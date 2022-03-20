@@ -10,7 +10,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.meritoki.prospero</groupId>
 	<artifactId>desktop</artifactId>
-	<version>0.7.202203</version>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -66,8 +65,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.meritoki.library</groupId>
-			<artifactId>prospero</artifactId>
+			<groupId>org.meritoki.prospero</groupId>
+			<artifactId>library</artifactId>
 			<version>0.7.202203</version>
 		</dependency>
 		<dependency>
