@@ -11,9 +11,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import com.meritoki.library.prospero.model.Model;
-import com.meritoki.library.prospero.model.plot.Plot;
-import com.meritoki.library.prospero.model.table.Table;
+import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.plot.Plot;
+import org.meritoki.prospero.library.model.table.Table;
 
 /**
  *

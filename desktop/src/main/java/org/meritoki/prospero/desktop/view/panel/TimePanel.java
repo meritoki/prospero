@@ -12,8 +12,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
-
-import com.meritoki.library.prospero.model.Model;
+import org.meritoki.prospero.library.model.Model;
 
 /**
  *

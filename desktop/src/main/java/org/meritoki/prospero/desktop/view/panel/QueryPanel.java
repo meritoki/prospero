@@ -10,9 +10,8 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
-
-import com.meritoki.library.prospero.model.Model;
-import com.meritoki.library.prospero.model.node.Variable;
+import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.Variable;
 
 /**
  *

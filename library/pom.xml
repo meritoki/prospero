@@ -33,7 +33,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.meritoki.library.prospero.Library</mainClass>
+							<mainClass>org.meritoki.prospero.library.Library</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

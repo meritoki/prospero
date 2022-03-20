@@ -19,13 +19,12 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.view.dialog.AboutDialog;
 import org.meritoki.prospero.desktop.view.dialog.MainDialog;
-
-import com.meritoki.library.prospero.model.Model;
-import com.meritoki.library.prospero.model.plot.Plot;
-import com.meritoki.library.prospero.model.query.Query;
-import com.meritoki.library.prospero.model.table.Table;
-import com.meritoki.library.prospero.model.unit.Script;
-import com.meritoki.library.prospero.model.vendor.microsoft.Excel;
+import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.plot.Plot;
+import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.table.Table;
+import org.meritoki.prospero.library.model.unit.Script;
+import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
 
 /**
  *

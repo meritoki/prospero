@@ -17,9 +17,8 @@ import javax.swing.tree.TreePath;
 
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.desktop.view.menu.VariableMenu;
-
-import com.meritoki.library.prospero.model.Model;
-import com.meritoki.library.prospero.model.node.Variable;
+import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.Variable;
 
 /**
  *

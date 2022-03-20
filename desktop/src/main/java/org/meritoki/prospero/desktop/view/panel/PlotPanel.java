@@ -20,9 +20,8 @@ import javax.swing.BoxLayout;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.SavePopupMenu;
-
-import com.meritoki.library.prospero.model.Model;
-import com.meritoki.library.prospero.model.plot.Plot;
+import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.plot.Plot;
 
 /**
  *

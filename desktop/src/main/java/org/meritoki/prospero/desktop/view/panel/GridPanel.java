@@ -18,11 +18,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.GridPopupMenu;
 import org.meritoki.prospero.desktop.view.menu.SavePopupMenu;
-
-import com.meritoki.library.prospero.model.Model;
-import com.meritoki.library.prospero.model.solar.planet.earth.*;
-import com.meritoki.library.prospero.model.terra.Terra;
-import com.meritoki.library.prospero.model.terra.cartography.Projection;
+import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.solar.planet.earth.*;
+import org.meritoki.prospero.library.model.terra.Terra;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  *

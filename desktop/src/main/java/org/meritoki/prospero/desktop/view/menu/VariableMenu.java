@@ -8,11 +8,11 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
+import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.unit.Operator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.library.prospero.model.Model;
-import com.meritoki.library.prospero.model.query.Query;
-import com.meritoki.library.prospero.model.unit.Operator;
 
 public class VariableMenu extends JPopupMenu {
 

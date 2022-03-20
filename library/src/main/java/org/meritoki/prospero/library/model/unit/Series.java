@@ -1,0 +1,386 @@
+package org.meritoki.prospero.library.model.unit;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.query.Query;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+public class Series {
+
+	static Logger logger = LogManager.getLogger(Series.class.getName());
+	public List<Index> indexList = new ArrayList<>();
+	public List<Time> timeList = new ArrayList<>();
+	public Map<String, Object> map = new TreeMap<>();
+	public Map<String, List<Regression>> regressionMap = new HashMap<>();
+
+	public void addIndexList(List<Index> indexList) {
+		for (Index i : indexList) {
+			this.addIndex(i);
+		}
+	}
+	
+	public String getTitle() {
+		String title = "";
+		title += (this.map.get("name")!=null)?this.map.get("name")+" ":"";
+		title += (this.map.get("group")!=null)?((String)this.map.get("group"))+" ":"";
+		title += (this.map.get("sum")!=null && (boolean)this.map.get("sum"))?"Sum ":"";
+		title += (this.map.get("average")!=null && (boolean)this.map.get("average"))?"Average ":"";
+		title += (this.map.get("family")!=null)?"Family "+((String)this.map.get("family"))+" ":"";
+		title += (this.map.get("class")!=null)?"Class "+((String)this.map.get("class"))+" ":"";
+		title += (this.map.get("region")!=null)?"Region "+"("+((String)this.map.get("region")).replace(",", "_").replace(":", ")-(")+")":"";
+		return title;
+	}
+	
+	public String getData() {
+		Query query = (Query)this.map.get("query");
+		String data = query.getName();
+		return data;
+	}
+
+//	/**
+//	 * Function addIndex Index index
+//	 * 
+//	 * @param index
+//	 */
+//	public boolean addIndex(Index index) {
+//		if (!this.indexList.contains(index)) {
+//			this.indexList.add(index);
+//		} else {
+//			int x = this.indexList.indexOf(index);// indexOf works with an equals method in index that uses the
+//													// startCalendar
+//			Index i = this.indexList.get(x);
+//			if (i.value != index.value) {
+//				i.value += index.value;
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
+	
+	/**
+	 * Function addIndex Index index
+	 * 
+	 * @param index
+	 */
+	public void addIndex(Index index) {
+		if (index != null && !this.indexList.contains(index)) {
+			this.indexList.add(index);
+		} 
+//		else {
+//			int x = this.indexList.indexOf(index);// indexOf works with an equals method in index that uses the
+//			if()
+//			this.indexList.set(x, index);									// startCalendar
+////			Index i = this.indexList.get(x);
+////			
+////			if (i.value != index.value) {
+////				
+////			}
+//		}
+	}
+
+
+	@JsonIgnore
+	public void setRegression(String value) throws Exception {
+		String[] regressionArray = (value != null) ? value.split(",") : new String[0];
+		for (String regression : regressionArray) {
+			this.regressionMap.put(regression, this.getRegressionList(regression, this.indexList));
+		}
+	}
+
+	/**
+	 * 
+	 * @param regression
+	 * @param indexList
+	 * @return
+	 * @throws Exception
+	 */
+	@JsonIgnore
+	public List<Regression> getRegressionList(String regression, List<Index> indexList) throws Exception {
+		List<Regression> regressionList = new ArrayList<>();
+		List<List<Index>> periodMatrix = this.getPeriodMatrix(regression, indexList);
+		for (List<Index> period : periodMatrix) {
+			if (period != null && period.size() > 0) {
+				Calendar startCalendar = period.get(0).startCalendar;
+				Calendar endCalendar = period.get(period.size() - 1).endCalendar;
+				List<Point> pointList = new ArrayList<>();
+				for (Index index : period) {
+					Point point = index.getPoint(startCalendar);
+					pointList.add(point);
+				}
+				double[][] data = new double[pointList.size()][2];
+				for (int i = 0; i < pointList.size(); i++) {
+					Point p = pointList.get(i);
+					data[i][0] = p.x;
+					data[i][1] = p.y;
+				}
+				SimpleRegression simpleRegression = new SimpleRegression(true);
+				simpleRegression.addData(data);
+				Regression r = new Regression();
+				Map<String, Double> map = new HashMap<>();
+				map.put("intercept", simpleRegression.getIntercept());
+				map.put("interceptStdErr", simpleRegression.getInterceptStdErr());
+				map.put("meanSquareError", simpleRegression.getMeanSquareError());
+//					map.put("n", simpleRegression.getN());
+				map.put("r", simpleRegression.getR());
+				map.put("regressionSumSquares", simpleRegression.getRegressionSumSquares());
+				map.put("rSquare", simpleRegression.getRSquare());
+				map.put("significance", simpleRegression.getSignificance());
+				map.put("slope", simpleRegression.getSlope());
+				map.put("slopeConfidenceInterval", simpleRegression.getSlopeConfidenceInterval());
+				map.put("slopeStdErr", simpleRegression.getSlopeStdErr());
+				map.put("sumOfCrossProducts", simpleRegression.getSumOfCrossProducts());
+				map.put("sumSquaredErrors", simpleRegression.getSumSquaredErrors());
+				map.put("totalSumSquares", simpleRegression.getTotalSumSquares());
+				map.put("xSumSqaures", simpleRegression.getXSumSquares());
+				r.map = map;
+				r.startCalendar = startCalendar;
+				r.endCalendar = endCalendar;
+				regressionList.add(r);
+			}
+		}
+		return regressionList;
+	}
+
+	public List<List<Index>> getPeriodMatrix(String regression, List<Index> indexList) {
+		List<List<Index>> periodMatrix = new ArrayList<>();
+		if (regression != null && indexList != null && indexList.size() > 0) {
+			switch (regression) {
+			case "all": {
+				List<Index> period = indexList;
+				periodMatrix.add(period);
+				break;
+			}
+			case "season": {
+				String seasonIndex = null;
+				List<Index> period = null;
+				for (Index index : indexList) {
+					Calendar calendar = index.startCalendar;
+					int month = calendar.get(Calendar.MONTH);
+					String season = Regression.getSeason(month);
+					if (!season.equals(seasonIndex)) {
+						if (period != null) {
+							periodMatrix.add(period);
+						}
+						seasonIndex = season;
+						period = new ArrayList<>();
+					}
+					if (period != null) {
+						period.add(index);
+					}
+				}
+				break;
+			}
+			case "year": {// doesn't work if year does not change
+				int yearIndex = -1;
+				List<Index> period = null;
+				for (Index index : indexList) {
+					Calendar calendar = index.startCalendar;
+					int year = calendar.get(Calendar.YEAR);
+					if (yearIndex != year) {
+						if (period != null) {
+							periodMatrix.add(period);
+						}
+						yearIndex = year;
+						period = new ArrayList<>();
+					}
+					if (period != null) {
+						period.add(index);
+					}
+				}
+				break;
+			}
+			case "decade": {
+				int decadeIndex = -1;
+				List<Index> period = null;
+				for (Index index : indexList) {
+					Calendar calendar = index.startCalendar;
+					int year = calendar.get(Calendar.YEAR);
+					int decade = Regression.getDecade(year);
+					if (decadeIndex != decade) {
+						if (period != null) {
+							periodMatrix.add(period);
+						}
+						decadeIndex = decade;
+						period = new ArrayList<>();
+					}
+					if (period != null) {
+						period.add(index);
+					}
+				}
+				break;
+			}
+			case "vicennial": {
+				int decadeIndex = -1;
+				List<Index> period = null;
+				for (Index index : indexList) {
+					Calendar calendar = index.startCalendar;
+					int year = calendar.get(Calendar.YEAR);
+					int decade = Regression.getDecade(year);
+					if (decadeIndex != decade) {
+						if (period != null) {
+							periodMatrix.add(period);
+						}
+						decadeIndex = decade;
+						period = new ArrayList<>();
+					}
+					if (period != null) {
+						period.add(index);
+					}
+				}
+				List<List<Index>> tmpPeriodMatrix = new ArrayList<>();
+				for (int i = 0; i < periodMatrix.size(); i++) {
+					if ((i + 1) < periodMatrix.size()) {
+						List<Index> p = new ArrayList<>();
+						p.addAll(periodMatrix.get(i));
+						p.addAll(periodMatrix.get(i + 1));
+						tmpPeriodMatrix.add(p);
+					}
+				}
+				periodMatrix = tmpPeriodMatrix;
+				break;
+			}
+			case "quinquennial": {// 5-years
+				// Pending
+			}
+			}
+		}
+		return periodMatrix;
+	}
+
+	@JsonIgnore
+	@Override
+	public String toString() {
+		String string = "";
+		ObjectWriter ow = new ObjectMapper().writer();
+		try {
+			string = ow.writeValueAsString(this);
+		} catch (IOException ex) {
+			System.err.println("IOException " + ex.getMessage());
+		}
+		return string;
+	}
+}
+//@JsonIgnore
+//public List<Regression> getRegression(String value) throws Exception {
+//	List<Regression> regressionList = new ArrayList<>();
+//	String[] regressionArray = (value != null) ? value.split(",") : new String[0];
+//	for (String regression : regressionArray) {
+//		List<Regression> rList = this.getRegression(regression, this.indexList);
+//		regressionList.addAll(rList);
+//	}
+//	return regressionList;
+//}
+
+//if (regression != null && indexList.size() > 0) {
+//List<List<Index>> periodMatrix = new ArrayList<>();
+//switch (regression) {
+//case "all": {
+//	List<Index> period = indexList;
+//	periodMatrix.add(period);
+//	break;
+//}
+//case "season": {
+//	String seasonIndex = null;
+//	List<Index> period = null;
+//	for (Index index : indexList) {
+//		Calendar calendar = index.startCalendar;
+//		int month = calendar.get(Calendar.MONTH);
+//		String season = Regression.getSeason(month);
+//		if (!season.equals(seasonIndex)) {
+//			if (period != null) {
+//				periodMatrix.add(period);
+//			}
+//			seasonIndex = season;
+//			period = new ArrayList<>();
+//		}
+//		if (period != null) {
+//			period.add(index);
+//		}
+//	}
+//	break;
+//}
+//case "year": {// doesn't work if year does not change
+//	int yearIndex = -1;
+//	List<Index> period = null;
+//	for (Index index : indexList) {
+//		Calendar calendar = index.startCalendar;
+//		int year = calendar.get(Calendar.YEAR);
+//		if (yearIndex != year) {
+//			if (period != null) {
+//				periodMatrix.add(period);
+//			}
+//			yearIndex = year;
+//			period = new ArrayList<>();
+//		}
+//		if (period != null) {
+//			period.add(index);
+//		}
+//	}
+//	break;
+//}
+//case "decade": {
+//	int decadeIndex = -1;
+//	List<Index> period = null;
+//	for (Index index : indexList) {
+//		Calendar calendar = index.startCalendar;
+//		int year = calendar.get(Calendar.YEAR);
+//		int decade = Regression.getDecade(year);
+//		if (decadeIndex != decade) {
+//			if (period != null) {
+//				periodMatrix.add(period);
+//			}
+//			decadeIndex = decade;
+//			period = new ArrayList<>();
+//		}
+//		if (period != null) {
+//			period.add(index);
+//		}
+//	}
+//	break;
+//}
+//case "vicennial": {
+//	int decadeIndex = -1;
+//	List<Index> period = null;
+//	for (Index index : indexList) {
+//		Calendar calendar = index.startCalendar;
+//		int year = calendar.get(Calendar.YEAR);
+//		int decade = Regression.getDecade(year);
+//		if (decadeIndex != decade) {
+//			if (period != null) {
+//				periodMatrix.add(period);
+//			}
+//			decadeIndex = decade;
+//			period = new ArrayList<>();
+//		}
+//		if (period != null) {
+//			period.add(index);
+//		}
+//	}
+//	List<List<Index>> tmpPeriodMatrix = new ArrayList<>();
+//	for (int i = 0; i < periodMatrix.size(); i++) {
+//		if ((i + 1) < periodMatrix.size()) {
+//			List<Index> p = new ArrayList<>();
+//			p.addAll(periodMatrix.get(i));
+//			p.addAll(periodMatrix.get(i + 1));
+//			tmpPeriodMatrix.add(p);
+//		}
+//	}
+//	periodMatrix = tmpPeriodMatrix;
+//	break;
+//}
+//case "quinquennial": {// 5-years
+//	// Pending
+//}
+//}

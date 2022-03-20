@@ -6,8 +6,7 @@ package org.meritoki.prospero.desktop.view.dialog;
 
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.desktop.view.panel.ModelPanel;
-
-import com.meritoki.library.prospero.model.Model;
+import org.meritoki.prospero.library.model.Model;
 
 /**
  *

@@ -20,11 +20,10 @@ import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.view.panel.GridPanel;
 import org.meritoki.prospero.desktop.view.panel.PlotPanel;
 import org.meritoki.prospero.desktop.view.panel.SolarPanel;
-
-import com.meritoki.library.prospero.model.Model;
-import com.meritoki.library.prospero.model.plot.Plot;
-import com.meritoki.library.prospero.model.table.Table;
-import com.meritoki.library.prospero.model.vendor.microsoft.Excel;
+import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.plot.Plot;
+import org.meritoki.prospero.library.model.table.Table;
+import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
 
 public class SavePopupMenu extends JPopupMenu {
     /**

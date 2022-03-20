@@ -19,13 +19,12 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.view.panel.GridPanel;
 import org.meritoki.prospero.desktop.view.panel.SolarPanel;
-
-import com.meritoki.library.prospero.model.Model;
-import com.meritoki.library.prospero.model.terra.cartography.AzimuthalNorth;
-import com.meritoki.library.prospero.model.terra.cartography.AzimuthalSouth;
-import com.meritoki.library.prospero.model.terra.cartography.Equirectangular;
-import com.meritoki.library.prospero.model.terra.cartography.Globe;
-import com.meritoki.library.prospero.model.terra.cartography.Mercator;
+import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.terra.cartography.AzimuthalNorth;
+import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
+import org.meritoki.prospero.library.model.terra.cartography.Equirectangular;
+import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Mercator;
 
 public class GridPopupMenu extends JPopupMenu {
 	/**

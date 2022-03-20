@@ -4,7 +4,7 @@
  */
 package org.meritoki.prospero.desktop.view.dialog;
 
-import com.meritoki.library.prospero.model.Model;
+import org.meritoki.prospero.library.model.Model;
 
 /**
  *

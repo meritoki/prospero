@@ -16,15 +16,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.dialog.LoadDialog;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
+import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.unit.Script;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meritoki.library.controller.time.TimeController;
-import com.meritoki.library.prospero.model.Model;
-import com.meritoki.library.prospero.model.node.Variable;
-import com.meritoki.library.prospero.model.query.Query;
-import com.meritoki.library.prospero.model.unit.Script;
 
 /**
  *
