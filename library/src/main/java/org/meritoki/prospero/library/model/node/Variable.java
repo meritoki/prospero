@@ -29,18 +29,14 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.data.Data;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
-import org.meritoki.prospero.library.model.unit.Coordinate;
-import org.meritoki.prospero.library.model.unit.Event;
-import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Operator;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
 import org.meritoki.prospero.library.model.unit.Time;
@@ -93,6 +89,8 @@ public class Variable extends Node {
 	public Operator operator;
 	@JsonIgnore
 	public LinkedList<Time> timeList = new LinkedList<>();
+	@JsonIgnore
+	public boolean cache = false;
 
 	public Variable() {
 	}
@@ -168,6 +166,7 @@ public class Variable extends Node {
 	public void init() {
 		logger.info("init()");
 		try {
+			this.cache = ((Model)this.getAbsoluteRoot()).cache;
 			this.operator = this.query.getOperator();
 			this.script = this.query.getScript();
 		} catch (Exception e) {

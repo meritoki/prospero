@@ -23,6 +23,7 @@ public class Model extends Variable {
 	static Logger logger = LogManager.getLogger(Model.class.getName());
 	public List<System> systemList = new ArrayList<>();
 	public Variable node = this;
+	public boolean cache = false;
 //	public boolean test = true;
 
 	public Model() {
@@ -38,6 +39,10 @@ public class Model extends Variable {
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		this.setCalendar(calendar);
+	}
+	
+	public void setCache(boolean cache) {
+		this.cache = cache;
 	}
 	
 	

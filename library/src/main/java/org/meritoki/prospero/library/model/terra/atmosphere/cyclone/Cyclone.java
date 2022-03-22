@@ -86,6 +86,7 @@ public class Cyclone extends Grid {
 	public void init() {
 		super.init();
 		try {
+			
 			this.familyList = query.getFamilyList();
 			this.classificationList = query.getClassificationList();
 			this.durationList = query.getDurationList();

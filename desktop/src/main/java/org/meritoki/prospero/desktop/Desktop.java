@@ -35,14 +35,17 @@ public class Desktop {
 	public static String about = "Version " + versionNumber + " Copyright " + vendor + " 2020-2022";
 	public static Option versionOption = new Option("v", "version", false, "Print version information");
 	public static Option helpOption = new Option("h", "help", false, "Print usage information");
+	public static Option cacheOption = new Option("c", "cache", false, "Cache data between queries, requires memory");
 	public static Option scriptPathOption = Option.builder("s").longOpt("script").desc("Option to input script file or folder path")
 			.hasArg().build();
 	public static String scriptPath = null;
 	public static boolean mainFlag = false;
+	public static boolean cacheFlag = false;
 
 	public static void main(String args[]) {
 		logger.info("Starting Prospero Desktop Application...");
 		Options options = new Options();
+		options.addOption(cacheOption);
 		options.addOption(helpOption);
 		options.addOption(scriptPathOption);
 		options.addOption(versionOption);
@@ -60,6 +63,9 @@ public class Desktop {
 					scriptPath = commandLine.getOptionValue("script");
 					logger.info("main(args) script=" + scriptPath);
 				}
+				if (commandLine.hasOption("cache")) {
+					cacheFlag = true;
+				}
 				mainFlag = true;
 			}
 		} catch (org.apache.commons.cli.ParseException ex) {
@@ -70,6 +76,7 @@ public class Desktop {
 			final MainFrame mainFrame = new MainFrame();
 			final SplashWindow splashWindow = new SplashWindow("/Splash.png", mainFrame, 2000);
 			final Model model = new Model();
+			model.setCache(cacheFlag);
 			try {
 				model.setScriptPath(scriptPath);
 				mainFrame.setModel(model);
