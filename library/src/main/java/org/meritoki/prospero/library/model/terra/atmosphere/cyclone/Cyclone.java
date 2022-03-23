@@ -104,15 +104,7 @@ public class Cyclone extends Grid {
 	public void load(Result result) {
 		super.load(result);
 		List<Event> eventList = result.getEventList();
-		try {
-//			eventList = this.filter(eventList);
-//			this.prune(eventList);
-//			this.eventList.addAll(eventList);
-			this.process(eventList);
-		} catch (Exception e) {
-			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
-			e.printStackTrace();
-		}
+//		if(cache)
 //		Variable variable = (Variable) this.getRoot();
 //		if (variable instanceof Cyclone) {
 //			Cyclone cyclone = (Cyclone) variable;
@@ -120,12 +112,12 @@ public class Cyclone extends Grid {
 //		} else {
 //			this.eventList.addAll(eventList);
 //		}
-//		try {
-//			this.process(eventList, false);
-//		} catch (Exception e) {
-//			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
-//			e.printStackTrace();
-//		}
+		try {
+			this.process(eventList);
+		} catch (Exception e) {
+			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	@Override
