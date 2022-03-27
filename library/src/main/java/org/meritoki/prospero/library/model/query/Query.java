@@ -75,7 +75,7 @@ public class Query {
 	public boolean equals(Object object) {
 		if(object instanceof Query) {
 			Query q = (Query)object;
-			boolean flag = this.getTime().equals(q.getTime()) && this.getSource().equals(q.getSource()) && this.map.equals(q.map);
+			boolean flag = this.getTime().equals(q.getTime()) && this.getSource().equals(q.getSource());//&& this.map.equals(q.map);
 //			logger.debug(this+".equals("+q+") flag="+flag);
 			return flag;
 		} 
@@ -175,9 +175,9 @@ public class Query {
 	@JsonIgnore
 	public String getSource() {
 		String source = this.map.get("source");
-		if(source == null) {
-			source = "NULL";
-		}
+//		if(source == null) {
+//			source = "NULL";
+//		}
 		return source;
 	}
 	

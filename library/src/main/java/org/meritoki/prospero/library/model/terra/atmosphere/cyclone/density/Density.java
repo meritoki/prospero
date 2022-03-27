@@ -116,13 +116,15 @@ public class Density extends Cyclone {
 
 	@Override
 	public Index getIndex(Time key, List<Event> eventList) {
-		int[][][] bufferCoordinateMatrix = this.coordinateMatrix;
-		List<String> bufferDateList = this.dateList;
+//		int[][][] bufferCoordinateMatrix = this.coordinateMatrix;
+//		List<String> bufferDateList = this.dateList;
+		int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		Index index = null;
-		this.setEventList(eventList, true);
-		this.initMonthArray();
-		this.initYearMap();
-		List<Tile> tileList = this.getTileList();
+//		this.setEventList(eventList, true);
+		List<Time> timeList = this.setCoordinateMatrix(coordinateMatrix, eventList);
+		this.initMonthArray(timeList);
+		this.initYearMap(timeList);
+		List<Tile> tileList = this.getTileList(coordinateMatrix);
 		if (average) {
 			StandardDeviation standardDeviation = new StandardDeviation();
 			Mean mean = new Mean();
@@ -147,8 +149,8 @@ public class Density extends Cyclone {
 		} else {
 			index = super.getIndex(key, eventList);
 		}
-		this.coordinateMatrix = bufferCoordinateMatrix;
-		this.dateList = bufferDateList;
+//		this.coordinateMatrix = bufferCoordinateMatrix;
+//		this.dateList = bufferDateList;
 		return index;
 	}
 }

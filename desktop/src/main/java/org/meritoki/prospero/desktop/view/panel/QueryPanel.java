@@ -152,7 +152,8 @@ public class QueryPanel extends javax.swing.JPanel {
         if (key != null && value != null && node != null) {
             node.query.put(key, value);
             try {
-				node.init();
+            	node.init();
+				node.query();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -168,7 +169,8 @@ public class QueryPanel extends javax.swing.JPanel {
             String[] pair = attribute.split("=");
             node.query.remove(pair[0]);
             try {
-				node.init();
+            	node.init();
+				node.query();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

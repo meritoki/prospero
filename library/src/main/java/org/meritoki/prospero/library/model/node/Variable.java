@@ -146,7 +146,7 @@ public class Variable extends Node {
 				break;
 			}
 			case EXCEPTION: {
-				this.mode = Mode.COMPLETE;
+				this.mode = Mode.EXCEPTION;
 				logger.warn("defaultState("+(object != null)+") EXCEPTION");
 				logger.warn("defaultState("+(object != null)+") result.message=" + result.message);
 				break;
@@ -166,9 +166,10 @@ public class Variable extends Node {
 	public void init() {
 		logger.info("init()");
 		try {
-			this.cache = ((Model)this.getAbsoluteRoot()).cache;
+//			this.cache = ((Model)this.getAbsoluteRoot()).cache;
 			this.operator = this.query.getOperator();
 			this.script = this.query.getScript();
+			this.timeList = new LinkedList<>();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -190,6 +191,11 @@ public class Variable extends Node {
 	public boolean isComplete() {
 		return this.mode == Mode.COMPLETE;
 	}
+	
+	@JsonIgnore
+	public void query() {
+		this.query(this.query);
+	}
 
 	/**
 	 * Query is only resent if something is different If time is null calendar is
@@ -197,39 +203,30 @@ public class Variable extends Node {
 	 */
 	@JsonIgnore
 	public void query(Query query) {
-		logger.info("query(" + (query) + ")");
-		Variable variable = (Variable)this.getRoot();
 		this.query = query;
-		this.query.put("sourceUUID",
-				(this.source != null) ? this.sourceMap.get(this.source) : this.sourceMap.get(this.query.getSource()));
-		this.query.calendar = this.calendar;
-		Query q = this.queryStack.peek();
-		if(q == null) {
-			q = variable.queryStack.peek();
-			this.mode = Mode.COMPLETE;
-		}
-		if (!this.query.equals(q)) {// here can be null, no problem
-			logger.info("query(" + (query != null) + ") new");
-			this.query.outputList = this.objectList;
-			this.reset();
-			try {
-				this.data.add(this.query);
-				this.init();
-				this.queryStack.push(new Query(this.query));
-				if(variable != null) {
-					variable.queryStack.push(new Query(this.query));
-				}
-			} catch (Exception e) {
-				logger.warn("query() Exception " + e.getMessage());
-				e.printStackTrace();
-			}
-		} else {
-			if (this.mode == Mode.COMPLETE) {
+		if(query.getSource() != null) {
+			query.put("sourceUUID",this.sourceMap.get(query.getSource()));
+			query.calendar = this.calendar;
+			if (!query.equals(this.queryStack.peek())) {
+				logger.info("query(" + query + ")");
+				query.outputList = this.objectList;
+				this.reset();
 				try {
-					this.process();
+					this.data.add(query);
+					this.init();
+					this.queryStack.push(new Query(query));
 				} catch (Exception e) {
-					logger.warn("query() Exception " + e.getMessage());
+					logger.warn("query(" + query + ") Exception " + e.getMessage());
 					e.printStackTrace();
+				}
+			} else {//Same Time & Source
+				if (this.mode == Mode.COMPLETE) {
+					try {
+						this.process();
+					} catch (Exception e) {
+						logger.warn("query(" + query + ") Exception " + e.getMessage());
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -246,7 +243,7 @@ public class Variable extends Node {
 		logger.info("reset()");
 		this.mode = Mode.NULL;
 		this.queryStack = new LinkedList<>();
-		this.timeList = new LinkedList<>();
+
 	}
 
 	public void initVariableMap() {

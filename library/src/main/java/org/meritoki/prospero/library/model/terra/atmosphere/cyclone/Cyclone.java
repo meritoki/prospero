@@ -75,18 +75,12 @@ public class Cyclone extends Grid {
 	@Override
 	public void reset() {
 		super.reset();
-//		Variable variable = (Variable) this.getRoot();
-//		if (variable instanceof Cyclone) {
-//			Cyclone cyclone = (Cyclone) variable;
-//			cyclone.reset();
-// 		}
 	}
 
 	@Override
 	public void init() {
 		super.init();
 		try {
-			
 			this.familyList = query.getFamilyList();
 			this.classificationList = query.getClassificationList();
 			this.durationList = query.getDurationList();
@@ -104,14 +98,7 @@ public class Cyclone extends Grid {
 	public void load(Result result) {
 		super.load(result);
 		List<Event> eventList = result.getEventList();
-//		if(cache)
-//		Variable variable = (Variable) this.getRoot();
-//		if (variable instanceof Cyclone) {
-//			Cyclone cyclone = (Cyclone) variable;
-//			cyclone.eventList.addAll(eventList);
-//		} else {
-//			this.eventList.addAll(eventList);
-//		}
+		this.eventList.addAll(eventList);
 		try {
 			this.process(eventList);
 		} catch (Exception e) {
@@ -126,17 +113,15 @@ public class Cyclone extends Grid {
 		if (this.regionList != null && this.regionList.size() > 0) {//
 			for (Time time : this.timeList) {
 				try {
-					this.eventList = this.eventMap.get(time);
-					if (this.eventList != null) {
+					List<Event> eventList = this.eventMap.get(time);
+					if (eventList != null) {
 						for (Region region : this.regionList) {
-//							MemoryController.log();
 							this.region = region;
 							Series series = this.seriesMap.get(region.toString());
 							if (series == null) {
 								series = this.newSeries();
 							}
-//							this.getIndex(series, time, super.filter(this.eventList));
-							series.addIndex(this.getIndex(time, super.filter(this.eventList)));
+							series.addIndex(this.getIndex(time, super.filter(eventList)));
 							this.seriesMap.put(region.toString(), series);
 						}
 						this.initPlotList(this.seriesMap);
@@ -156,14 +141,9 @@ public class Cyclone extends Grid {
 	@Override
 	public void process() throws Exception {
 		super.process();
-//		Variable variable = (Variable) this.getRoot();
-//		if (variable instanceof Cyclone) {
-//			Cyclone cyclone = (Cyclone) variable;
-//			this.eventList = cyclone.eventList;
-//		}
 		try {
-//			if(this.eventList != null && this.eventList.size() > 0)
-			this.process(null);
+			this.process(new ArrayList<>(this.eventList));
+			this.complete();
 		} catch (Exception e) {
 			logger.error("process() exception=" + e.getMessage());
 			e.printStackTrace();
@@ -176,16 +156,10 @@ public class Cyclone extends Grid {
 	 * @param eventList
 	 */
 	public void process(List<Event> eventList) throws Exception {
-		logger.debug("process(" + ((eventList != null) ? eventList.size() : null) + ")");
-//		if (eventList != null && eventList.size() > 0) {
+//		logger.info("process(" + ((eventList != null) ? eventList.size() : null) + ")");
 		this.region = null;
 		eventList = this.filter(eventList);
 		this.prune(eventList);
-		this.setEventList(eventList, false);
-		this.initMonthArray();
-		this.initYearMap();
-		this.tileList = this.getTileList();
-		this.initTileMinMax();
 		List<Time> timeList = this.setEventMap(this.eventMap, eventList);// what we have
 		for (Time time : timeList) {
 			if (!this.timeList.contains(time)) {
@@ -196,25 +170,25 @@ public class Cyclone extends Grid {
 				this.timeList.get(index).flag = true;
 			}
 		}
+		this.setMatrix(eventList);
+		this.tileList = this.getTileList();
+		this.initTileMinMax();
 		if (this.regionList != null && this.regionList.size() > 0) {
 			for (Time time : this.timeList) {
 				if (!time.flag) {
 					try {
-						this.eventList = this.eventMap.get(time);
-						if (this.eventList != null) {
+						eventList = this.eventMap.get(time);
+						if (eventList != null) {
 							for (Region region : this.regionList) {
-//									MemoryController.log();
 								this.region = region;
 								Series series = this.seriesMap.get(region.toString());
 								if (series == null) {
 									series = this.newSeries();
 								}
-//									this.addSeriesIndex(series, time, super.filter(this.eventList));
-								series.addIndex(this.getIndex(time, super.filter(this.eventList)));
+								series.addIndex(this.getIndex(time, super.filter(eventList)));
 								this.seriesMap.put(region.toString(), series);
 							}
 							this.initPlotList(this.seriesMap);
-							// Flag Here to do it
 							this.eventMap.remove(time);
 						}
 					} catch (Exception e) {
@@ -226,36 +200,15 @@ public class Cyclone extends Grid {
 				}
 			}
 		}
-		// Uncomment to Restore
-//			if (this.regionList != null && this.regionList.size() == 1) {//
-//				for (Region region : this.regionList) {
-//					this.region = region;
-//					Series series = this.seriesMap.get(region.toString());
-//					if (series == null) {
-//						series = this.newSeries();
-//					}
-//					for (Time time: timeList) {
-//						eventList = super.filter(new ArrayList<>(this.eventMap.get(time)));//Bottleneck is filtering by region
-//						//TRY stop trying to use the filter
-//						this.prune(eventList);
-//						this.addSeriesIndex(series, time, eventList);
-//					}
-//					this.seriesMap.put(region.toString(), series);
-//				}
-//				this.initPlotList(this.seriesMap);
-//			}
-//		}
 	}
 
 	public void prune(List<Event> eventList) {
-//		logger.info("prune() BEFORE eventList.size()="+eventList.size());
 		Iterator<Event> it = eventList.iterator();
 		while (it.hasNext()) {
 			Event e = it.next();
 			if (!e.flag || !e.hasCoordinate())
 				it.remove();
 		}
-//		logger.info("prune() AFTER eventList.size()="+eventList.size());
 	}
 
 	public Series newSeries() {
@@ -282,6 +235,8 @@ public class Cyclone extends Grid {
 	public Plot getPlot(Series series) throws Exception {
 		Plot plot = null;
 		if (series.indexList != null && series.indexList.size() > 0) {
+			series.map.put("startCalendar", this.startCalendar);
+			series.map.put("endCalendar", this.endCalendar);
 			series.setRegression(this.regression);
 			plot = new TimePlot(series);
 		}
@@ -358,7 +313,7 @@ public class Cyclone extends Grid {
 	public void setEventList(List<Event> eventList, boolean reset) {
 //		logger.debug("setEventList(" + eventList.size() + "," + reset + ")");
 		if (reset) {
-			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][monthCount];
+			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 			this.dateList = new ArrayList<>();
 		}
 		if (eventList != null) {
@@ -379,6 +334,41 @@ public class Cyclone extends Grid {
 				}
 			}
 		}
+	}
+	
+	public void setMatrix(List<Event> eventList) {
+		List<Time> timeList = this.setCoordinateMatrix(this.coordinateMatrix, eventList);
+		for(Time t: timeList) {
+			if(!this.eventTimeList.contains(t)) {
+				this.eventTimeList.add(t);
+			}
+		}
+		this.initMonthArray(this.eventTimeList);
+		this.initYearMap(this.eventTimeList);
+	}
+	
+	public List<Time> setCoordinateMatrix(int[][][] coordinateMatrix, List<Event> eventList) {
+		List<Time> timeList = null;
+		if (eventList != null) {
+			timeList = new ArrayList<>();
+			for (Event e : eventList) {
+				if (e.flag) {
+					for (Coordinate c : e.coordinateList) {
+						if (c.flag) {
+							int x = (int) ((c.latitude + this.latitude) * this.resolution);
+							int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+							int z = c.getMonth() - 1;
+							coordinateMatrix[x][y][z]++;
+							Time time = new Time(c.getYear(),c.getMonth(),-1,-1,-1,-1);
+							if(!timeList.contains(time)) {
+								timeList.add(time);
+							}
+						}
+					}
+				}
+			}
+		}
+		return timeList;
 	}
 
 	/**
@@ -558,6 +548,25 @@ public class Cyclone extends Grid {
 		}
 	}
 }
+// Uncomment to Restore
+//if (this.regionList != null && this.regionList.size() == 1) {//
+//	for (Region region : this.regionList) {
+//		this.region = region;
+//		Series series = this.seriesMap.get(region.toString());
+//		if (series == null) {
+//			series = this.newSeries();
+//		}
+//		for (Time time: timeList) {
+//			eventList = super.filter(new ArrayList<>(this.eventMap.get(time)));//Bottleneck is filtering by region
+//			//TRY stop trying to use the filter
+//			this.prune(eventList);
+//			this.addSeriesIndex(series, time, eventList);
+//		}
+//		this.seriesMap.put(region.toString(), series);
+//	}
+//	this.initPlotList(this.seriesMap);
+//}
+//}
 //time.year = year;
 //time.month = month;
 //time.day = day;

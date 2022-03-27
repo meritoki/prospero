@@ -25,8 +25,7 @@ import org.meritoki.prospero.library.model.unit.Time;
 public class Speed extends Cyclone {
 
 	static Logger logger = LogManager.getLogger(Speed.class.getName());
-	public float[][][] speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude
-			* resolution)][monthCount];
+	public float[][][] speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	public Map<Integer, float[][][]> speedMatrixMap = new HashMap<>();
 
 	public Speed() {
@@ -37,7 +36,7 @@ public class Speed extends Cyclone {
 	@Override
 	public void reset() {
 		super.reset();
-		this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][monthCount];
+		this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	}
 
 	@Override
@@ -104,8 +103,8 @@ public class Speed extends Cyclone {
 	public void setEventList(List<Event> eventList, boolean reset) {
 //		logger.info("setEventList("+eventList.size()+","+reset+")");
 		if (reset) {
-			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][monthCount];
-			this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][monthCount];
+			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+			this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 			this.dateList = new ArrayList<>();
 		}
 		for (Event e : eventList) {
@@ -128,21 +127,63 @@ public class Speed extends Cyclone {
 	}
 
 	@Override
+	public void setMatrix(List<Event> eventList) {
+		List<Time> timeList = this.setSpeedCoordinateMatrix(this.speedMatrix, this.coordinateMatrix, eventList);
+		for(Time t: timeList) {
+			if(!this.eventTimeList.contains(t)) {
+				this.eventTimeList.add(t);
+			}
+		}
+		this.initMonthArray(this.eventTimeList);
+		this.initYearMap(this.eventTimeList);
+	}
+
+	public List<Time> setSpeedCoordinateMatrix(float[][][] speedMatrix, int[][][] coordinateMatrix, List<Event> eventList) {
+		List<Time> timeList = null;
+		if (eventList != null) {
+			timeList = new ArrayList<>();
+			for (Event e : eventList) {
+				if (e.flag) {
+					Coordinate p = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
+					if (p != null) {
+						coordinateMatrix[(int) ((p.latitude + this.latitude)
+								* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
+										.getMonth() - 1]++;
+						speedMatrix[(int) ((p.latitude + this.latitude)
+								* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
+										.getMonth() - 1] += ((CycloneEvent) e).getMeanSpeed();
+						Time time = new Time(p.getYear(),p.getMonth(),-1,-1,-1,-1);
+						if(!timeList.contains(time)) {
+							timeList.add(time);
+						}
+					}
+				}
+			}
+		}
+		return timeList;
+	}
+
+	@Override
 	public Index getIndex(Time key, List<Event> eventList) {
-		int[][][] bufferCoordinateMatrix = this.coordinateMatrix;
-		float[][][] bufferSpeedMatrix = this.speedMatrix;
-		List<String> bufferDateList = this.dateList;
+//		int[][][] bufferCoordinateMatrix = this.coordinateMatrix;
+//		float[][][] bufferSpeedMatrix = this.speedMatrix;
+//		List<String> bufferDateList = this.dateList;
+		int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+		float[][][] speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		Index index = null;
-		this.setEventList(eventList, true);
-		this.initMonthArray();
-		this.initYearMap();
-		List<Tile> tileList = this.getTileList();
+//		this.setEventList(eventList, true);
+		List<Time> timeList = this.setSpeedCoordinateMatrix(speedMatrix, coordinateMatrix, eventList);
+		this.initMonthArray(timeList);
+		this.initYearMap(timeList);
+		List<Tile> tileList = this.getTileList(coordinateMatrix, speedMatrix);
 		if (average) {
 			StandardDeviation standardDeviation = new StandardDeviation();
 			Mean mean = new Mean();
 			for (Tile tile : tileList) {
-				standardDeviation.increment(tile.value);
-				mean.increment(tile.value);
+				if(tile.value != 0) {
+					standardDeviation.increment(tile.value);
+					mean.increment(tile.value);
+				}
 			}
 			double value = mean.getResult();
 			if (!Double.isNaN(value) && value != 0) {
@@ -161,9 +202,9 @@ public class Speed extends Cyclone {
 		} else {
 			index = super.getIndex(key, eventList);
 		}
-		this.coordinateMatrix = bufferCoordinateMatrix;
-		this.speedMatrix = bufferSpeedMatrix;
-		this.dateList = bufferDateList;
+//		this.coordinateMatrix = bufferCoordinateMatrix;
+//		this.speedMatrix = bufferSpeedMatrix;
+//		this.dateList = bufferDateList;
 		return index;
 	}
 }
