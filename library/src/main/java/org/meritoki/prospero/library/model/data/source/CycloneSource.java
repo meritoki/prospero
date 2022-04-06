@@ -64,7 +64,7 @@ public class CycloneSource extends Source {
 				Result result = new Result();
 				result.map.put("time", time);
 				result.map.put("eventList", new ArrayList<Event>((loadList)));
-				query.outputList.add(result);
+				query.objectList.add(result);
 			} else {
 				throw new InterruptedException();
 			}

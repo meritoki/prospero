@@ -75,7 +75,7 @@ public class Grid extends Variable {
 	public Map<String,Plot> plotMap = new TreeMap<>();
 	public List<Index> indexList = new ArrayList<>();
 
-	public int[] range;
+	public double[] range;
 	public String regression;
 	public boolean average;
 	public boolean sum;
@@ -104,7 +104,7 @@ public class Grid extends Variable {
 		super.reset();
 		this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		this.dataMatrix = new float[(int) latitude][(int) longitude];
-		this.dateList = new ArrayList<>();
+//		this.dateList = new ArrayList<>();
 		this.regionList = new ArrayList<>();
 		this.region = null;
 		this.bandList = new ArrayList<>();
@@ -162,10 +162,12 @@ public class Grid extends Variable {
 	 * @return List<Event>
 	 */
 	public List<Event> resetFlags(List<Event> eventList) {
-		for (Event e : eventList) {
-			e.flag = false;
-			for (Coordinate p : e.coordinateList) {
-				p.flag = false;
+		if(eventList != null) {
+			for (Event e : eventList) {
+				e.flag = false;
+				for (Coordinate p : e.coordinateList) {
+					p.flag = false;
+				}
 			}
 		}
 		return eventList;

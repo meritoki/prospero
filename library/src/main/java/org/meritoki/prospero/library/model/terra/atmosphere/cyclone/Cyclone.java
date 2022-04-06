@@ -98,7 +98,7 @@ public class Cyclone extends Grid {
 	public void load(Result result) {
 		super.load(result);
 		List<Event> eventList = result.getEventList();
-		this.eventList.addAll(eventList);
+		this.eventList.addAll(new ArrayList<>(eventList));
 		try {
 			this.process(eventList);
 		} catch (Exception e) {
@@ -142,6 +142,7 @@ public class Cyclone extends Grid {
 	public void process() throws Exception {
 		super.process();
 		try {
+			this.reset();
 			this.process(new ArrayList<>(this.eventList));
 			this.complete();
 		} catch (Exception e) {
@@ -199,6 +200,7 @@ public class Cyclone extends Grid {
 					time.flag = false;
 				}
 			}
+			this.resetFlags(eventList);
 		}
 	}
 

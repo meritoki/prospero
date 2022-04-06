@@ -135,14 +135,12 @@ public class Variable extends Node {
 			switch (result.mode) {
 			case LOAD: {
 				this.mode = Mode.LOAD;
-//				logger.info("defaultState("+(object != null)+") "+this.mode.toString());
 				load(result);
 				break;
 			}
 			case COMPLETE: {
 				complete();
 				this.mode = Mode.COMPLETE;
-//				logger.info("defaultState("+(object != null)+") "+this.mode.toString());
 				break;
 			}
 			case EXCEPTION: {
@@ -171,7 +169,7 @@ public class Variable extends Node {
 			this.script = this.query.getScript();
 			this.timeList = new LinkedList<>();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			logger.error("init() e="+e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -198,28 +196,28 @@ public class Variable extends Node {
 	}
 
 	/**
-	 * Query is only resent if something is different If time is null calendar is
-	 * used
+	 * Query is an important function. If the query is completely unknown, the global query is set
+	 * for the first time.
 	 */
 	@JsonIgnore
 	public void query(Query query) {
 		this.query = query;
-		if(query.getSource() != null) {
+		if(query.getSource() != null) {//should only move forward if we have a source
 			query.put("sourceUUID",this.sourceMap.get(query.getSource()));
 			query.calendar = this.calendar;
+			logger.info("query(" + query + ")");
 			if (!query.equals(this.queryStack.peek())) {
-				logger.info("query(" + query + ")");
-				query.outputList = this.objectList;
+				query.objectList = this.objectList;
 				this.reset();
+				this.init();
 				try {
 					this.data.add(query);
-					this.init();
 					this.queryStack.push(new Query(query));
 				} catch (Exception e) {
 					logger.warn("query(" + query + ") Exception " + e.getMessage());
 					e.printStackTrace();
 				}
-			} else {//Same Time & Source
+			} else {
 				if (this.mode == Mode.COMPLETE) {
 					try {
 						this.process();
@@ -243,7 +241,6 @@ public class Variable extends Node {
 		logger.info("reset()");
 		this.mode = Mode.NULL;
 		this.queryStack = new LinkedList<>();
-
 	}
 
 	public void initVariableMap() {

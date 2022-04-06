@@ -50,10 +50,10 @@ public class LithosphereGEBCO extends Source {
 		Result result = new Result();
 		result.map.put("coordinateList",this.box(-90,-180, 90, 180));
 		result.mode = Mode.LOAD;
-		query.outputList.add(result);
+		query.objectList.add(result);
 		result = new Result();
 		result.mode = Mode.COMPLETE;
-		query.outputList.add(result);
+		query.objectList.add(result);
 	}
 
 	public List<Coordinate> box(double latA, double lonA, double latB, double lonB) {

@@ -51,10 +51,10 @@ public class Source extends Node {//implements SourceInterface
 				this.query(query);
 			} catch (InterruptedException e) {
 				logger.warn("InterruptedException " + e.getMessage());
-				query.outputList.add(new Result(Mode.EXCEPTION,e.getMessage()));
+				query.objectList.add(new Result(Mode.EXCEPTION,e.getMessage()));
 			} catch (Exception e) {
 				logger.warn("Exception "+e.getMessage());
-				query.outputList.add(new Result(Mode.EXCEPTION,e.getMessage()));
+				query.objectList.add(new Result(Mode.EXCEPTION,e.getMessage()));
 			}
 		}
 	}
