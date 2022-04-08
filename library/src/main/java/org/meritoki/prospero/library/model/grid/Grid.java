@@ -102,21 +102,19 @@ public class Grid extends Variable {
 	 */
 	public void reset() {
 		super.reset();
-		this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-		this.dataMatrix = new float[(int) latitude][(int) longitude];
-//		this.dateList = new ArrayList<>();
+		this.tileList = new ArrayList<>();
 		this.regionList = new ArrayList<>();
 		this.region = null;
 		this.bandList = new ArrayList<>();
-		this.tileList = new ArrayList<>();
 		this.frameList = new ArrayList<>();
 		this.coordinateList = new ArrayList<>();
 		this.eventList = new ArrayList<>();
-//		this.eventMap = new HashMap<>();
 		this.stationList = new ArrayList<>();
-//		this.seriesMap = new TreeMap<>();
 		this.plotList = new ArrayList<>();
 //		this.window = null;
+//		this.dateList = new ArrayList<>();
+//		this.seriesMap = new TreeMap<>();
+//		this.eventMap = new HashMap<>();
 	}
 
 	@Override
@@ -136,6 +134,8 @@ public class Grid extends Variable {
 	public void init() {
 		super.init();
 		try {
+			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+			this.dataMatrix = new float[(int) latitude][(int) longitude];
 			this.regression = this.query.getRegression();
 			this.group = this.query.getGroup();
 			this.eventMap = new HashMap<>();
@@ -161,7 +161,7 @@ public class Grid extends Variable {
 	 * @param eventList
 	 * @return List<Event>
 	 */
-	public List<Event> resetFlags(List<Event> eventList) {
+	public void reset(List<Event> eventList) {
 		if(eventList != null) {
 			for (Event e : eventList) {
 				e.flag = false;
@@ -170,7 +170,6 @@ public class Grid extends Variable {
 				}
 			}
 		}
-		return eventList;
 	}
 
 	/**
@@ -181,10 +180,9 @@ public class Grid extends Variable {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Event> filter(List<Event> eventList) throws Exception {
+	public void filter(List<Event> eventList) throws Exception {
 		if (!Thread.interrupted()) {
-			if (eventList != null) {
-				eventList = this.resetFlags(eventList);
+			if (eventList != null & eventList.size() > 0) {
 				boolean regionFlag = false;
 				for (Event e : eventList) {
 					for (Coordinate c : e.coordinateList) {
@@ -206,15 +204,20 @@ public class Grid extends Variable {
 					}
 					e.flag = e.hasCoordinate();
 				}
-				if (eventList.size() == 0) {
-					logger.warn("filter(" + eventList.size() + ") zero");
-				}
 			}
-
 		} else {
 			throw new InterruptedException();
 		}
-		return eventList;
+	}
+	
+	public void prune(List<Event> eventList) {
+		Iterator<Event> eventIterator = eventList.iterator();
+		while (eventIterator.hasNext()) {
+			Event e = eventIterator.next();
+			if (!e.flag || !e.hasCoordinate()) {
+				eventIterator.remove();
+			}
+		}
 	}
 
 	@Override

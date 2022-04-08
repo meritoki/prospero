@@ -35,8 +35,8 @@ public class Vorticity extends Cyclone {
 	}
 
 	@Override
-	public void reset() {
-		super.reset();
+	public void init() {
+		super.init();
 		this.vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	}
 

@@ -121,7 +121,8 @@ public class Cyclone extends Grid {
 							if (series == null) {
 								series = this.newSeries();
 							}
-							series.addIndex(this.getIndex(time, super.filter(eventList)));
+							super.filter(eventList);
+							series.addIndex(this.getIndex(time, eventList));
 							this.seriesMap.put(region.toString(), series);
 						}
 						this.initPlotList(this.seriesMap);
@@ -140,9 +141,8 @@ public class Cyclone extends Grid {
 	 */
 	@Override
 	public void process() throws Exception {
-		super.process();
+		super.process();//this.init();
 		try {
-			this.reset();
 			this.process(new ArrayList<>(this.eventList));
 			this.complete();
 		} catch (Exception e) {
@@ -157,9 +157,9 @@ public class Cyclone extends Grid {
 	 * @param eventList
 	 */
 	public void process(List<Event> eventList) throws Exception {
-//		logger.info("process(" + ((eventList != null) ? eventList.size() : null) + ")");
 		this.region = null;
-		eventList = this.filter(eventList);
+		this.reset(eventList);
+		this.filter(eventList);
 		this.prune(eventList);
 		List<Time> timeList = this.setEventMap(this.eventMap, eventList);// what we have
 		for (Time time : timeList) {
@@ -186,7 +186,8 @@ public class Cyclone extends Grid {
 								if (series == null) {
 									series = this.newSeries();
 								}
-								series.addIndex(this.getIndex(time, super.filter(eventList)));
+								super.filter(eventList);
+								series.addIndex(this.getIndex(time, eventList));
 								this.seriesMap.put(region.toString(), series);
 							}
 							this.initPlotList(this.seriesMap);
@@ -200,16 +201,7 @@ public class Cyclone extends Grid {
 					time.flag = false;
 				}
 			}
-			this.resetFlags(eventList);
-		}
-	}
-
-	public void prune(List<Event> eventList) {
-		Iterator<Event> it = eventList.iterator();
-		while (it.hasNext()) {
-			Event e = it.next();
-			if (!e.flag || !e.hasCoordinate())
-				it.remove();
+			this.reset(eventList);
 		}
 	}
 
@@ -278,7 +270,7 @@ public class Cyclone extends Grid {
 				value++;
 			}
 		}
-		if(value > 0) {
+		if (value > 0) {
 			index = key.getIndex();
 			index.value = value;
 		}
@@ -295,7 +287,7 @@ public class Cyclone extends Grid {
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				logger.error("initPlotList("+seriesMap.size()+") e="+e);
+				logger.error("initPlotList(" + seriesMap.size() + ") e=" + e);
 				e.printStackTrace();
 			}
 		}
@@ -337,18 +329,18 @@ public class Cyclone extends Grid {
 			}
 		}
 	}
-	
+
 	public void setMatrix(List<Event> eventList) {
 		List<Time> timeList = this.setCoordinateMatrix(this.coordinateMatrix, eventList);
-		for(Time t: timeList) {
-			if(!this.eventTimeList.contains(t)) {
+		for (Time t : timeList) {
+			if (!this.eventTimeList.contains(t)) {
 				this.eventTimeList.add(t);
 			}
 		}
 		this.initMonthArray(this.eventTimeList);
 		this.initYearMap(this.eventTimeList);
 	}
-	
+
 	public List<Time> setCoordinateMatrix(int[][][] coordinateMatrix, List<Event> eventList) {
 		List<Time> timeList = null;
 		if (eventList != null) {
@@ -361,8 +353,8 @@ public class Cyclone extends Grid {
 							int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
 							int z = c.getMonth() - 1;
 							coordinateMatrix[x][y][z]++;
-							Time time = new Time(c.getYear(),c.getMonth(),-1,-1,-1,-1);
-							if(!timeList.contains(time)) {
+							Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
+							if (!timeList.contains(time)) {
 								timeList.add(time);
 							}
 						}
@@ -377,71 +369,69 @@ public class Cyclone extends Grid {
 	 * 
 	 */
 	@Override
-	public List<Event> filter(List<Event> eventList) throws Exception {
-		eventList = super.filter(eventList);
+	public void filter(List<Event> eventList) throws Exception {
+		super.filter(eventList);
 		if (!Thread.interrupted()) {
-			boolean levelFlag = false;
-			boolean durationFlag = false;
-			boolean familyFlag = false;
-			boolean classFlag = false;
-			for (Event e : eventList) {
-				durationFlag = false;
-				familyFlag = false;
-				classFlag = false;
-				for (Coordinate c : e.coordinateList) {
-					levelFlag = false;
-					if (this.levelList != null && this.levelList.size() > 0) {
-						for (Integer l : this.levelList) {
-							int level = (int) c.attribute.get("pressure");
-							if (l == level) {
-								levelFlag = true;
+			if (eventList != null) {
+				boolean levelFlag = false;
+				boolean durationFlag = false;
+				boolean familyFlag = false;
+				boolean classFlag = false;
+				for (Event e : eventList) {
+					durationFlag = false;
+					familyFlag = false;
+					classFlag = false;
+					for (Coordinate c : e.coordinateList) {
+						levelFlag = false;
+						if (this.levelList != null && this.levelList.size() > 0) {
+							for (Integer l : this.levelList) {
+								int level = (int) c.attribute.get("pressure");
+								if (l == level) {
+									levelFlag = true;
+								}
+							}
+						} else {
+							levelFlag = true;
+						}
+						c.flag = levelFlag;
+					}
+					if (this.durationList != null && this.durationList.size() > 0) {
+						for (Duration d : this.durationList) {
+							if (d.contains(e.getDuration())) {
+								durationFlag = true;
+								break;
 							}
 						}
 					} else {
-						levelFlag = true;
+						durationFlag = true;
 					}
-					c.flag = levelFlag;
-				}
-				if (this.durationList != null && this.durationList.size() > 0) {
-					for (Duration d : this.durationList) {
-						if (d.contains(e.getDuration())) {
-							durationFlag = true;
-							break;
+					if (this.familyList != null && this.familyList.size() > 0) {
+						for (Family depth : this.familyList) {
+							if (((CycloneEvent) e).family != null && depth == ((CycloneEvent) e).family) {
+								familyFlag = true;
+								break;
+							}
 						}
+					} else {
+						familyFlag = true;
 					}
-				} else {
-					durationFlag = true;
-				}
-				if (this.familyList != null && this.familyList.size() > 0) {
-					for (Family depth : this.familyList) {
-						if (((CycloneEvent) e).family != null && depth == ((CycloneEvent) e).family) {
-							familyFlag = true;
-							break;
-						}
-					}
-				} else {
-					familyFlag = true;
-				}
 
-				if (this.classificationList != null && this.classificationList.size() > 0) {
-					for (Classification type : classificationList) {
-						if (type == ((CycloneEvent) e).classification) {
-							classFlag = true;
-							break;
+					if (this.classificationList != null && this.classificationList.size() > 0) {
+						for (Classification type : classificationList) {
+							if (type == ((CycloneEvent) e).classification) {
+								classFlag = true;
+								break;
+							}
 						}
+					} else {
+						classFlag = true;
 					}
-				} else {
-					classFlag = true;
+					e.flag = durationFlag && familyFlag && classFlag;
 				}
-				e.flag = durationFlag && familyFlag && classFlag;
-			}
-			if (eventList.size() == 0) {
-				logger.warn("filter(" + eventList.size() + ") zero");
 			}
 		} else {
 			throw new InterruptedException();
 		}
-		return eventList;
 	}
 
 	public Time getTime(String value, Event e) {

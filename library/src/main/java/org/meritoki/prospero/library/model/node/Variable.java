@@ -164,7 +164,6 @@ public class Variable extends Node {
 	public void init() {
 		logger.info("init()");
 		try {
-//			this.cache = ((Model)this.getAbsoluteRoot()).cache;
 			this.operator = this.query.getOperator();
 			this.script = this.query.getScript();
 			this.timeList = new LinkedList<>();
