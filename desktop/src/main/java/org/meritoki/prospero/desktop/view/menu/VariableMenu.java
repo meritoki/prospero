@@ -17,7 +17,8 @@ package org.meritoki.prospero.desktop.view.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
@@ -32,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class VariableMenu extends JPopupMenu {
 
 	@JsonIgnore
-	protected Logger logger = Logger.getLogger(VariableMenu.class.getName());
+	protected Logger logger = LogManager.getLogger(VariableMenu.class.getName());
 	/**
 	 * 
 	 */
@@ -41,17 +42,18 @@ public class VariableMenu extends JPopupMenu {
 	public VariableMenu(Model model, MainFrame mainFrame) {
 		for (String source : model.node.getSourceList()) {
 			JCheckBoxMenuItem sourceMenuItem = new JCheckBoxMenuItem(source);
-			if (source.equals(model.node.source)) {
+			if (source.equals(model.node.query.getSource())) {
 				sourceMenuItem.setState(true);
 			}
 			sourceMenuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) e.getSource();
 					if (menuItem.isSelected()) {
-						logger.info("VariableMenu(" + model.node + ") e.getActionCommand()=" + e.getActionCommand());
 						String source = e.getActionCommand();
+						logger.info("VariableMenu(" + model.node + ") source=" + source);
 						model.node.source = source;
 						model.node.start();
+						model.node.query.map.put("source",source);
 						model.node.query.map.put("variable",model.node.name);//Consider generalizing and allowing in all cases, especifally if we want a user to ba able to save and rerun any script
 						model.node.init();
 						if(model.node.query.getOperator()== Operator.OR) {//Here we detect OR and know we MUST process as a script
@@ -61,12 +63,13 @@ public class VariableMenu extends JPopupMenu {
 							int index = mainFrame.getMainDialog().getModelPanel().getTabbedPane().indexOfTab("Script");
 							mainFrame.getMainDialog().getModelPanel().getTabbedPane().setSelectedIndex(index);
 						} else {//IF an AND, we can run the query
-							model.node.query(model.node.query);
+							model.node.query();//model.node.query);
 						}
 						mainFrame.init();
 					} else {
 						logger.info("VariableMenu(" + model.node + ") !menuItem.isSelected()");
 						model.node.stop();
+						model.node.query.map.put("source",null);
 					}
 				}
 			});

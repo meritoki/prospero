@@ -49,26 +49,7 @@ public class Series {
 		return data;
 	}
 
-//	/**
-//	 * Function addIndex Index index
-//	 * 
-//	 * @param index
-//	 */
-//	public boolean addIndex(Index index) {
-//		if (!this.indexList.contains(index)) {
-//			this.indexList.add(index);
-//		} else {
-//			int x = this.indexList.indexOf(index);// indexOf works with an equals method in index that uses the
-//													// startCalendar
-//			Index i = this.indexList.get(x);
-//			if (i.value != index.value) {
-//				i.value += index.value;
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-	
+
 	/**
 	 * Function addIndex Index index
 	 * 
@@ -272,6 +253,26 @@ public class Series {
 		return string;
 	}
 }
+///**
+//* Function addIndex Index index
+//* 
+//* @param index
+//*/
+//public boolean addIndex(Index index) {
+//	if (!this.indexList.contains(index)) {
+//		this.indexList.add(index);
+//	} else {
+//		int x = this.indexList.indexOf(index);// indexOf works with an equals method in index that uses the
+//												// startCalendar
+//		Index i = this.indexList.get(x);
+//		if (i.value != index.value) {
+//			i.value += index.value;
+//			return true;
+//		}
+//	}
+//	return false;
+//}
+
 //@JsonIgnore
 //public List<Regression> getRegression(String value) throws Exception {
 //	List<Regression> regressionList = new ArrayList<>();

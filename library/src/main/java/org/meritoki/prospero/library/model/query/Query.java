@@ -41,7 +41,7 @@ public class Query {
 	@JsonIgnore
 	public List<Alias> alias = new ArrayList<>();
 	@JsonIgnore
-	public List<Object> outputList;
+	public List<Object> objectList;
 	@JsonIgnore
 	public Calendar calendar = Calendar.getInstance();
 	@JsonIgnore
@@ -62,10 +62,10 @@ public class Query {
 	@JsonIgnore
 	public boolean objectListAdd(Object object) {
 		boolean flag = false;
-		if (this.outputList != null) {
-			synchronized (this.outputList) {
-				this.outputList.add(object);
-				this.outputList.notify();
+		if (this.objectList != null) {
+			synchronized (this.objectList) {
+				this.objectList.add(object);
+				this.objectList.notify();
 				flag = true;
 			}
 		}
@@ -75,7 +75,7 @@ public class Query {
 	public boolean equals(Object object) {
 		if(object instanceof Query) {
 			Query q = (Query)object;
-			boolean flag = this.getTime().equals(q.getTime()) && this.getSource().equals(q.getSource()) && this.map.equals(q.map);
+			boolean flag = this.getTime().equals(q.getTime()) && this.getSource().equals(q.getSource());//&& this.map.equals(q.map);
 //			logger.debug(this+".equals("+q+") flag="+flag);
 			return flag;
 		} 
@@ -175,9 +175,9 @@ public class Query {
 	@JsonIgnore
 	public String getSource() {
 		String source = this.map.get("source");
-		if(source == null) {
-			source = "NULL";
-		}
+//		if(source == null) {
+//			source = "NULL";
+//		}
 		return source;
 	}
 	
@@ -462,22 +462,22 @@ public class Query {
 	}
 	
 	@JsonIgnore
-	public int[] getRange() {
+	public double[] getRange() {
 		return this.getRange(this.map.get("range"));
 	}
 	
 	@JsonIgnore
-	public int[] getRange(String string) {
-		int[] range = new int[0];
+	public double[] getRange(String string) {
+		double[] range = new double[0];
 		if (string != null) {
 			String[] stringArray = string.split(":");
 			if (stringArray.length == 2) {
-				range = new int[2];
+				range = new double[2];
 				try {
-					range[0] = Integer.parseInt(stringArray[0]);
-					range[1] = Integer.parseInt(stringArray[1]);
+					range[0] = Double.parseDouble(stringArray[0]);
+					range[1] = Double.parseDouble(stringArray[1]);
 				} catch (NumberFormatException e) {
-					range = new int[0];
+					range = new double[0];
 				}
 			}
 		}

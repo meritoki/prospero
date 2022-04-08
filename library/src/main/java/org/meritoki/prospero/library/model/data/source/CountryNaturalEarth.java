@@ -30,10 +30,10 @@ public class CountryNaturalEarth extends Source {
 		Result result = new Result();
 		result.map.put("multiPolygonList",this.box(-180, 90, 180, -90));
 		result.mode = Mode.LOAD;
-		query.outputList.add(result);
+		query.objectList.add(result);
 		result = new Result();
 		result.mode = Mode.COMPLETE;
-		query.outputList.add(result);
+		query.objectList.add(result);
 	}
 	
 //	@Override

@@ -67,11 +67,11 @@ public class Plot { //extends JPanel {
 		this.data = data;
 	}
 	
-	public void setYMin(int min) {
+	public void setYMin(double min) {
 		this.yMin = min;
 	}
 	
-	public void setYMax(int max) {
+	public void setYMax(double max) {
 		this.yMax = max;
 	}
 	

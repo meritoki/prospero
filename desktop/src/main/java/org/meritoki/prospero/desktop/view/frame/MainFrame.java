@@ -115,26 +115,22 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 	
 	public void savePlotPanel(String path, String name, String uuid) {
-//    	int width = this.plotPanel.getWidth();
-//    	int height = 256;
     	Excel excel = new Excel();
     	for(Plot plot: this.plotPanel.plotList) {
 			if(plot != null) {
 				for(Table table: plot.tableList) {
 					excel.sheetMap.put(table.name,Table.getTableData(table.tableModel));
 				}
-//				plot.setPanelWidth(width);
-//				plot.setPanelHeight(height);
-//				Image image = plotPanel.createImage(width, height);
-//				image = plot.getImage(image);
 				Image image = plot.getImage();
-				String fileName;
-				fileName = "plot-"+plot.data+"-"+uuid+".png";
-				try {
-					NodeController.savePng(path, fileName, NodeController.toBufferedImage(image));
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if(image != null) {
+					String fileName;
+					fileName = "plot-"+plot.data+"-"+uuid+".png";
+					try {
+						NodeController.savePng(path, fileName, NodeController.toBufferedImage(image));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}

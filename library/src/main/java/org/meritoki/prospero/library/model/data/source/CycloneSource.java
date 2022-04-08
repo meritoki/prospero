@@ -47,7 +47,6 @@ public class CycloneSource extends Source {
 				this.load(query, i);
 			}
 			query.objectListAdd(new Result(Mode.COMPLETE));
-			this.eventMap = null;
 		}
 	}
 
@@ -61,11 +60,11 @@ public class CycloneSource extends Source {
 		List<Event> loadList;
 		for(Time time: timeList) {
 			if (!Thread.interrupted()) {
-				loadList = this.read(time.year, time.month);
+				loadList = this.eventMapGet(time.year, time.month);
 				Result result = new Result();
 				result.map.put("time", time);
 				result.map.put("eventList", new ArrayList<Event>((loadList)));
-				query.outputList.add(result);
+				query.objectList.add(result);
 			} else {
 				throw new InterruptedException();
 			}

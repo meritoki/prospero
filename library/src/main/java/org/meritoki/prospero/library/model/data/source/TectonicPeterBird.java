@@ -32,10 +32,10 @@ public class TectonicPeterBird extends Source {
 		Result result = new Result();
 		result.map.put("multiLineStringList",this.box(-180, 90, 180, -90));
 		result.mode = Mode.LOAD;
-		query.outputList.add(result);
+		query.objectList.add(result);
 		result = new Result();
 		result.mode = Mode.COMPLETE;
-		query.outputList.add(result);
+		query.objectList.add(result);
 	}
 	
 	public List<MultiLineString> box(double latitudeA, double longitudeA, double latitudeB, double longitudeB) {

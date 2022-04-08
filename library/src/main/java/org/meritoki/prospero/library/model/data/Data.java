@@ -45,30 +45,6 @@ public class Data extends Node {
 	static Logger logger = LogManager.getLogger(Data.class.getName());
 	public Map<String, Source> sourceMap = new HashMap<String, Source>();
 	
-	public static void main(String[] args) {
-//		List<Object> queue = new ArrayList<>();
-//		Data data = new Data();
-//		Query query = new Query();
-//		query.outputList = queue;
-//		query.map.put("time","2001");
-//		query.sourceUUID = "281cbf52-7014-4229-bffd-35c8ba41bcb5";
-//		data.add(query);
-//		data.setDelay(data.newDelay(10));
-//		boolean flag = true;
-//		while(flag) {
-//			Object o = (queue.size()>0)?queue.remove(0):null;
-//			if(data.delayExpired()) {
-//				query = new Query();
-//				query.outputList = queue;
-//				query.map.put("time","2005");
-//				query.sourceUUID = "281cbf52-7014-4229-bffd-35c8ba41bcb5";
-//				data.add(query);
-//				flag = false;
-//			}
-//		}
-//		System.out.println("Complete");
-	}
-
 	public Data() {
 		super("Data");
 		this.filter = false;
@@ -101,7 +77,6 @@ public class Data extends Node {
 	}
 	
 	protected void query(Query query) {
-//		logger.info("query("+query+")");
 		Object object = this.sourceMap.get(query.getSourceUUID());
 		if(object instanceof Source) {
 			Source source = (Source)object; 
@@ -114,6 +89,29 @@ public class Data extends Node {
 		}
 	}
 }
+//public static void main(String[] args) {
+////List<Object> queue = new ArrayList<>();
+////Data data = new Data();
+////Query query = new Query();
+////query.outputList = queue;
+////query.map.put("time","2001");
+////query.sourceUUID = "281cbf52-7014-4229-bffd-35c8ba41bcb5";
+////data.add(query);
+////data.setDelay(data.newDelay(10));
+////boolean flag = true;
+////while(flag) {
+////Object o = (queue.size()>0)?queue.remove(0):null;
+////if(data.delayExpired()) {
+////	query = new Query();
+////	query.outputList = queue;
+////	query.map.put("time","2005");
+////	query.sourceUUID = "281cbf52-7014-4229-bffd-35c8ba41bcb5";
+////	data.add(query);
+////	flag = false;
+////}
+////}
+////System.out.println("Complete");
+//}
 //public void interrupt() {
 //logger.warn("interrupt()");
 //this.thread.interrupt();

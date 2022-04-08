@@ -38,10 +38,10 @@ public class AtmosphereWMO extends Source {
 		Result result = new Result();
 		result.map.put("stationList",this.read());
 		result.mode = Mode.LOAD;
-		query.outputList.add(result);
+		query.objectList.add(result);
 		result = new Result();
 		result.mode = Mode.COMPLETE;
-		query.outputList.add(result);
+		query.objectList.add(result);
 	}
 	
 

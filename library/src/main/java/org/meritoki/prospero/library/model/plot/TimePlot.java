@@ -71,15 +71,15 @@ public class TimePlot extends Plot {
 			this.startCalendar = (Calendar)series.map.get("startCalendar");
 			this.endCalendar = (Calendar)series.map.get("endCalendar");
 		}
-		int[] range = (series.map.get("range") != null)?(int[])series.map.get("range"):null;
-		if(range != null && range.length == 2) {
-			this.setYMin(range[0]);
-			this.setYMax(range[1]);
-		}
 		this.initYMin();
 		this.initYMax();
 		this.initXMin();
 		this.initXMax();
+		double[] range = (series.map.get("range") != null)?(double[])series.map.get("range"):null;
+		if(range != null && range.length == 2) {
+			this.setYMin(range[0]);
+			this.setYMax(range[1]);
+		}
 		this.chroma.initRainbow();
 		this.scale = DEFAULT_SCALE;
 		this.setTitle(series.getTitle());

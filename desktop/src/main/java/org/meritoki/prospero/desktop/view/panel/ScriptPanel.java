@@ -116,15 +116,12 @@ public class ScriptPanel extends javax.swing.JPanel {
 					Iterator<Script> iterator = scriptList.iterator();
 					while (iterator.hasNext()) {
 						Script script = iterator.next();
-//					for(Script script: scriptList) {
 						if (script != null) {
 							for (Query query : script.queryList) {
 								if (!Thread.currentThread().isInterrupted()) {
 									consoleTextArea.append("query " + query + "\n");
-		//							MemoryController.log();
 									TimeController.start();
 									String variable = query.getVariable();
-//									logger.info("query() variable="+variable);
 									Variable node = model.getVariable(variable);
 									if (node != null) {
 										logger.info("query() node="+node);

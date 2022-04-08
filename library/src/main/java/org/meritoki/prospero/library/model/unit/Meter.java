@@ -113,7 +113,7 @@ public class Meter {
 			}
 		} else {
 			if (this.min > 0 || 0 > this.min) {
-				System.out.println("this.min="+min);
+//				System.out.println("this.min="+min);
 				if (minPower < 0) {
 					multiplier = Math.pow(10, Math.abs(minPower));
 					min = this.min * multiplier;
