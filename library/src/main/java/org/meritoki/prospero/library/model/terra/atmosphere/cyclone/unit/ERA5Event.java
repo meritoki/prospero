@@ -28,7 +28,7 @@ public class ERA5Event extends CycloneEvent {
 	
 	@JsonIgnore
 	public void classify() {
-		int maxTimeLevelCount = this.getMaxTimeLevelCount();// this.getLevelList().size();//
+		int maxTimeLevelCount = this.getMaxTimeLevelCount();
 		int lowerMostLevel = this.getLowerMostLevel();
 		if (2 <= maxTimeLevelCount && maxTimeLevelCount <= 4) {
 			this.family = Family.SHALLOW;
