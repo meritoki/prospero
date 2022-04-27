@@ -3,19 +3,25 @@ package org.meritoki.prospero.library.model.unit;
 import java.awt.Color;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Coordinate implements Comparable<Coordinate> {
 
+	@JsonProperty
 	public Calendar calendar;
+	@JsonProperty
 	public double latitude;
+	@JsonProperty
 	public double longitude;
-	public Point point = new Point();
+	@JsonProperty
 	public Map<String, Object> attribute = new TreeMap<>();
+	@JsonIgnore
+	public Point point = new Point();
+	@JsonIgnore
 	public boolean flag;
 
 	public Coordinate() {

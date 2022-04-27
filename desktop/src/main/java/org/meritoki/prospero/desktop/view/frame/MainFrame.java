@@ -27,9 +27,11 @@ import javax.swing.JPanel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
+import org.meritoki.prospero.desktop.model.Model;
 import org.meritoki.prospero.desktop.view.dialog.AboutDialog;
 import org.meritoki.prospero.desktop.view.dialog.MainDialog;
-import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
+import org.meritoki.prospero.desktop.view.dialog.OpenDialog;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.table.Table;
@@ -47,7 +49,9 @@ public class MainFrame extends javax.swing.JFrame {
 	public Model model;
 	public MainDialog mainDialog = new MainDialog(this, false);
 	public AboutDialog aboutDialog = new AboutDialog(this, false);
-
+	public SaveAsDialog saveAsDialog = null;
+	public OpenDialog openDialog = null;
+	
 	/**
 	 * Creates new form MainFrame2
 	 */
@@ -80,6 +84,15 @@ public class MainFrame extends javax.swing.JFrame {
 		this.gridPanel.repaint();
 		this.plotPanel.repaint();
 		this.tablePanel.repaint();
+	}
+	
+	public void save() {
+		if (this.model.system.newDocument) {
+			this.saveAsDialog = new org.meritoki.prospero.desktop.view.dialog.SaveAsDialog(this, false, this.model);
+		} else {
+			this.model.saveDocument();
+			this.init();
+		}
 	}
 	
 	public JPanel getGridPanel() {
@@ -160,6 +173,12 @@ public class MainFrame extends javax.swing.JFrame {
         tablePanel = new org.meritoki.prospero.desktop.view.panel.TablePanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        newMenuItem = new javax.swing.JMenuItem();
+        openMenuItem = new javax.swing.JMenuItem();
+        recentMenu = new javax.swing.JMenu();
+        saveMenuItem = new javax.swing.JMenuItem();
+        saveAsMenuItem = new javax.swing.JMenuItem();
+        exportMenu = new javax.swing.JMenu();
         windowMenu = new javax.swing.JMenu();
         dialogMenu = new javax.swing.JMenu();
         mainDialogMenuItem = new javax.swing.JMenuItem();
@@ -210,6 +229,45 @@ public class MainFrame extends javax.swing.JFrame {
         jTabbedPane1.addTab("Table", jScrollPane1);
 
         jMenu1.setText("File");
+
+        newMenuItem.setText("New");
+        newMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(newMenuItem);
+
+        openMenuItem.setText("Open");
+        openMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(openMenuItem);
+
+        recentMenu.setText("Recent");
+        jMenu1.add(recentMenu);
+
+        saveMenuItem.setText("Save");
+        saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(saveMenuItem);
+
+        saveAsMenuItem.setText("Save As");
+        saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveAsMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(saveAsMenuItem);
+
+        exportMenu.setText("Export");
+        jMenu1.add(exportMenu);
+
         jMenuBar1.add(jMenu1);
 
         windowMenu.setText("Window");
@@ -253,8 +311,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
         );
 
-        this.setSize(1024+256, 512+256);
-//        pack();
+        pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void mainDialogMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mainDialogMenuItemActionPerformed
@@ -265,17 +322,22 @@ public class MainFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
-	private void timeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_timeMenuItemActionPerformed
-//		this.timeDialog.setVisible(true);
-	}// GEN-LAST:event_timeMenuItemActionPerformed
+    private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newMenuItemActionPerformed
+    	this.model.newDocument();
+    	// TODO add your handling code here:
+    }//GEN-LAST:event_newMenuItemActionPerformed
 
-	private void modelMenuItemActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_modelMenuItemActionPerformed
-//		this.modelDialog.setVisible(true);
-	}// GEN-LAST:event_modelMenuItemActionPerformed
+    private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
+        this.openDialog = new OpenDialog(this, false, this.model);
+    }//GEN-LAST:event_openMenuItemActionPerformed
 
-	private void scriptMenuItemActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_scriptMenuItemActionPerformed
-//		this.scriptDialog.setVisible(true);
-	}// GEN-LAST:event_scriptMenuItemActionPerformed
+    private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
+    	this.save();
+    }//GEN-LAST:event_saveMenuItemActionPerformed
+
+    private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
+    	this.saveAsDialog = new org.meritoki.prospero.desktop.view.dialog.SaveAsDialog(this, false, this.model);
+    }//GEN-LAST:event_saveAsMenuItemActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -318,6 +380,7 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenu dialogMenu;
+    private javax.swing.JMenu exportMenu;
     private org.meritoki.prospero.desktop.view.panel.GridPanel gridPanel;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenu jMenu1;
@@ -329,7 +392,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JMenuItem mainDialogMenuItem;
+    private javax.swing.JMenuItem newMenuItem;
+    private javax.swing.JMenuItem openMenuItem;
     private org.meritoki.prospero.desktop.view.panel.PlotPanel plotPanel;
+    private javax.swing.JMenu recentMenu;
+    private javax.swing.JMenuItem saveAsMenuItem;
+    private javax.swing.JMenuItem saveMenuItem;
     private org.meritoki.prospero.desktop.view.panel.SolarPanel solarPanel;
     private org.meritoki.prospero.desktop.view.panel.TablePanel tablePanel;
     private javax.swing.JMenu windowMenu;

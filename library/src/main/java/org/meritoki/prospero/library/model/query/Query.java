@@ -1,5 +1,6 @@
 package org.meritoki.prospero.library.model.query;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,11 +31,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.meritoki.module.library.model.data.Data;
 
 public class Query {
 	
 	static Logger logger = LogManager.getLogger(Query.class.getName());
+	@JsonProperty
+	public String uuid;
 	@JsonProperty
 	public Map<String,String> map = new TreeMap<>();
 	@JsonIgnore
@@ -48,12 +51,16 @@ public class Query {
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	@JsonIgnore
 	public Script script = null;
+	@JsonIgnore
+	public Object object = null;
 
 	public Query() {
+		this.uuid = UUID.randomUUID().toString();
 		this.initAlias();
 	}
 	
 	public Query(Query q) {
+		this.uuid = q.uuid;
 		this.initAlias();
 		this.map = new TreeMap<>(q.map);
 		this.calendar = (Calendar)q.calendar.clone();
@@ -80,6 +87,14 @@ public class Query {
 			return flag;
 		} 
 		return false;
+	}
+	
+	public String getFileName() {
+		return this.getTime()+"-"+this.getSourceUUID();
+	}
+	
+	public File getFile() {
+		return new File(this.getFileName()+".json");
 	}
 	
 	@JsonIgnore

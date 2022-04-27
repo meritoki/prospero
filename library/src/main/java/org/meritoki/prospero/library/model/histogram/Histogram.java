@@ -9,7 +9,9 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Histogram {
+import org.meritoki.prospero.library.model.plot.Plot;
+
+public class Histogram extends Plot {
 
 	public final int DEFAULT_SCALE = 1;
 	public int width;
@@ -135,6 +137,7 @@ public class Histogram {
 //		System.out.println("setYMax("+yMax+") yInterval="+this.yInterval);
 	}
 
+	@Override
 	public void paint(Graphics g, Image image) {
 		Graphics graphics = image.getGraphics();
 		graphics = image.getGraphics();

@@ -283,6 +283,7 @@ public class Cyclone extends Grid {
 				e.printStackTrace();
 			}
 		}
+		
 		this.plotList = plotList;
 	}
 

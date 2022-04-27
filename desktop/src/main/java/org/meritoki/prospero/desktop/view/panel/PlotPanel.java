@@ -94,13 +94,6 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 				e.printStackTrace();
 			}
 		}
-//		graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
-//		if (this.plot != null) {
-//			graphics.setColor(Color.white);
-//			this.plot.setPanelHeight(256);
-//			this.plot.setPanelWidth(this.getWidth());
-//			this.plot.paint(graphics, createImage(this.getWidth(), 256));
-//		} 
 	}
 	
 	
