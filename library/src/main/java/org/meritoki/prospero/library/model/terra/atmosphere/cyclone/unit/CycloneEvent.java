@@ -561,7 +561,7 @@ public class CycloneEvent extends Event {
 		List<Coordinate> pointList = timePointMap.get(key);
 		int max = Integer.MIN_VALUE;
 		for (Coordinate p : pointList) {
-			int level = (int) p.attribute.get("level");
+			int level = (int) p.attribute.get("pressure");
 			if (level > max) {
 				max = level;
 			}
@@ -577,7 +577,7 @@ public class CycloneEvent extends Event {
 		List<Coordinate> pointList = timePointMap.get(key);
 		int min = Integer.MAX_VALUE;
 		for (Coordinate p : pointList) {
-			int level = (int) p.attribute.get("level");
+			int level = (int) p.attribute.get("pressure");
 			if (level < min) {
 				min = level;
 			}
@@ -594,7 +594,7 @@ public class CycloneEvent extends Event {
 		List<Coordinate> pointList = timePointMap.get(key);
 		int max = Integer.MIN_VALUE;
 		for (Coordinate p : pointList) {
-			int level = (int) p.attribute.get("level");
+			int level = (int) p.attribute.get("pressure");
 			if (level > max) {
 				max = level;
 			}
@@ -611,7 +611,7 @@ public class CycloneEvent extends Event {
 		List<Coordinate> pointList = timePointMap.get(key);
 		int min = Integer.MAX_VALUE;
 		for (Coordinate p : pointList) {
-			int level = (int) p.attribute.get("level");
+			int level = (int) p.attribute.get("pressure");
 			if (level < min) {
 				min = level;
 			}
@@ -714,8 +714,8 @@ public class CycloneEvent extends Event {
 				for (Integer level : levelList) {// iterate through all possible levels
 					for (Coordinate pointA : pointListA) {
 						for (Coordinate pointB : pointListB) {
-							int levelA = (int) pointA.attribute.get("level");
-							int levelB = (int) pointB.attribute.get("level");
+							int levelA = (int) pointA.attribute.get("pressure");
+							int levelB = (int) pointB.attribute.get("pressure");
 							if (pointA.flag && pointB.flag && level == levelA && level == levelB) {
 								count++;
 								double distance = this.getDistance(pointA, pointB);

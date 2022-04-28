@@ -1,22 +1,48 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.genesis;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density.Density;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
+import org.meritoki.prospero.library.model.unit.Time;
 
 public class Genesis extends Density {
 
 	public Genesis() {
 		super("Genesis");
 	}
-	
+
+	@Override
+	public List<Time> setCoordinateMatrix(int[][][] coordinateMatrix, List<Event> eventList) {
+		List<Time> timeList = null;
+		if (eventList != null) {
+			timeList = new ArrayList<>();
+			for (Event e : eventList) {
+				if (e.flag) {
+					Coordinate c = ((CycloneEvent) e).getStartCoordinate();
+					if (c.flag) {
+						int x = (int) ((c.latitude + this.latitude) * this.resolution);
+						int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+						int z = c.getMonth() - 1;
+						coordinateMatrix[x][y][z]++;
+						Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
+						if (!timeList.contains(time)) {
+							timeList.add(time);
+						}
+					}
+				}
+			}
+		}
+		return timeList;
+	}
+
 	public void setEventList(List<Event> eventList) {
 		for (Event e : eventList) {
 			if (e.flag) {
-				Coordinate p = ((CycloneEvent)e).getStartCoordinate();
+				Coordinate p = ((CycloneEvent) e).getStartCoordinate();
 				if (p.flag) {
 					coordinateMatrix[(int) ((p.latitude + this.latitude)
 							* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
@@ -29,7 +55,6 @@ public class Genesis extends Density {
 			}
 		}
 	}
-
 
 //	@Override
 //	public void initCoordinateMatrix(List<Event> eventList) {
