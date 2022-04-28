@@ -144,15 +144,15 @@ public class Speed extends Cyclone {
 			timeList = new ArrayList<>();
 			for (Event e : eventList) {
 				if (e.flag) {
-					Coordinate p = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
-					if (p != null) {
-						coordinateMatrix[(int) ((p.latitude + this.latitude)
-								* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
+					Coordinate c = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
+					if (c != null) {
+						coordinateMatrix[(int) ((c.latitude + this.latitude)
+								* this.resolution)][(int) ((c.longitude + this.longitude / 2) * this.resolution)][c
 										.getMonth() - 1]++;
-						speedMatrix[(int) ((p.latitude + this.latitude)
-								* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
+						speedMatrix[(int) ((c.latitude + this.latitude)
+								* this.resolution)][(int) ((c.longitude + this.longitude / 2) * this.resolution)][c
 										.getMonth() - 1] += ((CycloneEvent) e).getMeanSpeed();
-						Time time = new Time(p.getYear(),p.getMonth(),-1,-1,-1,-1);
+						Time time = new Time(c.getYear(),c.getMonth(),-1,-1,-1,-1);
 						if(!timeList.contains(time)) {
 							timeList.add(time);
 						}
@@ -165,13 +165,9 @@ public class Speed extends Cyclone {
 
 	@Override
 	public Index getIndex(Time key, List<Event> eventList) {
-//		int[][][] bufferCoordinateMatrix = this.coordinateMatrix;
-//		float[][][] bufferSpeedMatrix = this.speedMatrix;
-//		List<String> bufferDateList = this.dateList;
 		int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		float[][][] speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		Index index = null;
-//		this.setEventList(eventList, true);
 		List<Time> timeList = this.setSpeedCoordinateMatrix(speedMatrix, coordinateMatrix, eventList);
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
@@ -202,9 +198,6 @@ public class Speed extends Cyclone {
 		} else {
 			index = super.getIndex(key, eventList);
 		}
-//		this.coordinateMatrix = bufferCoordinateMatrix;
-//		this.speedMatrix = bufferSpeedMatrix;
-//		this.dateList = bufferDateList;
 		return index;
 	}
 }

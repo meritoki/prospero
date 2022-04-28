@@ -689,7 +689,7 @@ public class CycloneEvent extends Event {
 	}
 
 	@JsonIgnore
-	public List<Coordinate> getSpeedPointList() throws ParseException {
+	public List<Coordinate> getSpeedPointList() {
 		Map<String, List<Coordinate>> timePointMap = this.getTimePointMap(this.coordinateList);
 		int size = timePointMap.size();
 		List<Coordinate> pointList = new ArrayList<>();
@@ -727,14 +727,21 @@ public class CycloneEvent extends Event {
 					}
 				}
 				speedMean = (count > 0) ? speedSum / count : 0;
-				Date dateA = dateFormat.parse(keyA);
-				Date dateB = dateFormat.parse(keyB);
-				Coordinate pointA = this.getAveragePoint(pointListA, dateA);
-				Coordinate pointB = this.getAveragePoint(pointListB, dateB);
-				Coordinate point = this.getMeanPoint(pointA, pointB);
-//				point.calendar = dateA;
-				point.attribute.put("speed", speedMean);
-				pointList.add(point);
+				Date dateA;
+				try {
+					dateA = dateFormat.parse(keyA);
+					Date dateB = dateFormat.parse(keyB);
+					Coordinate pointA = this.getAveragePoint(pointListA, dateA);
+					Coordinate pointB = this.getAveragePoint(pointListB, dateB);
+					Coordinate point = this.getMeanPoint(pointA, pointB);
+//					point.calendar = dateA;
+					point.attribute.put("speed", speedMean);
+					pointList.add(point);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
 		}
 		return pointList;
