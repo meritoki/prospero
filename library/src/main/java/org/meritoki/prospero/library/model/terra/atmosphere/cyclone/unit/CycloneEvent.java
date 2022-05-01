@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -734,7 +735,8 @@ public class CycloneEvent extends Event {
 					Coordinate pointA = this.getAveragePoint(pointListA, dateA);
 					Coordinate pointB = this.getAveragePoint(pointListB, dateB);
 					Coordinate point = this.getMeanPoint(pointA, pointB);
-//					point.calendar = dateA;
+					point.calendar = Calendar.getInstance();
+					point.calendar.setTime(dateA);
 					point.attribute.put("speed", speedMean);
 					pointList.add(point);
 				} catch (ParseException e) {

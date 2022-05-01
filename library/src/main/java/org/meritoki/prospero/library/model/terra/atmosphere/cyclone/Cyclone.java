@@ -1,20 +1,13 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone;
 
 import java.awt.Graphics;
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.grid.Grid;
@@ -25,6 +18,7 @@ import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density.Density;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.genesis.Genesis;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.lysis.Lysis;
+import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed.InstantaneousSpeed;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed.Speed;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classification;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
@@ -34,16 +28,11 @@ import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Duration;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Regression;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
-import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
-
-import com.meritoki.library.controller.memory.MemoryController;
-import com.meritoki.library.controller.time.TimeController;
 
 public class Cyclone extends Grid {
 
@@ -61,6 +50,7 @@ public class Cyclone extends Grid {
 		this.addChild(new Lysis());
 		this.addChild(new Vorticity());
 		this.addChild(new Speed());
+		this.addChild(new InstantaneousSpeed());
 		this.sourceMap.put("UTN ERA INTERIM", "2d611935-9786-4c28-9dcf-f18cf3e99a3a");
 		this.sourceMap.put("UTN ERA 5", "281cbf52-7014-4229-bffd-35c8ba41bcb5");
 		this.chroma.initRainbow();
