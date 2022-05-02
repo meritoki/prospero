@@ -4,16 +4,27 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
+@JsonTypeInfo(use = Id.CLASS,
+include = JsonTypeInfo.As.PROPERTY,
+property = "type")
+@JsonSubTypes({
+@Type(value = CycloneEvent.class)
+})
 public class Event {
 	@JsonProperty
 	public String id;
@@ -23,8 +34,9 @@ public class Event {
 	public Map<String,Object> attribute = new TreeMap<>();
 	@JsonProperty
 	public Duration duration;
-	@JsonProperty
+	@JsonIgnore
 	public boolean flag = false;
+	@JsonIgnore
 	public boolean print = false;
 	
 	public Event() {

@@ -29,8 +29,9 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.data.Data;
+import org.meritoki.prospero.library.model.document.Document;
+import org.meritoki.prospero.library.model.document.Page;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
@@ -91,6 +92,8 @@ public class Variable extends Node {
 	public LinkedList<Time> timeList = new LinkedList<>();
 	@JsonIgnore
 	public boolean cache = false;
+	@JsonIgnore
+	public Document document = null;
 
 	public Variable() {
 	}
@@ -211,6 +214,12 @@ public class Variable extends Node {
 				this.init();
 				try {
 					this.data.add(query);
+//					Page page = this.document.pageMap.get(query.getTime()+"-"+query.getSourceUUID());
+//					if(page == null) {
+//						page = new Page();
+//					}
+//					page.queryList.add(query);
+//					this.document.pageMap.put(query.getTime()+"-"+query.getSourceUUID(),page);
 					this.queryStack.push(new Query(query));
 				} catch (Exception e) {
 					logger.warn("query(" + query + ") Exception " + e.getMessage());
@@ -271,6 +280,15 @@ public class Variable extends Node {
 			}
 		}
 		return plotList;
+	}
+	
+	@JsonIgnore
+	public void setDocument(Document document) {
+		this.document = document;
+		List<Variable> nodeList = this.getChildren();
+		for (Variable n : nodeList) {
+			n.setDocument(this.document);
+		}
 	}
 
 	@JsonIgnore

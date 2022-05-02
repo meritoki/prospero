@@ -24,7 +24,6 @@ public class Model extends Variable {
 	public List<System> systemList = new ArrayList<>();
 	public Variable node = this;
 	public boolean cache = false;
-//	public boolean test = true;
 
 	public Model() {
 		super("Model");
@@ -44,8 +43,6 @@ public class Model extends Variable {
 	public void setCache(boolean cache) {
 		this.cache = cache;
 	}
-	
-	
 
 	public N getTree() {
 		N root = new N(this.toString());

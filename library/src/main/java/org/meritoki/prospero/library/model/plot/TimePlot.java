@@ -485,9 +485,13 @@ public class TimePlot extends Plot {
 										- ((xMax - index.getSeconds(this.startCalendar)) * xIncrement));
 								Integer y1 = null;
 								y1 = (int) (horizon - (this.scaleIndex(index.value)));
-								if (y1 != null)
-									graphics.drawLine(x1, y1, x1, y1);
-
+								if (y1 != null) {
+									//graphics.drawLine(x1, y1, x1, y1);
+//									graphics.fillOval(x1, y1, 4, 4);
+									int s = 3;
+									graphics.drawLine(x1-s, y1, x1+s, y1);
+									graphics.drawLine(x1,y1-s,x1,y1+s);
+								}
 							}
 						}
 					}

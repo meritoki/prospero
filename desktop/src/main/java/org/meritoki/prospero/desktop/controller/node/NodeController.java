@@ -34,6 +34,7 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.swing.JPanel;
 
 import org.apache.logging.log4j.LogManager;
+import org.meritoki.prospero.library.model.document.Document;
 
 /**
  *
@@ -43,6 +44,45 @@ public class NodeController extends com.meritoki.library.controller.node.NodeCon
 
 	static org.apache.logging.log4j.Logger logger = LogManager.getLogger(NodeController.class.getName());
 
+	public static String getSystemHome() {
+		return getUserHome() + getSeperator() + ".prospero";
+	}
+
+	public static String getDocumentCache() {
+		return getSystemHome() + getSeperator() + "document";
+	}
+
+	public static String getDocumentCache(String uuid) {
+		return getDocumentCache() + getSeperator() + uuid;
+	}
+	
+	public static String getResourceCache() {
+		return getSystemHome() + getSeperator() + "resource";
+	}
+	
+	public static void saveDocument(String filePath, String fileName, Document document) {
+		logger.info("saveDocument(" + filePath + ", " + fileName + ", " + document + ")");
+		NodeController.saveJson(filePath, fileName, document);
+	}
+
+	public static void saveDocument(File file, Document document) {
+		logger.info("saveDocument(" + file + ", " + document + ")");
+		NodeController.saveJson(file, document);
+	}
+
+	public static Document openDocument(String filePath, String fileName) {
+		Document document = (Document) NodeController.openJson(new java.io.File(filePath + "/" + fileName),
+				Document.class);
+		logger.info("openDocument(" + filePath + ", " + fileName + ") document=" + document);
+		return document;
+	}
+
+	public static Document openDocument(File file) {
+		Document document = (Document) NodeController.openJson(file, Document.class);
+		logger.info("openDocument(" + file + ") document=" + document);
+		return document;
+	}
+	
 	public static double DPI = 300;
 	public static double INCH_2_CM = 2.54;
 	

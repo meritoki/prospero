@@ -11,6 +11,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.grid.Grid;
+import org.meritoki.prospero.library.model.histogram.Bar;
+import org.meritoki.prospero.library.model.histogram.Histogram;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.TimePlot;
@@ -131,7 +133,7 @@ public class Cyclone extends Grid {
 	 */
 	@Override
 	public void process() throws Exception {
-		super.process();//this.init();
+		super.process();// this.init();
 		try {
 			this.process(new ArrayList<>(this.eventList));
 			this.complete();
@@ -281,6 +283,7 @@ public class Cyclone extends Grid {
 				e.printStackTrace();
 			}
 		}
+		
 		this.plotList = plotList;
 	}
 
@@ -517,6 +520,134 @@ public class Cyclone extends Grid {
 		}
 		Collections.sort(levelList);
 		return levelList;
+	}
+
+	public Histogram getEventLevelCountHistogram() {
+		Histogram histogram = new Histogram();
+		Map<String, Integer> countMap = new HashMap<>();
+		histogram.setTitle("Event Level Percentage (%)");
+		histogram.setXLabel("Event Level");
+		histogram.setYLabel("Event Percentage (%)");
+		if (eventList != null) {
+			Integer count = 0;
+			String level;
+			for (Event e : eventList) {
+				if (e.flag) {
+					for (Integer l : ((CycloneEvent) e).getPressureList()) {
+						level = String.valueOf(l);
+						count = countMap.get(level);
+						if (count == null) {
+							count = 0;
+						}
+						count++;
+						countMap.put(level, count);
+					}
+				}
+			}
+			countMap = new TreeMap<String, Integer>(countMap).descendingMap();
+			Bar bar;
+			for (Entry<String, Integer> entry : countMap.entrySet()) {
+				double percentage = (double) entry.getValue() / (double) eventList.size() * 100;
+				bar = new Bar(percentage, entry.getKey());
+				histogram.addBar(bar);
+			}
+			histogram.setYMax(100);
+		}
+		return histogram;
+	}
+
+	public Histogram getEventLowermostLevelCountHistogram() {
+		Histogram histogram = new Histogram();
+		Map<String, Integer> countMap = new HashMap<>();
+		histogram.setTitle("Event Lowermost Level Count");
+		histogram.setXLabel("Event Level");
+		histogram.setYLabel("Event Count");
+		if (this.eventList != null) {
+			Integer count = 0;
+			String level;
+			for (Event e : this.eventList) {
+				if (e.flag) {
+					level = String.valueOf(((CycloneEvent) e).getLowerMostLevel());
+					count = countMap.get(level);
+					if (count == null) {
+						count = 0;
+					}
+					count++;
+					countMap.put(level, count);
+				}
+			}
+			countMap = new TreeMap<String, Integer>(countMap).descendingMap();
+			Bar bar;
+			for (Entry<String, Integer> entry : countMap.entrySet()) {
+				bar = new Bar(entry.getValue(), entry.getKey());
+				histogram.addBar(bar);
+			}
+			histogram.initYMax();
+		}
+		return histogram;
+	}
+	
+	public Histogram getEventTotalLevelCountHistogram() {
+		Histogram histogram = new Histogram();
+		Map<Integer, Integer> countMap = new HashMap<>();
+		histogram.setTitle("Event Total Level Count");
+		histogram.setXLabel("Event Level");
+		histogram.setYLabel("Event Count");
+		
+		if (eventList != null) {
+			Integer count = 0;
+			int level;
+			for (Event e : eventList) {
+				if(e.flag) {
+					level = (((CycloneEvent)e).getPressureCount());
+					count = countMap.get(level);
+					if (count == null) {
+						count = 0;
+					}
+					count++;
+					countMap.put(level, count);
+				}
+			}
+			countMap = new TreeMap<Integer, Integer>(countMap).descendingMap();
+			Bar bar;
+			for (Entry<Integer, Integer> entry : countMap.entrySet()) {
+				bar = new Bar(entry.getValue(), String.valueOf(entry.getKey()));
+				histogram.addBar(bar);
+			}
+			histogram.initYMax();
+		}
+		return histogram;
+	}
+
+	public Histogram getEventUppermostLevelCountHistogram() {
+		Histogram histogram = new Histogram();
+		Map<String, Integer> countMap = new HashMap<>();
+		histogram.setTitle("Event Uppermost Level Count");
+		histogram.setXLabel("Event Level");
+		histogram.setYLabel("Event Count");
+		if (eventList != null) {
+			Integer count = 0;
+			String level;
+			for (Event e : eventList) {
+				if(e.flag) {
+					level = String.valueOf(((CycloneEvent)e).getUpperMostLevel());
+					count = countMap.get(level);
+					if (count == null) {
+						count = 0;
+					}
+					count++;
+					countMap.put(level, count);
+				}
+			}
+			countMap = new TreeMap<String, Integer>(countMap).descendingMap();
+			Bar bar;
+			for (Entry<String, Integer> entry : countMap.entrySet()) {
+				bar = new Bar(entry.getValue(), entry.getKey());
+				histogram.addBar(bar);
+			}
+			histogram.initYMax();
+		}
+		return histogram;
 	}
 
 	@Override

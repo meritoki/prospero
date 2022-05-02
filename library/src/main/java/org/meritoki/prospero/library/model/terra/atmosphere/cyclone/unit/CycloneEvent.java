@@ -22,13 +22,23 @@ import org.meritoki.prospero.library.model.unit.Link;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+@JsonTypeInfo(use = Id.CLASS,
+include = JsonTypeInfo.As.PROPERTY,
+property = "type")
+@JsonSubTypes({
+@Type(value = ERA5Event.class),@Type(value = ERAInterimEvent.class)
+})
 public class CycloneEvent extends Event {
 
+	@JsonIgnore
 	static Logger logger = LogManager.getLogger(CycloneEvent.class.getName());
-
 	@JsonProperty
 	public List<Integer> pressureList;
 	@JsonProperty

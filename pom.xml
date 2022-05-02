@@ -9,7 +9,7 @@
 	<groupId>org.meritoki</groupId>
 	<artifactId>prospero</artifactId>
 	<packaging>pom</packaging>
-	<version>0.8.202204</version>
+	<version>0.9.202204</version>
 
 	<!-- sub modules -->
 	<modules>
