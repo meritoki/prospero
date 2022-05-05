@@ -8,10 +8,10 @@ import org.meritoki.prospero.library.model.terra.atmosphere.wind.intensity.Jetst
 public class Wind extends Variable {
 
 	static Logger logger = LogManager.getLogger(Wind.class.getName());
-	public Jetstream intensity = new Jetstream();
+	public Jetstream jetsream = new Jetstream();
 
 	public Wind() {
 		super("Wind");
-		this.addChild(intensity);
+		this.addChild(jetsream);
 	}
 }

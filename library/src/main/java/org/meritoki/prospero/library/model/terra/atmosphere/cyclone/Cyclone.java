@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +21,7 @@ import org.meritoki.prospero.library.model.plot.TimePlot;
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density.Density;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.genesis.Genesis;
+import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.lifetime.Lifetime;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.lysis.Lysis;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed.InstantaneousSpeed;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed.Speed;
@@ -53,6 +56,7 @@ public class Cyclone extends Grid {
 		this.addChild(new Vorticity());
 		this.addChild(new Speed());
 		this.addChild(new InstantaneousSpeed());
+		this.addChild(new Lifetime());
 		this.sourceMap.put("UTN ERA INTERIM", "2d611935-9786-4c28-9dcf-f18cf3e99a3a");
 		this.sourceMap.put("UTN ERA 5", "281cbf52-7014-4229-bffd-35c8ba41bcb5");
 		this.chroma.initRainbow();

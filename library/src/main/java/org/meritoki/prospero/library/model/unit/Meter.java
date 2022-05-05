@@ -89,11 +89,25 @@ public class Meter {
 			if (maxPower < 0) {//
 				multiplier = Math.pow(10, Math.abs(maxPower));
 				max = this.max * multiplier;
-				min = this.min * multiplier;
+//				min = this.min * multiplier;
 			} else {
 				max = this.max;
+//				min = this.min;
+			}
+			
+			if (minPower < 0) {//
+				String powerString = "e" + minPower;
+				int powerWidth = graphics.getFontMetrics().stringWidth(powerString);
+				graphics.setColor(Color.black);
+				graphics.drawString(powerString, startX + (meterWidth / 2) - (powerWidth / 2), startY - 16);
+				multiplier = Math.pow(10, Math.abs(minPower));
+//				max = this.max * multiplier;
+				min = this.min * multiplier;
+			} else {
+//				max = this.max;
 				min = this.min;
 			}
+
 
 			for (int i = meterHeight; i >= 0; i--) {
 				graphics.setColor(this.chroma.getColor(i * (difference / meterHeight), 0, difference));//0, max
@@ -144,8 +158,9 @@ public class Meter {
 	}
 
 	public int getPower(double number) {
+//		System.out.println("getPower("+number+")");
 		int power = 0;
-		if (!Double.isInfinite(number)) {
+		if (!Double.isInfinite(number) && number != 0) {
 			String value = Double.toString(number);
 			String[] array;
 

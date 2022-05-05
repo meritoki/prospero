@@ -31,7 +31,7 @@ public class Vorticity extends Cyclone {
 
 	public Vorticity() {
 		super("Vorticity");
-		this.unit = "1e-5/s";
+		this.unit = "";
 	}
 
 	@Override

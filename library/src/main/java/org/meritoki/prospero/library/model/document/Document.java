@@ -32,7 +32,9 @@ public class Document {
 		List<String> timeList = new ArrayList<>();
 		for(Query q: this.queryList) {
 			String sourceUUID = q.getSourceUUID();
+			root.getUserObject();
 			String time = q.getTime();
+			String variable = q.getVariable();
 			if(!sourceUUIDList.contains(sourceUUID)) {
 				sourceUUIDList.add(sourceUUID);
 			}
