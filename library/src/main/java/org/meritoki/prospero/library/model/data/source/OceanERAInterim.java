@@ -37,205 +37,204 @@ public class OceanERAInterim extends OceanSource {
 	
 	public OceanERAInterim() {}
 	
-	public List<Frame> read(int year, int month) {
-		logger.info("read(" + year + "," + month + ")");
-		String start = year + String.format("%02d", month) + String.format("%02d", 1);
-		String stop = year + String.format("%02d", month) + String.format("%02d", Time.getYearMonthDays(year, month));
-		String fileName = path + seperator + prefix + start + "-" + stop + suffix + "." + extension;
-		List<Frame> frameList = new ArrayList<>();
-		NetcdfFile dataFile = null;
-		try {
-			dataFile = NetcdfFile.open(fileName, null);
-			Variable latitudeVar = dataFile.findVariable("latitude");
-			Variable longitudeVar = dataFile.findVariable("longitude");
-			Variable timeVar = dataFile.findVariable("time");
-			Variable sstVar = dataFile.findVariable("sst");
-			Attribute scaleFactorAttribute = sstVar.findAttribute("scale_factor");
-			Attribute addOffsetAttribute = sstVar.findAttribute("add_offset");
-			double scaleFactor = (Double) scaleFactorAttribute.getNumericValue();
-			double addOffset = (Double) addOffsetAttribute.getNumericValue();
-			int longitudeCount = (int) longitudeVar.getSize();
-			int latitudeCount = (int) latitudeVar.getSize();
-			int timeCount = (int) timeVar.getSize();
-			ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
-			ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
-			ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
-			ArrayShort.D3 sstArray = (ArrayShort.D3) sstVar.read();
-			this.sstArray = this.getSSTArray(sstArray, timeCount, latitudeCount, longitudeCount, scaleFactor, addOffset);
-			float continent = this.getContinent(scaleFactor, addOffset);
-			boolean latitudeCentralFlag = false;
-			boolean latitudeBackwardFlag = false;
-			boolean latitudeForwardFlag = false;
-			boolean longitudeCentralFlag = false;
-			boolean longitudeBackwardFlag = false;
-			boolean longitudeForwardFlag = false;
-			boolean dPhiFlag = false;
-			boolean dThetaFlag = false;
-			if (test) {
-				timeCount = 1;
-			}
-			Frame frame;
-			for (int time = 0; time < timeCount; time++) {
-				frame = new Frame();
-				frame.calendar = Calendar.getInstance();
-				long milliseconds = Time.getNineteenHundredJanuaryFirstDate(timeArray.get(time)).getTime();
-				frame.calendar.setTimeInMillis(milliseconds);
-				for (int lat = 0; lat < latitudeCount; lat++) {
-					float latitude = latArray.get(lat);
-					float latitudeA = 0;
-					float latitudeB = 0;
-					latitudeCentralFlag = false;
-					latitudeForwardFlag = false;
-					latitudeBackwardFlag = false;
-					if ((lat) == 0) {
-						latitudeForwardFlag = true;
-						latitudeA = latArray.get(lat);
-						latitudeB = latArray.get(lat + 1);
-					} else if ((lat + 1) == latitudeCount) {
-						latitudeBackwardFlag = true;
-						latitudeA = latArray.get(lat - 1);
-						latitudeB = latArray.get(lat);
-					} else if ((lat - 1) >= 0 && (lat + 1) < latitudeCount) {
-						latitudeCentralFlag = true;
-						latitudeA = latArray.get(lat - 1);
-						latitudeB = latArray.get(lat + 1);
-					}
-					if (latitude < 0) {
-						float phi = 90 - latitude;
-						float phiA = 90 - latitudeA;
-						float phiB = 90 - latitudeB;
-						phi = (float) Math.toRadians(phi);
-						phiA = (float) Math.toRadians(phiA);
-						phiB = (float) Math.toRadians(phiB);
-						latitude += 90;
-						for (int lon = 0; lon < longitudeCount; lon++) {
-							float longitude = lonArray.get(lon);
-							float longitudeA = 0;
-							float longitudeB = 0;
-							longitudeCentralFlag = false;
-							longitudeForwardFlag = false;
-							longitudeBackwardFlag = false;
-							if (lon == 0) {
-								longitudeForwardFlag = true;
-								longitudeA = lonArray.get(lon);
-								longitudeB = lonArray.get(lon + 1);
-							} else if (lon + 1 == longitudeCount) {
-								longitudeBackwardFlag = true;
-								longitudeA = lonArray.get(lon - 1);
-								longitudeB = lonArray.get(lon);
-							} else if ((lon - 1) >= 0 && (lon + 1) < longitudeCount) {
-								longitudeCentralFlag = true;
-								longitudeA = lonArray.get(lon - 1);
-								longitudeB = lonArray.get(lon + 1);
-							}
-							double theta = longitude;
-							double thetaA = longitudeA;
-							double thetaB = longitudeB;
-							theta = Math.toRadians(theta);
-							thetaA = Math.toRadians(thetaA);
-							thetaB = Math.toRadians(thetaB);
-							float sst = this.sstArray.get(time, lat, lon);
-
-							float sstPhiA;
-							float sstPhiB;
-							float sstThetaA;
-							float sstThetaB;
-							double modulus = 0;
-							int latitudeIndex = (int) (latitude);
-							int longitudeIndex = (int) (longitude);
-							double dPhi = -1;
-							double dTheta = -1;
-							if (sst != continent) {
-								dPhiFlag = false;
-								if (latitudeForwardFlag) {
-									sstPhiA = this.sstArray.get(time, lat, lon);
-									sstPhiB = this.sstArray.get(time, lat + 1, lon);
-									if (sstPhiA > continent && sstPhiB > continent) {
-										dPhiFlag = true;
-										dPhi = this.getDerivative("forward", sstPhiA, sstPhiB, phiA, phiB);
-									}
-								} else if (latitudeBackwardFlag) {
-									sstPhiA = this.sstArray.get(time, lat - 1, lon);
-									sstPhiB = this.sstArray.get(time, lat, lon);
-									if (sstPhiA > continent && sstPhiB > continent) {
-										dPhiFlag = true;
-										dPhi = this.getDerivative("backward", sstPhiA, sstPhiB, phiA, phiB);
-									}
-								} else if (latitudeCentralFlag) {
-									sstPhiA = this.sstArray.get(time, lat - 1, lon);
-									sstPhiB = this.sstArray.get(time, lat + 1, lon);
-									if (sstPhiA > continent && sstPhiB > continent) {
-										dPhiFlag = true;
-										dPhi = this.getDerivative("central", sstPhiA, sstPhiB, phiA, phiB);
-									}
-								}
-								dThetaFlag = false;
-								if (longitudeForwardFlag) {
-									sstThetaA = this.sstArray.get(time, lat, lon);
-									sstThetaB = this.sstArray.get(time, lat, lon + 1);
-									if (sstThetaA > continent && sstThetaB > continent) {
-										dThetaFlag = true;
-										dTheta = this.getDerivative("forward", sstThetaA, sstThetaB, thetaA, thetaB);
-									}
-								} else if (longitudeBackwardFlag) {
-									sstThetaA = this.sstArray.get(time, lat, lon - 1);
-									sstThetaB = this.sstArray.get(time, lat, lon);
-									if (sstThetaA > continent && sstThetaB > continent) {
-										dThetaFlag = true;
-										dTheta = this.getDerivative("backward", sstThetaA, sstThetaB, thetaA, thetaB);
-									}
-								} else if (longitudeCentralFlag) {
-									sstThetaA = this.sstArray.get(time, lat, lon - 1);
-									sstThetaB = this.sstArray.get(time, lat, lon + 1);
-									if (sstThetaA > continent && sstThetaB > continent) {
-										dThetaFlag = true;
-										dTheta = this.getDerivative("central", sstThetaA, sstThetaB, thetaA, thetaB);
-									}
-								}
-
-								if (dPhiFlag && dThetaFlag) {
-									modulus = this.getModulus(this.earthRadius, phi, theta, 0, dPhi, dTheta);
-								} else {
-									modulus = 0;
-								}
-
-								frame.flag = true;
-								if (frame.data.get(latitudeIndex + "," + longitudeIndex) == null) {
-									frame.data.put(latitudeIndex + "," + longitudeIndex, new ArrayList<>());
-								}
-								frame.data.get(latitudeIndex + "," + longitudeIndex)
-										.add(new Data(DataType.MODULUS, (float) modulus));
-								frame.data.get(latitudeIndex + "," + longitudeIndex)
-										.add(new Data(DataType.SST, sst));
-							} else {
-								if (frame.data.get(latitudeIndex + "," + longitudeIndex) == null) {
-									frame.data.put(latitudeIndex + "," + longitudeIndex, new ArrayList<>());
-								}
-								frame.data.get(latitudeIndex + "," + longitudeIndex)
-										.add(new Data(DataType.CONTINENT, 0));
-							}
-						}
-					}
-				}
-				frameList.add(frame);
-			}
-			dataFile.close();
-			System.gc();
-		} catch (java.io.IOException e) {
-			logger.error("IOException " + e.getMessage());
-
-		} finally {
-			if (dataFile != null) {
-				try {
-					dataFile.close();
-				} catch (IOException e) {
-					logger.error("IOException " + e.getMessage());
-				}
-			}
-		}
-		MemoryController.log();
-		return frameList;
-	}
+//	public List<Frame> read(int year, int month) {
+//		logger.info("read(" + year + "," + month + ")");
+//		String start = year + String.format("%02d", month) + String.format("%02d", 1);
+//		String stop = year + String.format("%02d", month) + String.format("%02d", Time.getYearMonthDays(year, month));
+//		String fileName = path + seperator + prefix + start + "-" + stop + suffix + "." + extension;
+//		List<Frame> frameList = new ArrayList<>();
+//		NetcdfFile dataFile = null;
+//		try {
+//			dataFile = NetcdfFile.open(fileName, null);
+//			Variable latitudeVar = dataFile.findVariable("latitude");
+//			Variable longitudeVar = dataFile.findVariable("longitude");
+//			Variable timeVar = dataFile.findVariable("time");
+//			Variable sstVar = dataFile.findVariable("sst");
+//			Attribute scaleFactorAttribute = sstVar.findAttribute("scale_factor");
+//			Attribute addOffsetAttribute = sstVar.findAttribute("add_offset");
+//			double scaleFactor = (Double) scaleFactorAttribute.getNumericValue();
+//			double addOffset = (Double) addOffsetAttribute.getNumericValue();
+//			int longitudeCount = (int) longitudeVar.getSize();
+//			int latitudeCount = (int) latitudeVar.getSize();
+//			int timeCount = (int) timeVar.getSize();
+//			ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
+//			ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
+//			ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
+//			ArrayShort.D3 sstArray = (ArrayShort.D3) sstVar.read();
+//			this.sstArray = this.getSSTArray(sstArray, timeCount, latitudeCount, longitudeCount, scaleFactor, addOffset);
+//			float continent = this.getContinent(scaleFactor, addOffset);
+//			boolean latitudeCentralFlag = false;
+//			boolean latitudeBackwardFlag = false;
+//			boolean latitudeForwardFlag = false;
+//			boolean longitudeCentralFlag = false;
+//			boolean longitudeBackwardFlag = false;
+//			boolean longitudeForwardFlag = false;
+//			boolean dPhiFlag = false;
+//			boolean dThetaFlag = false;
+//			if (test) {
+//				timeCount = 1;
+//			}
+//			Frame frame;
+//			for (int time = 0; time < timeCount; time++) {
+//				frame = new Frame();
+//				frame.calendar = Calendar.getInstance();
+//				long milliseconds = Time.getNineteenHundredJanuaryFirstDate(timeArray.get(time)).getTime();
+//				frame.calendar.setTimeInMillis(milliseconds);
+//				for (int lat = 0; lat < latitudeCount; lat++) {
+//					float latitude = latArray.get(lat);
+//					float latitudeA = 0;
+//					float latitudeB = 0;
+//					latitudeCentralFlag = false;
+//					latitudeForwardFlag = false;
+//					latitudeBackwardFlag = false;
+//					if ((lat) == 0) {
+//						latitudeForwardFlag = true;
+//						latitudeA = latArray.get(lat);
+//						latitudeB = latArray.get(lat + 1);
+//					} else if ((lat + 1) == latitudeCount) {
+//						latitudeBackwardFlag = true;
+//						latitudeA = latArray.get(lat - 1);
+//						latitudeB = latArray.get(lat);
+//					} else if ((lat - 1) >= 0 && (lat + 1) < latitudeCount) {
+//						latitudeCentralFlag = true;
+//						latitudeA = latArray.get(lat - 1);
+//						latitudeB = latArray.get(lat + 1);
+//					}
+//					if (latitude < 0) {
+//						float phi = 90 - latitude;
+//						float phiA = 90 - latitudeA;
+//						float phiB = 90 - latitudeB;
+//						phi = (float) Math.toRadians(phi);
+//						phiA = (float) Math.toRadians(phiA);
+//						phiB = (float) Math.toRadians(phiB);
+//						latitude += 90;
+//						for (int lon = 0; lon < longitudeCount; lon++) {
+//							float longitude = lonArray.get(lon);
+//							float longitudeA = 0;
+//							float longitudeB = 0;
+//							longitudeCentralFlag = false;
+//							longitudeForwardFlag = false;
+//							longitudeBackwardFlag = false;
+//							if (lon == 0) {
+//								longitudeForwardFlag = true;
+//								longitudeA = lonArray.get(lon);
+//								longitudeB = lonArray.get(lon + 1);
+//							} else if (lon + 1 == longitudeCount) {
+//								longitudeBackwardFlag = true;
+//								longitudeA = lonArray.get(lon - 1);
+//								longitudeB = lonArray.get(lon);
+//							} else if ((lon - 1) >= 0 && (lon + 1) < longitudeCount) {
+//								longitudeCentralFlag = true;
+//								longitudeA = lonArray.get(lon - 1);
+//								longitudeB = lonArray.get(lon + 1);
+//							}
+//							double theta = longitude;
+//							double thetaA = longitudeA;
+//							double thetaB = longitudeB;
+//							theta = Math.toRadians(theta);
+//							thetaA = Math.toRadians(thetaA);
+//							thetaB = Math.toRadians(thetaB);
+//							float sst = this.sstArray.get(time, lat, lon);
+//
+//							float sstPhiA;
+//							float sstPhiB;
+//							float sstThetaA;
+//							float sstThetaB;
+//							double modulus = 0;
+//							int latitudeIndex = (int) (latitude);
+//							int longitudeIndex = (int) (longitude);
+//							double dPhi = -1;
+//							double dTheta = -1;
+//							if (sst != continent) {
+//								dPhiFlag = false;
+//								if (latitudeForwardFlag) {
+//									sstPhiA = this.sstArray.get(time, lat, lon);
+//									sstPhiB = this.sstArray.get(time, lat + 1, lon);
+//									if (sstPhiA > continent && sstPhiB > continent) {
+//										dPhiFlag = true;
+//										dPhi = this.getDerivative("forward", sstPhiA, sstPhiB, phiA, phiB);
+//									}
+//								} else if (latitudeBackwardFlag) {
+//									sstPhiA = this.sstArray.get(time, lat - 1, lon);
+//									sstPhiB = this.sstArray.get(time, lat, lon);
+//									if (sstPhiA > continent && sstPhiB > continent) {
+//										dPhiFlag = true;
+//										dPhi = this.getDerivative("backward", sstPhiA, sstPhiB, phiA, phiB);
+//									}
+//								} else if (latitudeCentralFlag) {
+//									sstPhiA = this.sstArray.get(time, lat - 1, lon);
+//									sstPhiB = this.sstArray.get(time, lat + 1, lon);
+//									if (sstPhiA > continent && sstPhiB > continent) {
+//										dPhiFlag = true;
+//										dPhi = this.getDerivative("central", sstPhiA, sstPhiB, phiA, phiB);
+//									}
+//								}
+//								dThetaFlag = false;
+//								if (longitudeForwardFlag) {
+//									sstThetaA = this.sstArray.get(time, lat, lon);
+//									sstThetaB = this.sstArray.get(time, lat, lon + 1);
+//									if (sstThetaA > continent && sstThetaB > continent) {
+//										dThetaFlag = true;
+//										dTheta = this.getDerivative("forward", sstThetaA, sstThetaB, thetaA, thetaB);
+//									}
+//								} else if (longitudeBackwardFlag) {
+//									sstThetaA = this.sstArray.get(time, lat, lon - 1);
+//									sstThetaB = this.sstArray.get(time, lat, lon);
+//									if (sstThetaA > continent && sstThetaB > continent) {
+//										dThetaFlag = true;
+//										dTheta = this.getDerivative("backward", sstThetaA, sstThetaB, thetaA, thetaB);
+//									}
+//								} else if (longitudeCentralFlag) {
+//									sstThetaA = this.sstArray.get(time, lat, lon - 1);
+//									sstThetaB = this.sstArray.get(time, lat, lon + 1);
+//									if (sstThetaA > continent && sstThetaB > continent) {
+//										dThetaFlag = true;
+//										dTheta = this.getDerivative("central", sstThetaA, sstThetaB, thetaA, thetaB);
+//									}
+//								}
+//
+//								if (dPhiFlag && dThetaFlag) {
+//									modulus = this.getModulus(this.earthRadius, phi, theta, 0, dPhi, dTheta);
+//								} else {
+//									modulus = 0;
+//								}
+//
+//								frame.flag = true;
+//								if (frame.data.get(latitudeIndex + "," + longitudeIndex) == null) {
+//									frame.data.put(latitudeIndex + "," + longitudeIndex, new ArrayList<>());
+//								}
+//								frame.data.get(latitudeIndex + "," + longitudeIndex)
+//										.add(new Data(DataType.MODULUS, (float) modulus));
+//								frame.data.get(latitudeIndex + "," + longitudeIndex)
+//										.add(new Data(DataType.SST, sst));
+//							} else {
+//								if (frame.data.get(latitudeIndex + "," + longitudeIndex) == null) {
+//									frame.data.put(latitudeIndex + "," + longitudeIndex, new ArrayList<>());
+//								}
+//								frame.data.get(latitudeIndex + "," + longitudeIndex)
+//										.add(new Data(DataType.CONTINENT, 0));
+//							}
+//						}
+//					}
+//				}
+//				frameList.add(frame);
+//			}
+//			dataFile.close();
+//			System.gc();
+//		} catch (java.io.IOException e) {
+//			logger.error("IOException " + e.getMessage());
+//		} finally {
+//			if (dataFile != null) {
+//				try {
+//					dataFile.close();
+//				} catch (IOException e) {
+//					logger.error("IOException " + e.getMessage());
+//				}
+//			}
+//		}
+//		MemoryController.log();
+//		return frameList;
+//	}
 }
 //@Override
 //public Object get(Calendar calendar) {

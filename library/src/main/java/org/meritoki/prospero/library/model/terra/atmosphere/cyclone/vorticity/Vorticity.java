@@ -101,32 +101,32 @@ public class Vorticity extends Cyclone {
 		return tileList;
 	}
 
-	@Override
-	public void setEventList(List<Event> eventList, boolean reset) {
-		logger.debug("setEventList(" + eventList.size() + "," + reset + ")");
-		if (reset) {
-			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-			this.vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-			this.dateList = new ArrayList<>();
-		}
-		for (Event e : eventList) {
-			if (e.flag) {
-				for (Coordinate p : e.coordinateList) {
-					if (p.flag) {
-						int x = (int) ((p.latitude + this.latitude) * this.resolution);
-						int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-						int z = p.getMonth() - 1;
-						this.coordinateMatrix[x][y][z]++;
-						this.vorticityMatrix[x][y][z] += (float) p.attribute.get("vorticity");
-						String date = p.getYear() + "-" + p.getMonth();
-						if (!this.dateList.contains(date)) {
-							this.dateList.add(date);
-						}
-					}
-				}
-			}
-		}
-	}
+//	@Override
+//	public void setEventList(List<Event> eventList, boolean reset) {
+//		logger.debug("setEventList(" + eventList.size() + "," + reset + ")");
+//		if (reset) {
+//			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//			this.vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//			this.dateList = new ArrayList<>();
+//		}
+//		for (Event e : eventList) {
+//			if (e.flag) {
+//				for (Coordinate p : e.coordinateList) {
+//					if (p.flag) {
+//						int x = (int) ((p.latitude + this.latitude) * this.resolution);
+//						int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+//						int z = p.getMonth() - 1;
+//						this.coordinateMatrix[x][y][z]++;
+//						this.vorticityMatrix[x][y][z] += (float) p.attribute.get("vorticity");
+//						String date = p.getYear() + "-" + p.getMonth();
+//						if (!this.dateList.contains(date)) {
+//							this.dateList.add(date);
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
 	
 	@Override
 	public void setMatrix(List<Event> eventList) {

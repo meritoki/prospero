@@ -392,7 +392,7 @@ public class TimePlot extends Plot {
 			graphics.setColor(Color.WHITE);
 			this.plotWidth = this.panelWidth - 256;
 			this.plotHeight = this.panelHeight - 128;
-			this.horizon = (int) this.plotHeight;
+//			this.horizon = (int) this.plotHeight;
 			graphics.fillRect(0, 0, this.panelWidth, this.panelHeight);
 			Point panelCenter = new Point(this.panelWidth / 2.0, this.panelHeight / 2.0);
 			Point plotCenter = new Point(this.plotWidth / 2.0, this.plotHeight / 2.0);
@@ -408,7 +408,7 @@ public class TimePlot extends Plot {
 			graphics.setColor(Color.black);
 			graphics.drawRect(0, 0, (int) (plotWidth), (int) (plotHeight));
 			graphics.setFont(new Font(this.fontName, this.titleFontStyle, this.titleFontSize));
-			this.yDifference = this.getYDifference();
+			this.yDifference = (this.yMax - this.yMin);//this.getYDifference();
 			this.xDifference = (this.xMax - this.xMin);
 			this.yInterval = this.yDifference / this.step;// works
 			this.xInterval = this.xDifference / this.xDifference;// 1000 * 3600 * 24;//

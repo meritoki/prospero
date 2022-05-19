@@ -1,12 +1,21 @@
 package org.meritoki.prospero.library.model.terra.hydrosphere.ocean.modulus;
 
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.Ocean;
+import org.meritoki.prospero.library.model.unit.DataType;
+import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.meritoki.prospero.library.model.unit.Result;
 
 public class Modulus extends Ocean {
+	static Logger logger = LogManager.getLogger(Modulus.class.getName());
 	
 	public Modulus() {
 		super("Modulus");
-		this.sourceMap.put("ERA Interim","8edb8e7d-d0e1-4204-ac2f-12c456f0a1b1");
+		this.sourceMap.put("ERA Interim","f4f4b169-fdc4-44db-b93a-85f8416aec2c");
+		this.dataType = DataType.MODULUS;
 	}
 }
 //@Override

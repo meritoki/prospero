@@ -89,7 +89,7 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 						graphics.drawImage(image, 0, i * height, null);
 					}
 				} 
-				this.setPreferredSize(new Dimension(width,(this.plotList.size()-1)*height));
+				this.setPreferredSize(new Dimension(width,(this.plotList.size())*height));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

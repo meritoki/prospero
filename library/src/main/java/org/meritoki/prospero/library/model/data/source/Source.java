@@ -97,6 +97,14 @@ public class Source extends Node {//implements SourceInterface
 		return dateList;
 	}
 	
+	public int getYearMonthDays(int year, int month) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month - 1);
+		int days = calendar.getActualMaximum(Calendar.DATE);
+		return days;
+	}
+	
 	public void unsupportedException(String field, String value) throws Exception {
 		if (value != null && !value.isEmpty())
 			throw new Exception("source does not support " + field);

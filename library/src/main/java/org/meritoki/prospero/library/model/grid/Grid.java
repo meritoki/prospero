@@ -1,6 +1,5 @@
 package org.meritoki.prospero.library.model.grid;
 
-import java.awt.AlphaComposite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import org.meritoki.prospero.library.model.color.Scheme;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
-import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.vorticity.Vorticity;
 import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Data;
@@ -29,9 +27,8 @@ import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Meter;
-import org.meritoki.prospero.library.model.unit.Operator;
+import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Regression;
 import org.meritoki.prospero.library.model.unit.Result;
@@ -59,6 +56,7 @@ public class Grid extends Variable {
 	public List<Band> bandList = new ArrayList<>();
 	public List<Tile> tileList = new ArrayList<>();
 	public List<Frame> frameList = new ArrayList<>();
+	public List<NetCDF> netCDFList = new ArrayList<>();
 	public List<Coordinate> coordinateList = new ArrayList<>();
 	public List<Event> eventList = new ArrayList<>();
 	public List<Time> eventTimeList = new ArrayList<>();
@@ -229,6 +227,12 @@ public class Grid extends Variable {
 		return null;
 	}
 
+	/**
+	 * Used by Ocean
+	 * @param dataType
+	 * @param frameList
+	 * @param dimension
+	 */
 	public void setFrameList(DataType dataType, List<Frame> frameList, double dimension) {
 		if (frameList != null) {
 			this.initDateList(frameList);

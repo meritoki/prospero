@@ -16,6 +16,7 @@ import org.meritoki.prospero.library.model.data.source.LithosphereGEBCO;
 import org.meritoki.prospero.library.model.data.source.MagneticNOAAEMAG;
 import org.meritoki.prospero.library.model.data.source.MagneticNOAAWMM;
 import org.meritoki.prospero.library.model.data.source.OceanERAInterim;
+import org.meritoki.prospero.library.model.data.source.OceanERAInterimZeroTwoFive;
 import org.meritoki.prospero.library.model.data.source.PDONOAA;
 import org.meritoki.prospero.library.model.data.source.SILSOSunspot;
 import org.meritoki.prospero.library.model.data.source.Source;
@@ -23,7 +24,6 @@ import org.meritoki.prospero.library.model.data.source.TectonicPeterBird;
 import org.meritoki.prospero.library.model.data.source.TornadoHistoryProject;
 import org.meritoki.prospero.library.model.data.source.VolcanicNOAA;
 import org.meritoki.prospero.library.model.data.source.WindERAInterim;
-import org.meritoki.prospero.library.model.grid.Grid;
 import org.meritoki.prospero.library.model.query.Query;
 
 import com.meritoki.module.library.model.Node;
@@ -54,6 +54,7 @@ public class Data extends Node {
 		this.sourceMap.put("d6eb88d6-100c-4948-8fd1-5300b724ec2d", new CountryNaturalEarth());
 		this.sourceMap.put("9bc2dd83-85c9-48fe-818f-f62db97c594a", new CityNaturalEarth());
 		this.sourceMap.put("8edb8e7d-d0e1-4204-ac2f-12c456f0a1b1", new OceanERAInterim());
+		this.sourceMap.put("f4f4b169-fdc4-44db-b93a-85f8416aec2c", new OceanERAInterimZeroTwoFive());
 		this.sourceMap.put("7cfb5b0a-0f8a-4e38-b0a9-5d50bf64a7b5", new EarthquakeUSGSEarthquakeHazardProgram());
 		this.sourceMap.put("3580b76c-b70d-4cdd-9a80-4feb57c72c77", new MagneticNOAAEMAG());
 		this.sourceMap.put("1aac29c0-e2f6-45e8-9921-c88397957795", new LithosphereGEBCO());

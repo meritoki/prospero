@@ -50,9 +50,7 @@ public class CycloneSource extends Source {
 		}
 	}
 
-	public int[] getLevelArray() {
-		return this.levelArray;
-	}
+
 	
 	public void load(Query query, Interval interval) throws Exception {
 		List<Time> timeList = Time.getTimeList(interval);
@@ -71,6 +69,9 @@ public class CycloneSource extends Source {
 		}
 	}
 
+	public int[] getLevelArray() {
+		return this.levelArray;
+	}
 //	/**
 //	 * Original function works with or without startYear and endYear, set to -1.
 //	 * This is the problem for Month and Alias queries there is nothing that says

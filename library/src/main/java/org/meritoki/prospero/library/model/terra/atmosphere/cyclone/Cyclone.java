@@ -121,7 +121,6 @@ public class Cyclone extends Grid {
 							series.addIndex(this.getIndex(time, eventList));
 							this.seriesMap.put(region.toString(), series);
 						}
-						this.initPlotList(this.seriesMap);
 						this.eventMap.remove(time);
 					}
 				} catch (Exception e) {
@@ -129,6 +128,7 @@ public class Cyclone extends Grid {
 					e.printStackTrace();
 				}
 			}
+			this.initPlotList(this.seriesMap, this.eventList);
 		}
 	}
 
@@ -186,7 +186,7 @@ public class Cyclone extends Grid {
 								series.addIndex(this.getIndex(time, eventList));
 								this.seriesMap.put(region.toString(), series);
 							}
-							this.initPlotList(this.seriesMap);
+							this.initPlotList(this.seriesMap, null);
 							this.eventMap.remove(time);
 						}
 					} catch (Exception e) {
@@ -197,7 +197,7 @@ public class Cyclone extends Grid {
 					time.flag = false;
 				}
 			}
-			this.reset(eventList);
+//			this.reset(eventList);
 		}
 	}
 
@@ -273,7 +273,7 @@ public class Cyclone extends Grid {
 		return index;
 	}
 
-	public void initPlotList(Map<String, Series> seriesMap) {
+	public void initPlotList(Map<String, Series> seriesMap, List<Event> eventList) {
 		List<Plot> plotList = new ArrayList<>();
 		for (Series series : new ArrayList<Series>(seriesMap.values())) {
 			try {
@@ -287,7 +287,16 @@ public class Cyclone extends Grid {
 				e.printStackTrace();
 			}
 		}
-		
+		if (eventList != null) {
+			plotList.add(this.getEventLevelCountHistogram(eventList));
+			plotList.add(this.getEventLowermostLevelCountHistogram(eventList));
+			plotList.add(this.getEventTotalLevelCountHistogram(eventList));
+			plotList.add(this.getEventUppermostLevelCountHistogram(eventList));
+			plotList.add(this.getGenesisLowermostLevelCountHistogram(eventList));
+			plotList.add(this.getGenesisUppermostLevelCountHistrogram(eventList));
+			plotList.add(this.getLysisLowermostLevelCountHistogram(eventList));
+			plotList.add(this.getLysisUppermostLevelCountHistogram(eventList));
+		}
 		this.plotList = plotList;
 	}
 
@@ -296,36 +305,36 @@ public class Cyclone extends Grid {
 		return this.plotList;
 	}
 
-	/**
-	 * 
-	 * @param eventList
-	 * @param reset
-	 */
-	public void setEventList(List<Event> eventList, boolean reset) {
-//		logger.debug("setEventList(" + eventList.size() + "," + reset + ")");
-		if (reset) {
-			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-			this.dateList = new ArrayList<>();
-		}
-		if (eventList != null) {
-			for (Event e : eventList) {
-				if (e.flag) {
-					for (Coordinate c : e.coordinateList) {
-						if (c.flag) {
-							int x = (int) ((c.latitude + this.latitude) * this.resolution);
-							int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-							int z = c.getMonth() - 1;
-							this.coordinateMatrix[x][y][z]++;
-							String date = c.getYear() + "-" + c.getMonth();
-							if (!this.dateList.contains(date)) {
-								this.dateList.add(date);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+//	/**
+//	 * 
+//	 * @param eventList
+//	 * @param reset
+//	 */
+//	public void setEventList(List<Event> eventList, boolean reset) {
+////		logger.debug("setEventList(" + eventList.size() + "," + reset + ")");
+//		if (reset) {
+//			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//			this.dateList = new ArrayList<>();
+//		}
+//		if (eventList != null) {
+//			for (Event e : eventList) {
+//				if (e.flag) {
+//					for (Coordinate c : e.coordinateList) {
+//						if (c.flag) {
+//							int x = (int) ((c.latitude + this.latitude) * this.resolution);
+//							int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+//							int z = c.getMonth() - 1;
+//							this.coordinateMatrix[x][y][z]++;
+//							String date = c.getYear() + "-" + c.getMonth();
+//							if (!this.dateList.contains(date)) {
+//								this.dateList.add(date);
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	public void setMatrix(List<Event> eventList) {
 		List<Time> timeList = this.setCoordinateMatrix(this.coordinateMatrix, eventList);
@@ -526,8 +535,9 @@ public class Cyclone extends Grid {
 		return levelList;
 	}
 
-	public Histogram getEventLevelCountHistogram() {
+	public Histogram getEventLevelCountHistogram(List<Event> eventList) {
 		Histogram histogram = new Histogram();
+		histogram.data = "event-level-count-histogram";
 		Map<String, Integer> countMap = new HashMap<>();
 		histogram.setTitle("Event Level Percentage (%)");
 		histogram.setXLabel("Event Level");
@@ -560,16 +570,17 @@ public class Cyclone extends Grid {
 		return histogram;
 	}
 
-	public Histogram getEventLowermostLevelCountHistogram() {
+	public Histogram getEventLowermostLevelCountHistogram(List<Event> eventList) {
 		Histogram histogram = new Histogram();
 		Map<String, Integer> countMap = new HashMap<>();
+		histogram.data = "event-lowermost-level-count-histogram";
 		histogram.setTitle("Event Lowermost Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
-		if (this.eventList != null) {
+		if (eventList != null) {
 			Integer count = 0;
 			String level;
-			for (Event e : this.eventList) {
+			for (Event e : eventList) {
 				if (e.flag) {
 					level = String.valueOf(((CycloneEvent) e).getLowerMostLevel());
 					count = countMap.get(level);
@@ -590,20 +601,21 @@ public class Cyclone extends Grid {
 		}
 		return histogram;
 	}
-	
-	public Histogram getEventTotalLevelCountHistogram() {
+
+	public Histogram getEventTotalLevelCountHistogram(List<Event> eventList) {
 		Histogram histogram = new Histogram();
+		histogram.data = "event-total-level-count-histogram";
 		Map<Integer, Integer> countMap = new HashMap<>();
 		histogram.setTitle("Event Total Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
-		
+
 		if (eventList != null) {
 			Integer count = 0;
 			int level;
 			for (Event e : eventList) {
-				if(e.flag) {
-					level = (((CycloneEvent)e).getPressureCount());
+				if (e.flag) {
+					level = (((CycloneEvent) e).getPressureCount());
 					count = countMap.get(level);
 					if (count == null) {
 						count = 0;
@@ -623,8 +635,10 @@ public class Cyclone extends Grid {
 		return histogram;
 	}
 
-	public Histogram getEventUppermostLevelCountHistogram() {
+	public Histogram getEventUppermostLevelCountHistogram(List<Event> eventList) {
+
 		Histogram histogram = new Histogram();
+		histogram.data = "event-uppermost-level-count-histogram";
 		Map<String, Integer> countMap = new HashMap<>();
 		histogram.setTitle("Event Uppermost Level Count");
 		histogram.setXLabel("Event Level");
@@ -633,8 +647,139 @@ public class Cyclone extends Grid {
 			Integer count = 0;
 			String level;
 			for (Event e : eventList) {
-				if(e.flag) {
-					level = String.valueOf(((CycloneEvent)e).getUpperMostLevel());
+				if (e.flag) {
+					level = String.valueOf(((CycloneEvent) e).getUpperMostLevel());
+					count = countMap.get(level);
+					if (count == null) {
+						count = 0;
+					}
+					count++;
+					countMap.put(level, count);
+				}
+			}
+			countMap = new TreeMap<String, Integer>(countMap).descendingMap();
+			Bar bar;
+			for (Entry<String, Integer> entry : countMap.entrySet()) {
+				bar = new Bar(entry.getValue(), entry.getKey());
+				histogram.addBar(bar);
+			}
+			histogram.initYMax();
+		}
+		return histogram;
+	}
+
+	public Histogram getGenesisLowermostLevelCountHistogram(List<Event> eventList) {
+		Histogram histogram = new Histogram();
+		histogram.data = "genesis-lowermost-level-count-histogram";
+		Map<String, Integer> countMap = new HashMap<>();
+		histogram.setTitle("Genesis Lowermost Level Count");
+		histogram.setXLabel("Event Level");
+		histogram.setYLabel("Event Count");
+
+		if (eventList != null) {
+			Integer count = 0;
+			String level;
+			for (Event e : eventList) {
+				if (e.flag) {
+					level = String.valueOf(((CycloneEvent) e).getGenesisLowermostLevel());
+					count = countMap.get(level);
+					if (count == null) {
+						count = 0;
+					}
+					count++;
+					countMap.put(level, count);
+				}
+			}
+			countMap = new TreeMap<String, Integer>(countMap).descendingMap();
+			Bar bar;
+			for (Entry<String, Integer> entry : countMap.entrySet()) {
+				bar = new Bar(entry.getValue(), entry.getKey());
+				histogram.addBar(bar);
+			}
+			histogram.initYMax();
+		}
+		return histogram;
+
+	}
+
+	public Histogram getGenesisUppermostLevelCountHistrogram(List<Event> eventList) {
+		Histogram histogram = new Histogram();
+		Map<String, Integer> countMap = new HashMap<>();
+		histogram.data = "genesis-uppermost-level-count-histogram";
+		histogram.setTitle("Genesis Uppermost Level Count");
+		histogram.setXLabel("Event Level");
+		histogram.setYLabel("Event Count");
+		if (eventList != null) {
+			Integer count = 0;
+			String level;
+			for (Event e : eventList) {
+				if (e.flag) {
+					level = String.valueOf(((CycloneEvent) e).getGenesisUppermostLevel());
+					count = countMap.get(level);
+					if (count == null) {
+						count = 0;
+					}
+					count++;
+					countMap.put(level, count);
+				}
+			}
+			countMap = new TreeMap<String, Integer>(countMap).descendingMap();
+			Bar bar;
+			for (Entry<String, Integer> entry : countMap.entrySet()) {
+				bar = new Bar(entry.getValue(), entry.getKey());
+				histogram.addBar(bar);
+			}
+			histogram.initYMax();
+		}
+		return histogram;
+	}
+
+	public Histogram getLysisLowermostLevelCountHistogram(List<Event> eventList) {
+		Histogram histogram = new Histogram();
+		histogram.data = "lysis-lowermost-level-count-histogram";
+		Map<String, Integer> countMap = new HashMap<>();
+		histogram.setTitle("Lysis Lowermost Level Count");
+		histogram.setXLabel("Event Level");
+		histogram.setYLabel("Event Count");
+		if (eventList != null) {
+			Integer count = 0;
+			String level;
+			for (Event e : eventList) {
+				if (e.flag) {
+					level = String.valueOf(((CycloneEvent) e).getLysisLowermostLevel());
+					count = countMap.get(level);
+					if (count == null) {
+						count = 0;
+					}
+					count++;
+					countMap.put(level, count);
+				}
+			}
+			countMap = new TreeMap<String, Integer>(countMap).descendingMap();
+			Bar bar;
+			for (Entry<String, Integer> entry : countMap.entrySet()) {
+				bar = new Bar(entry.getValue(), entry.getKey());
+				histogram.addBar(bar);
+			}
+			histogram.initYMax();
+		}
+		return histogram;
+	}
+
+	public Histogram getLysisUppermostLevelCountHistogram(List<Event> eventList) {
+		Histogram histogram = new Histogram();
+		histogram.data = "lysis-uppermost-level-count-histogram";
+		Map<String, Integer> countMap = new HashMap<>();
+		histogram.setTitle("Lysis Uppermost Level Count");
+		histogram.setXLabel("Event Level");
+		histogram.setYLabel("Event Count");
+
+		if (eventList != null) {
+			Integer count = 0;
+			String level;
+			for (Event e : eventList) {
+				if (e.flag) {
+					level = String.valueOf(((CycloneEvent) e).getLysisUppermostLevel());
 					count = countMap.get(level);
 					if (count == null) {
 						count = 0;

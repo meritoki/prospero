@@ -52,6 +52,30 @@ public class Result {
 		return eventList;
 	}
 	
+	public List<Frame> getFrameList() {
+		Object object = this.map.get("frameList");
+		List<Frame> frameList = new ArrayList<>();
+		if(object != null) {
+			frameList = (List<Frame>)object; 
+			if (frameList.size() == 0) {
+				logger.warn("load(...) frameList.size() == 0");
+			}
+		}
+		return frameList;
+	}
+	
+	public List<NetCDF> getNetCDFList() {
+		Object object = this.map.get("netCDFList");
+		List<NetCDF> netCDFList = new ArrayList<>();
+		if(object != null) {
+			netCDFList = (List<NetCDF>)object; 
+			if (netCDFList.size() == 0) {
+				logger.warn("load(...) netCDFList.size() == 0");
+			}
+		}
+		return netCDFList;
+	}
+	
 	public List<Interval> getIntervalList() {
 		Object object = this.map.get("intervalList");
 		List<Interval> eventList = new ArrayList<>();
