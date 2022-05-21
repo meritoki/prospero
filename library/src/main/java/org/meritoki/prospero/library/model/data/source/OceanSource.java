@@ -44,7 +44,7 @@ public class OceanSource extends Source {
 		List<NetCDF> loadList;
 		for(Time time: timeList) {
 			if (!Thread.interrupted()) {
-				loadList = this.netCDFMapGet(time.year, time.month);
+				loadList = this.read(time.year, time.month);
 				Result result = new Result();
 				result.map.put("time", time);
 				result.map.put("netCDFList", new ArrayList<NetCDF>((loadList)));
