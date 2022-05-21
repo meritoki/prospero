@@ -23,6 +23,7 @@ public class Ocean extends Grid {
 	public float[][] sumMatrix;
 	public boolean[][] continentMatrix;
 	public DataType dataType;
+	public double scale;
 	
 	public Ocean() {
 		super("Ocean");
@@ -39,6 +40,16 @@ public class Ocean extends Grid {
 	@Override
 	public void init() {
 		super.init();
+		this.dimension = 0.25;
+//		this.resolution = 100;
+//		this.scale = this.resolution / (this.dimension * this.resolution);
+//		this.latitude = 180;
+//		if (this.scale > 1) {
+//			this.latitude *= this.scale;
+//			this.longitude *= this.scale;
+//		}
+		this.latitude = 721;
+		this.longitude = 1440;
 		this.countMatrix = new int[latitude][longitude];
 		this.sumMatrix = new float[latitude][longitude];
 		this.continentMatrix = new boolean[latitude][longitude];
@@ -79,6 +90,7 @@ public class Ocean extends Grid {
 	}
 	
 	public void setMatrix(List<NetCDF> netCDFList) {
+		System.out.println("setMatrix("+netCDFList.size()+")");
 		for (NetCDF netCDF : netCDFList) {
 			if (netCDF.type == this.dataType) {
 				long timeSize = netCDF.timeArray.getSize();

@@ -24,8 +24,11 @@ import ucar.nc2.Variable;
 public class ModulusZeroTwoFiveNetCDFGenerator extends OceanGenerator {
 
 	static Logger logger = LogManager.getLogger(ModulusZeroTwoFiveNetCDFGenerator.class.getName());
-	public static String path = "." + seperator + "data" + seperator + "hydrosphere" + seperator + "ocean" + seperator
-			+ "sst";
+//	public static String path = "." + seperator + "data" + seperator + "hydrosphere" + seperator + "ocean" + seperator
+//			+ "sst";
+	public static String basePath = "/home/jorodriguez/Prospero/";
+	public static String path = basePath+"prospero-data" + seperator + "ECMWF" + seperator + "File" + seperator
+			+ "Data" + seperator + "ERA" + seperator +"Interim"+seperator +"SST";
 	public static String prefix = "34-128_";
 	public static String suffix = "_0-25-0-25";
 	public static String extension = "nc";

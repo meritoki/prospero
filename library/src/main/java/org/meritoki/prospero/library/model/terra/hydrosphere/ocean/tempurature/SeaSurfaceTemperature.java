@@ -14,13 +14,12 @@ public class SeaSurfaceTemperature extends Ocean {
 		this.sourceMap.put("ERA Interim","f4f4b169-fdc4-44db-b93a-85f8416aec2c");
 		this.dataType = DataType.SST;
 	}
-	
-	@Override
-	public List<Tile> getTileList() {
-//		return this.getTileList(this.coordinateMatrix);
-		return null;
-	}
 }
+//@Override
+//public List<Tile> getTileList() {
+////	return this.getTileList(this.coordinateMatrix);
+//	return null;
+//}
 //@Override
 //public void load() {
 //	if(this.load) { 

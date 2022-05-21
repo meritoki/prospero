@@ -92,7 +92,7 @@ public class OceanERAInterimZeroTwoFive extends OceanSource {
 		File file = new File(fileName);
 		if(!file.exists()) {
 			ModulusZeroTwoFiveNetCDFGenerator generator = new ModulusZeroTwoFiveNetCDFGenerator();
-//			generator.write(year,month);
+			generator.write(year,month);
 		}
 		try {
 			dataFile = NetcdfFile.open(fileName, null);
