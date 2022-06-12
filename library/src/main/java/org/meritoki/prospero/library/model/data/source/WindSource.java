@@ -5,7 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.unit.Frame;
+import org.meritoki.prospero.library.model.unit.Interval;
+import org.meritoki.prospero.library.model.unit.Mode;
+import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.meritoki.prospero.library.model.unit.Result;
+import org.meritoki.prospero.library.model.unit.Time;
 
 public class WindSource extends Source {
 	
@@ -13,6 +19,36 @@ public class WindSource extends Source {
 	
 	public WindSource() {
 	}
+	
+	@Override
+	public void query(Query query) throws Exception {
+		this.intervalList = query.getIntervalList(this.getStartYear(), this.getEndYear());
+		if (this.intervalList != null) {
+			for (Interval i : this.intervalList) {
+				this.load(query, i);
+			}
+			query.objectListAdd(new Result(Mode.COMPLETE));
+		}
+	}
+
+
+	
+	public void load(Query query, Interval interval) throws Exception {
+		List<Time> timeList = Time.getTimeList(interval);
+		List<Frame> loadList;
+		for(Time time: timeList) {
+			if (!Thread.interrupted()) {
+				loadList = this.read(time.year, time.month);
+				Result result = new Result();
+				result.map.put("time", time);
+				result.map.put("frameList", new ArrayList<Frame>((loadList)));
+				query.objectList.add(result);
+			} else {
+				throw new InterruptedException();
+			}
+		}
+	}
+
 	
 	public List<Frame> frameMapGet(int y, int m) throws Exception {
 		if (this.frameMap == null)

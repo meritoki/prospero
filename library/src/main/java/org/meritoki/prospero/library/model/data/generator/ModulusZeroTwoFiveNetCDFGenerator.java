@@ -1,5 +1,6 @@
 package org.meritoki.prospero.library.model.data.generator;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,8 @@ public class ModulusZeroTwoFiveNetCDFGenerator extends OceanGenerator {
 //			+ "sst";
 	public static String basePath = "/home/jorodriguez/Prospero/";
 	public static String path = basePath+"prospero-data" + seperator + "ECMWF" + seperator + "File" + seperator
-			+ "Data" + seperator + "ERA" + seperator +"Interim"+seperator +"SST";
-	public static String prefix = "34-128_";
+			+ "Data" + seperator + "ERA" + seperator +"5"+seperator +"SST";
+	public static String prefix = "sea_surface_temperature_";
 	public static String suffix = "_0-25-0-25";
 	public static String extension = "nc";
 	public int startYear = 2001;
@@ -46,6 +47,14 @@ public class ModulusZeroTwoFiveNetCDFGenerator extends OceanGenerator {
 	public static void main(String[] args) {
 		ModulusZeroTwoFiveNetCDFGenerator modulusGenerator = new ModulusZeroTwoFiveNetCDFGenerator();
 		modulusGenerator.write(2001, 01);
+	}
+	
+	public ModulusZeroTwoFiveNetCDFGenerator() {
+		
+	}
+	
+	public ModulusZeroTwoFiveNetCDFGenerator(String basePath) {
+		
 	}
 
 	public List<Frame> write(int year, int month) {

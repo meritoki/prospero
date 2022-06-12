@@ -5,7 +5,7 @@
 	<parent>
 	  <artifactId>prospero</artifactId>
 	  <groupId>org.meritoki</groupId>
-	  <version>0.9.202204</version>
+	  <version>0.10.202206</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.meritoki.prospero</groupId>
@@ -67,7 +67,7 @@
 		<dependency>
 			<groupId>org.meritoki.prospero</groupId>
 			<artifactId>library</artifactId>
-			<version>0.9.202204</version>
+			<version>0.10.202206</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

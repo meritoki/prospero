@@ -15,6 +15,7 @@ import org.meritoki.prospero.library.model.data.source.EarthquakeUSGSEarthquakeH
 import org.meritoki.prospero.library.model.data.source.LithosphereGEBCO;
 import org.meritoki.prospero.library.model.data.source.MagneticNOAAEMAG;
 import org.meritoki.prospero.library.model.data.source.MagneticNOAAWMM;
+import org.meritoki.prospero.library.model.data.source.OceanERA5ZeroTwoFive;
 import org.meritoki.prospero.library.model.data.source.OceanERAInterim;
 import org.meritoki.prospero.library.model.data.source.OceanERAInterimZeroTwoFive;
 import org.meritoki.prospero.library.model.data.source.PDONOAA;
@@ -24,6 +25,7 @@ import org.meritoki.prospero.library.model.data.source.TectonicPeterBird;
 import org.meritoki.prospero.library.model.data.source.TornadoHistoryProject;
 import org.meritoki.prospero.library.model.data.source.VolcanicNOAA;
 import org.meritoki.prospero.library.model.data.source.WindERAInterim;
+import org.meritoki.prospero.library.model.data.source.WindJetstreamERA5;
 import org.meritoki.prospero.library.model.query.Query;
 
 import com.meritoki.module.library.model.Node;
@@ -51,10 +53,12 @@ public class Data extends Node {
 		this.sourceMap.put("2d611935-9786-4c28-9dcf-f18cf3e99a3a", new CycloneUTNERAInterim());
 		this.sourceMap.put("281cbf52-7014-4229-bffd-35c8ba41bcb5", new CycloneUTNERA5());
 		this.sourceMap.put("f4d6ead6-949a-42a9-9327-a8e22790e0e7", new WindERAInterim());
+		this.sourceMap.put("73428541-23ea-4c4a-bc82-4fb4db5afe05", new WindJetstreamERA5());
 		this.sourceMap.put("d6eb88d6-100c-4948-8fd1-5300b724ec2d", new CountryNaturalEarth());
 		this.sourceMap.put("9bc2dd83-85c9-48fe-818f-f62db97c594a", new CityNaturalEarth());
 		this.sourceMap.put("8edb8e7d-d0e1-4204-ac2f-12c456f0a1b1", new OceanERAInterim());
 		this.sourceMap.put("f4f4b169-fdc4-44db-b93a-85f8416aec2c", new OceanERAInterimZeroTwoFive());
+		this.sourceMap.put("e0538d57-044d-48c2-b3a7-b985eada81fc", new OceanERA5ZeroTwoFive());
 		this.sourceMap.put("7cfb5b0a-0f8a-4e38-b0a9-5d50bf64a7b5", new EarthquakeUSGSEarthquakeHazardProgram());
 		this.sourceMap.put("3580b76c-b70d-4cdd-9a80-4feb57c72c77", new MagneticNOAAEMAG());
 		this.sourceMap.put("1aac29c0-e2f6-45e8-9921-c88397957795", new LithosphereGEBCO());

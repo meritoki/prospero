@@ -14,6 +14,7 @@ public class Modulus extends Ocean {
 	
 	public Modulus() {
 		super("Modulus");
+		this.sourceMap.put("ERA 5","e0538d57-044d-48c2-b3a7-b985eada81fc");
 		this.sourceMap.put("ERA Interim","f4f4b169-fdc4-44db-b93a-85f8416aec2c");
 		this.dataType = DataType.MODULUS;
 	}

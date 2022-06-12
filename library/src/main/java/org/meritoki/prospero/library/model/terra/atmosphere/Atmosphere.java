@@ -10,7 +10,7 @@ public class Atmosphere extends Variable {
 	
 	public Atmosphere() {
 		super("Atmosphere");
-//		this.addChild(new Wind());
+		this.addChild(new Wind());
 		this.addChild(new Cyclone());
 		this.addChild(new Tornado());
 //		this.addChild(new Temperature());

@@ -71,6 +71,8 @@ public class Variable extends Node {
 	@JsonIgnore
 	public LinkedList<Query> queryStack = new LinkedList<>();
 	@JsonIgnore
+	public List<String> orderList = new ArrayList<>();
+	@JsonIgnore
 	public Projection projection = new AzimuthalSouth();
 	@JsonIgnore
 	public Data data;
@@ -386,17 +388,33 @@ public class Variable extends Node {
 	public List<Variable> getChildren() {
 		List<Module> moduleList = new ArrayList<Module>(this.moduleMap.values());
 		List<Variable> variableList = new ArrayList<>();
-		for (Module m : moduleList) {
-			if (m instanceof Variable) {
-				variableList.add((Variable) m);
+//		for(String s: this.orderList) {
+			for (Module m : moduleList) {
+//				System.out.println(s+".equals("+m+")");
+//				if(s.equals(m.toString())) {
+	 				if (m instanceof Variable) {
+						variableList.add((Variable) m);
+					}
+//				}
 			}
-		}
+//		}
+//		List<Module> moduleList = new ArrayList<Module>(this.moduleMap.values());
+//		List<Variable> variableList = new ArrayList<>();
+//		for (Module m : moduleList) {
+//			for(String s: this.orderList) {
+//				if (s.equals(m.toString()) && m instanceof Variable) {
+//					variableList.add((Variable) m);
+//				}
+//			}
+//			
+//		}
 		return variableList;
 	}
 
 	@JsonIgnore
 	public void addChild(Variable child) {
 //		logger.info(this.name+".addChild("+child+")");
+		this.orderList.add(child.toString());
 		this.moduleMapPut(child);
 	}
 
