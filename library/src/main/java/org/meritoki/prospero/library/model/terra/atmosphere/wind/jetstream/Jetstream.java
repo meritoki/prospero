@@ -1,8 +1,9 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.wind.jetstream;
 
 import org.meritoki.prospero.library.model.grid.Grid;
+import org.meritoki.prospero.library.model.terra.atmosphere.wind.Wind;
 
-public class Jetstream extends Grid {
+public class Jetstream extends Wind {
 
 //	public List<Frame> frameList;
 	
