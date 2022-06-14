@@ -37,9 +37,9 @@ public class Wind extends Grid {
 	@Override
 	public void init() {
 		super.init();
-		dimension = 1;
-		counterMatrix = new int[(int) latitude][(int) longitude];
-		intensityMatrix = new float[(int) latitude][(int) longitude];
+		this.dimension = 1;
+		this.counterMatrix = new int[(int) latitude][(int) longitude];
+		this.intensityMatrix = new float[(int) latitude][(int) longitude];
 	}
 	
 	@Override
@@ -75,8 +75,8 @@ public class Wind extends Grid {
 								dataList = f.data.get(a + "," + b);
 								for (Data d : dataList) {
 									if (d.type == DataType.INTENSITY) {
-										counterMatrix[a][b]++;
-										intensityMatrix[a][b] += d.value;
+										this.counterMatrix[a][b]++;
+										this.intensityMatrix[a][b] += d.value;
 									}
 								}
 							}

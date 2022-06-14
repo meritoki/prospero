@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.grid.Grid;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.enso.ENSO;
+import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.ice.Ice;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.modulus.Modulus;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.pdo.PDO;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.tempurature.SeaSurfaceTemperature;
@@ -31,6 +32,7 @@ public class Ocean extends Grid {
 		this.addChild(new Modulus());
 		this.addChild(new ENSO());
 		this.addChild(new PDO());
+		this.addChild(new Ice());
 	}
 	
 	public Ocean(String name) {

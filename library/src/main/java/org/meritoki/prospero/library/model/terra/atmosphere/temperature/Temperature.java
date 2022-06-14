@@ -33,8 +33,11 @@ public class Temperature extends Grid {
 			if (this.stationList.size() == 0) {
 				logger.warn("load(...) this.stationList.size() == 0");
 			}
+			
 		}
 	}
+	
+	
 	
 	@Override
 	public void paint(Graphics graphics) throws Exception {

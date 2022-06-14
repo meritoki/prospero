@@ -12,6 +12,7 @@ import org.meritoki.prospero.library.model.data.source.CycloneUTNERA5;
 import org.meritoki.prospero.library.model.data.source.CycloneUTNERAInterim;
 import org.meritoki.prospero.library.model.data.source.ENSONOAA;
 import org.meritoki.prospero.library.model.data.source.EarthquakeUSGSEarthquakeHazardProgram;
+import org.meritoki.prospero.library.model.data.source.HydrosphereSeaIceTemperature;
 import org.meritoki.prospero.library.model.data.source.LithosphereGEBCO;
 import org.meritoki.prospero.library.model.data.source.MagneticNOAAEMAG;
 import org.meritoki.prospero.library.model.data.source.MagneticNOAAWMM;
@@ -70,6 +71,7 @@ public class Data extends Node {
 		this.sourceMap.put("162baa09-9ad1-4556-9a9f-a967ee37e514", new ENSONOAA());
 		this.sourceMap.put("c983e688-0e94-405f-a513-7565c6e13b03", new MagneticNOAAWMM());
 		this.sourceMap.put("ecb98f29-fc40-4025-ab0e-24faeaa39d5e", new SILSOSunspot());
+		this.sourceMap.put("8b2215c6-945b-4109-bfb4-6c764636e390", new HydrosphereSeaIceTemperature());
 		this.start();
 	}
 	
