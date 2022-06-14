@@ -18,7 +18,7 @@ import org.meritoki.prospero.library.model.unit.Station;
 
 import com.meritoki.library.controller.memory.MemoryController;
 
-public class HydrosphereSeaIceTemperature extends Source {
+public class OceanSeaIce extends Source {
 
 	public String path = basePath + "prospero-data" + seperator + "Toth" + seperator + "hielo2020toths.txt";
 
@@ -35,18 +35,14 @@ public class HydrosphereSeaIceTemperature extends Source {
 	}
 
 	public List<Station> read() throws Exception {
-		System.out.println("read() path=" + path);
 		List<Station> stationList = new ArrayList<>();
-//		try {
 		FileReader input = new FileReader(path);
 		BufferedReader bufferedeReader = new BufferedReader(input);
 		String line = null;
 		while ((line = bufferedeReader.readLine()) != null) {
-//			MemoryController.log();
 			line = line.trim();
 			if (line.length() > 0) {
 				String[] lineArray = line.split("\\s+");
-//				System.out.println(lineArray.length);
 				if (lineArray.length == 522) {
 					double latitude = Double.parseDouble(lineArray[0]);
 					double longitude = Double.parseDouble(lineArray[1]);
@@ -71,10 +67,6 @@ public class HydrosphereSeaIceTemperature extends Source {
 				}
 			}
 		}
-//		} catch (IOException e) {
-//			logger.error("read() Exception=" + e);
-//			e.printStackTrace();
-//		}
 		return stationList;
 	}
 
