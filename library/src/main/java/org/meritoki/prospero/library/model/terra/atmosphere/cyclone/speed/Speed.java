@@ -1,12 +1,9 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed;
 
-import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -18,7 +15,6 @@ import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Region;
-import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
@@ -130,12 +126,12 @@ public class Speed extends Cyclone {
 	public void setMatrix(List<Event> eventList) {
 		List<Time> timeList = this.setSpeedCoordinateMatrix(this.speedMatrix, this.coordinateMatrix, eventList);
 		for(Time t: timeList) {
-			if(!this.eventTimeList.contains(t)) {
-				this.eventTimeList.add(t);
+			if(!this.timeList.contains(t)) {
+				this.timeList.add(t);
 			}
 		}
-		this.initMonthArray(this.eventTimeList);
-		this.initYearMap(this.eventTimeList);
+		this.initMonthArray(this.timeList);
+		this.initYearMap(this.timeList);
 	}
 
 	public List<Time> setSpeedCoordinateMatrix(float[][][] speedMatrix, int[][][] coordinateMatrix, List<Event> eventList) {

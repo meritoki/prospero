@@ -17,7 +17,7 @@ public class Station {
 		StandardDeviation standardDeviation = new StandardDeviation();
 		Mean mean = new Mean();
 		for (Coordinate tile : this.coordinateList) {
-			double temp = (double)tile.attribute.get("temperature");
+			double temp = (double)tile.attribute.get("density");
 			if(temp != -8888.0 && temp != -7777) {
 				standardDeviation.increment(temp);
 				mean.increment(temp);

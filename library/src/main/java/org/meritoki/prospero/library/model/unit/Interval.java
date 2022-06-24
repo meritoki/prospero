@@ -170,9 +170,10 @@ public class Interval {
 	public boolean contains(Frame frame) {
 //		System.out.println("contains("+frame+") startYear="+startYear+" endYear="+endYear);
 		boolean flag = true;
-		Date date = new Date(frame.milliseconds);
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-		cal.setTime(date);
+//		Date date = new Date(frame.milliseconds);
+//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+//		cal.setTime(date);
+		Calendar cal = frame.calendar;
 		int year = cal.get(Calendar.YEAR);
 		int month = cal.get(Calendar.MONTH) + 1;
 		int day = cal.get(Calendar.DAY_OF_MONTH);

@@ -61,7 +61,6 @@ public class Ocean extends Grid {
 	public void load(Result result) {
 		super.load(result);
 		List<NetCDF> netCDFList = result.getNetCDFList();
-//		this.netCDFList.addAll(netCDFList);
 		try {
 			this.process(netCDFList);
 		} catch (Exception e) {

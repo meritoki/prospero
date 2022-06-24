@@ -91,12 +91,12 @@ public class Lifetime extends Cyclone {
 	public void setMatrix(List<Event> eventList) {
 		List<Time> timeList = this.setDurationCoordinateMatrix(this.durationMatrix, this.coordinateMatrix, eventList);
 		for(Time t: timeList) {
-			if(!this.eventTimeList.contains(t)) {
-				this.eventTimeList.add(t);
+			if(!this.timeList.contains(t)) {
+				this.timeList.add(t);
 			}
 		}
-		this.initMonthArray(this.eventTimeList);
-		this.initYearMap(this.eventTimeList);
+		this.initMonthArray(this.timeList);
+		this.initYearMap(this.timeList);
 	}
 	
 	public List<Time> setDurationCoordinateMatrix(float[][][] durationMatrix, int[][][] coordinateMatrix, List<Event> eventList) {

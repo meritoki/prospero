@@ -32,13 +32,22 @@ public class WindJetstreamERA5 extends WindSource {
 	public static String prefix = "u_component_of_wind-v_component_of_wind_";
 	public static String suffix = "_200-250-300_F128";
 	public static String extension = "nc";
-	public int startYear = 2001;
-	public int endYear = 2017;
+	public int startYear = 1979;
+	public int endYear = 2019;
 	
 	public WindJetstreamERA5() {
 		this.calendarFlag = true;
 	}
 	
+	@Override
+	public int getStartYear() {
+		return this.startYear;
+	}
+
+	@Override
+	public int getEndYear() {
+		return this.endYear;
+	}
 
 	
 	public List<Frame> read(int year, int month) {
@@ -89,31 +98,30 @@ public class WindJetstreamERA5 extends WindSource {
 				frame.calendar.setTimeInMillis(milliseconds);
 				for (int j = 0; j < latitudeCount; j++) {
 					latitude = latArray.get(j);
-//					if (latitude < 0) {
-						latitude += 90;
-						for (int i = 0; i < longitudeCount; i++) {
-							longitude = lonArray.get(i);
-							intensitySum = 0;
-							for (int l = 0; l < levelCount; l++) {
-								u = uArray.get(t, l, j, i);
-								v = vArray.get(t, l, j, i);
-								u *= uScaleFactor;
-								u += uAddOffset;
-								v *= vScaleFactor;
-								v += vAddOffset;
-								intensity = Math.sqrt((Math.pow(u, 2) + Math.pow(v, 2)));
-								intensitySum += intensity;
-							}
-							intensityAverage = intensitySum / levelCount;
-							frame.flag = true;
-							short latitudeIndex = (short) latitude;
-							short longitudeIndex = (short) longitude;
-							if (frame.data.get(latitudeIndex+","+longitudeIndex) == null) {
-								frame.data.put(latitudeIndex+","+longitudeIndex, new ArrayList<>());
-							}
-							frame.data.get(latitudeIndex+","+longitudeIndex).add(new Data(DataType.INTENSITY, intensityAverage));
+//					latitude += 90;
+					for (int i = 0; i < longitudeCount; i++) {
+						longitude = lonArray.get(i);
+						intensitySum = 0;
+						for (int l = 0; l < levelCount; l++) {
+							u = uArray.get(t, l, j, i);
+							v = vArray.get(t, l, j, i);
+							u *= uScaleFactor;
+							u += uAddOffset;
+							v *= vScaleFactor;
+							v += vAddOffset;
+							intensity = Math.sqrt((Math.pow(u, 2) + Math.pow(v, 2)));
+							intensitySum += intensity;
 						}
-//					}
+						intensityAverage = intensitySum / levelCount;
+						frame.flag = true;
+						Coordinate coordinate = new Coordinate();
+						coordinate.calendar = frame.calendar;
+						coordinate.latitude = latitude+90;
+						coordinate.longitude = longitude;
+						coordinate.attribute.put(DataType.INTENSITY.toString(),intensityAverage);
+						coordinate.flag = true;
+						frame.coordinateList.add(coordinate);
+					}
 				}
 				frameList.add(frame);
 			}
@@ -121,7 +129,6 @@ public class WindJetstreamERA5 extends WindSource {
 			System.gc();
 		} catch (java.io.IOException e) {
 			logger.error("IOException " + e.getMessage());
-
 		} finally {
 			if (dataFile != null) {
 				try {
@@ -135,6 +142,12 @@ public class WindJetstreamERA5 extends WindSource {
 		return frameList;
 	}
 }
+//short latitudeIndex = (short) latitude;
+//short longitudeIndex = (short) longitude;
+//if (frame.data.get(latitudeIndex+","+longitudeIndex) == null) {
+//	frame.data.put(latitudeIndex+","+longitudeIndex, new Data());
+//}
+//frame.data.get(latitudeIndex+","+longitudeIndex).map.put(DataType.INTENSITY, intensityAverage);
 //@Override
 //public List<Frame> frameMapGet(int y, int m) {
 //	if (this.frameMap == null)

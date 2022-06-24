@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class Query {
 	
 	static Logger logger = LogManager.getLogger(Query.class.getName());
-	@JsonProperty
+	@JsonIgnore
 	public String uuid;
 	@JsonProperty
 	public Map<String,String> map = new TreeMap<>();
@@ -89,10 +89,12 @@ public class Query {
 		return false;
 	}
 	
+	@JsonIgnore
 	public String getFileName() {
 		return this.getTime()+"-"+this.getSourceUUID();
 	}
 	
+	@JsonIgnore
 	public File getFile() {
 		return new File(this.getFileName()+".json");
 	}

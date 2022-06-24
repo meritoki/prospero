@@ -51,7 +51,7 @@ public class Grid extends Variable {
 	public Chroma chroma = new Chroma(Scheme.VIRIDIS);
 	public int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude
 			* resolution)][12];
-	public float[][] dataMatrix = new float[(int) latitude][(int) longitude];
+	public float[][][] dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	public List<Region> regionList = new ArrayList<>();
 	public List<Band> bandList = new ArrayList<>();
 	public List<Tile> tileList = new ArrayList<>();
@@ -59,7 +59,7 @@ public class Grid extends Variable {
 	public List<NetCDF> netCDFList = new ArrayList<>();
 	public List<Coordinate> coordinateList = new ArrayList<>();
 	public List<Event> eventList = new ArrayList<>();
-	public List<Time> eventTimeList = new ArrayList<>();
+	public List<Time> timeList = new ArrayList<>();
 	public HashMap<Time, List<Event>> eventMap = new HashMap<>();
 	public HashMap<Region, List<Event>> regionMap = new HashMap<>();
 	public List<Station> stationList = new ArrayList<>();
@@ -133,7 +133,7 @@ public class Grid extends Variable {
 		super.init();
 		try {
 			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-			this.dataMatrix = new float[(int) latitude][(int) longitude];
+			this.dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 			this.regression = this.query.getRegression();
 			this.group = this.query.getGroup();
 			this.eventMap = new HashMap<>();
@@ -146,7 +146,7 @@ public class Grid extends Variable {
 			this.window = this.query.getWindow();
 			this.range = this.query.getRange();
 			this.seriesMap = new TreeMap<>();
-			this.eventTimeList = new ArrayList<>();
+			this.timeList = new ArrayList<>();
 		} catch (Exception e) {
 			logger.error("init() exception="+e.getMessage());
 			e.printStackTrace();
@@ -226,53 +226,55 @@ public class Grid extends Variable {
 	public List<Tile> getTileList() {
 		return null;
 	}
+	
 
-	/**
-	 * Used by Ocean
-	 * @param dataType
-	 * @param frameList
-	 * @param dimension
-	 */
-	public void setFrameList(DataType dataType, List<Frame> frameList, double dimension) {
-		if (frameList != null) {
-			this.initDateList(frameList);
-			int latitude = (int) (this.latitude);// * this.resolution);
-			int longitude = (int) (this.longitude);// * this.resolution);
-			List<Data> dataList;
-			for (int i = 0; i < latitude; i += dimension) {
-				for (int j = 0; j < longitude; j += dimension) {
-					for (int a = i; a < (i + dimension); a++) {
-						for (int b = j; b < (j + dimension); b++) {
-							for (Frame f : frameList) {
-								dataList = f.data.get(a + "," + b);
-								for (Data d : dataList) {
-									if (d.type == dataType) {
-										dataMatrix[a][b] = d.value;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		this.tileList = new ArrayList<>();
-		for (int i = 0; i < latitude; i += dimension) {
-			for (int j = 0; j < longitude; j += dimension) {
-				float value = dataMatrix[i][j];
-				int lat = (int) ((i - this.latitude));
-				int lon;
-				if (j < 180) {
-					lon = j;
-				} else {
-					lon = j - 360;
-				}
-				Tile tile = new Tile(lat, lon, dimension, value);
-				this.tileList.add(tile);
-			}
-		}
-		this.initTileMinMax();
-	}
+
+//	/**
+//	 * Used by Ocean
+//	 * @param dataType
+//	 * @param frameList
+//	 * @param dimension
+//	 */
+//	public void setFrameList(DataType dataType, List<Frame> frameList, double dimension) {
+//		if (frameList != null) {
+//			this.initDateList(frameList);
+//			int latitude = (int) (this.latitude);// * this.resolution);
+//			int longitude = (int) (this.longitude);// * this.resolution);
+//			List<Data> dataList;
+//			for (int i = 0; i < latitude; i += dimension) {
+//				for (int j = 0; j < longitude; j += dimension) {
+//					for (int a = i; a < (i + dimension); a++) {
+//						for (int b = j; b < (j + dimension); b++) {
+//							for (Frame f : frameList) {
+//								dataList = f.data.get(a + "," + b);
+//								for (Data d : dataList) {
+//									if (d.type == dataType) {
+//										dataMatrix[a][b] = d.value;
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//		this.tileList = new ArrayList<>();
+//		for (int i = 0; i < latitude; i += dimension) {
+//			for (int j = 0; j < longitude; j += dimension) {
+//				float value = dataMatrix[i][j];
+//				int lat = (int) ((i - this.latitude));
+//				int lon;
+//				if (j < 180) {
+//					lon = j;
+//				} else {
+//					lon = j - 360;
+//				}
+//				Tile tile = new Tile(lat, lon, dimension, value);
+//				this.tileList.add(tile);
+//			}
+//		}
+//		this.initTileMinMax();
+//	}
 
 	public void initCoordinateMinMax(String variable, Double nullValue) {
 		double min = Double.MAX_VALUE;
@@ -349,19 +351,19 @@ public class Grid extends Variable {
 		return tileLatitudeList;
 	}
 
-	public void initDateList(List<Frame> frameList) {
-		String sample;
-		for (Frame f : frameList) {
-			if (f.flag) {
-				for (Long milliseconds : f.millisecondList) {
-					sample = this.getYear(milliseconds) + "-" + this.getMonth(milliseconds);
-					if (!this.dateList.contains(sample)) {
-						this.dateList.add(sample);
-					}
-				}
-			}
-		}
-	}
+//	public void initDateList(List<Frame> frameList) {
+//		String sample;
+//		for (Frame f : frameList) {
+//			if (f.flag) {
+//				for (Long milliseconds : f.millisecondList) {
+//					sample = this.getYear(milliseconds) + "-" + this.getMonth(milliseconds);
+//					if (!this.dateList.contains(sample)) {
+//						this.dateList.add(sample);
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	public int getMonth(long milliseconds) {
 		Date date = new Date(milliseconds);
