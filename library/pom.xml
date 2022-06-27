@@ -5,7 +5,7 @@
 	<parent>
 	  <artifactId>prospero</artifactId>
 	  <groupId>org.meritoki</groupId>
-	  <version>0.10.202206</version>
+	  <version>0.11.202206</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.meritoki.prospero</groupId>

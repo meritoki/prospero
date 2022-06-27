@@ -40,7 +40,6 @@ public class CycloneSource extends Source {
 
 	@Override
 	public void query(Query query) throws Exception {
-//		logger.info("query(" + query + ")");
 		this.intervalList = query.getIntervalList(this.getStartYear(), this.getEndYear());
 		if (this.intervalList != null) {
 			for (Interval i : this.intervalList) {
@@ -49,12 +48,9 @@ public class CycloneSource extends Source {
 			query.objectListAdd(new Result(Mode.COMPLETE));
 		}
 	}
-
-
 	
 	public void load(Query query, Interval interval) throws Exception {
 		List<Time> timeList = Time.getTimeList(interval);
-		List<Event> bufferList = null;
 		List<Event> loadList;
 		for(Time time: timeList) {
 			if (!Thread.interrupted()) {
