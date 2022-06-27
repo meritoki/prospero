@@ -94,8 +94,9 @@ public class WindJetstreamERA5 extends WindSource {
 			for (int t = 0; t < timeCount; t++) {
 				frame = new Frame();
 				frame.calendar = Calendar.getInstance();
-				long milliseconds = Time.getNineteenHundredJanuaryFirstDate(timeArray.get(t)).getTime();
-				frame.calendar.setTimeInMillis(milliseconds);
+				frame.calendar.setTime(Time.getNineteenHundredJanuaryFirstDate(timeArray.get(t)));
+//				long milliseconds = Time.getNineteenHundredJanuaryFirstDate(timeArray.get(t)).getTime();
+//				frame.calendar.setTimeInMillis(milliseconds);
 				for (int j = 0; j < latitudeCount; j++) {
 					latitude = latArray.get(j);
 //					latitude += 90;

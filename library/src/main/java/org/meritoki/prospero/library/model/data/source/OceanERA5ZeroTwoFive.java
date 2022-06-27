@@ -38,6 +38,15 @@ public class OceanERA5ZeroTwoFive extends OceanSource {
 	public OceanERA5ZeroTwoFive() {}
 
 
+	@Override
+	public int getStartYear() {
+		return this.startYear;
+	}
+
+	@Override
+	public int getEndYear() {
+		return this.endYear;
+	}
 
 	public List<NetCDF> read(int year, int month) {
 		logger.info("read(" + year + "," + month + ")");

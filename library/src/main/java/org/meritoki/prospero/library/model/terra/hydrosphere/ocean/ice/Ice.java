@@ -123,13 +123,9 @@ public class Ice extends Grid {
 				if (f.flag) {
 					for (Coordinate c : f.coordinateList) {
 						if (c.flag) {
-//							System.out.println(c.latitude+";"+c.longitude);
 							int x = (int) ((c.latitude + this.latitude) * this.resolution);
 							int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
 							int z = c.getMonth()-1;
-//							int z = c.getMonth()-1;
-////							System.out.println("coordinate:"+c.latitude+","+c.longitude+","+c.getMonth());
-////							System.out.println("index:"+x+","+y+","+z);
 							dataMatrix[x][y][z] += (float)((double)c.attribute.get("density"));
 							coordinateMatrix[x][y][z]++;
 							Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
