@@ -22,7 +22,7 @@ public class Speed extends Cyclone {
 
 	static Logger logger = LogManager.getLogger(Speed.class.getName());
 	public float[][][] speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-	public Map<Integer, float[][][]> speedMatrixMap = new HashMap<>();
+//	public Map<Integer, float[][][]> speedMatrixMap = new HashMap<>();
 
 	public Speed() {
 		super("Speed");
@@ -94,33 +94,6 @@ public class Speed extends Cyclone {
 
 		return tileList;
 	}
-
-//	@Override
-//	public void setEventList(List<Event> eventList, boolean reset) {
-////		logger.info("setEventList("+eventList.size()+","+reset+")");
-//		if (reset) {
-//			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-//			this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-//			this.dateList = new ArrayList<>();
-//		}
-//		for (Event e : eventList) {
-//			if (e.flag) {
-//				Coordinate p = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
-//				if (p != null) {
-//					coordinateMatrix[(int) ((p.latitude + this.latitude)
-//							* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
-//									.getMonth() - 1]++;
-//					speedMatrix[(int) ((p.latitude + this.latitude)
-//							* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
-//									.getMonth() - 1] += ((CycloneEvent) e).getMeanSpeed();
-//					String date = p.getYear() + "-" + p.getMonth();
-//					if (!this.dateList.contains(date)) {
-//						this.dateList.add(date);
-//					}
-//				}
-//			}
-//		}
-//	}
 
 	@Override
 	public void setMatrix(List<Event> eventList) {
@@ -197,6 +170,32 @@ public class Speed extends Cyclone {
 		return index;
 	}
 }
+//@Override
+//public void setEventList(List<Event> eventList, boolean reset) {
+////	logger.info("setEventList("+eventList.size()+","+reset+")");
+//	if (reset) {
+//		this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//		this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//		this.dateList = new ArrayList<>();
+//	}
+//	for (Event e : eventList) {
+//		if (e.flag) {
+//			Coordinate p = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
+//			if (p != null) {
+//				coordinateMatrix[(int) ((p.latitude + this.latitude)
+//						* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
+//								.getMonth() - 1]++;
+//				speedMatrix[(int) ((p.latitude + this.latitude)
+//						* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
+//								.getMonth() - 1] += ((CycloneEvent) e).getMeanSpeed();
+//				String date = p.getYear() + "-" + p.getMonth();
+//				if (!this.dateList.contains(date)) {
+//					this.dateList.add(date);
+//				}
+//			}
+//		}
+//	}
+//}
 //@Override
 //public void addSeriesIndex(Series series, Time key, List<Event> eventList) {
 ////	logger.info("setIndexList("+series.indexList.size()+"," + eventMap.size() + ","+reset+")");

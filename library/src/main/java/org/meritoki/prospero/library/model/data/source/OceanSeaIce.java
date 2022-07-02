@@ -12,12 +12,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.unit.Coordinate;
-import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
-import org.meritoki.prospero.library.model.unit.Station;
 import org.meritoki.prospero.library.model.unit.Time;
 
 public class OceanSeaIce extends Source {
@@ -65,54 +63,6 @@ public class OceanSeaIce extends Source {
 		}
 	}
 
-//	@Override
-//	public void query(Query query) throws Exception {
-//		logger.info("query(" + query + ")");
-//		Result result = new Result();
-//		result.map.put("stationList", this.read());
-//		result.mode = Mode.LOAD;
-//		query.objectList.add(result);
-//		result = new Result();
-//		result.mode = Mode.COMPLETE;
-//		query.objectList.add(result);
-//	}
-
-	public List<Station> read() throws Exception {
-		List<Station> stationList = new ArrayList<>();
-		FileReader input = new FileReader(path);
-		BufferedReader bufferedeReader = new BufferedReader(input);
-		String line = null;
-		while ((line = bufferedeReader.readLine()) != null) {
-			line = line.trim();
-			if (line.length() > 0) {
-				String[] lineArray = line.split("\\s+");
-				if (lineArray.length == 522) {
-					double latitude = Double.parseDouble(lineArray[0]);
-					double longitude = Double.parseDouble(lineArray[1]);
-					String[] tempArray = IntStream.range(2, lineArray.length).mapToObj(i -> lineArray[i])
-							.toArray(String[]::new);
-					Station station = new Station();
-					int year = 1979;
-					for (int i = 0; i < tempArray.length; i++) {
-						int month = (i % 11);
-						if (month == 0) {
-							year++;
-						}
-						Coordinate coordinate = new Coordinate();
-						Calendar calendar = new GregorianCalendar(year, month + 1, 1);
-						coordinate.attribute.put("density", Double.parseDouble(tempArray[i]));
-						coordinate.calendar = calendar;
-						coordinate.latitude = latitude;
-						coordinate.longitude = longitude;
-						station.coordinateList.add(coordinate);
-					}
-					stationList.add(station);
-				}
-			}
-		}
-		return stationList;
-	}
-
 	public List<Frame> read(int year, int month) throws Exception {
 		logger.info("read("+year+","+month+")");
 		List<Frame> frameList = new ArrayList<>();
@@ -122,7 +72,8 @@ public class OceanSeaIce extends Source {
 		frame.calendar = calendar;
 		frame.flag = true;
 		int y = year - 1979;
-		int index = (10*y)+(month-1);
+		int index = (12*y)+(month-1);
+		index += 2;
 		try (BufferedReader bufferedeReader = new BufferedReader(input)) {
 			String line = null;
 			while ((line = bufferedeReader.readLine()) != null) {
@@ -132,17 +83,16 @@ public class OceanSeaIce extends Source {
 					if (lineArray.length == 522) {
 						double latitude = Double.parseDouble(lineArray[0]);
 						double longitude = Double.parseDouble(lineArray[1]);
-						String[] tempArray = IntStream.range(2, lineArray.length).mapToObj(i -> lineArray[i])
-								.toArray(String[]::new);
+//						String[] tempArray = IntStream.range(2, lineArray.length).mapToObj(i -> lineArray[i])
+//								.toArray(String[]::new);
 						Coordinate coordinate = new Coordinate();
 						coordinate.calendar = frame.calendar;
-						coordinate.attribute.put("density", Double.parseDouble(tempArray[index]));
+						coordinate.attribute.put("density", Double.parseDouble(lineArray[index]));
 						coordinate.calendar = calendar;
 						coordinate.latitude = latitude;
 						coordinate.longitude = longitude;
 						coordinate.flag = true;
 						frame.coordinateList.add(coordinate);
-						
 					}
 				}
 			}
@@ -150,5 +100,52 @@ public class OceanSeaIce extends Source {
 		frameList.add(frame);
 		return frameList;
 	}
-
 }
+
+//@Override
+//public void query(Query query) throws Exception {
+//	logger.info("query(" + query + ")");
+//	Result result = new Result();
+//	result.map.put("stationList", this.read());
+//	result.mode = Mode.LOAD;
+//	query.objectList.add(result);
+//	result = new Result();
+//	result.mode = Mode.COMPLETE;
+//	query.objectList.add(result);
+//}
+
+//public List<Station> read() throws Exception {
+//	List<Station> stationList = new ArrayList<>();
+//	FileReader input = new FileReader(path);
+//	BufferedReader bufferedeReader = new BufferedReader(input);
+//	String line = null;
+//	while ((line = bufferedeReader.readLine()) != null) {
+//		line = line.trim();
+//		if (line.length() > 0) {
+//			String[] lineArray = line.split("\\s+");
+//			if (lineArray.length == 522) {
+//				double latitude = Double.parseDouble(lineArray[0]);
+//				double longitude = Double.parseDouble(lineArray[1]);
+//				String[] tempArray = IntStream.range(2, lineArray.length).mapToObj(i -> lineArray[i])
+//						.toArray(String[]::new);
+//				Station station = new Station();
+//				int year = 1979;
+//				for (int i = 0; i < tempArray.length; i++) {
+//					int month = (i % 11);
+//					if (month == 0) {
+//						year++;
+//					}
+//					Coordinate coordinate = new Coordinate();
+//					Calendar calendar = new GregorianCalendar(year, month + 1, 1);
+//					coordinate.attribute.put("density", Double.parseDouble(tempArray[i]));
+//					coordinate.calendar = calendar;
+//					coordinate.latitude = latitude;
+//					coordinate.longitude = longitude;
+//					station.coordinateList.add(coordinate);
+//				}
+//				stationList.add(station);
+//			}
+//		}
+//	}
+//	return stationList;
+//}

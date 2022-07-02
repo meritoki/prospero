@@ -116,11 +116,8 @@ public class Density extends Cyclone {
 
 	@Override
 	public Index getIndex(Time key, List<Event> eventList) {
-//		int[][][] bufferCoordinateMatrix = this.coordinateMatrix;
-//		List<String> bufferDateList = this.dateList;
 		int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		Index index = null;
-//		this.setEventList(eventList, true);
 		List<Time> timeList = this.setCoordinateMatrix(coordinateMatrix, eventList);
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
@@ -149,8 +146,6 @@ public class Density extends Cyclone {
 		} else {
 			index = super.getIndex(key, eventList);
 		}
-//		this.coordinateMatrix = bufferCoordinateMatrix;
-//		this.dateList = bufferDateList;
 		return index;
 	}
 }

@@ -164,5 +164,4 @@ public class InstantaneousSpeed extends Cyclone {
 		}
 		return index;
 	}
-
 }
