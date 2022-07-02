@@ -25,7 +25,7 @@ import org.meritoki.prospero.library.model.unit.Time;
 public class Vorticity extends Cyclone {
 
 	static Logger logger = LogManager.getLogger(Vorticity.class.getName());
-	public float[][][] vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//	public float[][][] vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 //	public Map<Integer, float[][][]> vorticityMatrixMap = new HashMap<>();
 
 	public Vorticity() {
@@ -36,11 +36,11 @@ public class Vorticity extends Cyclone {
 	@Override
 	public void init() {
 		super.init();
-		this.vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//		this.vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	}
 
 	public List<Tile> getTileList() {
-		List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.vorticityMatrix);
+		List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.dataMatrix);
 		logger.debug("getTileList() tileList.size()=" + tileList.size());
 		return tileList;
 	}
@@ -102,7 +102,7 @@ public class Vorticity extends Cyclone {
 
 	@Override
 	public void setMatrix(List<Event> eventList) {
-		List<Time> timeList = this.setVorticityCoordinateMatrix(this.vorticityMatrix, this.coordinateMatrix, eventList);
+		List<Time> timeList = this.setVorticityCoordinateMatrix(this.dataMatrix, this.coordinateMatrix, eventList);
 		for (Time t : timeList) {
 			if (!this.timeList.contains(t)) {
 				this.timeList.add(t);

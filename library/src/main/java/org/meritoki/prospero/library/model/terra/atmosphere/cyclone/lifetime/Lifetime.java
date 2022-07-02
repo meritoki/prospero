@@ -17,9 +17,9 @@ import org.meritoki.prospero.library.model.unit.Time;
 
 public class Lifetime extends Cyclone {
 
-	public float[][][] durationMatrix = new float[(int) (latitude * resolution)][(int) (longitude
-			* resolution)][12];
-	public Map<Integer, float[][][]> durationMatrixMap = new HashMap<>();
+//	public float[][][] durationMatrix = new float[(int) (latitude * resolution)][(int) (longitude
+//			* resolution)][12];
+//	public Map<Integer, float[][][]> durationMatrixMap = new HashMap<>();
 	
 	public Lifetime() {
 		super("Lifetime");
@@ -28,13 +28,13 @@ public class Lifetime extends Cyclone {
 	
 	public void init() {
 		super.init();
-		durationMatrix = new float[(int) (latitude * resolution)][(int) (longitude
-				* resolution)][12];
+//		durationMatrix = new float[(int) (latitude * resolution)][(int) (longitude
+//				* resolution)][12];
 	}
 	
 	@Override
 	public List<Tile> getTileList() {
-		return this.getTileList(coordinateMatrix, durationMatrix);
+		return this.getTileList(this.coordinateMatrix, this.dataMatrix);
 	}
 	
 	public List<Tile> getTileList(int[][][] pointMatrix, float[][][] durationMatrix) {
@@ -89,7 +89,7 @@ public class Lifetime extends Cyclone {
 	
 	@Override
 	public void setMatrix(List<Event> eventList) {
-		List<Time> timeList = this.setDurationCoordinateMatrix(this.durationMatrix, this.coordinateMatrix, eventList);
+		List<Time> timeList = this.setDurationCoordinateMatrix(this.dataMatrix, this.coordinateMatrix, eventList);
 		for(Time t: timeList) {
 			if(!this.timeList.contains(t)) {
 				this.timeList.add(t);

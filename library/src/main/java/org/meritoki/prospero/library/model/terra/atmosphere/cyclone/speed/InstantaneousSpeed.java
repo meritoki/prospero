@@ -21,8 +21,8 @@ import org.meritoki.prospero.library.model.unit.Time;
 public class InstantaneousSpeed extends Cyclone {
 	
 	static Logger logger = LogManager.getLogger(InstantaneousSpeed.class.getName());
-	public float[][][] speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-	public Map<Integer, float[][][]> speedMatrixMap = new HashMap<>();
+//	public float[][][] speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//	public Map<Integer, float[][][]> speedMatrixMap = new HashMap<>();
 
 	public InstantaneousSpeed() {
 		super("InstantaneousSpeed");
@@ -32,12 +32,12 @@ public class InstantaneousSpeed extends Cyclone {
 	@Override
 	public void init() {
 		super.init();
-		this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//		this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	}
 	
 	@Override
 	public List<Tile> getTileList() {
-		return this.getTileList(this.coordinateMatrix, this.speedMatrix);
+		return this.getTileList(this.coordinateMatrix, this.dataMatrix);
 	}
 	
 	public List<Tile> getTileList(int[][][] pointMatrix, float[][][] speedMatrix) {
@@ -117,7 +117,7 @@ public class InstantaneousSpeed extends Cyclone {
 	
 	@Override
 	public void setMatrix(List<Event> eventList) {
-		List<Time> timeList = this.setSpeedCoordinateMatrix(this.speedMatrix, this.coordinateMatrix, eventList);
+		List<Time> timeList = this.setSpeedCoordinateMatrix(this.dataMatrix, this.coordinateMatrix, eventList);
 		for(Time t: timeList) {
 			if(!this.timeList.contains(t)) {
 				this.timeList.add(t);
