@@ -1,24 +1,17 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.vorticity;
 
-import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
-import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed.Speed;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Region;
-import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 

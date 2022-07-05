@@ -5,25 +5,26 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.TreeMap;
 
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.cluster.TileWrapper;
 import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.color.Scheme;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
 import org.meritoki.prospero.library.model.unit.Band;
+import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Coordinate;
-import org.meritoki.prospero.library.model.unit.Data;
-import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Index;
@@ -72,7 +73,10 @@ public class Grid extends Variable {
 	public List<Plot> plotList = new ArrayList<>();
 	public Map<String,Plot> plotMap = new TreeMap<>();
 	public List<Index> indexList = new ArrayList<>();
-
+	public List<Cluster> clusterList = new ArrayList<>();
+	public KMeansPlusPlusClusterer<TileWrapper> clusterer = new KMeansPlusPlusClusterer<TileWrapper>(10, 10000);
+	public Map<Time, List<Tile>> timeTileMap = new HashMap<>();
+	
 	public double[] range;
 	public String regression;
 	public boolean average;
@@ -298,42 +302,42 @@ public class Grid extends Variable {
 		return tileLatitudeList;
 	}
 
-	public int getMonth(long milliseconds) {
-		Date date = new Date(milliseconds);
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-		cal.setTime(date);
-		int month = cal.get(Calendar.MONTH) + 1;
-		return month;
-	}
+//	public int getMonth(long milliseconds) {
+//		Date date = new Date(milliseconds);
+//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+//		cal.setTime(date);
+//		int month = cal.get(Calendar.MONTH) + 1;
+//		return month;
+//	}
 
 	/**
 	 * Function converts Milliseconds to Year
 	 * @param milliseconds
 	 * @return
 	 */
-	public int getYear(long milliseconds) {
-		Date date = new Date(milliseconds);
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-		cal.setTime(date);
-		int year = cal.get(Calendar.YEAR);
-		return year;
-	}
+//	public int getYear(long milliseconds) {
+//		Date date = new Date(milliseconds);
+//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+//		cal.setTime(date);
+//		int year = cal.get(Calendar.YEAR);
+//		return year;
+//	}
 
-	/**
-	 * 
-	 */
-	public void initMonthArray() {
-		this.monthArray = new int[12];
-		for (String date : this.dateList) {
-			if (date != null) {
-				String[] array = date.split("-");
-				int month = Integer.parseInt(array[1]);
-				this.monthArray[month - 1]++;
-			}
-		}
-		if (print && detail)
-			logger.info("initMonthArray() this.monthArray=" + Arrays.toString(this.monthArray));
-	}
+//	/**
+//	 * 
+//	 */
+//	public void initMonthArray() {
+//		this.monthArray = new int[12];
+//		for (String date : this.dateList) {
+//			if (date != null) {
+//				String[] array = date.split("-");
+//				int month = Integer.parseInt(array[1]);
+//				this.monthArray[month - 1]++;
+//			}
+//		}
+//		if (print && detail)
+//			logger.info("initMonthArray() this.monthArray=" + Arrays.toString(this.monthArray));
+//	}
 	
 	/**
 	 * 
@@ -364,32 +368,31 @@ public class Grid extends Variable {
 		return monthCount;
 	}
 
-	public Map<Integer, Integer> initYearMap() {
-		this.yearMap = new HashMap<>();
-		for (String sample : this.dateList) {
-			if (sample != null) {
-				String[] array = sample.split("-");
-				int year = Integer.parseInt(array[0]);
-				Integer count = this.yearMap.get(year);
-				if (count == null) {
-					count = 1;
-				} else {
-					count++;
-				}
-				this.yearMap.put(year, count);
-			}
-		}
-		if (print && detail)
-			logger.info("initYearMap() this.yearMap=" + yearMap);
-		return this.yearMap;
-	}
+//	public Map<Integer, Integer> initYearMap() {
+//		this.yearMap = new HashMap<>();
+//		for (String sample : this.dateList) {
+//			if (sample != null) {
+//				String[] array = sample.split("-");
+//				int year = Integer.parseInt(array[0]);
+//				Integer count = this.yearMap.get(year);
+//				if (count == null) {
+//					count = 1;
+//				} else {
+//					count++;
+//				}
+//				this.yearMap.put(year, count);
+//			}
+//		}
+//		if (print && detail)
+//			logger.info("initYearMap() this.yearMap=" + yearMap);
+//		return this.yearMap;
+//	}
 	
 	public Map<Integer, Integer> initYearMap(List<Time> timeList) {
 		this.yearMap = new HashMap<>();
-		for (Time sample : timeList) {
-			if (sample != null) {
-//				String[] array = sample.split("-");
-				int year = sample.year;//Integer.parseInt(array[0]);
+		for (Time time : timeList) {
+			if (time != null) {
+				int year = time.year;
 				Integer count = this.yearMap.get(year);
 				if (count == null) {
 					count = 1;
@@ -470,6 +473,49 @@ public class Grid extends Variable {
 	public void paint(Graphics graphics) throws Exception {
 		if (this.load) {
 			switch(this.analysis) {
+			case KMEANS : {
+				if(this.clusterList != null && !this.clusterList.isEmpty()) {
+					int count = 0;
+					this.chroma = new Chroma(Scheme.MAGMA);
+					Collections.sort(this.clusterList, new Comparator<Cluster>() {
+					    @Override
+					    public int compare(Cluster o1, Cluster o2) {
+					        return (o1.tileList.size())-(o2.tileList.size());
+					    }
+					});
+					for(Cluster cluster: this.clusterList) {
+						Graphics2D g2d = (Graphics2D) graphics;
+//						g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
+						Coordinate a;
+						Coordinate b;
+						Coordinate c;
+						Coordinate d;
+						java.util.Iterator<Tile> iterator = cluster.tileList.iterator();
+						while (iterator.hasNext()) {
+							Tile t = new Tile(iterator.next());
+							if (t != null) {
+								a = projection.getCoordinate(0, t.latitude, t.longitude);
+								b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
+								c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+								d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+								if (a != null && b != null && c != null && d != null) {
+									int xpoints[] = { (int) (a.point.x * projection.scale),
+											(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
+											(int) (d.point.x * projection.scale) };
+									int ypoints[] = { (int) (a.point.y * projection.scale),
+											(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
+											(int) (d.point.y * projection.scale) };
+									int npoints = 4;
+									g2d.setColor(this.chroma.getColor(count, 0, this.clusterList.size()));
+									g2d.fillPolygon(xpoints, ypoints, npoints);
+								}
+							}
+						}
+						count++;
+					}
+				}
+				break;
+			}
 			case SIGNIFICANCE :{ 
 				if(this.regionList != null) {
 					Graphics2D g2d = (Graphics2D) graphics;

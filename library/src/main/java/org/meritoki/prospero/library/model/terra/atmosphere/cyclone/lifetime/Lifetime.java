@@ -1,12 +1,12 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.lifetime;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
@@ -17,6 +17,7 @@ import org.meritoki.prospero.library.model.unit.Time;
 
 public class Lifetime extends Cyclone {
 
+	static Logger logger = LogManager.getLogger(Lifetime.class.getName());
 //	public float[][][] durationMatrix = new float[(int) (latitude * resolution)][(int) (longitude
 //			* resolution)][12];
 //	public Map<Integer, float[][][]> durationMatrixMap = new HashMap<>();

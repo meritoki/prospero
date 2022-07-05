@@ -1,9 +1,7 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;

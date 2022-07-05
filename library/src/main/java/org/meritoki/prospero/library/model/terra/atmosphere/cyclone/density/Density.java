@@ -11,7 +11,6 @@ import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Region;
-import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
@@ -122,6 +121,8 @@ public class Density extends Cyclone {
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix);
+		this.timeTileMap.put(key,tileList);
+//		this.clusterList = this.getClusterList(key, tileList);
 		if (average) {
 			StandardDeviation standardDeviation = new StandardDeviation();
 			Mean mean = new Mean();

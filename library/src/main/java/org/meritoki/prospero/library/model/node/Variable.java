@@ -31,7 +31,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.data.Data;
 import org.meritoki.prospero.library.model.document.Document;
-import org.meritoki.prospero.library.model.document.Page;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;

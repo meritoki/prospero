@@ -403,7 +403,7 @@ public class Query {
 	public String getGroup() {
 		String group = this.map.get("group");
 		if(group == null) {
-			group = "day";
+			group = "month";
 		}
 		return group;
 	}

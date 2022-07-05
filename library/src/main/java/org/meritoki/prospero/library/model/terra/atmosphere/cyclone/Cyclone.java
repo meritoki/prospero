@@ -10,8 +10,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.apache.commons.math3.ml.clustering.CentroidCluster;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
+import org.apache.commons.math3.ml.clustering.MultiKMeansPlusPlusClusterer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.cluster.TileWrapper;
 import org.meritoki.prospero.library.model.grid.Grid;
 import org.meritoki.prospero.library.model.histogram.Bar;
 import org.meritoki.prospero.library.model.histogram.Histogram;
@@ -29,6 +33,7 @@ import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classif
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Family;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.vorticity.Vorticity;
+import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Duration;
 import org.meritoki.prospero.library.model.unit.Event;
@@ -37,6 +42,7 @@ import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Regression;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
+import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
 public class Cyclone extends Grid {
@@ -169,6 +175,7 @@ public class Cyclone extends Grid {
 		}
 		this.setMatrix(eventList);
 		this.tileList = this.getTileList();
+		this.clusterList = this.getClusterList(this.tileList);
 		this.initTileMinMax();
 		if (this.regionList != null && this.regionList.size() > 0) {
 			for (Time time : this.timeList) {
@@ -197,7 +204,6 @@ public class Cyclone extends Grid {
 					time.flag = false;
 				}
 			}
-//			this.reset(eventList);
 		}
 	}
 
@@ -305,36 +311,7 @@ public class Cyclone extends Grid {
 		return this.plotList;
 	}
 
-//	/**
-//	 * 
-//	 * @param eventList
-//	 * @param reset
-//	 */
-//	public void setEventList(List<Event> eventList, boolean reset) {
-////		logger.debug("setEventList(" + eventList.size() + "," + reset + ")");
-//		if (reset) {
-//			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-//			this.dateList = new ArrayList<>();
-//		}
-//		if (eventList != null) {
-//			for (Event e : eventList) {
-//				if (e.flag) {
-//					for (Coordinate c : e.coordinateList) {
-//						if (c.flag) {
-//							int x = (int) ((c.latitude + this.latitude) * this.resolution);
-//							int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-//							int z = c.getMonth() - 1;
-//							this.coordinateMatrix[x][y][z]++;
-//							String date = c.getYear() + "-" + c.getMonth();
-//							if (!this.dateList.contains(date)) {
-//								this.dateList.add(date);
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
+
 
 	public void setMatrix(List<Event> eventList) {
 		List<Time> timeList = this.setCoordinateMatrix(this.coordinateMatrix, eventList);
@@ -609,7 +586,6 @@ public class Cyclone extends Grid {
 		histogram.setTitle("Event Total Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
-
 		if (eventList != null) {
 			Integer count = 0;
 			int level;
@@ -636,7 +612,6 @@ public class Cyclone extends Grid {
 	}
 
 	public Histogram getEventUppermostLevelCountHistogram(List<Event> eventList) {
-
 		Histogram histogram = new Histogram();
 		histogram.data = "event-uppermost-level-count-histogram";
 		Map<String, Integer> countMap = new HashMap<>();
@@ -675,7 +650,6 @@ public class Cyclone extends Grid {
 		histogram.setTitle("Genesis Lowermost Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
-
 		if (eventList != null) {
 			Integer count = 0;
 			String level;
@@ -699,7 +673,6 @@ public class Cyclone extends Grid {
 			histogram.initYMax();
 		}
 		return histogram;
-
 	}
 
 	public Histogram getGenesisUppermostLevelCountHistrogram(List<Event> eventList) {
@@ -773,7 +746,6 @@ public class Cyclone extends Grid {
 		histogram.setTitle("Lysis Uppermost Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
-
 		if (eventList != null) {
 			Integer count = 0;
 			String level;
@@ -798,6 +770,26 @@ public class Cyclone extends Grid {
 		}
 		return histogram;
 	}
+	
+	public List<Cluster> getClusterList(List<Tile> tileList) {
+		List<Cluster> clusterList = new ArrayList<>();
+		List<TileWrapper> clusterInput = new ArrayList<TileWrapper>(tileList.size());
+		for (Tile tile : tileList) {
+		    clusterInput.add(new TileWrapper(tile));
+		}
+		KMeansPlusPlusClusterer<TileWrapper> clusterer = new KMeansPlusPlusClusterer<TileWrapper>(10, 10000);
+//		MultiKMeansPlusPlusClusterer mClusterer = new MultiKMeansPlusPlusClusterer(clusterer,10);
+		List<CentroidCluster<TileWrapper>> clusterResults = clusterer.cluster(clusterInput);
+		for (int i=0; i<clusterResults.size(); i++) {
+			Cluster cluster = new Cluster();
+		    for (TileWrapper tileWrapper : clusterResults.get(i).getPoints()) {
+		        cluster.tileList.add(tileWrapper.getTile());
+		    }
+//		    logger.info("getClusterList("+tileList.size()+") cluster.tileList.size()="+cluster.tileList.size());
+		    clusterList.add(cluster);
+		}
+		return clusterList;
+	}
 
 	@Override
 	public void paint(Graphics graphics) throws Exception {
@@ -810,6 +802,36 @@ public class Cyclone extends Grid {
 		}
 	}
 }
+///**
+//* 
+//* @param eventList
+//* @param reset
+//*/
+//public void setEventList(List<Event> eventList, boolean reset) {
+////	logger.debug("setEventList(" + eventList.size() + "," + reset + ")");
+//	if (reset) {
+//		this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//		this.dateList = new ArrayList<>();
+//	}
+//	if (eventList != null) {
+//		for (Event e : eventList) {
+//			if (e.flag) {
+//				for (Coordinate c : e.coordinateList) {
+//					if (c.flag) {
+//						int x = (int) ((c.latitude + this.latitude) * this.resolution);
+//						int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+//						int z = c.getMonth() - 1;
+//						this.coordinateMatrix[x][y][z]++;
+//						String date = c.getYear() + "-" + c.getMonth();
+//						if (!this.dateList.contains(date)) {
+//							this.dateList.add(date);
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
 // Uncomment to Restore
 //if (this.regionList != null && this.regionList.size() == 1) {//
 //	for (Region region : this.regionList) {
