@@ -23,6 +23,7 @@ import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.TimePlot;
 import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.terra.analysis.Analysis;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density.Density;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.genesis.Genesis;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.lifetime.Lifetime;
@@ -44,6 +45,8 @@ import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+
+import com.meritoki.library.controller.node.NodeController;
 
 public class Cyclone extends Grid {
 
@@ -135,6 +138,28 @@ public class Cyclone extends Grid {
 				}
 			}
 			this.initPlotList(this.seriesMap, this.eventList);
+		}
+		if (this.analysis == Analysis.CLUSTER) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < this.timeList.size(); i++) { // Time time: this.timeList) {
+				Time time = this.timeList.get(i);
+				List<Tile> tileList = this.timeTileMap.get(time);
+				if (tileList != null) {
+					if (i == 0) {
+						sb.append("\"\"");
+						for (Tile tile : tileList) {
+							sb.append(",\"(" + tile.latitude + ":" + tile.longitude + "\")");
+						}
+						sb.append("\n");
+					}
+					sb.append("\"" + (i + 1) + "\"");
+					for (Tile tile : tileList) {
+						sb.append(",\"" + tile.value + "\"");
+					}
+					sb.append("\n");
+				}
+			}
+			NodeController.saveText("/home/jorodriguez/", "prospero.csv", sb);
 		}
 	}
 
@@ -310,8 +335,6 @@ public class Cyclone extends Grid {
 	public List<Plot> getPlotList() throws Exception {
 		return this.plotList;
 	}
-
-
 
 	public void setMatrix(List<Event> eventList) {
 		List<Time> timeList = this.setCoordinateMatrix(this.coordinateMatrix, eventList);
@@ -770,23 +793,23 @@ public class Cyclone extends Grid {
 		}
 		return histogram;
 	}
-	
+
 	public List<Cluster> getClusterList(List<Tile> tileList) {
 		List<Cluster> clusterList = new ArrayList<>();
 		List<TileWrapper> clusterInput = new ArrayList<TileWrapper>(tileList.size());
 		for (Tile tile : tileList) {
-		    clusterInput.add(new TileWrapper(tile));
+			clusterInput.add(new TileWrapper(tile));
 		}
 		KMeansPlusPlusClusterer<TileWrapper> clusterer = new KMeansPlusPlusClusterer<TileWrapper>(10, 10000);
 //		MultiKMeansPlusPlusClusterer mClusterer = new MultiKMeansPlusPlusClusterer(clusterer,10);
 		List<CentroidCluster<TileWrapper>> clusterResults = clusterer.cluster(clusterInput);
-		for (int i=0; i<clusterResults.size(); i++) {
+		for (int i = 0; i < clusterResults.size(); i++) {
 			Cluster cluster = new Cluster();
-		    for (TileWrapper tileWrapper : clusterResults.get(i).getPoints()) {
-		        cluster.tileList.add(tileWrapper.getTile());
-		    }
+			for (TileWrapper tileWrapper : clusterResults.get(i).getPoints()) {
+				cluster.tileList.add(tileWrapper.getTile());
+			}
 //		    logger.info("getClusterList("+tileList.size()+") cluster.tileList.size()="+cluster.tileList.size());
-		    clusterList.add(cluster);
+			clusterList.add(cluster);
 		}
 		return clusterList;
 	}

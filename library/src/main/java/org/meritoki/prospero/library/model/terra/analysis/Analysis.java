@@ -4,5 +4,5 @@ public enum Analysis {
 	MEAN,
 	SUM,
 	SIGNIFICANCE,
-	KMEANS
+	CLUSTER
 }
