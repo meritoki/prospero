@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>prospero</artifactId>
 		<groupId>org.meritoki</groupId>
-		<version>0.11.202206</version>
+		<version>0.12.202208</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.meritoki.prospero</groupId>
@@ -143,14 +143,14 @@
 			</releases>
 		</repository>
 	</repositories>
-	<!-- <repositories> <repository> <id>osgeo</id> <name>OSGeo Release Repository</name> 
+	<!-- <repositories> <repository> <id>osgeo</id> <name>OSGeo Release Repository</name>
 		<url>https://repo.osgeo.org/repository/release/</url> </repository> -->
 	<!--</repositories> -->
-	<!-- <repositories> <repository> <id>maven2-repository.dev.java.net</id> 
-		<name>Java.net repository</name> <url>http://download.java.net/maven/2</url> 
-		</repository> <repository> <id>osgeo</id> <name>Open Source Geospatial Foundation 
-		Repository</name> <url>http://download.osgeo.org/webdav/geotools/</url> </repository> 
-		<repository> <snapshots> <enabled>true</enabled> </snapshots> <id>boundless</id> 
-		<name>Boundless Maven Repository</name> <url>http://repo.boundlessgeo.com/main</url> 
+	<!-- <repositories> <repository> <id>maven2-repository.dev.java.net</id>
+		<name>Java.net repository</name> <url>http://download.java.net/maven/2</url>
+		</repository> <repository> <id>osgeo</id> <name>Open Source Geospatial Foundation
+		Repository</name> <url>http://download.osgeo.org/webdav/geotools/</url> </repository>
+		<repository> <snapshots> <enabled>true</enabled> </snapshots> <id>boundless</id>
+		<name>Boundless Maven Repository</name> <url>http://repo.boundlessgeo.com/main</url>
 		</repository> </repositories> -->
 </project>

@@ -133,7 +133,7 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 		while (true) {
 			try {
 				this.repaint();
-				Thread.sleep(3000);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

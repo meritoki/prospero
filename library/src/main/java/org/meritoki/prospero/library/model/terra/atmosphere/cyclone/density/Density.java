@@ -149,6 +149,34 @@ public class Density extends Cyclone {
 		}
 		return index;
 	}
+	
+//	public Index getIndex(List<Tile> tileList) {
+//		Index index = null;
+//		if (average) {
+//			StandardDeviation standardDeviation = new StandardDeviation();
+//			Mean mean = new Mean();
+//			for (Tile tile : tileList) {
+//				standardDeviation.increment(tile.value);
+//				mean.increment(tile.value);
+//			}
+//			double value = mean.getResult();
+//			if (!Double.isNaN(value) && value != 0) {
+//				index = key.getIndex();
+//				index.value = value;
+//				index.map.put("N", standardDeviation.getN());
+//				index.map.put("standardDeviation", standardDeviation.getResult());
+//			}
+//		} else if (sum) {
+//			double sum = 0;
+//			for (Tile tile : tileList) {
+//				sum += tile.value;
+//			}
+//			index = key.getIndex();
+//			index.value = sum;
+//		} else {
+//			index = super.getIndex(key, eventList);
+//		}
+//	}
 }
 //@Override
 //public void setIndexList(Series series, Map<Time, List<Event>> eventMap, boolean reset) {

@@ -103,7 +103,7 @@ public class MainFrame extends javax.swing.JFrame {
 		return this.plotPanel;
 	}
 	
-	public void saveQuery(Query query) {
+	public void saveQuery(Query query) throws Exception {
 //		logger.info("savePanels("+query+")");
 		Date dateTime = Calendar.getInstance().getTime();
     	String date = new SimpleDateFormat("yyyyMMdd").format(dateTime);
@@ -127,9 +127,9 @@ public class MainFrame extends javax.swing.JFrame {
 		NodeController.savePanel(this.gridPanel, path,"grid-"+((name !=null)?name:""));
 	}
 	
-	public void savePlotPanel(String path, String name, String uuid) {
+	public void savePlotPanel(String path, String name, String uuid) throws Exception {
     	Excel excel = new Excel();
-    	for(Plot plot: this.plotPanel.plotList) {
+    	for(Plot plot: this.model.getPlotList()) {
 			if(plot != null) {
 				for(Table table: plot.tableList) {
 					excel.sheetMap.put(table.name,Table.getTableData(table.tableModel));

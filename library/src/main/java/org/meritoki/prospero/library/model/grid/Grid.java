@@ -469,49 +469,49 @@ public class Grid extends Variable {
 	public void paint(Graphics graphics) throws Exception {
 		if (this.load) {
 			switch(this.analysis) {
-//			case CLUSTER : {
-//				if(this.clusterList != null && !this.clusterList.isEmpty()) {
-//					int count = 0;
+			case CLUSTER : {
+				if(this.clusterList != null && !this.clusterList.isEmpty()) {
+					int count = 0;
 //					this.chroma = new Chroma(Scheme.MAGMA);
-//					Collections.sort(this.clusterList, new Comparator<Cluster>() {
-//					    @Override
-//					    public int compare(Cluster o1, Cluster o2) {
-//					        return (o1.tileList.size())-(o2.tileList.size());
-//					    }
-//					});
-//					for(Cluster cluster: this.clusterList) {
-//						Graphics2D g2d = (Graphics2D) graphics;
-////						g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
-//						Coordinate a;
-//						Coordinate b;
-//						Coordinate c;
-//						Coordinate d;
-//						java.util.Iterator<Tile> iterator = cluster.tileList.iterator();
-//						while (iterator.hasNext()) {
-//							Tile t = new Tile(iterator.next());
-//							if (t != null) {
-//								a = projection.getCoordinate(0, t.latitude, t.longitude);
-//								b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
-//								c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
-//								d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
-//								if (a != null && b != null && c != null && d != null) {
-//									int xpoints[] = { (int) (a.point.x * projection.scale),
-//											(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
-//											(int) (d.point.x * projection.scale) };
-//									int ypoints[] = { (int) (a.point.y * projection.scale),
-//											(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
-//											(int) (d.point.y * projection.scale) };
-//									int npoints = 4;
-//									g2d.setColor(this.chroma.getColor(count, 0, this.clusterList.size()));
-//									g2d.fillPolygon(xpoints, ypoints, npoints);
-//								}
-//							}
-//						}
-//						count++;
-//					}
-//				}
-//				break;
-//			}
+					Collections.sort(this.clusterList, new Comparator<Cluster>() {
+					    @Override
+					    public int compare(Cluster o1, Cluster o2) {
+					        return (o1.tileList.size())-(o2.tileList.size());
+					    }
+					});
+					for(Cluster cluster: this.clusterList) {
+						Graphics2D g2d = (Graphics2D) graphics;
+//						g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
+						Coordinate a;
+						Coordinate b;
+						Coordinate c;
+						Coordinate d;
+						java.util.Iterator<Tile> iterator = cluster.tileList.iterator();
+						while (iterator.hasNext()) {
+							Tile t = new Tile(iterator.next());
+							if (t != null) {
+								a = projection.getCoordinate(0, t.latitude, t.longitude);
+								b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
+								c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+								d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+								if (a != null && b != null && c != null && d != null) {
+									int xpoints[] = { (int) (a.point.x * projection.scale),
+											(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
+											(int) (d.point.x * projection.scale) };
+									int ypoints[] = { (int) (a.point.y * projection.scale),
+											(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
+											(int) (d.point.y * projection.scale) };
+									int npoints = 4;
+									g2d.setColor(this.chroma.getColor(count, 0, this.clusterList.size()));
+									g2d.fillPolygon(xpoints, ypoints, npoints);
+								}
+							}
+						}
+						count++;
+					}
+				}
+				break;
+			}
 			case SIGNIFICANCE :{ 
 				if(this.regionList != null) {
 					Graphics2D g2d = (Graphics2D) graphics;

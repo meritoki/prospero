@@ -655,17 +655,6 @@ public class CycloneEvent extends Event {
 	}
 
 	@JsonIgnore
-	public double getDistance() {
-		List<Coordinate> pointList = this.getLowerMostPointList();
-		double distance = 0;
-		for (int i = 0; i < pointList.size(); i++) {
-			if (i + 1 < pointList.size())
-				distance += this.getDistance(pointList.get(i), pointList.get(i + 1));
-		}
-		return distance;
-	}
-
-	@JsonIgnore
 	public double getSpeed() {
 		double speed = this.getDistance() / this.getDuration().seconds;
 //		logger.info("getSpeed() speed=" + speed);
@@ -697,6 +686,17 @@ public class CycloneEvent extends Event {
 			pointList.add(entry.getValue().get(size - 1));
 		}
 		return pointList;
+	}
+
+	@JsonIgnore
+	public double getDistance() {
+		List<Coordinate> pointList = this.getLowerMostPointList();
+		double distance = 0;
+		for (int i = 0; i < pointList.size(); i++) {
+			if (i + 1 < pointList.size())
+				distance += this.getDistance(pointList.get(i), pointList.get(i + 1));
+		}
+		return distance;
 	}
 
 	@JsonIgnore

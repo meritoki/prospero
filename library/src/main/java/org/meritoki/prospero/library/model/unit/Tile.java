@@ -16,6 +16,14 @@ public class Tile {
 			this.value = tile.value;
 		}
 	}
+	
+	public Tile(double latitude, double longitude, double dimension) {
+		if (print)
+			System.out.println("Tile(" + latitude + "," + longitude + "," + dimension + "," + value + ")");
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.dimension = dimension;
+	}
 
 	public Tile(double latitude, double longitude, double dimension, double value) {
 		if (print)
@@ -25,9 +33,17 @@ public class Tile {
 		this.dimension = dimension;
 		this.value = (float) value;// (float) Math.abs(value);
 	}
+	
+	public boolean equals(Object o) {
+		if(o instanceof Tile) {
+			Tile t = (Tile)o;
+			return t.latitude == this.latitude && t.longitude == this.longitude && t.dimension == this.dimension;
+		}
+		return false;
+	}
 
 	public String toString() {
-		return "latitude=" + this.latitude + ", longitude=" + this.longitude + ", dimension=" + dimension + ", value="
-				+ value;
+		return "latitude=" + this.latitude + ", longitude=" + this.longitude + ", dimension=" + dimension; 
+				//+ ", value=" + value;
 	}
 }
