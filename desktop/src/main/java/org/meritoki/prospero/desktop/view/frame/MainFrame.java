@@ -132,6 +132,7 @@ public class MainFrame extends javax.swing.JFrame {
     	for(Plot plot: this.model.getPlotList()) {
 			if(plot != null) {
 				for(Table table: plot.tableList) {
+					//puts everything in one excel
 					excel.sheetMap.put(table.name,Table.getTableData(table.tableModel));
 				}
 				Image image = plot.getImage();
@@ -147,6 +148,9 @@ public class MainFrame extends javax.swing.JFrame {
 				}
 			}
 		}
+    	for(Table table: this.model.getTableList()) {
+    		excel.sheetMap.put(table.name,Table.getTableData(table.tableModel));
+    	}
     	excel.save(path, "table"+((name !=null)?"-"+name:""));
 	}
 

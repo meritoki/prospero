@@ -13,11 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.table.TableModel;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Duration;
 import org.meritoki.prospero.library.model.unit.Event;
+import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Link;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,12 +33,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-@JsonTypeInfo(use = Id.CLASS,
-include = JsonTypeInfo.As.PROPERTY,
-property = "type")
-@JsonSubTypes({
-@Type(value = ERA5Event.class),@Type(value = ERAInterimEvent.class)
-})
+@JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @Type(value = ERA5Event.class), @Type(value = ERAInterimEvent.class) })
 public class CycloneEvent extends Event {
 
 	@JsonIgnore
@@ -125,8 +125,63 @@ public class CycloneEvent extends Event {
 			}
 			}
 		}
-		logger.info("getFamilyClassMap(...) map="+map);
+		logger.info("getFamilyClassMap(...) map=" + map);
 		return map;
+	}
+
+	public static TableModel getTableModel(List<Event> eventList) {
+		Object[] objectArray = getObjectArray(eventList);
+		return new javax.swing.table.DefaultTableModel((Object[][]) objectArray[1], (Object[]) objectArray[0]);
+	}
+
+	public static Object[] getObjectArray(List<Event> eventList) {
+		Object[] objectArray = new Object[2];
+		Object[] columnArray = new Object[0];
+		Object[][] dataMatrix = null;
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		if (eventList != null) {
+			if (eventList.size() > 0) {
+				for (int i = 0; i < eventList.size(); i++) {
+					Event e = eventList.get(i);
+					if (e instanceof CycloneEvent) {
+						CycloneEvent event = (CycloneEvent) e;
+						if (i == 0) {
+							columnArray = Table.getColumnNames(13).toArray();
+							dataMatrix = new Object[eventList.size() + 1][13];
+							dataMatrix[i][0] = "startCalendar";
+							dataMatrix[i][1] = "endCalendar";
+							dataMatrix[i][2] = "duration";
+							dataMatrix[i][3] = "distance";
+							dataMatrix[i][4] = "levelCount";
+							dataMatrix[i][5] = "lowermostLevel";
+							dataMatrix[i][6] = "uppermostLevel";
+							dataMatrix[i][7] = "genesisLowermostLevel";
+							dataMatrix[i][8] = "genesisUppermostLevel";
+							dataMatrix[i][9] = "lysisLowermostLevel";
+							dataMatrix[i][10] = "lysisUppermostLevel";
+							dataMatrix[i][11] = "instantaneousVelocity";
+							dataMatrix[i][12] = "meanVorticity";
+						}
+						dataMatrix[i + 1][0] = dateFormat.format(event.getStartCalendar().getTime());
+						dataMatrix[i + 1][1] = dateFormat.format(event.getEndCalendar().getTime());
+						dataMatrix[i + 1][2] = event.getDuration().days;
+						dataMatrix[i + 1][3] = event.getDistance();
+						dataMatrix[i + 1][4] = event.getPressureCount();
+						dataMatrix[i + 1][5] = event.getLowerMostLevel();
+						dataMatrix[i + 1][6] = event.getUpperMostLevel();
+						dataMatrix[i + 1][7] = event.getGenesisLowermostLevel();
+						dataMatrix[i + 1][8] = event.getGenesisUppermostLevel();
+						dataMatrix[i + 1][9] = event.getLysisLowermostLevel();
+						dataMatrix[i + 1][10] = event.getLysisUppermostLevel();
+						dataMatrix[i + 1][11] = event.getMeanSpeed();
+						dataMatrix[i + 1][12] = event.getMeanVorticity();
+					}
+				}
+			}
+			objectArray[0] = columnArray;
+			objectArray[1] = dataMatrix;
+		}
+		return objectArray;
 	}
 
 	@JsonIgnore
@@ -466,6 +521,23 @@ public class CycloneEvent extends Event {
 		mean.longitude = longitude;
 		return mean;
 	}
+	
+	@JsonIgnore
+	public double getMeanVorticity() {
+		Map<String, List<Coordinate>> timePointMap = this.getTimeCoordinateMap();
+		double vorticity = 0;
+		double vorticitySum = 0;
+		for(List<Coordinate> cList: timePointMap.values()) {
+			vorticity = 0;
+			if(cList.size() > 0) {
+				for(Coordinate c: cList) {
+					vorticity += (float)c.attribute.get("vorticity");
+				}
+				vorticitySum += (vorticity/cList.size());
+			}
+		}
+		return vorticitySum/(timePointMap.values().size());
+	}
 
 	@JsonIgnore
 	public double getMeanSpeed() {
@@ -753,7 +825,7 @@ public class CycloneEvent extends Event {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 		}
 		return pointList;

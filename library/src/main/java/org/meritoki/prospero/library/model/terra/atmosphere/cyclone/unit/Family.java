@@ -4,5 +4,4 @@ public enum Family {
 	SHALLOW,
 	INTERMEDIATE,
 	DEEP
-
 }

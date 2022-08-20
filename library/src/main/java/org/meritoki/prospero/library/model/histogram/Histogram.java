@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.plot.Plot;
+import org.meritoki.prospero.library.model.table.Table;
+import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
 
 public class Histogram extends Plot {
@@ -48,6 +50,10 @@ public class Histogram extends Plot {
 	public Histogram() {
 		this.scale = DEFAULT_SCALE;
 //		this.test2();
+	}
+	
+	public void initTableList() {
+		this.tableList.add(new Table("("+this.title+")", Bar.getTableModel(this.barList)));
 	}
 
 	public void test1() {

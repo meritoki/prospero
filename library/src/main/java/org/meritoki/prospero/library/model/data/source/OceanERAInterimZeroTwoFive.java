@@ -37,8 +37,6 @@ public class OceanERAInterimZeroTwoFive extends OceanSource {
 	
 	public OceanERAInterimZeroTwoFive() {}
 
-
-
 	public List<NetCDF> read(int year, int month) {
 		logger.info("read(" + year + "," + month + ")");
 		MemoryController.log();

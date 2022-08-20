@@ -10,4 +10,5 @@ public class NetCDF {
 	public ArrayFloat.D1 lonArray;
 	public ArrayInt.D1 timeArray;
 	public ArrayFloat.D3 variableArray;
+	public Object variable;
 }

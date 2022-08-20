@@ -6,6 +6,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # load the dataset
 data <- read.csv(args[1])
+data[, colSums(data != 0) > 0]
 interest.rates <- ts(data,start=c(as.numeric(args[2]),as.numeric(args[3])), end=c(as.numeric(args[4]),as.numeric(args[5])), frequency=12)
 set.seed(35000)
 
@@ -25,4 +26,5 @@ Five.cluster.sol[, 2] <- cutree(hclust(diss(relative.rate.change, "PER", normali
 Five.cluster.sol[, 3] <- cutree(hclust(diss(relative.rate.change, "AR.PIC")), k = 8)
 # show the solution
 Five.cluster.sol
-write.csv(Five.cluster.sol, "./output.csv")
+# write.csv(Five.cluster.sol, "./output.csv")
+write.csv(Five.cluster.sol, args[6])

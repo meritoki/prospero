@@ -15,6 +15,7 @@ import org.locationtech.jts.io.WKTReader;
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 
 public class CountryNaturalEarth extends Source {

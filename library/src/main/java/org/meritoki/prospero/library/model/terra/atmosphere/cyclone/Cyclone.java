@@ -2,6 +2,8 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cyclone;
 
 import java.awt.Graphics;
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,7 +18,6 @@ import java.util.UUID;
 
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
-import org.apache.commons.math3.ml.clustering.MultiKMeansPlusPlusClusterer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.cluster.TileWrapper;
@@ -27,6 +28,7 @@ import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.TimePlot;
 import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density.Density;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.genesis.Genesis;
@@ -148,6 +150,7 @@ public class Cyclone extends Grid {
 			this.cluster();
 		}
 		this.initPlotList(this.seriesMap, this.eventList);
+		this.initTableList(this.eventList);
 	}
 	
 	public void cluster() {
@@ -173,16 +176,19 @@ public class Cyclone extends Grid {
 		Date dateTime = Calendar.getInstance().getTime();
 		String date = new SimpleDateFormat("yyyyMMdd").format(dateTime);
 		String uuid = UUID.randomUUID().toString();
-		String path = "output" + File.separatorChar + date + File.separatorChar + name;
+		String path = "."+File.separatorChar+"output" + File.separatorChar + date + File.separatorChar + name;
 		File directory = new File(path);
 		if (!directory.exists()) {
 			directory.mkdirs();
 		}
 		NodeController.saveText(path, uuid + ".csv", sb);
-		String rCommand = "Rscript comparison.R " + path + File.separatorChar + uuid + ".csv";
+		String input = path + File.separatorChar + uuid + ".csv";
+		String output = path + File.separatorChar + "output-"+uuid + ".csv";
+		String rCommand = "Rscript comparison.R " + input;
 		Time a = timeList.get(0);
 		Time b = timeList.get(timeList.size()-1);
 		rCommand+=" "+a.year+" "+a.month+" "+b.year+" "+b.month;
+		rCommand+=" "+output;
 		Exit exit;
 		try {
 			exit = NodeController.executeCommand(rCommand, 1440 * 3);
@@ -193,7 +199,7 @@ public class Cyclone extends Grid {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		List<String[]> outputList = NodeController.openCsv("./output.csv");
+		List<String[]> outputList = NodeController.openCsv(output);//"./output.csv");
 		outputList = outputList.subList(2, outputList.size()-1);
 		List<Tile> tileList = new ArrayList<Tile>();
 		Map<Integer,List<Tile>> tileMap = new HashMap<>();
@@ -312,6 +318,7 @@ public class Cyclone extends Grid {
 								this.seriesMap.put(region.toString(), series);
 							}
 							this.initPlotList(this.seriesMap, this.eventList);
+							this.initTableList(this.eventList);
 							this.eventMap.remove(time);
 						}
 					} catch (Exception e) {
@@ -414,7 +421,9 @@ public class Cyclone extends Grid {
 		if (eventList != null) {
 			plotList.add(this.getEventTotalDurationCountHistogram(eventList));
 			plotList.add(this.getEventTotalDistanceCountHistogram(eventList));
-			plotList.add(this.getEventLevelCountHistogram(eventList));
+			plotList.add(this.getEventTotalMeanVelocityCountHistogram(eventList));
+			plotList.add(this.getEventTotalMeanVorticityCountHistogram(eventList));
+//			plotList.add(this.getEventLevelCountHistogram(eventList));
 			plotList.add(this.getEventLowermostLevelCountHistogram(eventList));
 			plotList.add(this.getEventTotalLevelCountHistogram(eventList));
 			plotList.add(this.getEventUppermostLevelCountHistogram(eventList));
@@ -424,6 +433,19 @@ public class Cyclone extends Grid {
 			plotList.add(this.getLysisUppermostLevelCountHistogram(eventList));
 		}
 		this.plotList = plotList;
+	}
+	
+	public void initTableList(List<Event> eventList) {
+		List<Table> tableList = new ArrayList<>();
+		if(eventList != null) {
+			tableList.add(new Table("Cyclone Event(s)", CycloneEvent.getTableModel(eventList)));
+		}
+		this.tableList = tableList;
+	}
+	
+	@Override
+	public List<Table> getTableList() throws Exception {
+		return this.tableList;
 	}
 
 	@Override
@@ -630,6 +652,73 @@ public class Cyclone extends Grid {
 		return levelList;
 	}
 	
+	public Histogram getEventTotalMeanVelocityCountHistogram(List<Event> eventList) {
+		Histogram histogram = new Histogram();
+		histogram.data = "event-total-mean-velocity-count-histogram";
+		Map<Integer, Integer> countMap = new HashMap<>();
+		histogram.setTitle("Event Total Mean Velocity Count");
+		histogram.setXLabel("Event Mean Velocity (km/s)");
+		histogram.setYLabel("Event Count");
+		if (eventList != null) {
+			Integer count = 0;
+			int velocity;
+			for (Event e : eventList) {
+				if (e.flag) {
+					velocity = (int)(((CycloneEvent) e).getMeanSpeed());
+					count = countMap.get(velocity);
+					if (count == null) {
+						count = 0;
+					}
+					count++;
+					countMap.put(velocity, count);
+				}
+			}
+			countMap = new TreeMap<Integer, Integer>(countMap).descendingMap();
+			Bar bar;
+			for (Entry<Integer, Integer> entry : countMap.entrySet()) {
+				bar = new Bar(entry.getValue(), String.valueOf(entry.getKey()));
+				histogram.addBar(bar);
+			}
+			histogram.initYMax();
+		}
+		histogram.initTableList();
+		return histogram;
+	}
+	
+	public Histogram getEventTotalMeanVorticityCountHistogram(List<Event> eventList) {
+		Histogram histogram = new Histogram();
+		histogram.data = "event-total-mean-vorticity-count-histogram";
+		Map<String, Integer> countMap = new HashMap<>();
+		histogram.setTitle("Event Total Mean Vorticity Count");
+		histogram.setXLabel("Event Mean Vorticity");
+		histogram.setYLabel("Event Count");
+		if (eventList != null) {
+			Integer count = 0;
+			String velocity;
+			NumberFormat formatter = new DecimalFormat("0E0");
+			for (Event e : eventList) {
+				if (e.flag) {
+					velocity = formatter.format(((CycloneEvent) e).getMeanVorticity());
+					count = countMap.get(velocity);
+					if (count == null) {
+						count = 0;
+					}
+					count++;
+					countMap.put(velocity, count);
+				}
+			}
+			countMap = new TreeMap<String, Integer>(countMap).descendingMap();
+			Bar bar;
+			for (Entry<String, Integer> entry : countMap.entrySet()) {
+				bar = new Bar(entry.getValue(), String.valueOf(entry.getKey()));
+				histogram.addBar(bar);
+			}
+			histogram.initYMax();
+		}
+		histogram.initTableList();
+		return histogram;
+	}
+	
 	public Histogram getEventTotalDurationCountHistogram(List<Event> eventList) {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-duration-count-histogram";
@@ -659,6 +748,7 @@ public class Cyclone extends Grid {
 			}
 			histogram.initYMax();
 		}
+		histogram.initTableList();
 		return histogram;
 	}
 	
@@ -696,6 +786,7 @@ public class Cyclone extends Grid {
 			}
 			histogram.initYMax();
 		}
+		histogram.initTableList();
 		return histogram;
 	}
 
@@ -731,6 +822,7 @@ public class Cyclone extends Grid {
 			}
 			histogram.setYMax(100);
 		}
+		histogram.initTableList();
 		return histogram;
 	}
 
@@ -763,6 +855,7 @@ public class Cyclone extends Grid {
 			}
 			histogram.initYMax();
 		}
+		histogram.initTableList();
 		return histogram;
 	}
 
@@ -795,6 +888,7 @@ public class Cyclone extends Grid {
 			}
 			histogram.initYMax();
 		}
+		histogram.initTableList();
 		return histogram;
 	}
 
@@ -827,6 +921,7 @@ public class Cyclone extends Grid {
 			}
 			histogram.initYMax();
 		}
+		histogram.initTableList();
 		return histogram;
 	}
 
@@ -859,6 +954,7 @@ public class Cyclone extends Grid {
 			}
 			histogram.initYMax();
 		}
+		histogram.initTableList();
 		return histogram;
 	}
 
@@ -891,6 +987,7 @@ public class Cyclone extends Grid {
 			}
 			histogram.initYMax();
 		}
+		histogram.initTableList();
 		return histogram;
 	}
 
@@ -923,6 +1020,7 @@ public class Cyclone extends Grid {
 			}
 			histogram.initYMax();
 		}
+		histogram.initTableList();
 		return histogram;
 	}
 
@@ -955,6 +1053,7 @@ public class Cyclone extends Grid {
 			}
 			histogram.initYMax();
 		}
+		histogram.initTableList();
 		return histogram;
 	}
 

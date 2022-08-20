@@ -33,6 +33,7 @@ import org.meritoki.prospero.library.model.data.Data;
 import org.meritoki.prospero.library.model.document.Document;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Mode;
@@ -282,6 +283,17 @@ public class Variable extends Node {
 		}
 		return plotList;
 	}
+	
+	public List<Table> getTableList() throws Exception {
+		List<Table> tableList = new ArrayList<>();
+		for (Variable n : this.getList()) {
+			if (n.load) {
+				tableList.addAll(n.getTableList());
+			}
+		}
+		return tableList;
+	}
+	
 	
 	@JsonIgnore
 	public void setDocument(Document document) {

@@ -19,6 +19,7 @@ import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.color.Scheme;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
+import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
 import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Cluster;
@@ -61,6 +62,7 @@ public class Grid extends Variable {
 	public List<Time> timeList = new ArrayList<>();
 	public List<Station> stationList = new ArrayList<>();
 	public List<Plot> plotList = new ArrayList<>();
+	public List<Table> tableList = new ArrayList<>();
 	public List<Index> indexList = new ArrayList<>();
 	public List<Cluster> clusterList = new ArrayList<>();
 	public HashMap<Time, List<Event>> eventMap = new HashMap<>();

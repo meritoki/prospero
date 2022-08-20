@@ -165,6 +165,22 @@ public class OceanSource extends Source {
 		}
 		return newSSTArray;
 	}
+	
+	public ArrayFloat.D3 getMSLArray(ArrayShort.D3 mslArray, int timeCount, int latitudeCount, int longitudeCount,
+			double scaleFactor, double addOffset) {
+		ArrayFloat.D3 newMSLArray = new ArrayFloat.D3(timeCount, latitudeCount, longitudeCount);
+		for (int t = 0; t < timeCount; t++) {
+			for (int lat = 0; lat < latitudeCount; lat++) {
+				for (int lon = 0; lon < longitudeCount; lon++) {
+					float msl = mslArray.get(t, lat, lon);
+					msl *= scaleFactor;
+					msl += addOffset;
+					newMSLArray.set(t, lat, lon, msl);
+				}
+			}
+		}
+		return newMSLArray;
+	}
 
 	public float getContinent(double scaleFactor, double addOffset) {
 		float continent = -32767;

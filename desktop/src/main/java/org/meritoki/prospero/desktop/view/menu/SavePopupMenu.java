@@ -113,6 +113,11 @@ public class SavePopupMenu extends JPopupMenu {
 							excel.sheetMap.put(table.name,Table.getTableData(table.tableModel));
 						}
 	                }
+					List<Table> tableList = model.getTableList();
+					for(Table table: tableList) {
+						excel.sheetMap.put(table.name,Table.getTableData(table.tableModel));
+					}
+					
 	                excel.save(path, "table-"+uuid);
 				} catch (Exception e) {
 					e.printStackTrace();
