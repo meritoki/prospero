@@ -118,20 +118,27 @@ public class TablePanel extends javax.swing.JPanel implements Runnable {
 			}
 
 //			String name = (String) this.tableNameComboBox.getSelectedItem();
-                        if(this.tableName == null) {
-                            this.tableNameComboBox.setSelectedIndex(0);
-                            this.tableName = (String) this.tableNameComboBox.getSelectedItem();
-                        } else {
-                        	this.tableNameComboBox.setSelectedItem(this.tableName);
-                        }
-                        for (Table t : this.tableList) {
-                                    if (t.name.equals(this.tableName)) {
-                                            this.table.setModel(t.tableModel);
-                                            this.revalidate();
-                                            this.repaint();
-                                            break;
-                                    }
-                            }
+			if (this.tableName == null) {
+				if(this.tableNameComboBox.getItemCount() > 0) {
+					this.tableNameComboBox.setSelectedIndex(0);
+					this.tableName = (String) this.tableNameComboBox.getSelectedItem();
+				}
+			} else {
+				this.tableNameComboBox.setSelectedItem(this.tableName);
+			}
+
+			if (this.tableList.size() > 0) {
+				for (Table t : this.tableList) {
+					if (t.name.equals(this.tableName)) {
+						this.table.setModel(t.tableModel);
+						this.revalidate();
+						this.repaint();
+						break;
+					}
+				}
+			} else {
+				this.table.setModel(new DefaultTableModel());
+			}
 
 //                    if(this.tableNameComboBox.getSelectedItem() != this.tableName) {
 //                        this.tableName = this.
@@ -278,17 +285,19 @@ public class TablePanel extends javax.swing.JPanel implements Runnable {
 
 	private void previousButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_previousButtonActionPerformed
 		int index = this.tableNameComboBox.getSelectedIndex();
-		System.out.println("previous: "+index);
-        index = (index > 0)?index-1:0;
-		this.tableNameComboBox.setSelectedIndex(index);
-		this.tableName = (String) this.tableNameComboBox.getSelectedItem();
-		if (this.tableList != null) {
-			for (Table table : this.tableList) {
-				if (table.name.equals(this.tableName)) {
-					this.table.setModel(table.tableModel);
-					this.revalidate();
-					this.repaint();
-					break;
+		if (index > -1) {
+			System.out.println("previous: " + index);
+			index = (index > 0) ? index - 1 : 0;
+			this.tableNameComboBox.setSelectedIndex(index);
+			this.tableName = (String) this.tableNameComboBox.getSelectedItem();
+			if (this.tableList != null) {
+				for (Table table : this.tableList) {
+					if (table.name.equals(this.tableName)) {
+						this.table.setModel(table.tableModel);
+						this.revalidate();
+						this.repaint();
+						break;
+					}
 				}
 			}
 		}
@@ -296,18 +305,21 @@ public class TablePanel extends javax.swing.JPanel implements Runnable {
 
 	private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_nextButtonActionPerformed
 		int index = this.tableNameComboBox.getSelectedIndex();
-		System.out.println("next: "+index +" count: "+this.tableNameComboBox.getItemCount());
-        index = (index < this.tableNameComboBox.getItemCount()-1)?index+1:this.tableNameComboBox.getItemCount()-1;
-        System.out.println("next-real: "+index);
-		this.tableNameComboBox.setSelectedIndex(index);
-		this.tableName = (String) this.tableNameComboBox.getSelectedItem();
-		if (this.tableList != null) {
-			for (Table table : this.tableList) {
-				if (table.name.equals(this.tableName)) {
-					this.table.setModel(table.tableModel);
-					this.revalidate();
-					this.repaint();
-					break;
+		if (index > -1) {
+			System.out.println("next: " + index + " count: " + this.tableNameComboBox.getItemCount());
+			index = (index < this.tableNameComboBox.getItemCount() - 1) ? index + 1
+					: this.tableNameComboBox.getItemCount() - 1;
+			System.out.println("next-real: " + index);
+			this.tableNameComboBox.setSelectedIndex(index);
+			this.tableName = (String) this.tableNameComboBox.getSelectedItem();
+			if (this.tableList != null) {
+				for (Table table : this.tableList) {
+					if (table.name.equals(this.tableName)) {
+						this.table.setModel(table.tableModel);
+						this.revalidate();
+						this.repaint();
+						break;
+					}
 				}
 			}
 		}

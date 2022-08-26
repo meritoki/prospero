@@ -317,8 +317,8 @@ public class Cyclone extends Grid {
 								series.addIndex(this.getIndex(time, eventList));
 								this.seriesMap.put(region.toString(), series);
 							}
-							this.initPlotList(this.seriesMap, this.eventList);
-							this.initTableList(this.eventList);
+							this.initPlotList(this.seriesMap, null);
+							this.initTableList(null);
 							this.eventMap.remove(time);
 						}
 					} catch (Exception e) {
