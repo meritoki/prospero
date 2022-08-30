@@ -146,35 +146,39 @@ public class CycloneEvent extends Event {
 					if (e instanceof CycloneEvent) {
 						CycloneEvent event = (CycloneEvent) e;
 						if (i == 0) {
-							columnArray = Table.getColumnNames(13).toArray();
-							dataMatrix = new Object[eventList.size() + 1][13];
+							columnArray = Table.getColumnNames(15).toArray();
+							dataMatrix = new Object[eventList.size() + 1][15];
 							dataMatrix[i][0] = "startCalendar";
 							dataMatrix[i][1] = "endCalendar";
 							dataMatrix[i][2] = "duration";
-							dataMatrix[i][3] = "distance";
-							dataMatrix[i][4] = "levelCount";
-							dataMatrix[i][5] = "lowermostLevel";
-							dataMatrix[i][6] = "uppermostLevel";
-							dataMatrix[i][7] = "genesisLowermostLevel";
-							dataMatrix[i][8] = "genesisUppermostLevel";
-							dataMatrix[i][9] = "lysisLowermostLevel";
-							dataMatrix[i][10] = "lysisUppermostLevel";
-							dataMatrix[i][11] = "instantaneousVelocity";
-							dataMatrix[i][12] = "meanVorticity";
+							dataMatrix[i][3] = "family";
+							dataMatrix[i][4] = "classification";
+							dataMatrix[i][5] = "distance";
+							dataMatrix[i][6] = "levelCount";
+							dataMatrix[i][7] = "lowermostLevel";
+							dataMatrix[i][8] = "uppermostLevel";
+							dataMatrix[i][9] = "genesisLowermostLevel";
+							dataMatrix[i][10] = "genesisUppermostLevel";
+							dataMatrix[i][11] = "lysisLowermostLevel";
+							dataMatrix[i][12] = "lysisUppermostLevel";
+							dataMatrix[i][13] = "instantaneousVelocity";
+							dataMatrix[i][14] = "meanVorticity";
 						}
 						dataMatrix[i + 1][0] = dateFormat.format(event.getStartCalendar().getTime());
 						dataMatrix[i + 1][1] = dateFormat.format(event.getEndCalendar().getTime());
 						dataMatrix[i + 1][2] = event.getDuration().days;
-						dataMatrix[i + 1][3] = event.getDistance();
-						dataMatrix[i + 1][4] = event.getPressureCount();
-						dataMatrix[i + 1][5] = event.getLowerMostLevel();
-						dataMatrix[i + 1][6] = event.getUpperMostLevel();
-						dataMatrix[i + 1][7] = event.getGenesisLowermostLevel();
-						dataMatrix[i + 1][8] = event.getGenesisUppermostLevel();
-						dataMatrix[i + 1][9] = event.getLysisLowermostLevel();
-						dataMatrix[i + 1][10] = event.getLysisUppermostLevel();
-						dataMatrix[i + 1][11] = event.getMeanSpeed();
-						dataMatrix[i + 1][12] = event.getMeanVorticity();
+						dataMatrix[i + 1][3] = event.family;
+						dataMatrix[i + 1][4] = event.classification;
+						dataMatrix[i + 1][5] = event.getDistance();
+						dataMatrix[i + 1][6] = event.getPressureCount();
+						dataMatrix[i + 1][7] = event.getLowerMostLevel();
+						dataMatrix[i + 1][8] = event.getUpperMostLevel();
+						dataMatrix[i + 1][9] = event.getGenesisLowermostLevel();
+						dataMatrix[i + 1][10] = event.getGenesisUppermostLevel();
+						dataMatrix[i + 1][11] = event.getLysisLowermostLevel();
+						dataMatrix[i + 1][12] = event.getLysisUppermostLevel();
+						dataMatrix[i + 1][13] = event.getMeanSpeed();
+						dataMatrix[i + 1][14] = event.getMeanVorticity();
 					}
 				}
 			}
