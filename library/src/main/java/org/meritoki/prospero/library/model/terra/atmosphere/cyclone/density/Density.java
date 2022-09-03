@@ -122,28 +122,10 @@ public class Density extends Cyclone {
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix);
 		this.timeTileMap.put(key,tileList);
-//		this.clusterList = this.getClusterList(key, tileList);
 		if (average) {
-			StandardDeviation standardDeviation = new StandardDeviation();
-			Mean mean = new Mean();
-			for (Tile tile : tileList) {
-				standardDeviation.increment(tile.value);
-				mean.increment(tile.value);
-			}
-			double value = mean.getResult();
-			if (!Double.isNaN(value) && value != 0) {
-				index = key.getIndex();
-				index.value = value;
-				index.map.put("N", standardDeviation.getN());
-				index.map.put("standardDeviation", standardDeviation.getResult());
-			}
+			index = Tile.getAverage(key, tileList);
 		} else if (sum) {
-			double sum = 0;
-			for (Tile tile : tileList) {
-				sum += tile.value;
-			}
-			index = key.getIndex();
-			index.value = sum;
+			index = Tile.getSum(key, tileList);
 		} else {
 			index = super.getIndex(key, eventList);
 		}

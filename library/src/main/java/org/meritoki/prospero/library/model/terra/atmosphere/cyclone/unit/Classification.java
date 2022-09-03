@@ -6,4 +6,5 @@ public enum Classification {
 	UPPER,
 	LOW_MID,
 	MID_UPPER,
+	NULL
 }

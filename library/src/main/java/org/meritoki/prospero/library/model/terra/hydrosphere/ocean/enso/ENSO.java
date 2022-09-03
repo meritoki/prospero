@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.Point;
 import org.meritoki.prospero.library.model.grid.Grid;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.plot.TimePlot;
+import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.terra.biosphere.city.City;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Result;

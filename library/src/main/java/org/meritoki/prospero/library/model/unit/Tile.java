@@ -1,5 +1,10 @@
 package org.meritoki.prospero.library.model.unit;
 
+import java.util.List;
+
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+
 public class Tile {
 
 	public double latitude;
@@ -40,6 +45,34 @@ public class Tile {
 			return t.latitude == this.latitude && t.longitude == this.longitude && t.dimension == this.dimension;
 		}
 		return false;
+	}
+	
+	public static Index getAverage(Time key, List<Tile> tileList) {
+		StandardDeviation standardDeviation = new StandardDeviation();
+		Mean mean = new Mean();
+		for (Tile tile : tileList) {
+			standardDeviation.increment(tile.value);
+			mean.increment(tile.value);
+		}
+		double value = mean.getResult();
+		Index index = null;
+		if (!Double.isNaN(value) && value != 0) {
+			index = key.getIndex();
+			index.value = value;
+			index.map.put("N", standardDeviation.getN());
+			index.map.put("standardDeviation", standardDeviation.getResult());
+		}
+		return index;
+	}
+	
+	public static Index getSum(Time key, List<Tile> tileList) {
+		double sum = 0;
+		for (Tile tile : tileList) {
+			sum += tile.value;
+		}
+		Index index = key.getIndex();
+		index.value = sum;
+		return index;
 	}
 
 	public String toString() {

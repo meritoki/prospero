@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.meritoki.prospero.library.model.plot;
+package org.meritoki.prospero.library.model.plot.time;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Label;

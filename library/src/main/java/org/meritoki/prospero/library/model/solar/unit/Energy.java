@@ -16,7 +16,7 @@ import java.util.Map.Entry;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.plot.TimePlot;
+import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
 

@@ -1,13 +1,10 @@
-package org.meritoki.prospero.library.model.histogram;
+package org.meritoki.prospero.library.model.unit;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.swing.table.TableModel;
 
 import org.meritoki.prospero.library.model.table.Table;
-import org.meritoki.prospero.library.model.unit.Index;
 
 public class Bar {
 	

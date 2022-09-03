@@ -15,9 +15,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.meritoki.prospero.library.model.plot.CartesianPlot;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.plot.TimePlot;
+import org.meritoki.prospero.library.model.plot.cartesian.CartesianPlot;
+import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.solar.planet.Planet;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.star.sun.Sun;

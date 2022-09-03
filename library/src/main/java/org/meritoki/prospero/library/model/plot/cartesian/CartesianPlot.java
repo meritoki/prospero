@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.meritoki.prospero.library.model.plot;
+package org.meritoki.prospero.library.model.plot.cartesian;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -25,6 +25,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.color.Chroma;
+import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.unit.Point;
 
 public class CartesianPlot extends Plot {
