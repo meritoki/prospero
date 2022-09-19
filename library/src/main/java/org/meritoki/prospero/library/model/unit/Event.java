@@ -43,9 +43,13 @@ public class Event {
 		
 	}
 	
-	public Event(String id, List<Coordinate> pointList) {
+	public Event(List<Coordinate> coordinateList) {
+		this.coordinateList = coordinateList;
+	}
+	
+	public Event(String id, List<Coordinate> coordinateList) {
 		this.id = id;
-		this.coordinateList = pointList;
+		this.coordinateList = coordinateList;
 	}
 	
 	public void reset() {

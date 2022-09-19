@@ -15,7 +15,7 @@ import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
 import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.gravitation.Gravitation;
 import org.meritoki.prospero.library.model.terra.hydrosphere.Hydrosphere;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.unit.Coordinate;
@@ -24,10 +24,10 @@ public class Terra extends Variable {
 	static Logger logger = LogManager.getLogger(Terra.class.getName());
 	public int latitudeInterval = 15;
 	public int longitudeInterval = 30;
-
 	
 	public Terra() {
 		super("Terra");
+		this.addChild(new Gravitation());
 		this.addChild(new Lithosphere());
 		this.addChild(new Hydrosphere());
 		this.addChild(new Atmosphere());
@@ -48,14 +48,14 @@ public class Terra extends Variable {
 		List<Coordinate> coordinateList = this.projection.getGridCoordinateList(0, this.latitudeInterval, this.longitudeInterval);
 		graphics.setColor(Color.BLACK);
 		for (Coordinate c : coordinateList) {
-//			graphics.fillOval((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) 2, (int) 2);
 			graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
 		}
-//		coordinateList = this.projection.getCoordinateList(0, this.solar.getCoordinateList("earth"));
-//		graphics.setColor(Color.BLACK);
-//		for (Coordinate c : coordinateList) {
-//			graphics.drawString((String)c.attribute.map.get("label")+":"+(String)c.attribute.map.get("distance"),(int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
-//			graphics.fillOval((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) 2, (int) 2);
-//		}
 	}
 }
+//graphics.fillOval((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) 2, (int) 2);
+//coordinateList = this.projection.getCoordinateList(0, this.solar.getCoordinateList("earth"));
+//graphics.setColor(Color.BLACK);
+//for (Coordinate c : coordinateList) {
+//	graphics.drawString((String)c.attribute.map.get("label")+":"+(String)c.attribute.map.get("distance"),(int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
+//	graphics.fillOval((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) 2, (int) 2);
+//}

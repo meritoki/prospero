@@ -48,8 +48,8 @@ public class AzimuthalSouth extends Projection {
 			double x = coordinate.point.x;
 			double y = -coordinate.point.y;
 			double z = vertical;
-			Point point3D = new Point(x, y, z);
-			return this.getCoordinate(point3D);
+			Point point = new Point(x, y, z);
+			return this.getCoordinate(point);
 		} else {
 			return null;
 		}

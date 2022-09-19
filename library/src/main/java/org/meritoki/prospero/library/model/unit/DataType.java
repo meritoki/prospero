@@ -5,5 +5,6 @@ public enum DataType {
 	MODULUS,
 	INTENSITY,
 	CONTINENT,
-	MSL
+	MSL,
+	GEOPOTENTIAL
 }

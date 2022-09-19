@@ -16,20 +16,22 @@
 package org.meritoki.prospero.desktop.view.panel;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Calendar;
+import java.awt.geom.AffineTransform;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.GridPopupMenu;
-import org.meritoki.prospero.desktop.view.menu.SavePopupMenu;
 import org.meritoki.prospero.library.model.Model;
-import org.meritoki.prospero.library.model.solar.planet.earth.*;
+import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
@@ -52,6 +54,7 @@ public class GridPanel extends javax.swing.JPanel
 	protected int azimuth = 0;
 	protected int elevation = 0;
 	public Terra terra;
+	public Dimension dimension;
 
 	/**
 	 * Creates new form ProjectionPanel
@@ -75,13 +78,30 @@ public class GridPanel extends javax.swing.JPanel
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
 		logger.debug("paint("+(graphics!=null)+")");
+		this.dimension = this.getSize();
 		graphics.setColor(Color.white);
-		graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
+		graphics.fillRect(0, 0, (int)(this.getWidth()), (int)(this.getHeight()));
 		graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
+//		Graphics2D g2d = (Graphics2D) graphics;
+//		g2d.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+//        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//        g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+//        g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+//        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+//        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+//        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+//        g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+//        g2d.setTransform(AffineTransform.getScaleInstance(scale, scale));
 		if (this.model != null) {
 			Terra terra = ((Earth)this.model.getVariable("Earth")).terra;
 			try { 
 				terra.paint(graphics);
+
+//                g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+//                g2d.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
+////                g2d.dispose();
+//                this.setSize(this.dimension);
+////                this.doLayout();
 			} catch(Exception e) {
 				e.printStackTrace();
 			}

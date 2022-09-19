@@ -4,5 +4,7 @@ public enum Analysis {
 	MEAN,
 	SUM,
 	SIGNIFICANCE,
-	CLUSTER
+	CLUSTER,
+	BAND,
+	STACK
 }

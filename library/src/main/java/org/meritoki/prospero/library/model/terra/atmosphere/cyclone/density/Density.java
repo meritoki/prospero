@@ -122,9 +122,9 @@ public class Density extends Cyclone {
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix);
 		this.timeTileMap.put(key,tileList);
-		if (average) {
+		if (averageFlag) {
 			index = Tile.getAverage(key, tileList);
-		} else if (sum) {
+		} else if (sumFlag) {
 			index = Tile.getSum(key, tileList);
 		} else {
 			index = super.getIndex(key, eventList);

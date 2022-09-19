@@ -1,16 +1,19 @@
 package org.meritoki.prospero.library.model.grid;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -30,7 +33,6 @@ import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Meter;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Region;
-import org.meritoki.prospero.library.model.unit.Regression;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Station;
@@ -40,7 +42,6 @@ import org.meritoki.prospero.library.model.unit.Time;
 public class Grid extends Variable {
 
 	static Logger logger = LogManager.getLogger(Grid.class.getName());
-//	public int monthCount = 12;
 	public int latitude = 90;
 	public int longitude = 360;
 	public int resolution = 1;
@@ -49,10 +50,10 @@ public class Grid extends Variable {
 	public double max;
 	public double min;
 	public Chroma chroma = new Chroma(Scheme.VIRIDIS);
-	public int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude
-			* resolution)][12];
+	public int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	public float[][][] dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	public List<Region> regionList = new ArrayList<>();
+	public List<String> idList = new ArrayList<>();
 	public List<Band> bandList = new ArrayList<>();
 	public List<Tile> tileList = new ArrayList<>();
 	public List<Frame> frameList = new ArrayList<>();
@@ -67,23 +68,25 @@ public class Grid extends Variable {
 	public List<Cluster> clusterList = new ArrayList<>();
 	public HashMap<Time, List<Event>> eventMap = new HashMap<>();
 	public HashMap<Region, List<Event>> regionMap = new HashMap<>();
-	public Map<String, List<Tile>> tileListMap = new TreeMap<>();
+	public Map<Integer, List<Tile>> tileListMap = new TreeMap<>();
 	public Map<Integer, List<Band>> bandListMap = new HashMap<>();
-	public Map<Integer, int[][][]> pointMatrixMap = new HashMap<>();
+	public Map<Integer, int[][][]> coordinateMatrixMap = new HashMap<>();
+	public Map<Integer, float[][][]> dataMatrixMap = new HashMap<>();
 	public Map<Integer, Integer> yearMap = new HashMap<>();
-	public Map<String,Series> seriesMap = new TreeMap<>();
-	public Map<String,Plot> plotMap = new TreeMap<>();
+	public Map<String, Series> seriesMap = new TreeMap<>();
+	public Map<String, Plot> plotMap = new TreeMap<>();
 	public Map<Time, List<Tile>> timeTileMap = new HashMap<>();
 	protected Analysis analysis;
 	protected Region region;
 	protected Double[] meter;
 	protected Calendar[] window;
 	public double[] range;
+	public double interval = 1;
 	public String regression;
 	public String season;
 	public String group;
-	public boolean average;
-	public boolean sum;
+	public boolean averageFlag;
+	public boolean sumFlag;
 	public boolean stackFlag;
 	public boolean bandFlag;
 	public boolean cubeFlag;
@@ -91,7 +94,8 @@ public class Grid extends Variable {
 	public boolean yearFlag;
 	private boolean print = false;
 	private boolean detail = false;
-
+	public boolean clearFlag = false;
+	public boolean level = false;
 
 	public Grid(String name) {
 		super(name);
@@ -117,7 +121,7 @@ public class Grid extends Variable {
 	public void load(Result result) {
 		super.load(result);
 	}
-	
+
 	@Override
 	public void complete() {
 		super.complete();
@@ -132,12 +136,16 @@ public class Grid extends Variable {
 		try {
 			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 			this.dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+			this.idList = this.query.getIDList();
 			this.regression = this.query.getRegression();
 			this.group = this.query.getGroup();
 			this.eventMap = new HashMap<>();
 			this.analysis = this.query.getAnalysis();
-			this.sum = this.query.getSum();
-			this.average = this.query.getAverage();
+			this.sumFlag = this.query.getSum();
+			this.averageFlag = this.query.getAverage();
+			this.bandFlag = this.query.getBand();
+			this.stackFlag = this.query.getStack();
+			this.clearFlag = this.query.getClear();
 			this.regionList = this.query.getRegionList();
 			this.dimension = this.query.getDimension();
 			this.meter = this.query.getMeter();
@@ -146,19 +154,20 @@ public class Grid extends Variable {
 			this.seriesMap = new TreeMap<>();
 			this.timeList = new ArrayList<>();
 		} catch (Exception e) {
-			logger.error("init() exception="+e.getMessage());
+			logger.error("init() exception=" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Function Set Event & Point Flag to False
-	 * Flag Set to True If Event And/Or Point Satisfies Query Parameters
+	 * Function Set Event & Point Flag to False Flag Set to True If Event And/Or
+	 * Point Satisfies Query Parameters
+	 * 
 	 * @param eventList
 	 * @return List<Event>
 	 */
 	public void reset(List<Event> eventList) {
-		if(eventList != null) {
+		if (eventList != null) {
 			for (Event e : eventList) {
 				e.flag = false;
 				for (Coordinate p : e.coordinateList) {
@@ -170,8 +179,9 @@ public class Grid extends Variable {
 
 	/**
 	 * Precondition EventList truth is known. Easiest way to know is to do a reset.
-	 * Truth can change for an event by changing filter parameters and reapplying filter
-	 * For example, applying regions.
+	 * Truth can change for an event by changing filter parameters and reapplying
+	 * filter For example, applying regions.
+	 * 
 	 * @param eventList
 	 * @return
 	 * @throws Exception
@@ -179,33 +189,50 @@ public class Grid extends Variable {
 	public void filter(List<Event> eventList) throws Exception {
 		if (!Thread.interrupted()) {
 			if (eventList != null & eventList.size() > 0) {
-				boolean regionFlag = false;
-				for (Event e : eventList) {
-					for (Coordinate c : e.coordinateList) {
-						regionFlag = false;
-						if(this.region != null) {
-							if (this.region.contains(c)) {
-								regionFlag = true;
+				if (this.idList.size() > 0) {
+					for (Event e : eventList) {
+						boolean eventFlag = false;
+						for (String id : this.idList) {
+							if (e.id.equals(id)) {
+								eventFlag = true;
+								break;
 							}
-						} else if (this.regionList != null && this.regionList.size() > 0) {
-							for (Region r : this.regionList) {
-								if (r.contains(c)) {
+						}
+						if (eventFlag) {
+							e.flag = true;
+						} else {
+							e.flag = false;
+						}
+					}
+				} else {
+					boolean regionFlag = false;
+					for (Event e : eventList) {
+						for (Coordinate c : e.coordinateList) {
+							regionFlag = false;
+							if (this.region != null) {
+								if (this.region.contains(c)) {
 									regionFlag = true;
 								}
+							} else if (this.regionList != null && this.regionList.size() > 0) {
+								for (Region r : this.regionList) {
+									if (r.contains(c)) {
+										regionFlag = true;
+									}
+								}
+							} else {
+								regionFlag = true;
 							}
-						} else {
-							regionFlag = true;
+							c.flag = regionFlag;
 						}
-						c.flag = regionFlag;
+						e.flag = e.hasCoordinate();
 					}
-					e.flag = e.hasCoordinate();
 				}
 			}
 		} else {
 			throw new InterruptedException();
 		}
 	}
-	
+
 	public void prune(List<Event> eventList) {
 		Iterator<Event> eventIterator = eventList.iterator();
 		while (eventIterator.hasNext()) {
@@ -300,43 +327,6 @@ public class Grid extends Variable {
 		return tileLatitudeList;
 	}
 
-//	public int getMonth(long milliseconds) {
-//		Date date = new Date(milliseconds);
-//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-//		cal.setTime(date);
-//		int month = cal.get(Calendar.MONTH) + 1;
-//		return month;
-//	}
-
-	/**
-	 * Function converts Milliseconds to Year
-	 * @param milliseconds
-	 * @return
-	 */
-//	public int getYear(long milliseconds) {
-//		Date date = new Date(milliseconds);
-//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-//		cal.setTime(date);
-//		int year = cal.get(Calendar.YEAR);
-//		return year;
-//	}
-
-//	/**
-//	 * 
-//	 */
-//	public void initMonthArray() {
-//		this.monthArray = new int[12];
-//		for (String date : this.dateList) {
-//			if (date != null) {
-//				String[] array = date.split("-");
-//				int month = Integer.parseInt(array[1]);
-//				this.monthArray[month - 1]++;
-//			}
-//		}
-//		if (print && detail)
-//			logger.info("initMonthArray() this.monthArray=" + Arrays.toString(this.monthArray));
-//	}
-	
 	/**
 	 * 
 	 */
@@ -345,7 +335,7 @@ public class Grid extends Variable {
 		for (Time date : timeList) {
 			if (date != null) {
 				int month = date.month;
-				if(month != -1) {
+				if (month != -1) {
 					this.monthArray[month - 1]++;
 				}
 			}
@@ -366,26 +356,6 @@ public class Grid extends Variable {
 		return monthCount;
 	}
 
-//	public Map<Integer, Integer> initYearMap() {
-//		this.yearMap = new HashMap<>();
-//		for (String sample : this.dateList) {
-//			if (sample != null) {
-//				String[] array = sample.split("-");
-//				int year = Integer.parseInt(array[0]);
-//				Integer count = this.yearMap.get(year);
-//				if (count == null) {
-//					count = 1;
-//				} else {
-//					count++;
-//				}
-//				this.yearMap.put(year, count);
-//			}
-//		}
-//		if (print && detail)
-//			logger.info("initYearMap() this.yearMap=" + yearMap);
-//		return this.yearMap;
-//	}
-	
 	public Map<Integer, Integer> initYearMap(List<Time> timeList) {
 		this.yearMap = new HashMap<>();
 		for (Time time : timeList) {
@@ -432,29 +402,45 @@ public class Grid extends Variable {
 				}
 			}
 		}
-//		if (print)
-//		logger.info("initTileMinMax() min=" + min+", max=" + max + ", min<max="+(min<max));
 		this.max = max;
 		this.min = min;
-		
+	}
+
+	public void initBandMinMax() {
+		double min = Double.POSITIVE_INFINITY;
+		double max = Double.NEGATIVE_INFINITY;
+		if (this.bandList != null & this.bandList.size() > 0) {
+			java.util.Iterator<Band> iterator = this.bandList.iterator();
+			while (iterator.hasNext()) {
+				Band t = iterator.next();
+				if (t.value > max) {
+					max = t.value;
+				}
+				if (t.value < min) {
+					min = t.value;
+				}
+			}
+		}
+		this.max = max;
+		this.min = min;
 	}
 
 	public double getMax() {
-		if(this.meter.length >= 2) {
+		if (this.meter.length >= 2) {
 			return this.meter[1];
 		}
 		return this.max;
 	}
 
 	public double getMin() {
-		if(this.meter.length >= 1) {
+		if (this.meter.length >= 1) {
 			return this.meter[0];
 		}
 		return this.min;
 	}
-	
+
 	public double getIncrement() {
-		if(this.meter.length == 3) {
+		if (this.meter.length == 3) {
 			return this.meter[2];
 		}
 		return 0;
@@ -468,163 +454,195 @@ public class Grid extends Variable {
 		this.min = min;
 	}
 
+	public double getMeters(int level) {
+		double p = (double) level;
+		double p0 = 1013.25;
+		double T = 15;
+		double meters = ((Math.pow(p0 / p, 1 / 5.257) - 1) * (T + 273.15)) / 0.0065;
+//		logger.info("getMeters("+level+") meters="+meters);
+		return meters;
+	}
+
+	public void paintStack(Graphics graphics) {
+		if (this.tileListMap.size() > 0) {
+			int size = this.tileListMap.size();
+			double interval = this.interval;
+			int index = (size / 2);
+			boolean mapFlag = true;
+			int count = 1;
+
+			this.tileListMap = new TreeMap<Integer, List<Tile>>(this.tileListMap).descendingMap();
+			Set<Integer> levelSet = this.tileListMap.keySet();
+			int minLevel = Collections.min(levelSet);
+			int maxLevel = Collections.max(levelSet);
+			if (this.level) {
+				this.min = this.getMeters(maxLevel);
+				this.max = this.getMeters(minLevel);
+			}
+			Coordinate a;
+			Coordinate b;
+			Coordinate c;
+			Coordinate d;
+			for (Entry<Integer, List<Tile>> entry : this.tileListMap.entrySet()) {
+				((Graphics2D) graphics).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+				int level = entry.getKey();
+				List<Tile> tileList = entry.getValue();
+				if (index == 0) {
+					index--;
+				}
+				double vertical = index * interval;
+				if (tileList != null && tileList.size() > 0) {
+					for (Tile t : tileList) {
+						a = projection.getCoordinate(vertical, t.latitude, t.longitude);
+						b = projection.getCoordinate(vertical, t.latitude + t.dimension, t.longitude);
+						c = projection.getCoordinate(vertical, t.latitude + t.dimension, t.longitude + t.dimension);
+						d = projection.getCoordinate(vertical, t.latitude, t.longitude + t.dimension);
+						if (a != null && b != null && c != null && d != null) {
+							int xpoints[] = { (int) (a.point.x * projection.scale),
+									(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
+									(int) (d.point.x * projection.scale) };
+							int ypoints[] = { (int) (a.point.y * projection.scale),
+									(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
+									(int) (d.point.y * projection.scale) };
+							int npoints = 4;
+
+							if (this.clearFlag) {
+								if (t.value != 0) {
+									Color color = null;
+									if (this.level) {
+										color = this.chroma.getColor(this.getMeters(level), this.getMin(),
+												this.getMax());
+									} else {
+										color = this.chroma.getColor(t.value, this.getMin(), this.getMax());
+									}
+									if (color != null) {
+										graphics.setColor(color);
+										graphics.fillPolygon(xpoints, ypoints, npoints);
+									}
+								}
+							} else {
+								Color color = this.chroma.getColor(t.value, this.getMin(), this.getMax());
+								graphics.setColor(color);
+								graphics.fillPolygon(xpoints, ypoints, npoints);
+							}
+						}
+					}
+				}
+
+//			if(count == this.tileListMap.size()) {
+//				projection.showMap(true);
+//			} else {
+//				projection.showMap(false);
+//			}
+//			if(mapFlag) {
+//				projection.showMap(mapFlag);
+//				mapFlag = false;
+//			} else {
+//				projection.showMap(mapFlag);
+//			}
+//			projection.paint(graphics, vertical);
+				count++;
+				index--;
+			}
+		}
+	}
+
+	public void paintBand(Graphics graphics) {
+		Coordinate a;
+		Coordinate b;
+		Coordinate c;
+		Coordinate d;
+		for (Band band : this.bandList) {
+			for (Tile t : band.tileList) {
+				a = projection.getCoordinate(0, t.latitude, t.longitude);
+				b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
+				c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+				d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+				if (a != null && b != null && c != null && d != null) {
+					int xpoints[] = { (int) (a.point.x * projection.scale), (int) (b.point.x * projection.scale),
+							(int) (c.point.x * projection.scale), (int) (d.point.x * projection.scale) };
+					int ypoints[] = { (int) (a.point.y * projection.scale), (int) (b.point.y * projection.scale),
+							(int) (c.point.y * projection.scale), (int) (d.point.y * projection.scale) };
+					int npoints = 4;
+					graphics.setColor(this.chroma.getColor(band.value, this.getMin(), this.getMax()));
+					graphics.fillPolygon(xpoints, ypoints, npoints);
+				}
+			}
+		}
+		this.initBandMinMax();
+		Meter meter = new Meter(0.9, (int) (projection.xMax * projection.scale), this.getMax(), this.getMin(),
+				this.unit, this.getIncrement());
+		meter.setChroma(this.chroma);
+		meter.paint(graphics);
+	}
+
+	public void paintTile(Graphics graphics) {
+		logger.debug(this + ".paintTile(...) tileList.size() = " + this.tileList.size());
+		Coordinate a;
+		Coordinate b;
+		Coordinate c;
+		Coordinate d;
+		java.util.Iterator<Tile> iterator = this.tileList.iterator();
+		while (iterator.hasNext()) {
+			Tile t = new Tile(iterator.next());
+			if (t != null) {
+				a = projection.getCoordinate(0, t.latitude, t.longitude);
+				b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
+				c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+				d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+				if (a != null && b != null && c != null && d != null) {
+					int xpoints[] = { (int) (a.point.x * projection.scale), (int) (b.point.x * projection.scale),
+							(int) (c.point.x * projection.scale), (int) (d.point.x * projection.scale) };
+					int ypoints[] = { (int) (a.point.y * projection.scale), (int) (b.point.y * projection.scale),
+							(int) (c.point.y * projection.scale), (int) (d.point.y * projection.scale) };
+					int npoints = 4;
+					graphics.setColor(this.chroma.getColor(t.value, this.getMin(), this.getMax()));
+					graphics.fillPolygon(xpoints, ypoints, npoints);
+				}
+			}
+		}
+		this.initTileMinMax();
+		Meter meter = new Meter(0.9, (int) (projection.xMax * projection.scale), this.getMax(), this.getMin(),
+				this.unit, this.getIncrement());
+		meter.setChroma(this.chroma);
+		meter.paint(graphics);
+	}
+
+	public void paintEvent(Graphics graphics) {
+		logger.debug(this + ".paintEvent(...) eventList.size() = " + this.eventList.size());
+		for (int i = 0; i < this.eventList.size(); i++) {
+			Event event = (Event) this.eventList.get(i);
+			if (event.flag) {
+				logger.debug(this + ".paintEvent(...) event=" + event.id);
+				List<Coordinate> coordinateList = this.projection.getCoordinateList(0, event.coordinateList);
+				if (coordinateList != null) {
+					for (Coordinate c : coordinateList) {
+						if (c != null && c.flag) {
+							logger.debug(this + ".paint(...) coordinate=" + c);
+							graphics.setColor(this.chroma.getColor(i, 0, this.eventList.size()));
+							graphics.drawLine((int) ((c.point.x) * this.projection.scale),
+									(int) ((c.point.y) * this.projection.scale),
+									(int) ((c.point.x) * this.projection.scale),
+									(int) ((c.point.y) * this.projection.scale));
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public void paint(Graphics graphics) throws Exception {
 		if (this.load) {
-			switch(this.analysis) {
-			case CLUSTER : {
-				if(this.clusterList != null && !this.clusterList.isEmpty()) {
-					int count = 0;
-//					this.chroma = new Chroma(Scheme.MAGMA);
-					Collections.sort(this.clusterList, new Comparator<Cluster>() {
-					    @Override
-					    public int compare(Cluster o1, Cluster o2) {
-					        return (o1.tileList.size())-(o2.tileList.size());
-					    }
-					});
-					for(Cluster cluster: this.clusterList) {
-						Graphics2D g2d = (Graphics2D) graphics;
-//						g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
-						Coordinate a;
-						Coordinate b;
-						Coordinate c;
-						Coordinate d;
-						java.util.Iterator<Tile> iterator = cluster.tileList.iterator();
-						while (iterator.hasNext()) {
-							Tile t = new Tile(iterator.next());
-							if (t != null) {
-								a = projection.getCoordinate(0, t.latitude, t.longitude);
-								b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
-								c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
-								d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
-								if (a != null && b != null && c != null && d != null) {
-									int xpoints[] = { (int) (a.point.x * projection.scale),
-											(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
-											(int) (d.point.x * projection.scale) };
-									int ypoints[] = { (int) (a.point.y * projection.scale),
-											(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
-											(int) (d.point.y * projection.scale) };
-									int npoints = 4;
-									g2d.setColor(this.chroma.getColor(count, 0, this.clusterList.size()));
-									g2d.fillPolygon(xpoints, ypoints, npoints);
-								}
-							}
-						}
-						count++;
-					}
-				}
-				break;
-			}
-			case SIGNIFICANCE :{ 
-				if(this.regionList != null) {
-					Graphics2D g2d = (Graphics2D) graphics;
-//					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
-					Coordinate a;
-					Coordinate b;
-					Coordinate c;
-					Coordinate d;
-					Iterator<Region> regionIterator = this.regionList.iterator();
-					Chroma significanceChroma = new Chroma(Scheme.MAGMA);
-					while(regionIterator.hasNext()) {
-						Region region = new Region(regionIterator.next());
-						if(region != null) {
-							Double significance = null;
-							Series series = this.seriesMap.get(region.toString());
-							if(series != null) {
-								List<Regression> regressionList = series.regressionMap.get("all");
-								if(regressionList != null && regressionList.size() > 0) {
-									significance = regressionList.get(0).map.get("significance");
-								}
-							}
-							if (this.tileList != null && this.tileList.size() > 0) {
-								java.util.Iterator<Tile> iterator = this.tileList.iterator();
-								while (iterator.hasNext()) {
-									Tile t = new Tile(iterator.next());
-									if (t != null && region.contains(t)) {
-										a = projection.getCoordinate(0, t.latitude, t.longitude);
-										b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
-										c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
-										d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
-										if (a != null && b != null && c != null && d != null) {
-											int xpoints[] = { (int) (a.point.x * projection.scale),
-													(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
-													(int) (d.point.x * projection.scale) };
-											int ypoints[] = { (int) (a.point.y * projection.scale),
-													(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
-													(int) (d.point.y * projection.scale) };
-											int npoints = 4;
-											if(significance != null) {
-												g2d.setColor(significanceChroma.getColor(significance, 0, 1));
-												g2d.fillPolygon(xpoints, ypoints, npoints);
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				double increment = 0;
-				Meter meter = new Meter(0.9, (int)(projection.xMax * projection.scale), 1, 0,null,increment);
-				meter.setChroma(this.chroma);
-				meter.paint(graphics);
-				break;
-			}
-			default: {
+			if (stackFlag) {
+				this.paintStack(graphics);
+			} else if (this.bandFlag) {
+				this.paintBand(graphics);
+			} else {
 				if (this.tileList != null && this.tileList.size() > 0) {
-					logger.debug(this + ".paint(...) tileList.size() = " + this.tileList.size());
-					Graphics2D g2d = (Graphics2D) graphics;
-//					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
-					Coordinate a;
-					Coordinate b;
-					Coordinate c;
-					Coordinate d;
-					java.util.Iterator<Tile> iterator = this.tileList.iterator();
-					while (iterator.hasNext()) {
-						Tile t = new Tile(iterator.next());
-						if (t != null) {
-							a = projection.getCoordinate(0, t.latitude, t.longitude);
-							b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
-							c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
-							d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
-							if (a != null && b != null && c != null && d != null) {
-								int xpoints[] = { (int) (a.point.x * projection.scale),
-										(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
-										(int) (d.point.x * projection.scale) };
-								int ypoints[] = { (int) (a.point.y * projection.scale),
-										(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
-										(int) (d.point.y * projection.scale) };
-								int npoints = 4;
-								g2d.setColor(this.chroma.getColor(t.value, this.getMin(), this.getMax()));
-								g2d.fillPolygon(xpoints, ypoints, npoints);
-							}
-						}
-					}
-					Meter meter = new Meter(0.9, (int)(projection.xMax * projection.scale), this.getMax(), this.getMin(),this.unit,this.getIncrement());
-					meter.setChroma(this.chroma);
-					meter.paint(graphics);
+					this.paintTile(graphics);
 				} else if (this.eventList != null && this.eventList.size() > 0) {
-					logger.debug(this + ".paint(...) eventList.size() = " + this.eventList.size());
-					for (int i = 0; i < this.eventList.size(); i++) {
-						Event event = (Event) this.eventList.get(i);
-						if (event.flag) {
-							logger.debug(this + ".paint(...) event=" + event.id);
-							List<Coordinate> coordinateList = this.projection.getCoordinateList(0, event.coordinateList);
-							if (coordinateList != null) {
-								for (Coordinate c : coordinateList) {
-									if (c != null && c.flag) {
-										logger.debug(this + ".paint(...) coordinate=" + c);
-										graphics.setColor(this.chroma.getColor(i, 0, this.eventList.size()));
-										graphics.drawLine((int) ((c.point.x) * this.projection.scale),
-												(int) ((c.point.y) * this.projection.scale),
-												(int) ((c.point.x) * this.projection.scale),
-												(int) ((c.point.y) * this.projection.scale));
-									}
-								}
-							}
-						}
-					}
+					this.paintEvent(graphics);
 				}
-			}
 			}
 		}
 
@@ -634,6 +652,229 @@ public class Grid extends Variable {
 		}
 	}
 }
+//public Map<Integer, Integer> initYearMap() {
+//this.yearMap = new HashMap<>();
+//for (String sample : this.dateList) {
+//	if (sample != null) {
+//		String[] array = sample.split("-");
+//		int year = Integer.parseInt(array[0]);
+//		Integer count = this.yearMap.get(year);
+//		if (count == null) {
+//			count = 1;
+//		} else {
+//			count++;
+//		}
+//		this.yearMap.put(year, count);
+//	}
+//}
+//if (print && detail)
+//	logger.info("initYearMap() this.yearMap=" + yearMap);
+//return this.yearMap;
+//}
+//public int getMonth(long milliseconds) {
+//Date date = new Date(milliseconds);
+//Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+//cal.setTime(date);
+//int month = cal.get(Calendar.MONTH) + 1;
+//return month;
+//}
+
+/**
+ * Function converts Milliseconds to Year
+ * 
+ * @param milliseconds
+ * @return
+ */
+//public int getYear(long milliseconds) {
+//Date date = new Date(milliseconds);
+//Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+//cal.setTime(date);
+//int year = cal.get(Calendar.YEAR);
+//return year;
+//}
+
+///**
+//* 
+//*/
+//public void initMonthArray() {
+//this.monthArray = new int[12];
+//for (String date : this.dateList) {
+//	if (date != null) {
+//		String[] array = date.split("-");
+//		int month = Integer.parseInt(array[1]);
+//		this.monthArray[month - 1]++;
+//	}
+//}
+//if (print && detail)
+//	logger.info("initMonthArray() this.monthArray=" + Arrays.toString(this.monthArray));
+//}
+//g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
+//	public void paint(Graphics graphics) throws Exception {
+//		if (this.load) {
+//			switch(this.analysis) {
+//			case CLUSTER : {
+//				if(this.clusterList != null && !this.clusterList.isEmpty()) {
+//					int count = 0;
+////					this.chroma = new Chroma(Scheme.MAGMA);
+//					Collections.sort(this.clusterList, new Comparator<Cluster>() {
+//					    @Override
+//					    public int compare(Cluster o1, Cluster o2) {
+//					        return (o1.tileList.size())-(o2.tileList.size());
+//					    }
+//					});
+//					for(Cluster cluster: this.clusterList) {
+//						Graphics2D g2d = (Graphics2D) graphics;
+////						g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
+//						Coordinate a;
+//						Coordinate b;
+//						Coordinate c;
+//						Coordinate d;
+//						java.util.Iterator<Tile> iterator = cluster.tileList.iterator();
+//						while (iterator.hasNext()) {
+//							Tile t = new Tile(iterator.next());
+//							if (t != null) {
+//								a = projection.getCoordinate(0, t.latitude, t.longitude);
+//								b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
+//								c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+//								d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+//								if (a != null && b != null && c != null && d != null) {
+//									int xpoints[] = { (int) (a.point.x * projection.scale),
+//											(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
+//											(int) (d.point.x * projection.scale) };
+//									int ypoints[] = { (int) (a.point.y * projection.scale),
+//											(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
+//											(int) (d.point.y * projection.scale) };
+//									int npoints = 4;
+//									g2d.setColor(this.chroma.getColor(count, 0, this.clusterList.size()));
+//									g2d.fillPolygon(xpoints, ypoints, npoints);
+//								}
+//							}
+//						}
+//						count++;
+//					}
+//				}
+//				break;
+//			}
+//			case SIGNIFICANCE :{ 
+//				if(this.regionList != null) {
+//					Graphics2D g2d = (Graphics2D) graphics;
+////					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
+//					Coordinate a;
+//					Coordinate b;
+//					Coordinate c;
+//					Coordinate d;
+//					Iterator<Region> regionIterator = this.regionList.iterator();
+//					Chroma significanceChroma = new Chroma(Scheme.MAGMA);
+//					while(regionIterator.hasNext()) {
+//						Region region = new Region(regionIterator.next());
+//						if(region != null) {
+//							Double significance = null;
+//							Series series = this.seriesMap.get(region.toString());
+//							if(series != null) {
+//								List<Regression> regressionList = series.regressionMap.get("all");
+//								if(regressionList != null && regressionList.size() > 0) {
+//									significance = regressionList.get(0).map.get("significance");
+//								}
+//							}
+//							if (this.tileList != null && this.tileList.size() > 0) {
+//								java.util.Iterator<Tile> iterator = this.tileList.iterator();
+//								while (iterator.hasNext()) {
+//									Tile t = new Tile(iterator.next());
+//									if (t != null && region.contains(t)) {
+//										a = projection.getCoordinate(0, t.latitude, t.longitude);
+//										b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
+//										c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+//										d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+//										if (a != null && b != null && c != null && d != null) {
+//											int xpoints[] = { (int) (a.point.x * projection.scale),
+//													(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
+//													(int) (d.point.x * projection.scale) };
+//											int ypoints[] = { (int) (a.point.y * projection.scale),
+//													(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
+//													(int) (d.point.y * projection.scale) };
+//											int npoints = 4;
+//											if(significance != null) {
+//												g2d.setColor(significanceChroma.getColor(significance, 0, 1));
+//												g2d.fillPolygon(xpoints, ypoints, npoints);
+//											}
+//										}
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
+//				double increment = 0;
+//				Meter meter = new Meter(0.9, (int)(projection.xMax * projection.scale), 1, 0,null,increment);
+//				meter.setChroma(this.chroma);
+//				meter.paint(graphics);
+//				break;
+//			}
+//			default: {
+//				if (this.tileList != null && this.tileList.size() > 0) {
+//					logger.debug(this + ".paint(...) tileList.size() = " + this.tileList.size());
+//					Graphics2D g2d = (Graphics2D) graphics;
+////					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
+//					Coordinate a;
+//					Coordinate b;
+//					Coordinate c;
+//					Coordinate d;
+//					java.util.Iterator<Tile> iterator = this.tileList.iterator();
+//					while (iterator.hasNext()) {
+//						Tile t = new Tile(iterator.next());
+//						if (t != null) {
+//							a = projection.getCoordinate(0, t.latitude, t.longitude);
+//							b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
+//							c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+//							d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+//							if (a != null && b != null && c != null && d != null) {
+//								int xpoints[] = { (int) (a.point.x * projection.scale),
+//										(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
+//										(int) (d.point.x * projection.scale) };
+//								int ypoints[] = { (int) (a.point.y * projection.scale),
+//										(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
+//										(int) (d.point.y * projection.scale) };
+//								int npoints = 4;
+//								g2d.setColor(this.chroma.getColor(t.value, this.getMin(), this.getMax()));
+//								g2d.fillPolygon(xpoints, ypoints, npoints);
+//							}
+//						}
+//					}
+//					Meter meter = new Meter(0.9, (int)(projection.xMax * projection.scale), this.getMax(), this.getMin(),this.unit,this.getIncrement());
+//					meter.setChroma(this.chroma);
+//					meter.paint(graphics);
+//				} else if (this.eventList != null && this.eventList.size() > 0) {
+//					logger.debug(this + ".paint(...) eventList.size() = " + this.eventList.size());
+//					for (int i = 0; i < this.eventList.size(); i++) {
+//						Event event = (Event) this.eventList.get(i);
+//						if (event.flag) {
+//							logger.debug(this + ".paint(...) event=" + event.id);
+//							List<Coordinate> coordinateList = this.projection.getCoordinateList(0, event.coordinateList);
+//							if (coordinateList != null) {
+//								for (Coordinate c : coordinateList) {
+//									if (c != null && c.flag) {
+//										logger.debug(this + ".paint(...) coordinate=" + c);
+//										graphics.setColor(this.chroma.getColor(i, 0, this.eventList.size()));
+//										graphics.drawLine((int) ((c.point.x) * this.projection.scale),
+//												(int) ((c.point.y) * this.projection.scale),
+//												(int) ((c.point.x) * this.projection.scale),
+//												(int) ((c.point.y) * this.projection.scale));
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
+//			}
+//		}
+//
+//		List<Variable> nodeList = this.getChildren();
+//		for (Variable n : nodeList) {
+//			n.paint(graphics);
+//		}
+//	}
+
 //public void initDateList(List<Frame> frameList) {
 //String sample;
 //for (Frame f : frameList) {

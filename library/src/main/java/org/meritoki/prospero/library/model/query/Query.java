@@ -362,6 +362,15 @@ public class Query {
 	}
 	
 	@JsonIgnore
+	public Boolean getClear() {
+		String clear = this.map.get("clear");
+		if(clear != null) {
+			return Boolean.valueOf(clear);
+		}
+		return false;
+	}
+	
+	@JsonIgnore
 	public Boolean getAverage() {
 		String average = this.map.get("average");
 		if(average != null) {
@@ -445,6 +454,32 @@ public class Query {
 			regression = "all";
 		}
 		return regression;
+	}
+	
+	@JsonIgnore
+	public String getID() {
+		return map.get("id");
+	}
+	
+	@JsonIgnore
+	public List<String> getIDList() {
+		return this.getIDList(this.getID());
+	}
+	
+	@JsonIgnore
+	public List<String> getIDList(String string) {
+		List<String> stringList = new ArrayList<>();
+		if(string != null) {
+			if(string.contains(",")) {
+				String[] array = string.split(",");
+				for(String t: array) {
+					stringList.add(t);
+				}
+			} else {
+				stringList.add(string);
+			}
+		}
+		return stringList;
 	}
 	
 	@JsonIgnore

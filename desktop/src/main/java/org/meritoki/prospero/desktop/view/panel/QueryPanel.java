@@ -54,6 +54,8 @@ public class QueryPanel extends javax.swing.JPanel {
     
 	public void init() {
 		this.initList();
+		this.keyTextField.setText("");
+		this.valueTextField.setText("");
 	}
     
 	public void initList() {

@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Polygon;
 import org.meritoki.prospero.library.model.unit.Result;
 
 public class Country extends Variable {
@@ -25,8 +26,8 @@ public class Country extends Variable {
 	@Override
 	public void load(Result result) {
 		Object object = result.map.get("multiPolygonList");
-		if(object != null) {
-			this.multiPolygonList = (List<MultiPolygon>)object;
+		if (object != null) {
+			this.multiPolygonList = (List<MultiPolygon>) object;
 			if (this.multiPolygonList.size() == 0) {
 				logger.warn("load(...) this.multiPolygonList.size() == 0");
 			}
@@ -38,16 +39,27 @@ public class Country extends Variable {
 		if (this.load) {
 			if (this.multiPolygonList != null) {
 				graphics.setColor(this.color);
-				List<Coordinate> coordinateList = this.projection.getMultiPolygonList(0, this.multiPolygonList);
-				for (Coordinate c : coordinateList) {
-					graphics.drawLine((int) ((c.point.x) * this.projection.scale),
-							(int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale),
-							(int) ((c.point.y) * this.projection.scale));
+				List<Polygon> polygonList = this.projection.getPolygonList(0, this.multiPolygonList);
+				for (Polygon p : polygonList) {
+					if (p.coordinateList.size() > 0) {
+						for (int i = 0; i < p.coordinateList.size(); i++) {
+							Coordinate c = p.coordinateList.get(i);
+							graphics.drawLine((int) ((c.point.x) * this.projection.scale),
+									(int) ((c.point.y) * this.projection.scale),
+									(int) ((c.point.x) * this.projection.scale),
+									(int) ((c.point.y) * this.projection.scale));
+						}
+					}
 				}
 			}
 		}
 	}
 }
+//for (Coordinate c : coordinateList) {
+//graphics.drawLine((int) ((c.point.x) * this.projection.scale),
+//		(int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale),
+//		(int) ((c.point.y) * this.projection.scale));
+//}
 //String sourceUUID = this.sourceMap.get(this.sourceKey);
 //this.multiPolygonList = (List<MultiPolygon>) this.data.query(sourceUUID, this.query);
 //@Override

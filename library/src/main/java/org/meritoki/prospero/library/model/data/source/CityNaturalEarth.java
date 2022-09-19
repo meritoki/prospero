@@ -50,15 +50,8 @@ public class CityNaturalEarth extends Source {
 			try {
 				while (iterator.hasNext()) {
 					SimpleFeature feature = iterator.next();
-					GeometryFactory geometryFactory = (GeometryFactory) JTSFactoryFinder.getGeometryFactory( null );
-
 					WKTReader reader = new WKTReader();
 					p = (Point) reader.read(feature.getDefaultGeometry() + "");
-
-					
-//					GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
-//					WKTReader reader = new WKTReader(geometryFactory);
-//					p = (Point) reader.read(feature.getDefaultGeometry() + "");
 				}
 			} finally {
 				iterator.close();
@@ -100,6 +93,9 @@ public class CityNaturalEarth extends Source {
 		return pList;
 	}
 }
+//GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory(null);
+//WKTReader reader = new WKTReader(geometryFactory);
+//p = (Point) reader.read(feature.getDefaultGeometry() + "");
 //@Override
 //public Object get() {
 //	if(this.pointList == null) {

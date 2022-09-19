@@ -47,15 +47,26 @@ public class CycloneEvent extends Event {
 	public Classification classification = Classification.NULL;
 
 	public CycloneEvent() {
+		
+	}
+	
+	public CycloneEvent(List<Coordinate> coordinateList) {
+		super(coordinateList);
+		this.classify();
 	}
 
-	public CycloneEvent(String id, List<Coordinate> pointList) {
-		super(id, pointList);
-//		this.classify();
+	public CycloneEvent(String id, List<Coordinate> coordinateList) {
+		super(id, coordinateList);
+		this.classify();
 	}
 
 	public CycloneEvent(CycloneEvent event) {
 		super(event.id, new ArrayList<>(event.coordinateList));
+		this.classify();
+	}
+	
+	public void classify() {
+		
 	}
 
 	@JsonIgnore
@@ -140,14 +151,15 @@ public class CycloneEvent extends Event {
 		Object[][] dataMatrix = null;
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		if (eventList != null) {
+			eventList = getSelectedEventList(eventList);
 			if (eventList.size() > 0) {
 				for (int i = 0; i < eventList.size(); i++) {
 					Event e = eventList.get(i);
 					if (e instanceof CycloneEvent) {
 						CycloneEvent event = (CycloneEvent) e;
 						if (i == 0) {
-							columnArray = Table.getColumnNames(15).toArray();
-							dataMatrix = new Object[eventList.size() + 1][15];
+							columnArray = Table.getColumnNames(17).toArray();
+							dataMatrix = new Object[eventList.size() + 1][17];
 							dataMatrix[i][0] = "id";
 							dataMatrix[i][1] = "startCalendar";
 							dataMatrix[i][2] = "endCalendar";
@@ -155,15 +167,16 @@ public class CycloneEvent extends Event {
 							dataMatrix[i][4] = "family";
 							dataMatrix[i][5] = "classification";
 							dataMatrix[i][6] = "distance";
-							dataMatrix[i][7] = "levelCount";
-							dataMatrix[i][8] = "lowermostLevel";
-							dataMatrix[i][9] = "uppermostLevel";
-							dataMatrix[i][10] = "genesisLowermostLevel";
-							dataMatrix[i][11] = "genesisUppermostLevel";
-							dataMatrix[i][12] = "lysisLowermostLevel";
-							dataMatrix[i][13] = "lysisUppermostLevel";
-							dataMatrix[i][14] = "instantaneousVelocity";
-							dataMatrix[i][15] = "meanVorticity";
+							dataMatrix[i][7] = "maxTimeLevelCount";
+							dataMatrix[i][8] = "totalLevelCount";
+							dataMatrix[i][9] = "lowermostLevel";
+							dataMatrix[i][10] = "uppermostLevel";
+							dataMatrix[i][11] = "genesisLowermostLevel";
+							dataMatrix[i][12] = "genesisUppermostLevel";
+							dataMatrix[i][13] = "lysisLowermostLevel";
+							dataMatrix[i][14] = "lysisUppermostLevel";
+							dataMatrix[i][15] = "instantaneousVelocity";
+							dataMatrix[i][16] = "meanVorticity";
 						}
 						dataMatrix[i + 1][0] = event.id;
 						dataMatrix[i + 1][1] = dateFormat.format(event.getStartCalendar().getTime());
@@ -172,15 +185,16 @@ public class CycloneEvent extends Event {
 						dataMatrix[i + 1][4] = (event.family != null)?event.family.toString():"NULL";
 						dataMatrix[i + 1][5] = (event.classification != null)?event.classification.toString():"NULL";
 						dataMatrix[i + 1][6] = event.getDistance();
-						dataMatrix[i + 1][7] = event.getPressureCount();
-						dataMatrix[i + 1][8] = event.getLowerMostLevel();
-						dataMatrix[i + 1][9] = event.getUpperMostLevel();
-						dataMatrix[i + 1][10] = event.getGenesisLowermostLevel();
-						dataMatrix[i + 1][11] = event.getGenesisUppermostLevel();
-						dataMatrix[i + 1][12] = event.getLysisLowermostLevel();
-						dataMatrix[i + 1][13] = event.getLysisUppermostLevel();
-						dataMatrix[i + 1][14] = event.getMeanSpeed();
-						dataMatrix[i + 1][15] = event.getMeanVorticity();
+						dataMatrix[i + 1][7] = event.getMaxTimeLevelCount();
+						dataMatrix[i + 1][8] = event.getPressureCount();
+						dataMatrix[i + 1][9] = event.getLowerMostLevel();
+						dataMatrix[i + 1][10] = event.getUpperMostLevel();
+						dataMatrix[i + 1][11] = event.getGenesisLowermostLevel();
+						dataMatrix[i + 1][12] = event.getGenesisUppermostLevel();
+						dataMatrix[i + 1][13] = event.getLysisLowermostLevel();
+						dataMatrix[i + 1][14] = event.getLysisUppermostLevel();
+						dataMatrix[i + 1][15] = event.getMeanSpeed();
+						dataMatrix[i + 1][16] = event.getMeanVorticity();
 					}
 				}
 			}
@@ -188,6 +202,16 @@ public class CycloneEvent extends Event {
 			objectArray[1] = dataMatrix;
 		}
 		return objectArray;
+	}
+	
+	public static List<Event> getSelectedEventList(List<Event> eventList) {
+		List<Event> eList = new ArrayList<>();
+		for(Event e: eventList) {
+			if(e.flag) {
+				eList.add(e);
+			}
+		}
+		return eList;
 	}
 
 	@JsonIgnore
@@ -294,28 +318,26 @@ public class CycloneEvent extends Event {
 	}
 
 	@JsonIgnore
-	public Map<String, List<Coordinate>> getTimePointMap(List<Coordinate> pointList) {
-//		if (this.timePointMap == null) {
+	public Map<String, List<Coordinate>> getTimePointMap(List<Coordinate> coordinateList) {
 		Map<String, List<Coordinate>> timePointMap = new HashMap<>();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String date;
-		List<Coordinate> pList;
-		for (Coordinate p : pointList) {
-			if (p.flag) {
-				date = dateFormat.format(p.calendar.getTime());
-				pList = timePointMap.get(date);
-				if (pList == null) {
-					pList = new ArrayList<>();
-					pList.add(p);
+		List<Coordinate> cList;
+		for (Coordinate c : coordinateList) {
+			if (c.flag) {
+				date = dateFormat.format(c.calendar.getTime());
+				cList = timePointMap.get(date);
+				if (cList == null) {
+					cList = new ArrayList<>();
+					cList.add(c);
 				} else {
-					pList.add(p);
+					cList.add(c);
 				}
-				Collections.sort(pList);
-				timePointMap.put(date, pList);
+				Collections.sort(cList);
+				timePointMap.put(date, cList);
 			}
 		}
 		timePointMap = new TreeMap<String, List<Coordinate>>(timePointMap);
-//		}
 		return timePointMap;
 	}
 
@@ -735,7 +757,6 @@ public class CycloneEvent extends Event {
 	@JsonIgnore
 	public double getSpeed() {
 		double speed = this.getDistance() / this.getDuration().seconds;
-//		logger.info("getSpeed() speed=" + speed);
 		return speed;
 	}
 
@@ -749,10 +770,6 @@ public class CycloneEvent extends Event {
 		}
 		return monthList;
 	}
-
-//	public String toString() {
-//		return this.id;
-//	}
 
 	@JsonIgnore
 	public List<Coordinate> getLowerMostPointList() {
@@ -850,6 +867,10 @@ public class CycloneEvent extends Event {
 		return string;
 	}
 }
+//logger.info("getSpeed() speed=" + speed);
+//public String toString() {
+//return this.id;
+//}
 //@JsonIgnore
 //public void classify() {
 //	int maxTimeLevelCount = this.getMaxTimeLevelCount();// this.getLevelList().size();//

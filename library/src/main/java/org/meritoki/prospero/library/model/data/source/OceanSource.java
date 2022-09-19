@@ -23,6 +23,7 @@ public class OceanSource extends Source {
 	public float earthRadius = 6371;
 	
 	public OceanSource() {
+		super();
 		this.calendarFlag = true;
 	}
 	

@@ -123,6 +123,8 @@ public class InstantaneousSpeed extends Cyclone {
 		}
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
+		this.tileList = this.getTileList();
+		this.initTileMinMax();
 	}
 	
 	@Override
@@ -134,9 +136,9 @@ public class InstantaneousSpeed extends Cyclone {
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix, speedMatrix);
-		if (average) {
+		if (averageFlag) {
 			index = Tile.getAverage(key, tileList);
-		} else if (sum) {
+		} else if (sumFlag) {
 			index = Tile.getSum(key, tileList);
 		} else {
 			index = super.getIndex(key, eventList);

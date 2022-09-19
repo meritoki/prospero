@@ -96,16 +96,19 @@ public class Speed extends Cyclone {
 	@Override
 	public void setMatrix(List<Event> eventList) {
 		List<Time> timeList = this.setSpeedCoordinateMatrix(this.dataMatrix, this.coordinateMatrix, eventList);
-		for(Time t: timeList) {
-			if(!this.timeList.contains(t)) {
+		for (Time t : timeList) {
+			if (!this.timeList.contains(t)) {
 				this.timeList.add(t);
 			}
 		}
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
+		this.tileList = this.getTileList();
+		this.initTileMinMax();
 	}
 
-	public List<Time> setSpeedCoordinateMatrix(float[][][] speedMatrix, int[][][] coordinateMatrix, List<Event> eventList) {
+	public List<Time> setSpeedCoordinateMatrix(float[][][] speedMatrix, int[][][] coordinateMatrix,
+			List<Event> eventList) {
 		List<Time> timeList = null;
 		if (eventList != null) {
 			timeList = new ArrayList<>();
@@ -119,8 +122,8 @@ public class Speed extends Cyclone {
 						speedMatrix[(int) ((c.latitude + this.latitude)
 								* this.resolution)][(int) ((c.longitude + this.longitude / 2) * this.resolution)][c
 										.getMonth() - 1] += ((CycloneEvent) e).getMeanSpeed();
-						Time time = new Time(c.getYear(),c.getMonth(),-1,-1,-1,-1);
-						if(!timeList.contains(time)) {
+						Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
+						if (!timeList.contains(time)) {
 							timeList.add(time);
 						}
 					}
@@ -139,9 +142,9 @@ public class Speed extends Cyclone {
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix, speedMatrix);
-		if (average) {
+		if (averageFlag) {
 			index = Tile.getAverage(key, tileList);
-		} else if (sum) {
+		} else if (sumFlag) {
 			index = Tile.getSum(key, tileList);
 		} else {
 			index = super.getIndex(key, eventList);

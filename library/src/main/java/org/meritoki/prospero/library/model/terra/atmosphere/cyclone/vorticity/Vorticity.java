@@ -3,11 +3,10 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.vorticity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
+import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
@@ -103,25 +102,78 @@ public class Vorticity extends Cyclone {
 		}
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
+		this.tileList = this.getTileList();
+		this.initTileMinMax();
+		if (this.stackFlag) {
+			List<Integer> levelList = this.getEventPressureList(eventList);
+			for (Integer level : levelList) {
+				this.coordinateMatrix = this.coordinateMatrixMap.get(level);
+				this.dataMatrix = this.dataMatrixMap.get(level);
+				List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.dataMatrix);
+				this.tileListMap.put(level, tileList);
+			}
+		} else if(this.bandFlag) {
+			List<Double> tileLatitudeList = this.getTileLatitudeList(this.tileList);
+			for (Double latitude : tileLatitudeList) {
+				List<Tile> bandTileList = new ArrayList<>();
+				for (Tile t : this.tileList) {
+					if (latitude.equals(t.latitude)) {
+						bandTileList.add(t);
+					}
+				}
+				Band band = new Band(bandTileList, latitude);
+				this.bandList.add(band);
+			}
+		}
 	}
 
 	public List<Time> setVorticityCoordinateMatrix(float[][][] vorticityMatrix, int[][][] coordinateMatrix,
-			List<Event> eventList) {
+		List<Event> eventList) {
 		List<Time> timeList = null;
 		if (eventList != null) {
 			timeList = new ArrayList<>();
-			for (Event e : eventList) {
-				if (e.flag) {
-					for (Coordinate p : e.coordinateList) {
-						if (p.flag) {
-							int x = (int) ((p.latitude + this.latitude) * this.resolution);
-							int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-							int z = p.getMonth() - 1;
-							coordinateMatrix[x][y][z]++;
-							vorticityMatrix[x][y][z] += (float) p.attribute.get("vorticity");
-							Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
-							if (!timeList.contains(time)) {
-								timeList.add(time);
+			if(this.stackFlag) {
+				List<Integer> levelList = this.getEventPressureList(eventList);
+				for (Integer level : levelList) {
+					coordinateMatrix = this.coordinateMatrixMap.get(level);
+					vorticityMatrix = this.dataMatrixMap.get(level);
+					if(coordinateMatrix == null)
+						coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+					if(vorticityMatrix == null)
+						vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude
+							* resolution)][12];
+					for (Event e : eventList) {
+						for (Coordinate p : e.coordinateList) {
+							if (p.flag && ((Integer) p.attribute.get("pressure")).equals(level)) {
+								int x = (int) ((p.latitude + this.latitude) * this.resolution);
+								int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int z = p.getMonth() - 1;
+								coordinateMatrix[x][y][z]++;
+								vorticityMatrix[x][y][z] += (float) p.attribute.get("vorticity");
+								Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
+								if (!timeList.contains(time)) {
+									timeList.add(time);
+								}
+							}
+						}
+					}
+					this.coordinateMatrixMap.put(level, coordinateMatrix);
+					this.dataMatrixMap.put(level, vorticityMatrix);
+				}
+			} else {
+				for (Event e : eventList) {
+					if (e.flag) {
+						for (Coordinate p : e.coordinateList) {
+							if (p.flag) {
+								int x = (int) ((p.latitude + this.latitude) * this.resolution);
+								int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int z = p.getMonth() - 1;
+								coordinateMatrix[x][y][z]++;
+								vorticityMatrix[x][y][z] += (float) p.attribute.get("vorticity");
+								Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
+								if (!timeList.contains(time)) {
+									timeList.add(time);
+								}
 							}
 						}
 					}
@@ -140,9 +192,9 @@ public class Vorticity extends Cyclone {
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix, vorticityMatrix);
-		if (average) {
+		if (averageFlag) {
 			index = Tile.getAverage(key, tileList);
-		} else if (sum) {
+		} else if (sumFlag) {
 			index = Tile.getSum(key, tileList);
 		} else {
 			index = super.getIndex(key, eventList);

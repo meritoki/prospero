@@ -10,24 +10,20 @@ public class ERAInterimEvent extends CycloneEvent {
 
 	public ERAInterimEvent() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public ERAInterimEvent(CycloneEvent event) {
 		super(event);
-		this.classify();
-		// TODO Auto-generated constructor stub
 	}
 
 	public ERAInterimEvent(String id, List<Coordinate> pointList) {
 		super(id, pointList);
-		this.classify();
-		// TODO Auto-generated constructor stub
 	}
 	
 	@JsonIgnore
+	@Override
 	public void classify() {
-		int maxTimeLevelCount = this.getMaxTimeLevelCount();// this.getLevelList().size();//
+		int maxTimeLevelCount = this.getMaxTimeLevelCount();
 		int lowerMostLevel = this.getLowerMostLevel();
 		if (maxTimeLevelCount == 2 || maxTimeLevelCount == 3) {
 			this.family = Family.SHALLOW;
