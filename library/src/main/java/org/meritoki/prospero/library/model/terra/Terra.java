@@ -27,7 +27,7 @@ public class Terra extends Variable {
 	
 	public Terra() {
 		super("Terra");
-		this.addChild(new Gravitation());
+//		this.addChild(new Gravitation());
 		this.addChild(new Lithosphere());
 		this.addChild(new Hydrosphere());
 		this.addChild(new Atmosphere());
