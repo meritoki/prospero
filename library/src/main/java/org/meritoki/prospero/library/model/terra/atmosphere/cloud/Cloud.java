@@ -1,4 +1,4 @@
-package org.meritoki.prospero.library.model.terra.hydrosphere.ocean;
+package org.meritoki.prospero.library.model.terra.atmosphere.cloud;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,47 +7,37 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.grid.Grid;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.enso.ENSO;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.ice.Ice;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.modulus.Modulus;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.pdo.PDO;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.tempurature.SeaSurfaceTemperature;
+import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.N;
 import org.meritoki.prospero.library.model.unit.DataType;
-import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
-public class Ocean extends Grid {
+import ucar.ma2.ArrayFloat;
+import ucar.nc2.Dimension;
 
-	static Logger logger = LogManager.getLogger(Ocean.class.getName());
-//	public int[][] countMatrix;
-//	public float[][] sumMatrix;
-//	public boolean[][] continentMatrix;
+public class Cloud extends Grid {
+
+	static Logger logger = LogManager.getLogger(Cloud.class.getName());
 	public DataType dataType;
-	public double scale;
-	
-	public Ocean() {
-		super("Ocean");
-		this.addChild(new SeaSurfaceTemperature());
-		this.addChild(new Modulus());
-		this.addChild(new ENSO());
-		this.addChild(new PDO());
-		this.addChild(new Ice());
+
+	public Cloud() {
+		super("Cloud");
+		this.addChild(new N());
 	}
-	
-	public Ocean(String name) {
+
+	public Cloud(String name) {
 		super(name);
 	}
-	
+
 	@Override
 	public void init() {
 		this.dimension = 1;
 		super.init();
 	}
-	
+
 	@Override
 	public void load(Result result) {
 		super.load(result);
@@ -55,11 +45,11 @@ public class Ocean extends Grid {
 		try {
 			this.process(netCDFList);
 		} catch (Exception e) {
-			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
+//			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Reviewed 202112160852 Good
 	 */
@@ -74,69 +64,75 @@ public class Ocean extends Grid {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void process(List<NetCDF> netCDFList) throws Exception {
 		this.setMatrix(netCDFList);
 		this.tileList = this.getTileList();
 		this.initTileMinMax();
 	}
-	
+
 	public void setMatrix(List<NetCDF> netCDFList) {
 		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, netCDFList);
-		for(Time t: timeList) {
-			if(!this.timeList.contains(t)) {
+		for (Time t : timeList) {
+			if (!this.timeList.contains(t)) {
 				this.timeList.add(t);
 			}
 		}
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
 	}
-	
+
 //	public void setMatrix(List<NetCDF> netCDFList) {
-	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, List<NetCDF> netCDFList) {
-		System.out.println("setMatrix("+netCDFList.size()+")");
+	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix,
+			List<NetCDF> netCDFList) {
+		System.out.println("setMatrix(" + netCDFList.size() + ")");
 		List<Time> timeList = new ArrayList<>();
 		for (NetCDF netCDF : netCDFList) {
 			if (netCDF.type == this.dataType) {
+				ArrayFloat.D2 latMatrix = netCDF.latMatrix;
+				ArrayFloat.D2 lonMatrix = netCDF.lonMatrix;
+				ArrayFloat.D3 dataArray = netCDF.variableArray;
+				Dimension xDimension = netCDF.xDimension;
+				Dimension yDimension = netCDF.yDimension;
 				long timeSize = netCDF.timeArray.getSize();
-				long latSize = netCDF.latArray.getSize();
-				long lonSize = netCDF.lonArray.getSize();
+//				long latSize = netCDF.latArray.getSize();
+//				long lonSize = netCDF.lonArray.getSize();
 				for (int t = 0; t < timeSize; t++) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(Time.getNineteenHundredJanuaryFirstDate(netCDF.timeArray.get(t)));
-					for (int lat = 0; lat < latSize - 1; lat++) {
-						float latitude = netCDF.latArray.get(lat);
-						if (latitude <= 0) {
-							for (int lon = 0; lon < lonSize; lon++) {
-								float longitude = netCDF.lonArray.get(lon);
-//								logger.info(latitude+";"+longitude);
+					for (int i = 0; i < xDimension.getLength(); i++) {
+//						float latitude = netCDF.latArray.get(x);
+//						if (latitude <= 0) {
+						for (int j = 0; j < yDimension.getLength(); j++) {
+							float latitude = latMatrix.get(i, j);
+							float longitude = lonMatrix.get(i, j);
+							logger.info(latitude + ";" + longitude);
 //								float variable = netCDF.variableArray.get(t, lat, lon);
-								int x = (int) ((latitude + this.latitude-1) * this.resolution);
-								int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = calendar.get(Calendar.MONTH);
+							int x = (int) ((latitude + this.latitude - 1) * this.resolution);
+							int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+							int z = calendar.get(Calendar.MONTH);
 //								System.out.println(x+","+y+","+z);
-								dataMatrix[x][y][z] += netCDF.variableArray.get(t, lat, lon);
-								coordinateMatrix[x][y][z]++;
-								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, -1, -1, -1, -1);
-								if (!timeList.contains(time)) {
-									timeList.add(time);
-								}
+							dataMatrix[x][y][z] += dataArray.get(t, i, j);
+							coordinateMatrix[x][y][z]++;
+							Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, -1, -1,
+									-1, -1);
+							if (!timeList.contains(time)) {
+								timeList.add(time);
 							}
 						}
+//						}
 					}
 				}
 			}
 		}
 		return timeList;
 	}
-	
 
-	
 	@Override
 	public List<Tile> getTileList() {
-		return this.getTileList(this.coordinateMatrix,this.dataMatrix);
+		return this.getTileList(this.coordinateMatrix, this.dataMatrix);
 	}
-	
+
 	public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] dataMatrix) {
 		List<Tile> tileList = new ArrayList<>();
 		int yearCount = this.getYearCount();
@@ -191,45 +187,3 @@ public class Ocean extends Grid {
 		return tileList;
 	}
 }
-//public List<Tile> getTileList() {
-//List<Tile> tileList = new ArrayList<>();
-//for (int i = 0; i < latitude; i++) {
-//	for (int j = 0; j < longitude; j++) {
-//		double latitude = 90 - (i * this.dimension);
-//		if (latitude <= 0) {
-//			if (!continentMatrix[i][j]) {
-//				float temperatureMean = (countMatrix[i][j] > 0) ? sumMatrix[i][j] / countMatrix[i][j] : 0;
-//				double value = temperatureMean;
-//				double lat = latitude;
-//				double lon;
-//				if ((j * this.dimension) < 180) {
-//					lon = (j * this.dimension);
-//				} else {
-//					lon = (j * this.dimension) - 360;
-//				}
-//				Tile tile = new Tile(lat, lon, this.dimension, value);
-//				if (regionList != null) {
-//					for (Region region : regionList) {
-//						if (region.contains(tile)) {
-//							tileList.add(tile);
-//							break;
-//						}
-//					}
-//				} else {
-//					tileList.add(tile);
-//				}
-//			}
-//		}
-//	}
-//}
-//return tileList;
-//}
-//public List<Frame> getCalendarFrameList(List<Frame> frameList) {
-//List<Frame> fList = new ArrayList<>();
-//for(Frame f: frameList) {
-//	if(f.containsCalendar(this.calendar)) {
-//		fList.add(f);
-//	}
-//}
-//return fList;
-//}

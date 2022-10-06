@@ -6,5 +6,6 @@ public enum DataType {
 	INTENSITY,
 	CONTINENT,
 	MSL,
-	GEOPOTENTIAL
+	GEOPOTENTIAL,
+	BAND_4
 }

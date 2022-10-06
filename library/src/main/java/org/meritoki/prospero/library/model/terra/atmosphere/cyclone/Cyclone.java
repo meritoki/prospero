@@ -261,7 +261,7 @@ public class Cyclone extends Grid {
 		rCommand += " " + output;
 		Exit exit;
 		try {
-			exit = NodeController.executeCommand(rCommand, 1440 * 3);
+			exit = NodeController.executeCommand(rCommand, 1440 * 64);
 			if (exit.value != 0) {
 				throw new Exception("Non-Zero Exit Value: " + exit.value);
 			}
@@ -303,6 +303,7 @@ public class Cyclone extends Grid {
 	}
 
 	public void getClusterPlots(List<Cluster> clusterList) {
+		logger.info("getClusterPlots("+clusterList+")");
 		Map<String, Series> seriesMap = new HashMap<>();
 		for (Entry<Time, List<Tile>> entry : this.timeTileMap.entrySet()) {
 			Time time = entry.getKey();

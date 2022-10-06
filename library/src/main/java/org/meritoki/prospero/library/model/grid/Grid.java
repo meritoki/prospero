@@ -464,6 +464,7 @@ public class Grid extends Variable {
 	}
 
 	public void paintStack(Graphics graphics) {
+		logger.debug(this + ".paintStack(...) tileListMap.size() = " + this.tileListMap.size());
 		if (this.tileListMap.size() > 0) {
 			int size = this.tileListMap.size();
 			double interval = this.interval;

@@ -53,6 +53,7 @@ public class Source extends Node {//implements SourceInterface
 				logger.warn("InterruptedException " + e.getMessage());
 				query.objectList.add(new Result(Mode.EXCEPTION,e.getMessage()));
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.warn("Exception "+e.getMessage());
 				query.objectList.add(new Result(Mode.EXCEPTION,e.getMessage()));
 			}
