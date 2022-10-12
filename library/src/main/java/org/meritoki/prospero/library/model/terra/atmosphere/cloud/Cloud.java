@@ -21,7 +21,7 @@ import ucar.nc2.Dimension;
 public class Cloud extends Grid {
 
 	static Logger logger = LogManager.getLogger(Cloud.class.getName());
-	public DataType dataType;
+	protected DataType dataType;
 
 	public Cloud() {
 		super("Cloud");
@@ -35,6 +35,9 @@ public class Cloud extends Grid {
 	@Override
 	public void init() {
 		this.dimension = 1;
+//		this.latitude = 180;
+//		this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//		this.dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		super.init();
 	}
 
@@ -45,14 +48,11 @@ public class Cloud extends Grid {
 		try {
 			this.process(netCDFList);
 		} catch (Exception e) {
-//			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
+			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * Reviewed 202112160852 Good
-	 */
 	@Override
 	public void process() throws Exception {
 		super.process();
@@ -72,6 +72,7 @@ public class Cloud extends Grid {
 	}
 
 	public void setMatrix(List<NetCDF> netCDFList) {
+		logger.info("setMatrix(" + netCDFList.size() + ")");
 		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, netCDFList);
 		for (Time t : timeList) {
 			if (!this.timeList.contains(t)) {
@@ -82,10 +83,8 @@ public class Cloud extends Grid {
 		this.initYearMap(this.timeList);
 	}
 
-//	public void setMatrix(List<NetCDF> netCDFList) {
 	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix,
 			List<NetCDF> netCDFList) {
-		System.out.println("setMatrix(" + netCDFList.size() + ")");
 		List<Time> timeList = new ArrayList<>();
 		for (NetCDF netCDF : netCDFList) {
 			if (netCDF.type == this.dataType) {
@@ -95,32 +94,26 @@ public class Cloud extends Grid {
 				Dimension xDimension = netCDF.xDimension;
 				Dimension yDimension = netCDF.yDimension;
 				long timeSize = netCDF.timeArray.getSize();
-//				long latSize = netCDF.latArray.getSize();
-//				long lonSize = netCDF.lonArray.getSize();
 				for (int t = 0; t < timeSize; t++) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(Time.getNineteenHundredJanuaryFirstDate(netCDF.timeArray.get(t)));
 					for (int i = 0; i < xDimension.getLength(); i++) {
-//						float latitude = netCDF.latArray.get(x);
-//						if (latitude <= 0) {
 						for (int j = 0; j < yDimension.getLength(); j++) {
-							float latitude = latMatrix.get(i, j);
-							float longitude = lonMatrix.get(i, j);
-							logger.info(latitude + ";" + longitude);
-//								float variable = netCDF.variableArray.get(t, lat, lon);
-							int x = (int) ((latitude + this.latitude - 1) * this.resolution);
-							int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
-							int z = calendar.get(Calendar.MONTH);
-//								System.out.println(x+","+y+","+z);
-							dataMatrix[x][y][z] += dataArray.get(t, i, j);
-							coordinateMatrix[x][y][z]++;
-							Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, -1, -1,
-									-1, -1);
-							if (!timeList.contains(time)) {
-								timeList.add(time);
+							float latitude = latMatrix.get(j, i);
+							float longitude = lonMatrix.get(j, i);
+							if ((int) latitude != 2143289344 && (int) longitude != 2143289344 && latitude <= 0) {
+								int x = (int) ((latitude + this.latitude) * this.resolution);
+								int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int z = calendar.get(Calendar.MONTH);
+								dataMatrix[x][y][z] += dataArray.get(t, j, i);
+								coordinateMatrix[x][y][z]++;
+								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, -1,
+										-1, -1, -1);
+								if (!timeList.contains(time)) {
+									timeList.add(time);
+								}
 							}
 						}
-//						}
 					}
 				}
 			}
