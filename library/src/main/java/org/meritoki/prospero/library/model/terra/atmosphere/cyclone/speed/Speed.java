@@ -69,7 +69,7 @@ public class Speed extends Cyclone {
 				if (this.monthFlag) {
 					value /= monthCount;
 				} else if (this.yearFlag) {
-					value /= ((double) this.getMonthCount() / (double) yearCount);
+					value /= yearCount;//value /= ((double) this.getMonthCount() / (double) yearCount);
 				}
 				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
 						this.dimension, value);
@@ -104,6 +104,7 @@ public class Speed extends Cyclone {
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
 		this.tileList = this.getTileList();
+		this.bandList = this.getBandList(this.tileList);
 		this.initTileMinMax();
 	}
 

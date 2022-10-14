@@ -7,10 +7,17 @@ import java.util.List;
 
 import javax.swing.table.TableModel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Band {
+	
+	@JsonIgnore
+	static Logger logger = LogManager.getLogger(Band.class.getName());
 	public List<Tile> tileList = new ArrayList<>();
 	public double value;
 	public double latitude;
@@ -31,7 +38,8 @@ public class Band {
 				size++;
 			}
 		}
-		quotient = (size>0)?sum/size:quotient;
+		quotient = (size>0)?(sum/size):quotient;
+//		logger.info("average("+tileList.size()+") quotient="+quotient);
 		return quotient;
 	}
 	

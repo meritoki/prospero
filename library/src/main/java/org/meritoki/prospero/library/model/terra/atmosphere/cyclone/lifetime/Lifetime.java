@@ -18,9 +18,6 @@ import org.meritoki.prospero.library.model.unit.Time;
 public class Lifetime extends Cyclone {
 
 	static Logger logger = LogManager.getLogger(Lifetime.class.getName());
-//	public float[][][] durationMatrix = new float[(int) (latitude * resolution)][(int) (longitude
-//			* resolution)][12];
-//	public Map<Integer, float[][][]> durationMatrixMap = new HashMap<>();
 	
 	public Lifetime() {
 		super("Lifetime");
@@ -29,8 +26,6 @@ public class Lifetime extends Cyclone {
 	
 	public void init() {
 		super.init();
-//		durationMatrix = new float[(int) (latitude * resolution)][(int) (longitude
-//				* resolution)][12];
 	}
 	
 	@Override
@@ -38,7 +33,7 @@ public class Lifetime extends Cyclone {
 		return this.getTileList(this.coordinateMatrix, this.dataMatrix);
 	}
 	
-	public List<Tile> getTileList(int[][][] pointMatrix, float[][][] durationMatrix) {
+	public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] durationMatrix) {
 		List<Tile> tileList = new ArrayList<>();
 		int yearCount = this.getYearCount();
 		int monthCount = this.getMonthCount();
@@ -48,8 +43,8 @@ public class Lifetime extends Cyclone {
 		float durationMean;
 		float durationMeanSum;
 		float value;
-		for (int i = 0; i < pointMatrix.length; i += this.dimension) {
-			for (int j = 0; j < pointMatrix[i].length; j += this.dimension) {
+		for (int i = 0; i < coordinateMatrix.length; i += this.dimension) {
+			for (int j = 0; j < coordinateMatrix[i].length; j += this.dimension) {
 				durationMeanSum = 0;
 				for (int m = 0; m < 12; m++) {
 					point = 0;
@@ -57,7 +52,7 @@ public class Lifetime extends Cyclone {
 					for (int a = i; a < (i + this.dimension); a++) {
 						for (int b = j; b < (j + this.dimension); b++) {
 							if (a < this.latitude && b < this.longitude) {
-								point += pointMatrix[a][b][m];
+								point += coordinateMatrix[a][b][m];
 								duration += durationMatrix[a][b][m];
 							}
 						}
@@ -69,7 +64,7 @@ public class Lifetime extends Cyclone {
 				if (this.monthFlag) {
 					value /= monthCount;
 				} else if (this.yearFlag) {
-					value /= ((double)this.getMonthCount()/(double)yearCount);
+					value /= yearCount;//value /= ((double)this.getMonthCount()/(double)yearCount);
 				}
 				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
 						this.dimension, value);
@@ -99,6 +94,7 @@ public class Lifetime extends Cyclone {
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
 		this.tileList = this.getTileList();
+		this.bandList = this.getBandList(this.tileList);
 		this.initTileMinMax();
 	}
 	
@@ -146,3 +142,6 @@ public class Lifetime extends Cyclone {
 		return index;
 	}
 }
+//public float[][][] durationMatrix = new float[(int) (latitude * resolution)][(int) (longitude
+//* resolution)][12];
+//public Map<Integer, float[][][]> durationMatrixMap = new HashMap<>();

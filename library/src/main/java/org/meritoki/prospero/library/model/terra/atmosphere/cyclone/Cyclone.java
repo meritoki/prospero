@@ -675,7 +675,6 @@ public class Cyclone extends Grid {
 			}
 		}
 		Time time = new Time(year, month, day, hour, minute, second);
-
 		return time;
 	}
 

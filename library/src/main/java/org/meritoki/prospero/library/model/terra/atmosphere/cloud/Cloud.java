@@ -36,6 +36,7 @@ public class Cloud extends Grid {
 	public void init() {
 		this.dimension = 1;
 //		this.latitude = 180;
+//		this.resolution = 100;
 //		this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 //		this.dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		super.init();

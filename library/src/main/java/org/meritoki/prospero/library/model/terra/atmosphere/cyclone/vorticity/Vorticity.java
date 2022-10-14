@@ -103,6 +103,7 @@ public class Vorticity extends Cyclone {
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
 		this.tileList = this.getTileList();
+		this.bandList = this.getBandList(this.tileList);
 		this.initTileMinMax();
 		if (this.stackFlag) {
 			List<Integer> levelList = this.getEventPressureList(eventList);
@@ -112,19 +113,20 @@ public class Vorticity extends Cyclone {
 				List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.dataMatrix);
 				this.tileListMap.put(level, tileList);
 			}
-		} else if(this.bandFlag) {
-			List<Double> tileLatitudeList = this.getTileLatitudeList(this.tileList);
-			for (Double latitude : tileLatitudeList) {
-				List<Tile> bandTileList = new ArrayList<>();
-				for (Tile t : this.tileList) {
-					if (latitude.equals(t.latitude)) {
-						bandTileList.add(t);
-					}
-				}
-				Band band = new Band(bandTileList, latitude);
-				this.bandList.add(band);
-			}
-		}
+		} 
+//		else if(this.bandFlag) {
+//			List<Double> tileLatitudeList = this.getTileLatitudeList(this.tileList);
+//			for (Double latitude : tileLatitudeList) {
+//				List<Tile> bandTileList = new ArrayList<>();
+//				for (Tile t : this.tileList) {
+//					if (latitude.equals(t.latitude)) {
+//						bandTileList.add(t);
+//					}
+//				}
+//				Band band = new Band(bandTileList, latitude);
+//				this.bandList.add(band);
+//			}
+//		}
 	}
 
 	public List<Time> setVorticityCoordinateMatrix(float[][][] vorticityMatrix, int[][][] coordinateMatrix,
