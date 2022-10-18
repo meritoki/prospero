@@ -17,8 +17,6 @@ import org.meritoki.prospero.library.model.unit.Time;
 public class Vorticity extends Cyclone {
 
 	static Logger logger = LogManager.getLogger(Vorticity.class.getName());
-//	public float[][][] vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-//	public Map<Integer, float[][][]> vorticityMatrixMap = new HashMap<>();
 
 	public Vorticity() {
 		super("Vorticity");
@@ -28,7 +26,6 @@ public class Vorticity extends Cyclone {
 	@Override
 	public void init() {
 		super.init();
-//		this.vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	}
 
 	public List<Tile> getTileList() {
@@ -88,7 +85,6 @@ public class Vorticity extends Cyclone {
 				}
 			}
 		}
-
 		return tileList;
 	}
 
@@ -114,19 +110,7 @@ public class Vorticity extends Cyclone {
 				this.tileListMap.put(level, tileList);
 			}
 		} 
-//		else if(this.bandFlag) {
-//			List<Double> tileLatitudeList = this.getTileLatitudeList(this.tileList);
-//			for (Double latitude : tileLatitudeList) {
-//				List<Tile> bandTileList = new ArrayList<>();
-//				for (Tile t : this.tileList) {
-//					if (latitude.equals(t.latitude)) {
-//						bandTileList.add(t);
-//					}
-//				}
-//				Band band = new Band(bandTileList, latitude);
-//				this.bandList.add(band);
-//			}
-//		}
+
 	}
 
 	public List<Time> setVorticityCoordinateMatrix(float[][][] vorticityMatrix, int[][][] coordinateMatrix,
@@ -194,9 +178,9 @@ public class Vorticity extends Cyclone {
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix, vorticityMatrix);
-		if (averageFlag) {
+		if (this.averageFlag) {
 			index = Tile.getAverage(key, tileList);
-		} else if (sumFlag) {
+		} else if (this.sumFlag) {
 			index = Tile.getSum(key, tileList);
 		} else {
 			index = super.getIndex(key, eventList);
@@ -204,6 +188,19 @@ public class Vorticity extends Cyclone {
 		return index;
 	}
 }
+//else if(this.bandFlag) {
+//List<Double> tileLatitudeList = this.getTileLatitudeList(this.tileList);
+//for (Double latitude : tileLatitudeList) {
+//	List<Tile> bandTileList = new ArrayList<>();
+//	for (Tile t : this.tileList) {
+//		if (latitude.equals(t.latitude)) {
+//			bandTileList.add(t);
+//		}
+//	}
+//	Band band = new Band(bandTileList, latitude);
+//	this.bandList.add(band);
+//}
+//}
 //@Override
 //public void initTileMinMax() {
 //	double min = Double.POSITIVE_INFINITY;

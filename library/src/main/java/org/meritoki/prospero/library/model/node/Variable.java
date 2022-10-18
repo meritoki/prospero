@@ -97,8 +97,7 @@ public class Variable extends Node {
 	@JsonIgnore
 	public Document document = null;
 
-	public Variable() {
-	}
+	public Variable() {}
 
 	public Variable(String name) {
 		super(name);

@@ -132,9 +132,9 @@ public class Lifetime extends Cyclone {
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix, durationMatrix);
-		if (averageFlag) {
+		if (this.averageFlag) {
 			index = Tile.getAverage(key, tileList);
-		} else if (sumFlag) {
+		} else if (this.sumFlag) {
 			index = Tile.getSum(key, tileList);
 		} else {
 			index = super.getIndex(key, eventList);

@@ -47,7 +47,7 @@ public class Series {
 	public String getData() {
 		Query query = (Query)this.map.get("query");
 		String data = query.getName();
-		String cluster = (String)this.map.get("cluster");
+		Integer cluster = (Integer)this.map.get("cluster");
 		if(cluster != null) {
 			data += "-cluster-"+cluster;
 		}

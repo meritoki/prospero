@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +50,8 @@ public class Grid extends Variable {
 	public double dimension = 2;
 	public double max;
 	public double min;
-	public Chroma chroma = new Chroma(Scheme.VIRIDIS);
+	public Scheme scheme = Scheme.VIRIDIS;
+	public Chroma chroma = new Chroma(scheme);
 	public int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	public float[][][] dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	public List<Region> regionList = new ArrayList<>();
@@ -115,6 +117,7 @@ public class Grid extends Variable {
 		this.eventList = new ArrayList<>();
 		this.stationList = new ArrayList<>();
 		this.plotList = new ArrayList<>();
+		this.clusterList = new ArrayList<>();
 	}
 
 	@Override
@@ -151,8 +154,10 @@ public class Grid extends Variable {
 			this.meter = this.query.getMeter();
 			this.window = this.query.getWindow();
 			this.range = this.query.getRange();
+			this.scheme = this.query.getScheme();
 			this.seriesMap = new TreeMap<>();
 			this.timeList = new ArrayList<>();
+			
 		} catch (Exception e) {
 			logger.error("init() exception=" + e.getMessage());
 			e.printStackTrace();
@@ -465,6 +470,7 @@ public class Grid extends Variable {
 
 	public void paintStack(Graphics graphics) {
 		logger.debug(this + ".paintStack(...) tileListMap.size() = " + this.tileListMap.size());
+		this.chroma = new Chroma(scheme);
 		if (this.tileListMap.size() > 0) {
 			int size = this.tileListMap.size();
 			double interval = this.interval;
@@ -549,6 +555,7 @@ public class Grid extends Variable {
 	}
 
 	public void paintBand(Graphics graphics) {
+		this.chroma = new Chroma(scheme);
 		Coordinate a;
 		Coordinate b;
 		Coordinate c;
@@ -579,6 +586,7 @@ public class Grid extends Variable {
 
 	public void paintTile(Graphics graphics) {
 		logger.debug(this + ".paintTile(...) tileList.size() = " + this.tileList.size());
+		this.chroma = new Chroma(this.scheme);
 		Coordinate a;
 		Coordinate b;
 		Coordinate c;
@@ -611,16 +619,18 @@ public class Grid extends Variable {
 
 	public void paintEvent(Graphics graphics) {
 		logger.debug(this + ".paintEvent(...) eventList.size() = " + this.eventList.size());
+		this.chroma = new Chroma();
 		for (int i = 0; i < this.eventList.size(); i++) {
 			Event event = (Event) this.eventList.get(i);
 			if (event.flag) {
 				logger.debug(this + ".paintEvent(...) event=" + event.id);
 				List<Coordinate> coordinateList = this.projection.getCoordinateList(0, event.coordinateList);
 				if (coordinateList != null) {
-					for (Coordinate c : coordinateList) {
+					for (int j=0;j <coordinateList.size();j++) {//Coordinate c : coordinateList) {
+						Coordinate c = coordinateList.get(j);
 						if (c != null && c.flag) {
 							logger.debug(this + ".paint(...) coordinate=" + c);
-							graphics.setColor(this.chroma.getColor(i, 0, this.eventList.size()));
+							graphics.setColor(this.chroma.getColor(j, 0, coordinateList.size()));
 							graphics.drawLine((int) ((c.point.x) * this.projection.scale),
 									(int) ((c.point.y) * this.projection.scale),
 									(int) ((c.point.x) * this.projection.scale),
@@ -631,6 +641,48 @@ public class Grid extends Variable {
 			}
 		}
 	}
+	
+	public void paintCluster(Graphics graphics) throws Exception {
+		this.chroma = new Chroma(this.scheme);
+		Collections.sort(this.clusterList, new Comparator<Cluster>() {
+		    @Override
+		    public int compare(Cluster o1, Cluster o2) {
+		        return (o1.tileList.size())-(o2.tileList.size());
+		    }
+		});
+		for(Cluster cluster: this.clusterList) {
+			Graphics2D g2d = (Graphics2D) graphics;
+			Coordinate a;
+			Coordinate b;
+			Coordinate c;
+			Coordinate d;
+			java.util.Iterator<Tile> iterator = cluster.tileList.iterator();
+			while (iterator.hasNext()) {
+				Tile t = new Tile(iterator.next());
+				if (t != null) {
+					a = projection.getCoordinate(0, t.latitude, t.longitude);
+					b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
+					c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+					d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+					if (a != null && b != null && c != null && d != null) {
+						int xpoints[] = { (int) (a.point.x * projection.scale),
+								(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
+								(int) (d.point.x * projection.scale) };
+						int ypoints[] = { (int) (a.point.y * projection.scale),
+								(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
+								(int) (d.point.y * projection.scale) };
+						int npoints = 4;
+						g2d.setColor(this.chroma.getColor(cluster.getID(), 0, this.clusterList.size()));
+						g2d.fillPolygon(xpoints, ypoints, npoints);
+					}
+				}
+			}
+		}
+		Meter meter = new Meter(0.9, (int) (projection.xMax * projection.scale), this.clusterList.size(), 0,
+				"id", 1);
+		meter.setChroma(this.chroma);
+		meter.paint(graphics);
+	}
 
 	public void paint(Graphics graphics) throws Exception {
 		if (this.load) {
@@ -639,7 +691,9 @@ public class Grid extends Variable {
 			} else if (this.bandFlag) {
 				this.paintBand(graphics);
 			} else {
-				if (this.tileList != null && this.tileList.size() > 0) {
+				if(this.clusterList != null && !this.clusterList.isEmpty()) {
+					this.paintCluster(graphics);
+				} else if (this.tileList != null && this.tileList.size() > 0) {
 					this.paintTile(graphics);
 				} else if (this.eventList != null && this.eventList.size() > 0) {
 					this.paintEvent(graphics);

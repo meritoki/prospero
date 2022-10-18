@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.color.Scheme;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classification;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
@@ -187,6 +188,19 @@ public class Query {
 			analysis = Analysis.valueOf(value.toUpperCase());
 		}
 		return analysis;
+	}
+	
+	@JsonIgnore
+	public Scheme getScheme() {
+		String s = this.map.get("scheme");
+		Scheme scheme = null;
+		if(s != null) {
+			s.toUpperCase();
+			scheme = Scheme.valueOf(s);
+		} else {
+			scheme = Scheme.VIRIDIS;
+		}
+		return scheme;
 	}
 	
 	@JsonIgnore

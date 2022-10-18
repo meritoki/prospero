@@ -19,8 +19,6 @@ import org.meritoki.prospero.library.model.unit.Time;
 public class Speed extends Cyclone {
 
 	static Logger logger = LogManager.getLogger(Speed.class.getName());
-//	public float[][][] speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-//	public Map<Integer, float[][][]> speedMatrixMap = new HashMap<>();
 
 	public Speed() {
 		super("Speed");
@@ -30,7 +28,6 @@ public class Speed extends Cyclone {
 	@Override
 	public void init() {
 		super.init();
-//		this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	}
 
 	@Override
@@ -143,9 +140,9 @@ public class Speed extends Cyclone {
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix, speedMatrix);
-		if (averageFlag) {
+		if (this.averageFlag) {
 			index = Tile.getAverage(key, tileList);
-		} else if (sumFlag) {
+		} else if (this.sumFlag) {
 			index = Tile.getSum(key, tileList);
 		} else {
 			index = super.getIndex(key, eventList);

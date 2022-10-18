@@ -31,9 +31,6 @@ public class Planet extends Orbital {
 		super(name);
 	}
 	
-
-	
-	
 	public List<Point> getSineFunction(List<Index> indexList) {
 		Sine sine = new Sine(indexList);
 		List<Point> pointList = new ArrayList<>();

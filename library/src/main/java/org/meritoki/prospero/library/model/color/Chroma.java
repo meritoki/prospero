@@ -21,7 +21,7 @@ public class Chroma {
 	public boolean print = true;
 
 	public Chroma() {
-
+		this.initRainbow();
 	}
 	
 	public void initRainbow() {
@@ -59,6 +59,8 @@ public class Chroma {
 				break;
 			}
 			}
+		} else {
+			this.initRainbow();
 		}
 	}
 

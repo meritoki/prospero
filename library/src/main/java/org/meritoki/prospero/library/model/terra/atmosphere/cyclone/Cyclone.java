@@ -76,7 +76,6 @@ public class Cyclone extends Grid {
 		this.addChild(new Lifetime());
 		this.sourceMap.put("UTN ERA INTERIM", "2d611935-9786-4c28-9dcf-f18cf3e99a3a");
 		this.sourceMap.put("UTN ERA 5", "281cbf52-7014-4229-bffd-35c8ba41bcb5");
-		this.chroma.initRainbow();
 	}
 
 	public Cyclone(String name) {
@@ -219,7 +218,7 @@ public class Cyclone extends Grid {
 			this.cluster();
 		}
 		this.initPlotList(this.seriesMap, this.eventList);
-		this.initTableList(this.eventList, this.bandList);
+		this.initTableList(this.eventList, this.bandList,this.clusterList);
 	}
 
 	public void cluster() {
@@ -292,14 +291,12 @@ public class Cyclone extends Grid {
 		Cluster cluster;
 		for (Entry<Integer, List<Tile>> entry : tileMap.entrySet()) {
 			cluster = new Cluster();
-			cluster.id = entry.getKey().toString();
+			cluster.id = entry.getKey();
 			cluster.tileList = entry.getValue();
 			clusterList.add(cluster);
 		}
 		this.clusterList = clusterList;
 		this.getClusterPlots(this.clusterList);
-//		this.tileList = tileList;
-//		this.initTileMinMax();
 	}
 
 	public void getClusterPlots(List<Cluster> clusterList) {
@@ -316,16 +313,15 @@ public class Cyclone extends Grid {
 				}
 			}
 			for (Cluster c : clusterList) {
-				Series series = seriesMap.get(c.id);
+				Series series = seriesMap.get(c.uuid);
 				if (series == null) {
 					series = this.newSeries();
 					series.map.put("cluster", c.id);
 				}
 				Index index = time.getIndex();
 				index.value = c.getAverageValue();
-//				System.out.println("getClusterPlots(...) index="+index);
 				series.addIndex(index);
-				seriesMap.put(c.id, series);
+				seriesMap.put(c.uuid, series);
 			}
 		}
 		this.seriesMap.putAll(seriesMap);
@@ -385,7 +381,7 @@ public class Cyclone extends Grid {
 								this.seriesMap.put(region.toString(), series);
 							}
 							this.initPlotList(this.seriesMap, null);
-							this.initTableList(null, null);
+//							this.initTableList(null, null,null);
 							this.eventMap.remove(time);
 						}
 					} catch (Exception e) {
@@ -502,13 +498,16 @@ public class Cyclone extends Grid {
 		this.plotList = plotList;
 	}
 
-	public void initTableList(List<Event> eventList, List<Band> bandList) {
+	public void initTableList(List<Event> eventList, List<Band> bandList, List<Cluster> clusterList) {
 		List<Table> tableList = new ArrayList<>();
 		if (eventList != null && eventList.size() > 0) {
 			tableList.add(new Table("Cyclone Event(s)", CycloneEvent.getTableModel(eventList)));
 		}
 		if (bandList != null && bandList.size() > 0) {
 			tableList.add(new Table("Band(s)", Band.getTableModel(bandList)));
+		}
+		if(clusterList != null && clusterList.size() >0) {
+			tableList.add(new Table("Cluster(s)", Cluster.getTableModel(clusterList)));
 		}
 		this.tableList = tableList;
 	}
