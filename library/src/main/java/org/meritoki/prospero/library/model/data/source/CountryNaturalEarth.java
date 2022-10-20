@@ -15,6 +15,7 @@ import org.locationtech.jts.io.WKTReader;
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 
 public class CountryNaturalEarth extends Source {
@@ -36,14 +37,6 @@ public class CountryNaturalEarth extends Source {
 		query.objectList.add(result);
 	}
 	
-//	@Override
-//	public Object get() {
-//		if(this.multiPolygonList == null) {
-//			this.multiPolygonList = (List<MultiPolygon>) this.box(-180, 90, 180, -90);
-//		}
-//		return this.multiPolygonList;
-//	}
-	
 	public MultiPolygon point(double latitude, double longitude) {
 		MultiPolygon f = null;
 		File file = new File(this.fileName);
@@ -59,7 +52,6 @@ public class CountryNaturalEarth extends Source {
 				while (iterator.hasNext()) {
 					SimpleFeature feature = iterator.next();
 					System.out.println(feature.getAttribute("NAME"));
-//					GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory( null );
 					WKTReader reader = new WKTReader();
 					MultiPolygon polygon = (MultiPolygon) reader.read(feature.getDefaultGeometry()+"");
 					f=polygon;
@@ -104,3 +96,10 @@ public class CountryNaturalEarth extends Source {
 		return mList;
 	}
 }
+//@Override
+//public Object get() {
+//	if(this.multiPolygonList == null) {
+//		this.multiPolygonList = (List<MultiPolygon>) this.box(-180, 90, 180, -90);
+//	}
+//	return this.multiPolygonList;
+//}

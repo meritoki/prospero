@@ -8,32 +8,62 @@ import java.util.Vector;
 
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.unit.Event;
-import org.meritoki.prospero.library.model.unit.Frame;
+import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.meritoki.prospero.library.model.unit.Interval;
+import org.meritoki.prospero.library.model.unit.Mode;
+import org.meritoki.prospero.library.model.unit.Result;
+import org.meritoki.prospero.library.model.unit.Time;
 
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.ArrayShort;
 
 public class OceanSource extends Source {
 	
-	protected Map<String, List<Frame>> frameMap = new HashMap<>();
+	protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 	public float earthRadius = 6371;
 	
 	public OceanSource() {
+		super();
 		this.calendarFlag = true;
 	}
 	
-	public void filter(Query query) throws Exception {
-		
+	@Override
+	public void query(Query query) throws Exception {
+		this.intervalList = query.getIntervalList(this.getStartYear(), this.getEndYear());
+		if (this.intervalList != null) {
+			for (Interval i : this.intervalList) {
+				this.load(query, i);
+			}
+			query.objectListAdd(new Result(Mode.COMPLETE));
+		}
+	}
+
+
+	
+	public void load(Query query, Interval interval) throws Exception {
+		List<Time> timeList = Time.getTimeList(interval);
+		List<NetCDF> loadList;
+		for(Time time: timeList) {
+			if (!Thread.interrupted()) {
+				loadList = this.read(time.year, time.month);
+				Result result = new Result();
+				result.map.put("time", time);
+				result.map.put("netCDFList", new ArrayList<NetCDF>((loadList)));
+				query.objectList.add(result);
+			} else {
+				throw new InterruptedException();
+			}
+		}
 	}
 	
-	public List<Frame> frameMapGet(int y, int m) throws Exception {
-		if (this.frameMap == null)
-			this.frameMap = new HashMap<>();
-		List<Frame> eList = this.frameMap.get(y + "" + m);
+	public List<NetCDF> netCDFMapGet(int y, int m) throws Exception {
+		if (this.netCDFMap == null)
+			this.netCDFMap = new HashMap<>();
+		List<NetCDF> eList = this.netCDFMap.get(y + "" + m);
 		if (eList == null) {
 			eList = this.read(y, m);
 			if (eList != null) {
-				this.frameMap.put(y + "" + m, eList);
+				this.netCDFMap.put(y + "" + m, eList);
 			} else {
 				eList = new ArrayList<>();
 			}
@@ -42,7 +72,7 @@ public class OceanSource extends Source {
 		return eList;
 	}
 	
-	public List<Frame> read(int year, int month) throws Exception {
+	public List<NetCDF> read(int year, int month) throws Exception {
 		return null;
 	}
 
@@ -135,6 +165,22 @@ public class OceanSource extends Source {
 			}
 		}
 		return newSSTArray;
+	}
+	
+	public ArrayFloat.D3 getMSLArray(ArrayShort.D3 mslArray, int timeCount, int latitudeCount, int longitudeCount,
+			double scaleFactor, double addOffset) {
+		ArrayFloat.D3 newMSLArray = new ArrayFloat.D3(timeCount, latitudeCount, longitudeCount);
+		for (int t = 0; t < timeCount; t++) {
+			for (int lat = 0; lat < latitudeCount; lat++) {
+				for (int lon = 0; lon < longitudeCount; lon++) {
+					float msl = mslArray.get(t, lat, lon);
+					msl *= scaleFactor;
+					msl += addOffset;
+					newMSLArray.set(t, lat, lon, msl);
+				}
+			}
+		}
+		return newMSLArray;
 	}
 
 	public float getContinent(double scaleFactor, double addOffset) {

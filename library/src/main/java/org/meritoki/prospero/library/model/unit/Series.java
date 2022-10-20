@@ -34,6 +34,7 @@ public class Series {
 	public String getTitle() {
 		String title = "";
 		title += (this.map.get("name")!=null)?this.map.get("name")+" ":"";
+		title += (this.map.get("cluster")!=null)?"Cluster "+this.map.get("cluster")+" ":"";
 		title += (this.map.get("group")!=null)?((String)this.map.get("group"))+" ":"";
 		title += (this.map.get("sum")!=null && (boolean)this.map.get("sum"))?"Sum ":"";
 		title += (this.map.get("average")!=null && (boolean)this.map.get("average"))?"Average ":"";
@@ -46,6 +47,10 @@ public class Series {
 	public String getData() {
 		Query query = (Query)this.map.get("query");
 		String data = query.getName();
+		Integer cluster = (Integer)this.map.get("cluster");
+		if(cluster != null) {
+			data += "-cluster-"+cluster;
+		}
 		return data;
 	}
 

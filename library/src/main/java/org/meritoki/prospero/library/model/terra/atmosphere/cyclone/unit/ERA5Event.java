@@ -11,25 +11,25 @@ public class ERA5Event extends CycloneEvent {
 
 	public ERA5Event() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public ERA5Event(CycloneEvent event) {
 		super(event);
-		this.classify();
-		// TODO Auto-generated constructor stub
 	}
 
-	public ERA5Event(String id, List<Coordinate> pointList) {
-		super(id, pointList);
-		this.classify();
-		// TODO Auto-generated constructor stub
+	public ERA5Event(List<Coordinate> coordinateList) {
+		super(coordinateList);
+	}
+	
+	public ERA5Event(String id, List<Coordinate> coordinateList) {
+		super(id, coordinateList);
 	}
 	
 	@JsonIgnore
+	@Override
 	public void classify() {
-		int maxTimeLevelCount = this.getMaxTimeLevelCount();// this.getLevelList().size();//
-		int lowerMostLevel = this.getLowerMostLevel();
+		int maxTimeLevelCount = this.getMaxTimeLevelCount();
+		int lowerMostLevel = this.getLowerMostLevel();// Need to fix
 		if (2 <= maxTimeLevelCount && maxTimeLevelCount <= 4) {
 			this.family = Family.SHALLOW;
 			if (lowerMostLevel >= 700) {

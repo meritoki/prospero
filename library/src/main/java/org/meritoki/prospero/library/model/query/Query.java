@@ -1,5 +1,6 @@
 package org.meritoki.prospero.library.model.query;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,9 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.color.Scheme;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classification;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
@@ -29,11 +32,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.meritoki.module.library.model.data.Data;
 
 public class Query {
 	
 	static Logger logger = LogManager.getLogger(Query.class.getName());
+	@JsonIgnore
+	public String uuid;
 	@JsonProperty
 	public Map<String,String> map = new TreeMap<>();
 	@JsonIgnore
@@ -48,12 +52,16 @@ public class Query {
 	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	@JsonIgnore
 	public Script script = null;
+	@JsonIgnore
+	public Object object = null;
 
 	public Query() {
+		this.uuid = UUID.randomUUID().toString();
 		this.initAlias();
 	}
 	
 	public Query(Query q) {
+		this.uuid = q.uuid;
 		this.initAlias();
 		this.map = new TreeMap<>(q.map);
 		this.calendar = (Calendar)q.calendar.clone();
@@ -80,6 +88,16 @@ public class Query {
 			return flag;
 		} 
 		return false;
+	}
+	
+	@JsonIgnore
+	public String getFileName() {
+		return this.getTime()+"-"+this.getSourceUUID();
+	}
+	
+	@JsonIgnore
+	public File getFile() {
+		return new File(this.getFileName()+".json");
 	}
 	
 	@JsonIgnore
@@ -170,6 +188,19 @@ public class Query {
 			analysis = Analysis.valueOf(value.toUpperCase());
 		}
 		return analysis;
+	}
+	
+	@JsonIgnore
+	public Scheme getScheme() {
+		String s = this.map.get("scheme");
+		Scheme scheme = null;
+		if(s != null) {
+			s.toUpperCase();
+			scheme = Scheme.valueOf(s);
+		} else {
+			scheme = Scheme.VIRIDIS;
+		}
+		return scheme;
 	}
 	
 	@JsonIgnore
@@ -345,6 +376,15 @@ public class Query {
 	}
 	
 	@JsonIgnore
+	public Boolean getClear() {
+		String clear = this.map.get("clear");
+		if(clear != null) {
+			return Boolean.valueOf(clear);
+		}
+		return false;
+	}
+	
+	@JsonIgnore
 	public Boolean getAverage() {
 		String average = this.map.get("average");
 		if(average != null) {
@@ -386,7 +426,7 @@ public class Query {
 	public String getGroup() {
 		String group = this.map.get("group");
 		if(group == null) {
-			group = "day";
+			group = "month";
 		}
 		return group;
 	}
@@ -428,6 +468,32 @@ public class Query {
 			regression = "all";
 		}
 		return regression;
+	}
+	
+	@JsonIgnore
+	public String getID() {
+		return map.get("id");
+	}
+	
+	@JsonIgnore
+	public List<String> getIDList() {
+		return this.getIDList(this.getID());
+	}
+	
+	@JsonIgnore
+	public List<String> getIDList(String string) {
+		List<String> stringList = new ArrayList<>();
+		if(string != null) {
+			if(string.contains(",")) {
+				String[] array = string.split(",");
+				for(String t: array) {
+					stringList.add(t);
+				}
+			} else {
+				stringList.add(string);
+			}
+		}
+		return stringList;
 	}
 	
 	@JsonIgnore

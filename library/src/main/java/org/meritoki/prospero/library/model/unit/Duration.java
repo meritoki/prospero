@@ -29,7 +29,7 @@ public class Duration {
 		this.seconds = diff / 1000;
 		this.minutes = diff / (60 * 1000);
 		this.hours = diff / (60 * 60 * 1000);
-		this.days = ((diff) / (1000 * 60 * 60 * 24));
+		this.days = ((diff) / (1000.0 * 60.0 * 60.0 * 24.0));
 	}
 
 	public boolean contains(Duration duration) {

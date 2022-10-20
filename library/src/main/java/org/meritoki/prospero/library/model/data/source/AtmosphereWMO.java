@@ -21,8 +21,7 @@ import org.meritoki.prospero.library.model.unit.Station;
 
 public class AtmosphereWMO extends Source {
 	static Logger logger = LogManager.getLogger(VolcanicNOAA.class.getName());
-	public String path = this.basePath+"prospero-data/WMO/Station/";
-//	public List<Station> stationList;
+	public String path = basePath+"prospero-data"+seperator+"WMO"+seperator+ "Station"+seperator;
 
 	public static void main(String[] args) {
 		AtmosphereWMO a = new AtmosphereWMO();
@@ -51,7 +50,6 @@ public class AtmosphereWMO extends Source {
 		List<Station> stationList = new ArrayList<>();
 		for (File subdirectory : directory.listFiles()) {
 			if (subdirectory.isDirectory()) {
-//				System.out.println(subdirectory);
 				Station station = new Station();
 				double latitude = 0;
 				double longitude = 0;

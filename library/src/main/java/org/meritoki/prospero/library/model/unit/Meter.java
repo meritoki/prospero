@@ -81,19 +81,33 @@ public class Meter {
 		double multiplier = 1;
 		double max = 0;
 		double min = 0;
-		NumberFormat formatter = new DecimalFormat("#0.00");
+		NumberFormat formatter = new DecimalFormat("#0.000");
 		int count = meterHeight / interval;
 		double value = 0;
-		if (this.max > 0 || 0 > this.max) {
+//		if (this.max > 0 || 0 > this.max) {
 //			System.out.println("this.max="+max);
 			if (maxPower < 0) {//
 				multiplier = Math.pow(10, Math.abs(maxPower));
 				max = this.max * multiplier;
-				min = this.min * multiplier;
+//				min = this.min * multiplier;
 			} else {
 				max = this.max;
+//				min = this.min;
+			}
+			
+			if (minPower < 0) {//
+				String powerString = "e" + minPower;
+				int powerWidth = graphics.getFontMetrics().stringWidth(powerString);
+				graphics.setColor(Color.black);
+				graphics.drawString(powerString, startX + (meterWidth / 2) - (powerWidth / 2), startY - 16);
+				multiplier = Math.pow(10, Math.abs(minPower));
+//				max = this.max * multiplier;
+				min = this.min * multiplier;
+			} else {
+//				max = this.max;
 				min = this.min;
 			}
+
 
 			for (int i = meterHeight; i >= 0; i--) {
 				graphics.setColor(this.chroma.getColor(i * (difference / meterHeight), 0, difference));//0, max
@@ -111,24 +125,24 @@ public class Meter {
 					count--;
 				}
 			}
-		} else {
-			if (this.min > 0 || 0 > this.min) {
-//				System.out.println("this.min="+min);
-				if (minPower < 0) {
-					multiplier = Math.pow(10, Math.abs(minPower));
-					min = this.min * multiplier;
-				} else {
-					min = this.min;
-				}
-				if (minPower < 0) {
-					String powerString = "e" + minPower;
-					int powerWidth = graphics.getFontMetrics().stringWidth(powerString);
-					graphics.drawString(powerString, startX + (meterWidth / 2) - (powerWidth / 2), startY - 16);
-				}
-			}
-			graphics.drawLine(startX + meterWidth, startY + meterHeight, startX + meterWidth + 4, startY + meterHeight);
-			graphics.drawString(formatter.format(min), startX + meterWidth + 5, startY + meterHeight + 4);
-		}
+//		} else {
+//			if (this.min > 0 || 0 > this.min) {
+////				System.out.println("this.min="+min);
+//				if (minPower < 0) {
+//					multiplier = Math.pow(10, Math.abs(minPower));
+//					min = this.min * multiplier;
+//				} else {
+//					min = this.min;
+//				}
+//				if (minPower < 0) {
+//					String powerString = "e" + minPower;
+//					int powerWidth = graphics.getFontMetrics().stringWidth(powerString);
+//					graphics.drawString(powerString, startX + (meterWidth / 2) - (powerWidth / 2), startY - 16);
+//				}
+//			}
+//			graphics.drawLine(startX + meterWidth, startY + meterHeight, startX + meterWidth + 4, startY + meterHeight);
+//			graphics.drawString(formatter.format(min), startX + meterWidth + 5, startY + meterHeight + 4);
+//		}
 		graphics.setColor(Color.black);
 		graphics.drawRect(startX, startY, (int) (meterWidth * this.scale), (int) (meterHeight * this.scale));
 		if (this.max != 0 && maxPower < 0) {
@@ -144,8 +158,9 @@ public class Meter {
 	}
 
 	public int getPower(double number) {
+//		System.out.println("getPower("+number+")");
 		int power = 0;
-		if (!Double.isInfinite(number)) {
+		if (!Double.isInfinite(number) && number != 0) {
 			String value = Double.toString(number);
 			String[] array;
 

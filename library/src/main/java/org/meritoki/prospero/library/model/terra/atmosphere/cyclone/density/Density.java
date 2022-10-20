@@ -11,7 +11,6 @@ import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Region;
-import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
@@ -116,43 +115,50 @@ public class Density extends Cyclone {
 
 	@Override
 	public Index getIndex(Time key, List<Event> eventList) {
-//		int[][][] bufferCoordinateMatrix = this.coordinateMatrix;
-//		List<String> bufferDateList = this.dateList;
 		int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		Index index = null;
-//		this.setEventList(eventList, true);
 		List<Time> timeList = this.setCoordinateMatrix(coordinateMatrix, eventList);
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix);
-		if (average) {
-			StandardDeviation standardDeviation = new StandardDeviation();
-			Mean mean = new Mean();
-			for (Tile tile : tileList) {
-				standardDeviation.increment(tile.value);
-				mean.increment(tile.value);
-			}
-			double value = mean.getResult();
-			if (!Double.isNaN(value) && value != 0) {
-				index = key.getIndex();
-				index.value = value;
-				index.map.put("N", standardDeviation.getN());
-				index.map.put("standardDeviation", standardDeviation.getResult());
-			}
-		} else if (sum) {
-			double sum = 0;
-			for (Tile tile : tileList) {
-				sum += tile.value;
-			}
-			index = key.getIndex();
-			index.value = sum;
+		this.timeTileMap.put(key,tileList);
+		if (averageFlag) {
+			index = Tile.getAverage(key, tileList);
+		} else if (sumFlag) {
+			index = Tile.getSum(key, tileList);
 		} else {
 			index = super.getIndex(key, eventList);
 		}
-//		this.coordinateMatrix = bufferCoordinateMatrix;
-//		this.dateList = bufferDateList;
 		return index;
 	}
+	
+//	public Index getIndex(List<Tile> tileList) {
+//		Index index = null;
+//		if (average) {
+//			StandardDeviation standardDeviation = new StandardDeviation();
+//			Mean mean = new Mean();
+//			for (Tile tile : tileList) {
+//				standardDeviation.increment(tile.value);
+//				mean.increment(tile.value);
+//			}
+//			double value = mean.getResult();
+//			if (!Double.isNaN(value) && value != 0) {
+//				index = key.getIndex();
+//				index.value = value;
+//				index.map.put("N", standardDeviation.getN());
+//				index.map.put("standardDeviation", standardDeviation.getResult());
+//			}
+//		} else if (sum) {
+//			double sum = 0;
+//			for (Tile tile : tileList) {
+//				sum += tile.value;
+//			}
+//			index = key.getIndex();
+//			index.value = sum;
+//		} else {
+//			index = super.getIndex(key, eventList);
+//		}
+//	}
 }
 //@Override
 //public void setIndexList(Series series, Map<Time, List<Event>> eventMap, boolean reset) {

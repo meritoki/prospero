@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.meritoki.prospero.library.model.plot;
+package org.meritoki.prospero.library.model.plot.time;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Label;
@@ -392,7 +393,7 @@ public class TimePlot extends Plot {
 			graphics.setColor(Color.WHITE);
 			this.plotWidth = this.panelWidth - 256;
 			this.plotHeight = this.panelHeight - 128;
-			this.horizon = (int) this.plotHeight;
+//			this.horizon = (int) this.plotHeight;
 			graphics.fillRect(0, 0, this.panelWidth, this.panelHeight);
 			Point panelCenter = new Point(this.panelWidth / 2.0, this.panelHeight / 2.0);
 			Point plotCenter = new Point(this.plotWidth / 2.0, this.plotHeight / 2.0);
@@ -408,7 +409,7 @@ public class TimePlot extends Plot {
 			graphics.setColor(Color.black);
 			graphics.drawRect(0, 0, (int) (plotWidth), (int) (plotHeight));
 			graphics.setFont(new Font(this.fontName, this.titleFontStyle, this.titleFontSize));
-			this.yDifference = this.getYDifference();
+			this.yDifference = (this.yMax - this.yMin);//this.getYDifference();
 			this.xDifference = (this.xMax - this.xMin);
 			this.yInterval = this.yDifference / this.step;// works
 			this.xInterval = this.xDifference / this.xDifference;// 1000 * 3600 * 24;//
@@ -485,9 +486,13 @@ public class TimePlot extends Plot {
 										- ((xMax - index.getSeconds(this.startCalendar)) * xIncrement));
 								Integer y1 = null;
 								y1 = (int) (horizon - (this.scaleIndex(index.value)));
-								if (y1 != null)
-									graphics.drawLine(x1, y1, x1, y1);
-
+								if (y1 != null) {
+									//graphics.drawLine(x1, y1, x1, y1);
+//									graphics.fillOval(x1, y1, 4, 4);
+									int s = 3;
+									graphics.drawLine(x1-s, y1, x1+s, y1);
+									graphics.drawLine(x1,y1-s,x1,y1+s);
+								}
 							}
 						}
 					}

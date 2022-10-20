@@ -23,9 +23,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.desktop.model.Model;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.desktop.view.window.SplashWindow;
-import org.meritoki.prospero.library.model.Model;
+
 
 public class Desktop {
 

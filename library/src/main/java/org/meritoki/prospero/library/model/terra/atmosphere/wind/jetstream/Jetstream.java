@@ -1,17 +1,16 @@
-package org.meritoki.prospero.library.model.terra.atmosphere.wind.intensity;
+package org.meritoki.prospero.library.model.terra.atmosphere.wind.jetstream;
 
-import org.meritoki.prospero.library.model.grid.Grid;
+import org.meritoki.prospero.library.model.terra.atmosphere.wind.Wind;
 
-public class Jetstream extends Grid {
-
-//	public List<Frame> frameList;
-	
+public class Jetstream extends Wind {
 	
 	public Jetstream() {
 		super("Jetstream");
+		this.sourceMap.put("ERA 5", "73428541-23ea-4c4a-bc82-4fb4db5afe05");
 		this.sourceMap.put("ERA Interim", "f4d6ead6-949a-42a9-9327-a8e22790e0e7");
 	}
 }
+//public List<Frame> frameList;
 //@Override
 //public void load() {
 //	if(this.load) { 

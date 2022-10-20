@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.meritoki.prospero.library.model.function.Cosine;
+import org.meritoki.prospero.library.model.function.Sine;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.star.sun.Sun;
@@ -28,8 +30,6 @@ import org.meritoki.prospero.library.model.solar.unit.Orbital;
 import org.meritoki.prospero.library.model.solar.unit.Space;
 import org.meritoki.prospero.library.model.solar.unit.Triangle;
 import org.meritoki.prospero.library.model.solar.unit.Tunnel;
-import org.meritoki.prospero.library.model.trig.Cosine;
-import org.meritoki.prospero.library.model.trig.Sine;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;

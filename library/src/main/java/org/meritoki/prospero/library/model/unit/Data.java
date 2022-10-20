@@ -1,6 +1,8 @@
 package org.meritoki.prospero.library.model.unit;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,20 +17,22 @@ public class Data {
 	static Logger logger = LogManager.getLogger(Data.class.getName());
 //	@JsonProperty
 //	public long milliseconds;
+//	@JsonProperty
+//	public DataType type;
+//	@JsonProperty
+//	public float value;
 	@JsonProperty
-	public DataType type;
-	@JsonProperty
-	public float value;
+	public Map<DataType,Float> map = new HashMap<>();
 	
 	public Data() {
 		
 	}
 	
-	public Data(DataType type, float value) {
-//		this.milliseconds = milliseconds;
-		this.type=type;
-		this.value = value;
-	}
+//	public Data(DataType type, float value) {
+////		this.milliseconds = milliseconds;
+//		this.type=type;
+//		this.value = value;
+//	}
 	
 //	public Data(DataType type, float value, long milliseconds) {
 //		this.milliseconds = milliseconds;

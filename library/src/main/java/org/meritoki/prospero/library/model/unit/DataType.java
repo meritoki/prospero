@@ -4,5 +4,8 @@ public enum DataType {
 	SST,
 	MODULUS,
 	INTENSITY,
-	CONTINENT
+	CONTINENT,
+	MSL,
+	GEOPOTENTIAL,
+	BAND_4
 }

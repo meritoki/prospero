@@ -53,6 +53,7 @@ public class Source extends Node {//implements SourceInterface
 				logger.warn("InterruptedException " + e.getMessage());
 				query.objectList.add(new Result(Mode.EXCEPTION,e.getMessage()));
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.warn("Exception "+e.getMessage());
 				query.objectList.add(new Result(Mode.EXCEPTION,e.getMessage()));
 			}
@@ -95,6 +96,14 @@ public class Source extends Node {//implements SourceInterface
 			dateList.add(date);
 		}
 		return dateList;
+	}
+	
+	public int getYearMonthDays(int year, int month) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month - 1);
+		int days = calendar.getActualMaximum(Calendar.DATE);
+		return days;
 	}
 	
 	public void unsupportedException(String field, String value) throws Exception {

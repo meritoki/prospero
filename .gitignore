@@ -4,3 +4,5 @@ target/
 archive/
 logs/
 output/
+desktop/output.csv
+desktop/process/

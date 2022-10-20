@@ -40,7 +40,6 @@ public class CycloneSource extends Source {
 
 	@Override
 	public void query(Query query) throws Exception {
-//		logger.info("query(" + query + ")");
 		this.intervalList = query.getIntervalList(this.getStartYear(), this.getEndYear());
 		if (this.intervalList != null) {
 			for (Interval i : this.intervalList) {
@@ -49,14 +48,9 @@ public class CycloneSource extends Source {
 			query.objectListAdd(new Result(Mode.COMPLETE));
 		}
 	}
-
-	public int[] getLevelArray() {
-		return this.levelArray;
-	}
 	
 	public void load(Query query, Interval interval) throws Exception {
 		List<Time> timeList = Time.getTimeList(interval);
-		List<Event> bufferList = null;
 		List<Event> loadList;
 		for(Time time: timeList) {
 			if (!Thread.interrupted()) {
@@ -71,6 +65,9 @@ public class CycloneSource extends Source {
 		}
 	}
 
+	public int[] getLevelArray() {
+		return this.levelArray;
+	}
 //	/**
 //	 * Original function works with or without startYear and endYear, set to -1.
 //	 * This is the problem for Month and Alias queries there is nothing that says

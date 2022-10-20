@@ -20,31 +20,36 @@ public class Frame {
 	public String uuid;
 	@JsonProperty
 	public boolean flag;
-	@JsonProperty
-	public long milliseconds;
+//	@JsonProperty
+//	public long milliseconds;
 	@JsonProperty
 	public Calendar calendar;
-	@JsonProperty
-	public short latitude = 90;
-	@JsonProperty
-	public short longitude = 360;
-	@JsonProperty
-	public int resolution = 1;
-	@JsonProperty
-	public List<Long> millisecondList;
+//	@JsonProperty
+//	public short latitude = 90;
+//	@JsonProperty
+//	public short longitude = 360;
+//	@JsonProperty
+//	public int resolution = 1;
+//	@JsonProperty
+//	public List<Long> millisecondList;
 	@JsonIgnore
 	public boolean print = false;
-	@JsonProperty
-	public Map<String, List<Data>> data;
+	@JsonProperty 
+	public List<Coordinate> coordinateList = new ArrayList<>();
+//	@JsonProperty
+//	public Map<String, Data> data = new HashMap<>();
 
 	public Frame() {
 		this.uuid = UUID.randomUUID().toString();
-		this.millisecondList = new ArrayList<>();
-		this.data = new HashMap<>();
+//		this.millisecondList = new ArrayList<>();
+//		this.data = new HashMap<>();
 	}
 	
+//	public List<Data> getDataList() {
+//		return (List<Data>) data.values();
+//	}
+	
 	public boolean containsCalendar(Calendar calendar) {
-		
 		if (this.calendar.get(Calendar.YEAR) == calendar.get(Calendar.YEAR)
 				&& this.calendar.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)
 				&& this.calendar.get(Calendar.DATE) == calendar.get(Calendar.DATE)

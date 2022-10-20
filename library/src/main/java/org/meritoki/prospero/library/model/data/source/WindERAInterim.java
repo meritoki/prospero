@@ -39,8 +39,6 @@ public class WindERAInterim extends WindSource {
 		this.calendarFlag = true;
 	}
 	
-
-	
 	public List<Frame> read(int year, int month) {
 		logger.info("read(" + year + "," + month + ")");
 		String start = year + String.format("%02d", month) + String.format("%02d", 1);
@@ -90,7 +88,7 @@ public class WindERAInterim extends WindSource {
 				for (int j = 0; j < latitudeCount; j++) {
 					latitude = latArray.get(j);
 //					if (latitude < 0) {
-						latitude += 90;
+//						latitude += 90;
 						for (int i = 0; i < longitudeCount; i++) {
 							longitude = lonArray.get(i);
 							intensitySum = 0;
@@ -106,12 +104,14 @@ public class WindERAInterim extends WindSource {
 							}
 							intensityAverage = intensitySum / levelCount;
 							frame.flag = true;
-							short latitudeIndex = (short) latitude;
-							short longitudeIndex = (short) longitude;
-							if (frame.data.get(latitudeIndex+","+longitudeIndex) == null) {
-								frame.data.put(latitudeIndex+","+longitudeIndex, new ArrayList<>());
-							}
-							frame.data.get(latitudeIndex+","+longitudeIndex).add(new Data(DataType.INTENSITY, intensityAverage));
+							Coordinate coordinate = new Coordinate();
+							coordinate.calendar = frame.calendar;
+							coordinate.latitude = latitude+90;
+							coordinate.longitude = longitude;
+							coordinate.attribute.put(DataType.INTENSITY.toString(),intensityAverage);
+							coordinate.flag = true;
+							frame.coordinateList.add(coordinate);
+
 						}
 //					}
 				}
@@ -135,6 +135,12 @@ public class WindERAInterim extends WindSource {
 		return frameList;
 	}
 }
+//short latitudeIndex = (short) latitude;
+//short longitudeIndex = (short) longitude;
+//if (frame.data.get(latitudeIndex+","+longitudeIndex) == null) {
+//	frame.data.put(latitudeIndex+","+longitudeIndex, new Data());
+//}
+//frame.data.get(latitudeIndex+","+longitudeIndex).map.put(DataType.INTENSITY, intensityAverage);
 //@Override
 //public List<Frame> frameMapGet(int y, int m) {
 //	if (this.frameMap == null)

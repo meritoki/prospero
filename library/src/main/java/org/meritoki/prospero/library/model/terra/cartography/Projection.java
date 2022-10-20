@@ -10,6 +10,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Edge;
 import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.Polygon;
 
 public class Projection implements ProjectionInterface {
 
@@ -96,21 +97,24 @@ public class Projection implements ProjectionInterface {
 		return coordinateList;
 	}
 	
-	public List<Coordinate> getMultiPolygonList(double vertical, List<MultiPolygon> multiPolygonList) {
+	public List<Polygon> getPolygonList(double vertical, List<MultiPolygon> multiPolygonList) {
 		if(print)System.out.println("getMultiPolygonList("+vertical+","+multiPolygonList.size()+")");
-		List<Coordinate> coordinateList = new ArrayList<>();
+		List<Polygon> polygonList = new ArrayList<>();
 		org.locationtech.jts.geom.Coordinate[] a;
-		Coordinate coordinate;
+		Polygon polygon;
 		for (MultiPolygon m : multiPolygonList) {
 			a = m.getCoordinates();
+			polygon = new Polygon();
 			for (int i = 0; i < a.length; i++) {
-				coordinate = this.getCoordinate(vertical, a[i].y, a[i].x);
-				if (coordinate != null)
-					coordinateList.add(coordinate);
+				Coordinate coordinate = this.getCoordinate(vertical, a[i].y, a[i].x);
+				if (coordinate != null) {
+					polygon.coordinateList.add(coordinate);
+				}
 			}
+			polygonList.add(polygon);
 		}
-		if(print)System.out.println("getMultiPolygonList("+vertical+","+multiPolygonList.size()+") coordinateList.size()="+coordinateList.size());
-		return coordinateList;
+		if(print)System.out.println("getMultiPolygonList("+vertical+","+multiPolygonList.size()+") coordinateList.size()="+polygonList.size());
+		return polygonList;
 	}
 	
 	public List<Coordinate> getMultiLineStringList(double vertical, List<MultiLineString> multiLineStringList) {
@@ -151,6 +155,11 @@ public class Projection implements ProjectionInterface {
 		if(print)System.out.println("getGridCoordinateList("+vertical+","+latitudeInterval+","+longitudeInterval+")");
 		List<Coordinate> coordinateList = new ArrayList<>();
 		Coordinate coordinate;
+		int latitudeMax = 90;
+		int latitudeMin = -90;
+		int longitudeMax = 180;
+		int longitudeMin = -180;
+		
 		for (int i = -90; i <= 90; i++) {
 			for (int j = -180; j <= 180; j += longitudeInterval) {
 				double latitude = i;
@@ -173,7 +182,7 @@ public class Projection implements ProjectionInterface {
 		return coordinateList;
 	}
 	
-	public Coordinate getCoordinate(Point point3D) {
+	public Coordinate getCoordinate(Point point) {
 		Coordinate coordinate = null;
 		double theta = Math.PI * azimuth/ 180.0;
 		double phi = Math.PI * elevation/ 180.0;
@@ -187,9 +196,9 @@ public class Projection implements ProjectionInterface {
 		float sinTsinP = sinT * sinP;
 		float near = 3; // distance from eye to near plane
 		float nearToObj = 1.5f; // distance from near plane to center of object
-		double x0 = point3D.x;
-		double y0 = point3D.y;
-		double z0 = point3D.z;
+		double x0 = point.x;
+		double y0 = point.y;
+		double z0 = point.z;
 
 		// compute an orthographic projection
 		float x1 = (float) (cosT * x0 + sinT * z0);

@@ -89,18 +89,11 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 						graphics.drawImage(image, 0, i * height, null);
 					}
 				} 
-				this.setPreferredSize(new Dimension(width,(this.plotList.size()-1)*height));
+				this.setPreferredSize(new Dimension(width,(this.plotList.size())*height));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-//		graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
-//		if (this.plot != null) {
-//			graphics.setColor(Color.white);
-//			this.plot.setPanelHeight(256);
-//			this.plot.setPanelWidth(this.getWidth());
-//			this.plot.paint(graphics, createImage(this.getWidth(), 256));
-//		} 
 	}
 	
 	
@@ -140,7 +133,7 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 		while (true) {
 			try {
 				this.repaint();
-				Thread.sleep(3000);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -1,4 +1,4 @@
-package org.meritoki.prospero.library.model.trig;
+package org.meritoki.prospero.library.model.function;
 
 import java.util.ArrayList;
 import java.util.Calendar;

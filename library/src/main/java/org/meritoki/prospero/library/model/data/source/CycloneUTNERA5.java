@@ -1,6 +1,7 @@
 package org.meritoki.prospero.library.model.data.source;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -127,8 +128,8 @@ public class CycloneUTNERA5 extends CycloneSource {
 			for (Entry<Integer, Stack> stackEntry : stackMap.entrySet()) {
 				if (!Thread.interrupted()) {
 					int id = stackEntry.getValue().id;
-					String date = stackEntry.getValue().startDate;
-					List<Coordinate> pointList = new ArrayList<Coordinate>();
+//					String date = stackEntry.getValue().getFirstDot().startDate;
+					List<Coordinate> coordinateList = new ArrayList<Coordinate>();
 					trackMap = stackEntry.getValue().trackMap;
 					for (Entry<Integer, Track> trackEntry : trackMap.entrySet()) {
 						if (!Thread.interrupted()) {
@@ -150,7 +151,7 @@ public class CycloneUTNERA5 extends CycloneSource {
 									}
 									point.attribute.put("pressure", pressure);
 									point.attribute.put("vorticity", vorticity);
-									pointList.add(point);
+									coordinateList.add(point);
 								} else {
 									throw new InterruptedException();
 								}
@@ -159,7 +160,9 @@ public class CycloneUTNERA5 extends CycloneSource {
 							throw new InterruptedException();
 						}
 					}
-					CycloneEvent event = new ERA5Event(date + "-" + id, pointList);
+					CycloneEvent event = new ERA5Event(coordinateList);
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+					event.id = sdf.format(event.getStartCalendar().getTime())+"-"+sdf.format(event.getEndCalendar().getTime())+id;
 					eventList.add(event);
 				} else {
 					throw new InterruptedException();

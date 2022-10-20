@@ -1,12 +1,7 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed;
 
-import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
@@ -18,15 +13,12 @@ import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Region;
-import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
 public class Speed extends Cyclone {
 
 	static Logger logger = LogManager.getLogger(Speed.class.getName());
-	public float[][][] speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-	public Map<Integer, float[][][]> speedMatrixMap = new HashMap<>();
 
 	public Speed() {
 		super("Speed");
@@ -36,12 +28,11 @@ public class Speed extends Cyclone {
 	@Override
 	public void init() {
 		super.init();
-		this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	}
 
 	@Override
 	public List<Tile> getTileList() {
-		return this.getTileList(coordinateMatrix, speedMatrix);
+		return this.getTileList(this.coordinateMatrix, this.dataMatrix);
 	}
 
 	public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] speedMatrix) {
@@ -75,7 +66,7 @@ public class Speed extends Cyclone {
 				if (this.monthFlag) {
 					value /= monthCount;
 				} else if (this.yearFlag) {
-					value /= ((double) this.getMonthCount() / (double) yearCount);
+					value /= yearCount;//value /= ((double) this.getMonthCount() / (double) yearCount);
 				}
 				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
 						this.dimension, value);
@@ -100,60 +91,37 @@ public class Speed extends Cyclone {
 	}
 
 	@Override
-	public void setEventList(List<Event> eventList, boolean reset) {
-//		logger.info("setEventList("+eventList.size()+","+reset+")");
-		if (reset) {
-			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-			this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-			this.dateList = new ArrayList<>();
-		}
-		for (Event e : eventList) {
-			if (e.flag) {
-				Coordinate p = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
-				if (p != null) {
-					coordinateMatrix[(int) ((p.latitude + this.latitude)
-							* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
-									.getMonth() - 1]++;
-					speedMatrix[(int) ((p.latitude + this.latitude)
-							* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
-									.getMonth() - 1] += ((CycloneEvent) e).getMeanSpeed();
-					String date = p.getYear() + "-" + p.getMonth();
-					if (!this.dateList.contains(date)) {
-						this.dateList.add(date);
-					}
-				}
-			}
-		}
-	}
-
-	@Override
 	public void setMatrix(List<Event> eventList) {
-		List<Time> timeList = this.setSpeedCoordinateMatrix(this.speedMatrix, this.coordinateMatrix, eventList);
-		for(Time t: timeList) {
-			if(!this.eventTimeList.contains(t)) {
-				this.eventTimeList.add(t);
+		List<Time> timeList = this.setSpeedCoordinateMatrix(this.dataMatrix, this.coordinateMatrix, eventList);
+		for (Time t : timeList) {
+			if (!this.timeList.contains(t)) {
+				this.timeList.add(t);
 			}
 		}
-		this.initMonthArray(this.eventTimeList);
-		this.initYearMap(this.eventTimeList);
+		this.initMonthArray(this.timeList);
+		this.initYearMap(this.timeList);
+		this.tileList = this.getTileList();
+		this.bandList = this.getBandList(this.tileList);
+		this.initTileMinMax();
 	}
 
-	public List<Time> setSpeedCoordinateMatrix(float[][][] speedMatrix, int[][][] coordinateMatrix, List<Event> eventList) {
+	public List<Time> setSpeedCoordinateMatrix(float[][][] speedMatrix, int[][][] coordinateMatrix,
+			List<Event> eventList) {
 		List<Time> timeList = null;
 		if (eventList != null) {
 			timeList = new ArrayList<>();
 			for (Event e : eventList) {
 				if (e.flag) {
-					Coordinate p = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
-					if (p != null) {
-						coordinateMatrix[(int) ((p.latitude + this.latitude)
-								* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
+					Coordinate c = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
+					if (c != null) {
+						coordinateMatrix[(int) ((c.latitude + this.latitude)
+								* this.resolution)][(int) ((c.longitude + this.longitude / 2) * this.resolution)][c
 										.getMonth() - 1]++;
-						speedMatrix[(int) ((p.latitude + this.latitude)
-								* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
+						speedMatrix[(int) ((c.latitude + this.latitude)
+								* this.resolution)][(int) ((c.longitude + this.longitude / 2) * this.resolution)][c
 										.getMonth() - 1] += ((CycloneEvent) e).getMeanSpeed();
-						Time time = new Time(p.getYear(),p.getMonth(),-1,-1,-1,-1);
-						if(!timeList.contains(time)) {
+						Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
+						if (!timeList.contains(time)) {
 							timeList.add(time);
 						}
 					}
@@ -165,49 +133,49 @@ public class Speed extends Cyclone {
 
 	@Override
 	public Index getIndex(Time key, List<Event> eventList) {
-//		int[][][] bufferCoordinateMatrix = this.coordinateMatrix;
-//		float[][][] bufferSpeedMatrix = this.speedMatrix;
-//		List<String> bufferDateList = this.dateList;
 		int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		float[][][] speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		Index index = null;
-//		this.setEventList(eventList, true);
 		List<Time> timeList = this.setSpeedCoordinateMatrix(speedMatrix, coordinateMatrix, eventList);
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix, speedMatrix);
-		if (average) {
-			StandardDeviation standardDeviation = new StandardDeviation();
-			Mean mean = new Mean();
-			for (Tile tile : tileList) {
-				if(tile.value != 0) {
-					standardDeviation.increment(tile.value);
-					mean.increment(tile.value);
-				}
-			}
-			double value = mean.getResult();
-			if (!Double.isNaN(value) && value != 0) {
-				index = key.getIndex();
-				index.value = value;
-				index.map.put("N", standardDeviation.getN());
-				index.map.put("standardDeviation", standardDeviation.getResult());
-			}
-		} else if (sum) {
-			double sum = 0;
-			for (Tile tile : tileList) {
-				sum += tile.value;
-			}
-			index = key.getIndex();
-			index.value = sum;
+		if (this.averageFlag) {
+			index = Tile.getAverage(key, tileList);
+		} else if (this.sumFlag) {
+			index = Tile.getSum(key, tileList);
 		} else {
 			index = super.getIndex(key, eventList);
 		}
-//		this.coordinateMatrix = bufferCoordinateMatrix;
-//		this.speedMatrix = bufferSpeedMatrix;
-//		this.dateList = bufferDateList;
 		return index;
 	}
 }
+//@Override
+//public void setEventList(List<Event> eventList, boolean reset) {
+////	logger.info("setEventList("+eventList.size()+","+reset+")");
+//	if (reset) {
+//		this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//		this.speedMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+//		this.dateList = new ArrayList<>();
+//	}
+//	for (Event e : eventList) {
+//		if (e.flag) {
+//			Coordinate p = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
+//			if (p != null) {
+//				coordinateMatrix[(int) ((p.latitude + this.latitude)
+//						* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
+//								.getMonth() - 1]++;
+//				speedMatrix[(int) ((p.latitude + this.latitude)
+//						* this.resolution)][(int) ((p.longitude + this.longitude / 2) * this.resolution)][p
+//								.getMonth() - 1] += ((CycloneEvent) e).getMeanSpeed();
+//				String date = p.getYear() + "-" + p.getMonth();
+//				if (!this.dateList.contains(date)) {
+//					this.dateList.add(date);
+//				}
+//			}
+//		}
+//	}
+//}
 //@Override
 //public void addSeriesIndex(Series series, Time key, List<Event> eventList) {
 ////	logger.info("setIndexList("+series.indexList.size()+"," + eventMap.size() + ","+reset+")");

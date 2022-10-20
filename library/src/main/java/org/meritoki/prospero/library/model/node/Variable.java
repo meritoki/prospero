@@ -29,10 +29,11 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.data.Data;
+import org.meritoki.prospero.library.model.document.Document;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Mode;
@@ -70,6 +71,8 @@ public class Variable extends Node {
 	@JsonIgnore
 	public LinkedList<Query> queryStack = new LinkedList<>();
 	@JsonIgnore
+	public List<String> orderList = new ArrayList<>();
+	@JsonIgnore
 	public Projection projection = new AzimuthalSouth();
 	@JsonIgnore
 	public Data data;
@@ -91,9 +94,10 @@ public class Variable extends Node {
 	public LinkedList<Time> timeList = new LinkedList<>();
 	@JsonIgnore
 	public boolean cache = false;
+	@JsonIgnore
+	public Document document = null;
 
-	public Variable() {
-	}
+	public Variable() {}
 
 	public Variable(String name) {
 		super(name);
@@ -162,7 +166,7 @@ public class Variable extends Node {
 	 */
 	@JsonIgnore
 	public void init() {
-		logger.info("init()");
+//		logger.info("init()");
 		try {
 			this.operator = this.query.getOperator();
 			this.script = this.query.getScript();
@@ -211,6 +215,12 @@ public class Variable extends Node {
 				this.init();
 				try {
 					this.data.add(query);
+//					Page page = this.document.pageMap.get(query.getTime()+"-"+query.getSourceUUID());
+//					if(page == null) {
+//						page = new Page();
+//					}
+//					page.queryList.add(query);
+//					this.document.pageMap.put(query.getTime()+"-"+query.getSourceUUID(),page);
 					this.queryStack.push(new Query(query));
 				} catch (Exception e) {
 					logger.warn("query(" + query + ") Exception " + e.getMessage());
@@ -271,6 +281,26 @@ public class Variable extends Node {
 			}
 		}
 		return plotList;
+	}
+	
+	public List<Table> getTableList() throws Exception {
+		List<Table> tableList = new ArrayList<>();
+		for (Variable n : this.getList()) {
+			if (n.load) {
+				tableList.addAll(n.getTableList());
+			}
+		}
+		return tableList;
+	}
+	
+	
+	@JsonIgnore
+	public void setDocument(Document document) {
+		this.document = document;
+		List<Variable> nodeList = this.getChildren();
+		for (Variable n : nodeList) {
+			n.setDocument(this.document);
+		}
 	}
 
 	@JsonIgnore
@@ -368,17 +398,33 @@ public class Variable extends Node {
 	public List<Variable> getChildren() {
 		List<Module> moduleList = new ArrayList<Module>(this.moduleMap.values());
 		List<Variable> variableList = new ArrayList<>();
-		for (Module m : moduleList) {
-			if (m instanceof Variable) {
-				variableList.add((Variable) m);
+//		for(String s: this.orderList) {
+			for (Module m : moduleList) {
+//				System.out.println(s+".equals("+m+")");
+//				if(s.equals(m.toString())) {
+	 				if (m instanceof Variable) {
+						variableList.add((Variable) m);
+					}
+//				}
 			}
-		}
+//		}
+//		List<Module> moduleList = new ArrayList<Module>(this.moduleMap.values());
+//		List<Variable> variableList = new ArrayList<>();
+//		for (Module m : moduleList) {
+//			for(String s: this.orderList) {
+//				if (s.equals(m.toString()) && m instanceof Variable) {
+//					variableList.add((Variable) m);
+//				}
+//			}
+//			
+//		}
 		return variableList;
 	}
 
 	@JsonIgnore
 	public void addChild(Variable child) {
 //		logger.info(this.name+".addChild("+child+")");
+		this.orderList.add(child.toString());
 		this.moduleMapPut(child);
 	}
 

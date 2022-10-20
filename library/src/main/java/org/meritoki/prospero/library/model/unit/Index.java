@@ -126,8 +126,8 @@ public class Index implements Comparable<Index> {
 		return objectArray;
 	}
 	
-	public static TableModel getTableModel(List<Index> regressionList) {
-		Object[] objectArray = getObjectArray(regressionList);
+	public static TableModel getTableModel(List<Index> indexList) {
+		Object[] objectArray = getObjectArray(indexList);
 		return new javax.swing.table.DefaultTableModel((Object[][])objectArray[1], (Object[])objectArray[0]);
 	}
 	
