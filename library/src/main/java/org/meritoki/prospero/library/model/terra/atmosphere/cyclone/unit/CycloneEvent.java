@@ -275,8 +275,8 @@ public class CycloneEvent extends Event {
 	@JsonIgnore
 	public List<Integer> getPressureList() {
 		List<Integer> pressureList = new ArrayList<>();
-		for (Coordinate p : this.coordinateList) {
-			int pressure = (int) p.attribute.get("pressure");
+		for (Coordinate c : this.coordinateList) {
+			int pressure = (int) c.attribute.get("pressure");
 			if (!pressureList.contains(pressure)) {
 				pressureList.add(pressure);
 			}
