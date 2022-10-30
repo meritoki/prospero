@@ -10,13 +10,14 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.data.Data;
+import org.meritoki.prospero.library.model.node.Energy;
+import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.unit.Script;
 
 import com.meritoki.library.controller.node.NodeController;
 import com.meritoki.module.library.model.N;
-import com.meritoki.module.library.model.Node;
 
 public class Model extends Variable {
 
@@ -25,10 +26,11 @@ public class Model extends Variable {
 	public List<System> systemList = new ArrayList<>();
 	public Variable node = this;
 	public boolean cache = false;
+	public Solar solar = new Solar();
 
 	public Model() {
 		super("Model");
-		this.addChild(new Solar(this));
+		this.addChild(this.solar);
 		this.setData(new Data());
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
@@ -39,6 +41,15 @@ public class Model extends Variable {
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		this.setCalendar(calendar);
+	}
+	
+	public void setNode(Variable variable) {
+		logger.info("setNode("+variable+")");
+		this.node = variable;
+		if(this.node instanceof Orbital) {
+			Energy e = (Energy)this.node;
+			this.solar.setCenter(e.space);
+		}
 	}
 	
 	public void setCache(boolean cache) {

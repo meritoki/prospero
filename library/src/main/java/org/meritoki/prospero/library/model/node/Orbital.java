@@ -15,9 +15,11 @@
  */
 package org.meritoki.prospero.library.model.node;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
@@ -28,6 +30,7 @@ import org.meritoki.prospero.library.model.solar.planet.jupiter.Jupiter;
 import org.meritoki.prospero.library.model.solar.planet.saturn.Saturn;
 import org.meritoki.prospero.library.model.solar.planet.uranus.Uranus;
 import org.meritoki.prospero.library.model.solar.star.sun.Sun;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
 
@@ -36,11 +39,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * Citation
  * <ol type="A">
- * <li><a href="https://stjarnhimlen.se/comp/ppcomp.html">https://stjarnhimlen.se/comp/ppcomp.html</a></li>
- * <li><a href="http://www.stjarnhimlen.se/comp/tutorial.html">http://www.stjarnhimlen.se/comp/tutorial.html</a></li>
+ * <li><a href=
+ * "https://stjarnhimlen.se/comp/ppcomp.html">https://stjarnhimlen.se/comp/ppcomp.html</a></li>
+ * <li><a href=
+ * "http://www.stjarnhimlen.se/comp/tutorial.html">http://www.stjarnhimlen.se/comp/tutorial.html</a></li>
  * </ol>
  */
-public class Orbital extends Energy {
+public class Orbital extends Grid {
 
 	static Logger logger = LogManager.getLogger(Orbital.class.getName());
 	public Calendar referenceCalendar = (new GregorianCalendar(2000, 0, 0, 0, 0, 0));
@@ -57,7 +62,7 @@ public class Orbital extends Energy {
 	public double[] meanAnomaly = new double[3];
 	public double rotation;
 	public Orbital centroid;
-	
+
 	public Orbital() {
 		super("Orbital");
 	}
@@ -65,24 +70,51 @@ public class Orbital extends Energy {
 	public Orbital(String name) {
 		super(name);
 	}
-	
-	public Vector3D getDirection(Energy energy) {
-		Vector3D direction = this.space.rectangular.subtract(energy.space.rectangular);
-		if(centroid != null)
-			direction = direction.subtract(centroid.space.rectangular);
-		if(direction.getNorm() != 0)
-			direction = direction.normalize();
-		return direction;
-	}
 
 	@JsonIgnore
 	public void setCalendar(Calendar calendar) {
 		this.calendar = calendar;
-//		this.space = this.getSpace(this.calendar);
+		// this.space = this.getSpace(this.calendar);
 		List<Variable> nodeList = this.getChildren();
-		for(Variable n: nodeList) {
+		for (Variable n : nodeList) {
 			n.setCalendar(calendar);
 		}
+		Object root = this.getRoot();
+		if (root instanceof Orbital) {//&& !(this.getRoot() instanceof Solar)) {
+			this.centroid = (Orbital)root;
+			this.space = this.getSpace(this.calendar, this.centroid);
+			this.space.subtract(this.center);
+			this.projection.setSpace(this.space);
+			
+			logger.info(this.name + ".paint(graphics) space=" + space);
+		}
+
+	}
+	
+	public List<Point> getOrbit(Orbital centroid) {
+		LinkedList<Point> vertexList = new LinkedList<>();
+		if (this.orbitalPeriod > 0) {
+			double resolution = 512.0;
+			double increment = (this.orbitalPeriod*24) / resolution;
+			Calendar calendar = (Calendar) this.calendar.clone();
+			double count = 0;
+			while (count <= resolution) {
+				Point position = this.projection.getPoint(this.getSpace(calendar,centroid).getPoint());
+				calendar.add(Calendar.HOUR, (int) (Math.round(increment))); // number of days to ad
+				count++;
+				vertexList.add(position);
+			}
+		}
+		return vertexList;
+	}
+
+	public Vector3D getDirection(Energy energy) {
+		Vector3D direction = this.space.rectangular.subtract(energy.space.rectangular);
+		if (centroid != null)
+			direction = direction.subtract(centroid.space.rectangular);
+		if (direction.getNorm() != 0)
+			direction = direction.normalize();
+		return direction;
 	}
 
 	public double getMeanAnomaly(double d) {
@@ -104,11 +136,13 @@ public class Orbital extends Energy {
 	 * 
 	 * M = mean anomaly (0 at perihelion; increases uniformly with time)
 	 * 
-	 * Please note that a, the semi-major axis, is given in Earth radii for the Moon, but in Astronomical Units for the Sun and all the planets.
+	 * Please note that a, the semi-major axis, is given in Earth radii for the
+	 * Moon, but in Astronomical Units for the Sun and all the planets.
+	 * 
 	 * @param calendar
 	 * @return Space
 	 */
-	public Space getSpace(Calendar calendar) {
+	public Space getSpace(Calendar calendar, Orbital centroid) {
 		double t = this.getTime(calendar);
 		double N = this.longitudeOfAscendingNode[0] + this.longitudeOfAscendingNode[1] * t;
 		double i = this.inclination[0] + this.inclination[1] * t;
@@ -122,31 +156,31 @@ public class Orbital extends Energy {
 		M = this.rev(M);
 		double longitudeCorrection = 0;
 		double latitudeCorrection = 0;
-		//A - Perturabations
+		// A - Perturabations
 		if (this instanceof Jupiter) {
 			Sun sun = (Sun) this.getRoot();
 			Saturn saturn = (Saturn) sun.getVariable("Saturn");
 			double Ms = saturn.getMeanAnomaly(t);
-			double one = - 0.332 * Math.sin(Math.toRadians((2 * M) - (5 * Ms) - 67.6));
-			double two = - 0.056 * Math.sin(Math.toRadians(2 * M - 2 * Ms + 21));
-			double three = + 0.042 * Math.sin(Math.toRadians(3 * M - 5 * Ms + 21));
-			double four = - 0.036 * Math.sin(Math.toRadians(M - 2 * Ms));
-			double five = + 0.022 * Math.cos(Math.toRadians(M - Ms));
-			double six = + 0.023 * Math.sin(Math.toRadians(2 * M - 3 * Ms + 52));
-			double seven = - 0.016 * Math.sin(Math.toRadians(M - 5 * Ms - 69));
+			double one = -0.332 * Math.sin(Math.toRadians((2 * M) - (5 * Ms) - 67.6));
+			double two = -0.056 * Math.sin(Math.toRadians(2 * M - 2 * Ms + 21));
+			double three = +0.042 * Math.sin(Math.toRadians(3 * M - 5 * Ms + 21));
+			double four = -0.036 * Math.sin(Math.toRadians(M - 2 * Ms));
+			double five = +0.022 * Math.cos(Math.toRadians(M - Ms));
+			double six = +0.023 * Math.sin(Math.toRadians(2 * M - 3 * Ms + 52));
+			double seven = -0.016 * Math.sin(Math.toRadians(M - 5 * Ms - 69));
 			longitudeCorrection = one + two + three + four + five + six + seven;
 		} else if (this instanceof Saturn) {
 			Sun sun = (Sun) this.getRoot();
 			Jupiter jupiter = (Jupiter) sun.getVariable("Jupiter");
 			double Mj = jupiter.getMeanAnomaly(t);
-			double one = 0.812 * Math.sin(Math.toRadians(2*Mj - 5*M - 67.6));
-			double two = -0.229 * Math.cos(Math.toRadians(2*Mj - 4*M - 2));
-			double three = +0.119 * Math.sin(Math.toRadians(Mj - 2*M -3));
-			double four = +0.046 * Math.sin(Math.toRadians(2*Mj - 6*M - 69));
-			double five = +0.014 * Math.sin(Math.toRadians(Mj - 3*M -32));
+			double one = 0.812 * Math.sin(Math.toRadians(2 * Mj - 5 * M - 67.6));
+			double two = -0.229 * Math.cos(Math.toRadians(2 * Mj - 4 * M - 2));
+			double three = +0.119 * Math.sin(Math.toRadians(Mj - 2 * M - 3));
+			double four = +0.046 * Math.sin(Math.toRadians(2 * Mj - 6 * M - 69));
+			double five = +0.014 * Math.sin(Math.toRadians(Mj - 3 * M - 32));
 			longitudeCorrection = one + two + three + four + five;
-			double six = -0.020 * Math.cos(Math.toRadians(2*Mj - 4*M - 2));
-			double seven = 0.018 * Math.sin(2*Mj - 6*M - 49);
+			double six = -0.020 * Math.cos(Math.toRadians(2 * Mj - 4 * M - 2));
+			double seven = 0.018 * Math.sin(2 * Mj - 6 * M - 49);
 			latitudeCorrection = six + seven;
 		} else if (this instanceof Uranus) {
 			Sun sun = (Sun) this.getRoot();
@@ -154,13 +188,13 @@ public class Orbital extends Energy {
 			Jupiter jupiter = (Jupiter) sun.getVariable("Jupiter");
 			double Ms = saturn.getMeanAnomaly(t);
 			double Mj = jupiter.getMeanAnomaly(t);
-			double one = +0.040 * Math.sin(Math.toRadians(Ms - 2*M + 6));
-			double two = +0.035 * Math.sin(Math.toRadians(Ms - 3*M + 33));
+			double one = +0.040 * Math.sin(Math.toRadians(Ms - 2 * M + 6));
+			double two = +0.035 * Math.sin(Math.toRadians(Ms - 3 * M + 33));
 			double three = -0.015 * Math.sin(Math.toRadians(Mj - M + 20));
 			longitudeCorrection = one + two + three;
 		}
-		logger.debug(this.name+":{N: "+N+", i:"+i+", w: "+w+", a: "+a+", e: "+e+", M:"+M+"}");
-		//A - Solving Kepler's Equation
+		logger.debug(this.name + ":{N: " + N + ", i:" + i + ", w: " + w + ", a: " + a + ", e: " + e + ", M:" + M + "}");
+		// A - Solving Kepler's Equation
 		M = Math.toRadians(M);
 		N = Math.toRadians(N);
 		i = Math.toRadians(i);
@@ -168,37 +202,42 @@ public class Orbital extends Energy {
 		double E = M + e * Math.sin(M) * (1.0 + e * Math.cos(M));
 		double error = 1;
 		double E0 = E;
-		while (error > 0.0001) { //0.005
+		while (error > 0.0001) { // 0.005
 			double E1 = E0 - (E0 - e * Math.sin(E0) - M) / (1 - e * Math.cos(E0));
 			error = Math.abs(E0 - E1);
 			E0 = E1;
 		}
-		E=E0;
-		//A - Spheroid Distance and true anomaly
+		E = E0;
+		// A - Spheroid Distance and true anomaly
 		double xv = a * (Math.cos(E) - e);
 		double yv = a * (Math.sqrt(1.0 - e * e) * Math.sin(E));
 		double v = Math.atan2(yv, xv);
 		double r = Math.sqrt(xv * xv + yv * yv);
-		//A -  Calculate The Position in space
-		double xh = r * (Math.cos(N) * Math.cos(v+w) - Math.sin(N) * Math.sin(v+w) * Math.cos(i));
-		double yh = r * (Math.sin(N) * Math.cos(v+w) + Math.cos(N) * Math.sin(v+w) * Math.cos(i));
-		double zh = r * Math.sin(v+w) * Math.sin(i);
-		//A - Correct for Perturbations
+		// A - Calculate The Position in space
+		double xh = r * (Math.cos(N) * Math.cos(v + w) - Math.sin(N) * Math.sin(v + w) * Math.cos(i));
+		double yh = r * (Math.sin(N) * Math.cos(v + w) + Math.cos(N) * Math.sin(v + w) * Math.cos(i));
+		double zh = r * Math.sin(v + w) * Math.sin(i);
+		// A - Correct for Perturbations
 		double lonecl = Math.toRadians(Math.toDegrees(Math.atan2(yh, xh)) + longitudeCorrection);// longitude
-		double latecl = Math.toRadians(Math.toDegrees(Math.asin(zh / Math.sqrt(xh*xh+yh*yh))) + latitudeCorrection);// latitude
-		//A - Initialize Space Object that will hold all spatial representations
+		double latecl = Math
+				.toRadians(Math.toDegrees(Math.asin(zh / Math.sqrt(xh * xh + yh * yh))) + latitudeCorrection);// latitude
+		// A - Initialize Space Object that will hold all spatial representations
 		Space space = new Space();
 		Vector3D eliptic = new Vector3D(xh, yh, zh);
 		Vector3D spherical = new Vector3D(r, lonecl, latecl);
-		Vector3D rectangular = new Vector3D(r * Math.sin(lonecl) * Math.cos(latecl), r * Math.sin(lonecl) * Math.sin(latecl),
-				r * Math.cos(lonecl));
-		//A - Place Spheroid in Orbit around Centroid
-		if (this.centroid != null) {
+		Vector3D rectangular = new Vector3D(r * Math.sin(lonecl) * Math.cos(latecl),
+				r * Math.sin(lonecl) * Math.sin(latecl), r * Math.cos(lonecl));
+		// A - Place Spheroid in Orbit around Centroid
+		if (centroid != null) {
 			space.eliptic = this.centroid.space.eliptic.add(eliptic);
 			space.spherical = spherical;
 			space.rectangular = this.centroid.space.rectangular.add(rectangular);
 		}
 		return space;
+	}
+	
+	public void setCentroid(Orbital centroid) {
+		this.centroid = centroid;
 	}
 
 //	public Coordinate getCoordinate(Point point) {
@@ -248,28 +287,25 @@ public class Orbital extends Energy {
 		int minute = calendar.get(Calendar.MINUTE);
 		int second = calendar.get(Calendar.SECOND);
 		double UT = this.getUniversalTime(hour, minute, second);
-		if(calendar.get(Calendar.ERA) == GregorianCalendar.BC) {
+		if (calendar.get(Calendar.ERA) == GregorianCalendar.BC) {
 			year = -year;
 		}
-		int t = (367 * year) 
-				- 7 * (year + (month + 9) / 12) / 4
-				- 3 * ((year +(month - 9) / 7)/100+1)/ 4
-				+ 275 * month/ 9
-				+ day
-				- 730515;
-		return t + UT/24.0;
+		int t = (367 * year) - 7 * (year + (month + 9) / 12) / 4 - 3 * ((year + (month - 9) / 7) / 100 + 1) / 4
+				+ 275 * month / 9 + day - 730515;
+		return t + UT / 24.0;
 	}
-	
+
 	/**
-	 * In this function we are trying to write time as hours and fractions
-	 * of an hour.
+	 * In this function we are trying to write time as hours and fractions of an
+	 * hour.
+	 * 
 	 * @param hour
 	 * @param minute
 	 * @param second
 	 * @return
 	 */
 	public double getUniversalTime(int hour, int minute, int second) {
-		return hour+(minute/60.0)+(second/3600.0);
+		return hour + (minute / 60.0) + (second / 3600.0);
 	}
 
 	public double rev(double x) {
@@ -280,8 +316,6 @@ public class Orbital extends Energy {
 		return rv;
 	}
 
-
-	
 //	public List<Point> getOrbit() {
 //		LinkedList<Point> vertexList = new LinkedList<>();
 //		if (this.orbitalPeriod != 0) {
@@ -300,11 +334,11 @@ public class Orbital extends Energy {
 //	}
 //	
 	public double getOrbitDistance() {
-		return this.angularVelocity*(this.orbitalPeriod*24*60*60);
+		return this.angularVelocity * (this.orbitalPeriod * 24 * 60 * 60);
 	}
-	
+
 	public double getAngularVelocity(double radius) {
-		return Math.sqrt(Unit.G*this.getMass()/radius);
+		return Math.sqrt(Unit.G * this.getMass() / radius);
 	}
 
 	public double getRotationCorrection(Calendar a) {
@@ -319,18 +353,19 @@ public class Orbital extends Energy {
 		double angle = ratio * 360;
 		return angle;
 	}
-	
+
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
-		if(this.getRoot() instanceof Orbital && !(this.getRoot() instanceof Solar)) {
-			logger.info(this.name+".paint(graphics) this.getRoot()="+this.getRoot());
-			this.centroid = (Orbital)this.getRoot();
-			this.space = this.getSpace(this.calendar);
-			logger.info(this.name+".paint(graphics) space="+space);
-		} else {
-			this.space = new Space();
+		List<Point> vertexList = this.getOrbit(this.centroid);
+		graphics.setColor(Color.gray);
+		for (int i = 1; i < vertexList.size(); i++) {
+			graphics.drawLine((int) (vertexList.get(i - 1).x * this.projection.scale),
+					(int) (vertexList.get(i - 1).y * this.projection.scale),
+					(int) (vertexList.get(i).x * this.projection.scale),
+					(int) (vertexList.get(i).y * this.projection.scale));
 		}
+		graphics.setColor(this.color);
 	}
 }
 //public static void main(String[] args) {

@@ -74,9 +74,6 @@ public class CameraPanel extends javax.swing.JPanel
 		graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
 		if (this.model != null && this.model.node != null) {
 			Variable node = this.model.node;
-			while (node != null && !node.paint) {
-				node = (node.getRoot() != null) ? (Variable) node.getRoot() : null;
-			}
 			if (node != null) {
 				try {
 					node.paint(graphics);

@@ -22,11 +22,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.function.Sine;
-import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
 
-public class Planet extends Grid {
+public class Planet extends Orbital {
 
 	static Logger logger = LogManager.getLogger(Planet.class.getName());
 	
@@ -43,34 +43,30 @@ public class Planet extends Grid {
 		}
 		return pointList;
 	}
-	
-
 
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
-//		this.initVariableMap();
 
-
-//		List<Point> vertexList = this.getOrbit();
-//		graphics.setColor(Color.gray);
-//		radius = 5;
-//		for (int i = 1; i < vertexList.size(); i++) {
-//			graphics.drawLine((int) (vertexList.get(i - 1).x * this.projection.scale),
-//					(int) (vertexList.get(i - 1).y * this.projection.scale), (int) (vertexList.get(i).x * this.projection.scale),
-//					(int) (vertexList.get(i).y * this.projection.scale));
-//		}
-
-//		super.paint(graphics);
-//		List<Variable> nodeList = this.getChildren();
-//		for (Variable n : nodeList) {
-//			if(n instanceof Energy) {
-//				n.paint(graphics);
-//			}
-//		}
 	}
 }
+//this.initVariableMap();
+//List<Point> vertexList = this.getOrbit();
+//graphics.setColor(Color.gray);
+//radius = 5;
+//for (int i = 1; i < vertexList.size(); i++) {
+//	graphics.drawLine((int) (vertexList.get(i - 1).x * this.projection.scale),
+//			(int) (vertexList.get(i - 1).y * this.projection.scale), (int) (vertexList.get(i).x * this.projection.scale),
+//			(int) (vertexList.get(i).y * this.projection.scale));
+//}
 
+//super.paint(graphics);
+//List<Variable> nodeList = this.getChildren();
+//for (Variable n : nodeList) {
+//	if(n instanceof Energy) {
+//		n.paint(graphics);
+//	}
+//}
 //if(this.name.equals("Earth")) {
 //System.out.println(this.name+": Joules:"+this.getJoules()+": E_k:"+this.getKineticEnergy());
 //System.out.println("Gravity Force:"+this.getGravityForce(this.centroid));

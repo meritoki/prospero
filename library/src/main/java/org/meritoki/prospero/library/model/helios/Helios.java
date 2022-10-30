@@ -3,9 +3,9 @@ package org.meritoki.prospero.library.model.helios;
 import java.awt.Graphics;
 
 import org.meritoki.prospero.library.model.helios.photosphere.Photosphere;
-import org.meritoki.prospero.library.model.solar.star.sun.Sun;
+import org.meritoki.prospero.library.model.node.Grid;
 
-public class Helios extends Sun {
+public class Helios extends Grid {
 
 	public Helios() {
 		super("Helios");

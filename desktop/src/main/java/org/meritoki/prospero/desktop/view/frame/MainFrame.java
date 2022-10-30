@@ -34,8 +34,8 @@ import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
 import org.meritoki.prospero.desktop.view.dialog.OpenDialog;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.query.Query;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Script;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
 
 /**

@@ -48,6 +48,8 @@ public class Energy extends Variable {
 	public double mass;
 	@JsonProperty
 	public Space space = new Space();
+	@JsonProperty
+	public Space center = new Space();
 	@JsonIgnore
 	protected Color color;
 	///////////////////////////////////////
@@ -88,6 +90,24 @@ public class Energy extends Variable {
 		}
 		if (this.triangleList != null || this instanceof Triangle) {
 			this.variableMap.put("Angle", false);
+		}
+	}
+	
+	@JsonIgnore
+	public void setSpace(Space space) {
+		this.space = space;
+	}
+	
+	@JsonIgnore
+	public void setCenter(Space space) {
+		logger.info(this.name+".setCenter("+space+")");
+		this.center = space;
+		List<Variable> nodeList = this.getChildren();
+		for (Variable n : nodeList) {
+			if(n instanceof Energy) {
+				Energy e = (Energy)n;
+				e.setCenter(space);
+			}
 		}
 	}
 

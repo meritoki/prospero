@@ -17,7 +17,9 @@ package org.meritoki.prospero.library.model.solar.planet.earth;
 
 import java.awt.Color;
 
+import org.meritoki.prospero.library.model.solar.moon.luna.Luna;
 import org.meritoki.prospero.library.model.solar.planet.Planet;
+import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.cartography.Globe;
 
 /**
@@ -29,8 +31,10 @@ import org.meritoki.prospero.library.model.terra.cartography.Globe;
  */
 public class Earth extends Planet {
 	
-	public Earth(String name) {
-		super(name);
+	public Terra terra = new Terra();
+	
+	public Earth() {
+		super("Earth");
 		this.mass = 5.972e24;//Kilograms
 		this.radius = 6378.137;//Kilometers
 		this.a = this.radius;//Kilometers
@@ -59,8 +63,15 @@ public class Earth extends Planet {
 		this.angularVelocity = 7.292115053925690e-05;
 		this.obliquity = 23.439292;
 		this.rotation = 23.9345;// hour
+//		this.projection = new Globe(this.a,this.b,this.c);
+		this.terra.a = this.a;
+		this.terra.b = this.b;
+		this.terra.c = this.c;
 		this.projection = new Globe(this.a,this.b,this.c);
-		this.projection.setSpace(this.space);
+		this.terra.projection = this.projection;
+		this.addChild(this.terra);
+		this.addChild(new Luna());
+//		this.projection.setSpace(this.space);
 	}
 }
 //this.projection.setScale(0.0000001);

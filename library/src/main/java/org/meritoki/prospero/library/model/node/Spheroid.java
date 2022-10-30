@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.terra.cartography.Globe;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
+import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Unit;
 
@@ -37,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * <a href="https://en.wikipedia.org/wiki/Spheroid">Reference</a>
  *
  */
-public class Spheroid extends Orbital {
+public class Spheroid extends Energy {
 
 	static Logger logger = LogManager.getLogger(Spheroid.class.getName());
 	public Projection projection = new Globe();
@@ -271,37 +272,28 @@ public class Spheroid extends Orbital {
 		System.out.println(this.name + " Resistance Ratio: " + this.getResistanceRatio());
 	}
 
-	public List<Point> getOrbit() {
-		LinkedList<Point> vertexList = new LinkedList<>();
-		if (this.orbitalPeriod != 0) {
-			int resolution = 100;
-			double increment = this.orbitalPeriod / resolution;
-			Calendar c = (Calendar) this.calendar.clone();
-			double count = 0;
-			while (count <= this.orbitalPeriod) {
-				Point position = this.projection.getPoint(this.getSpace(c).getPoint());
-				c.add(Calendar.DATE, (int) (Math.round(increment))); // number of days to ad
-				count += increment;
-				vertexList.add(position);
-			}
-		}
-		return vertexList;
-	}
+
 
 	@JsonIgnore
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
-		this.projection.setSpace(this.space);
-		List<Point> vertexList = this.getOrbit();
-		graphics.setColor(Color.gray);
-		for (int i = 1; i < vertexList.size(); i++) {
-			graphics.drawLine((int) (vertexList.get(i - 1).x * this.projection.scale),
-					(int) (vertexList.get(i - 1).y * this.projection.scale),
-					(int) (vertexList.get(i).x * this.projection.scale),
-					(int) (vertexList.get(i).y * this.projection.scale));
-		}
 		graphics.setColor(this.color);
+		List<Coordinate> coordinateList = this.projection.getGridCoordinateList(0, 15, 30);
+		for (Coordinate c : coordinateList) {
+			graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
+		}
+		Point point = this.projection.getPoint(this.space.getPoint());
+		double x = point.x * this.projection.scale;
+		double y = point.y * this.projection.scale;
+		graphics.setColor(this.color);
+		double radius = 8;
+		x = x - (radius / 2);
+		y = y - (radius / 2);
+		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
+		graphics.setColor(Color.black);
+		graphics.drawString(this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "", (int) x,
+				(int) y);
 	}
 }
 //List<Coordinate> coordinateList = this.projection.getGridCoordinateList(0, 15, 30);

@@ -38,7 +38,6 @@ import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.color.Scheme;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.solar.Solar;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
 import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Cluster;
@@ -53,6 +52,7 @@ import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Station;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 import org.meritoki.prospero.library.model.unit.Unit;
@@ -704,24 +704,6 @@ public class Grid extends Spheroid {
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
-		List<Coordinate> coordinateList = this.projection.getGridCoordinateList(0, 15, 30);
-		graphics.setColor(this.color);
-		for (Coordinate c : coordinateList) {
-			graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
-		}
-		if (!(this instanceof Solar)) {
-			Point point = this.projection.getPoint(this.space.getPoint());
-			double x = point.x * this.projection.scale;
-			double y = point.y * this.projection.scale;
-			graphics.setColor(this.color);
-			double radius = 2;//this.projection.getRadius(1/Unit.ASTRONOMICAL)*this.projection.scale;
-			x = x - (radius / 2);
-			y = y - (radius / 2);
-			graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
-			graphics.setColor(Color.black);
-			graphics.drawString(this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "", (int) x,
-					(int) y);
-		}
 		if (this.load) {
 			if (stackFlag) {
 				this.paintStack(graphics);
@@ -737,7 +719,6 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
-		
 	}
 }
 //List<Variable> nodeList = this.getChildren();

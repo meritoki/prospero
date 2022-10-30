@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.function.SlopeFunction;
 import org.meritoki.prospero.library.model.function.Time;
 import org.meritoki.prospero.library.model.node.Grid;
-import org.meritoki.prospero.library.model.table.Table;
 
 public class Regression {
 	

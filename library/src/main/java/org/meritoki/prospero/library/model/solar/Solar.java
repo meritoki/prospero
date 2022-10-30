@@ -31,17 +31,14 @@ import java.util.Map;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.function.Cosine;
 import org.meritoki.prospero.library.model.function.Sine;
-import org.meritoki.prospero.library.model.helios.Helios;
 import org.meritoki.prospero.library.model.node.Energy;
 import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Triangle;
 import org.meritoki.prospero.library.model.node.Tunnel;
-import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.star.sun.Sun;
 import org.meritoki.prospero.library.model.unit.Coordinate;
@@ -56,7 +53,7 @@ import org.meritoki.prospero.library.model.unit.Space;
 public class Solar extends Grid {
 
 	static Logger logger = LogManager.getLogger(Solar.class.getName());
-	public static final double DEFAULT_SCALE = 100;// 1/Unit.ASTRONOMICAL * 1000.0;
+	public static final double DEFAULT_SCALE = 100;//Astronomical Units In Use
 	public Color color = Color.YELLOW;
 	private Map<String, List<Index>> allAnglePlanetsIndexListMap;
 	private Map<String, List<Index>> allDistancePlanetsIndexListMap;
@@ -67,13 +64,11 @@ public class Solar extends Grid {
 	private List<String> planetOrder = Arrays.asList("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus",
 			"Neptune");
 	private List<Tunnel> tunnelList = null;
-	private Model model;
 
-	public Solar(Model model) {
+	public Solar() {
 		super("Solar");
-		this.model = model;
 		this.paint = true;
-		this.addChild(new Helios());
+		this.addChild(new Sun());
 		this.projection.setRadius(39.5);// Astronomical Unit
 		this.projection.setUnit(1);
 		this.setScale(DEFAULT_SCALE);
@@ -659,17 +654,12 @@ public class Solar extends Grid {
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
 		this.initVariableMap();
-		if(this.model.node != null && !(this.model.node instanceof Solar) && !(this.model.node instanceof Model)) {
-			List<Variable> nodeList = this.getChildren();
-			for (Variable n : nodeList) {
-				if(n instanceof Energy) {
-					Energy e = (Energy)n;
-					e.space.rectangular.subtract(((Energy)this.model.node).space.rectangular);
-				}
-				logger.info(this.name+".paint(graphics) n="+n);
-				n.paint(graphics);
-			}
-		}
+//		if(this.model.node != null && !(this.model.node instanceof Solar) && !(this.model.node instanceof Model)) {
+//			if(this.model.node instanceof Energy) {
+//				Energy e = (Energy)this.model.node;
+//				this.setCenter(e.space);
+//			}
+//		}
 	}
 }
 //Variable tunnelNode = this.getVariable("Tunnel");

@@ -10,7 +10,6 @@ import javax.swing.table.TableModel;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
-import org.meritoki.prospero.library.model.table.Table;
 
 public class Cluster {
 	

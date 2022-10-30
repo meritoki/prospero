@@ -4,9 +4,9 @@ import java.awt.Graphics;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.node.Orbital;
 
-public class Moon extends Grid {
+public class Moon extends Orbital {
 
 	static Logger logger = LogManager.getLogger(Moon.class.getName());
 	

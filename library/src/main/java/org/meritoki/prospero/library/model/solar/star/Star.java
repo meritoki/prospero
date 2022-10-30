@@ -2,9 +2,9 @@ package org.meritoki.prospero.library.model.solar.star;
 
 import java.awt.Graphics;
 
-import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.node.Orbital;
 
-public class Star extends Grid {
+public class Star extends Orbital {
 
 	public Star(String name) {
 		super(name);

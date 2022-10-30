@@ -10,8 +10,6 @@ import java.util.Map;
 
 import javax.swing.table.TableModel;
 
-import org.meritoki.prospero.library.model.table.Table;
-
 public class Index implements Comparable<Index> {
 	public Calendar startCalendar;
 	public Calendar endCalendar;

@@ -9,7 +9,6 @@ import javax.swing.table.TableModel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

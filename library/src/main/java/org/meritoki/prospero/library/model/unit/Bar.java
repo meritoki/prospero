@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.swing.table.TableModel;
 
-import org.meritoki.prospero.library.model.table.Table;
-
 public class Bar {
 	
 	

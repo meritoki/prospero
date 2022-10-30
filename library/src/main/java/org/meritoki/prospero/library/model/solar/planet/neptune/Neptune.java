@@ -56,7 +56,5 @@ public class Neptune extends Planet {
         this.orbitalPeriod = 60182;
         this.angularVelocity =  1.083382527619075e-04;
         this.projection = new Globe(this.a,this.b,this.c);
-		this.projection.setNear((float)this.radius);
-		this.projection.setNearToObject((float)this.radius+1000);
     }
 }

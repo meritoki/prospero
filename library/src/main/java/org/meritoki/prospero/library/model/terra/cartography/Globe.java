@@ -67,9 +67,7 @@ public class Globe extends Projection {
 	@Override
 	public Coordinate getCoordinate(Point point) {
 		Point spacePoint = this.space.getPoint();
-//		spacePoint.multiply(this.scale);
-		point.subtract(spacePoint);
-		
+		point.add(spacePoint);
 		Coordinate coordinate = null;
 		double theta = Math.PI * azimuth / 180.0;
 		double phi = Math.PI * elevation / 180.0;

@@ -33,12 +33,12 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Label;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Regression;
 import org.meritoki.prospero.library.model.unit.Series;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Window;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

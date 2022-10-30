@@ -17,6 +17,8 @@ package org.meritoki.prospero.library.model.solar.star.sun;
 
 import java.awt.Color;
 
+import org.meritoki.prospero.library.model.helios.Helios;
+import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.planet.jupiter.Jupiter;
 import org.meritoki.prospero.library.model.solar.planet.mars.Mars;
 import org.meritoki.prospero.library.model.solar.planet.mercury.Mercury;
@@ -25,7 +27,6 @@ import org.meritoki.prospero.library.model.solar.planet.saturn.Saturn;
 import org.meritoki.prospero.library.model.solar.planet.uranus.Uranus;
 import org.meritoki.prospero.library.model.solar.planet.venus.Venus;
 import org.meritoki.prospero.library.model.solar.star.Star;
-import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.cartography.Globe;
 
 
@@ -36,8 +37,10 @@ import org.meritoki.prospero.library.model.terra.cartography.Globe;
  */
 public class Sun extends Star {
 	
-	public Sun(String name){
-		super(name);
+	public Helios helios = new Helios();
+	
+	public Sun(){
+		super("Sun");
         this.mass = 1.9891e30;//Kilograms
         this.radius = 696342;// kilometers
         this.a = this.radius;//Kilometers
@@ -47,7 +50,7 @@ public class Sun extends Star {
         this.angularVelocity = 2.865329607243705e-06;
         this.rotation = 0.564263323;//Kilometers/Second
         this.projection = new Globe(this.a,this.b,this.c);
-        this.addChild(new Terra());
+        this.addChild(new Earth());
         this.addChild(new Jupiter());
         this.addChild(new Mars());
         this.addChild(new Mercury());

@@ -24,7 +24,7 @@ import javax.swing.table.TableModel;
 
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.table.Table;
+import org.meritoki.prospero.library.model.unit.Table;
 
 /**
  *

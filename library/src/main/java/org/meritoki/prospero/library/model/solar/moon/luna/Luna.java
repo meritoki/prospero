@@ -27,7 +27,7 @@ import org.meritoki.prospero.library.model.unit.Unit;
  * <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html">https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html</a>
  *
  */
-public class Luna extends Moon{
+public class Luna extends Moon {
 
     public Luna() {
     	super("Luna");

@@ -37,7 +37,7 @@ import org.meritoki.prospero.desktop.view.panel.PlotPanel;
 import org.meritoki.prospero.desktop.view.panel.SolarPanel;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.table.Table;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
 
 public class SavePopupMenu extends JPopupMenu {

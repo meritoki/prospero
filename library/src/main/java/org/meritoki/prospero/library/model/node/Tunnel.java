@@ -231,7 +231,7 @@ public class Tunnel extends Orbital {
 //	}
 	
 	/**
-	 * Amperes calculated as the net of amperes from Spheroids a and b. 
+	 * Amperes calculated as the net of amperes from Orbitals a and b. 
 	 * I was able to use the net amperes to calculate a mass, which was used to detect 
 	 * a point where force of gravity equals zero. This 
 	 * @return

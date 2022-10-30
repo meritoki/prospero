@@ -56,7 +56,5 @@ public class Mercury extends Planet {
 		this.orbitalPeriod = 87.9691;
 		this.angularVelocity = 1.240013441242619e-06;
         this.projection = new Globe(this.a,this.b,this.c);
-		this.projection.setNear((float)this.radius);
-		this.projection.setNearToObject((float)this.radius+1000);
 	}
 }

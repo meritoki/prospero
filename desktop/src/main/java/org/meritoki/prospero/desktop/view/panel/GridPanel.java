@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.GridPopupMenu;
 import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
@@ -80,7 +81,7 @@ public class GridPanel extends javax.swing.JPanel
 		graphics.fillRect(0, 0, (int)(this.getWidth()), (int)(this.getHeight()));
 		graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
 		if (this.model != null) {
-			Terra terra = ((Terra)this.model.getVariable("Terra"));
+			Earth terra = ((Earth)this.model.getVariable("Earth"));
 			try { 
 				terra.paint(graphics);
 			} catch(Exception e) {

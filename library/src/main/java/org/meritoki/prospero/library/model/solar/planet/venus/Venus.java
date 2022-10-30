@@ -59,8 +59,6 @@ public class Venus extends Planet {
         this.orbitalPeriod = 225;
         this.angularVelocity = 2.99e-07;
         this.projection = new Globe(this.a,this.b,this.c);
-		this.projection.setNear((float)this.radius);
-		this.projection.setNearToObject((float)this.radius+1000);
     }
 }
 //this.centroid = (Orbital)this.getRoot();

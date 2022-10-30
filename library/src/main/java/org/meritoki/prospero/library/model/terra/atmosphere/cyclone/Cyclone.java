@@ -26,7 +26,6 @@ import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.histogram.Histogram;
 import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.query.Query;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density.Density;
@@ -50,6 +49,7 @@ import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Regression;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 

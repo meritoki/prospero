@@ -56,7 +56,5 @@ public class Saturn extends Planet {
         this.orbitalPeriod = 10759.22;
         this.angularVelocity = 1.636246173744684e-04;
         this.projection = new Globe(this.a,this.b,this.c);
-		this.projection.setNear((float)this.radius);
-		this.projection.setNearToObject((float)this.radius+1000);
     }
 }

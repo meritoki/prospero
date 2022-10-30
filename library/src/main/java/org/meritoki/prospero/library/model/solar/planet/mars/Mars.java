@@ -57,7 +57,5 @@ public class Mars extends Planet {
 		this.orbitalPeriod = 686.980;
 		this.angularVelocity = 7.088218127178316e-05;
 		this.projection = new Globe(this.a, this.b, this.c);
-		this.projection.setNear((float) this.radius);
-		this.projection.setNearToObject((float) this.radius + 1000);
 	}
 }

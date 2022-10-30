@@ -31,11 +31,11 @@ import org.meritoki.prospero.library.model.data.Data;
 import org.meritoki.prospero.library.model.document.Document;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.query.Query;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Operator;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Time;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -376,7 +376,7 @@ public class Variable extends Node {
 
 	@JsonIgnore
 	public void addChild(Variable child) {
-		logger.debug(this.name+".addChild("+child+")");
+		logger.info(this.name+".addChild("+child+")");
 		this.orderList.add(child.toString());
 		this.moduleMapPut(child);
 	}
@@ -424,10 +424,8 @@ public class Variable extends Node {
 
 	@JsonIgnore
 	public void paint(Graphics graphics) throws Exception {
-		logger.info(this.name+".paint(graphics)");
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
-			logger.info(this.name+".paint(graphics) n="+n);
 			n.paint(graphics);
 		}
 	}
