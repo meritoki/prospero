@@ -9,7 +9,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.Point;
-import org.meritoki.prospero.library.model.grid.Grid;
+import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.terra.biosphere.city.City;

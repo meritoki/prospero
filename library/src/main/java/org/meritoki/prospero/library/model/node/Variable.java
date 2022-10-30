@@ -1,9 +1,5 @@
-package org.meritoki.prospero.library.model.node;
-
-import java.awt.Graphics;
-
 /*
- * Copyright 2020 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +13,9 @@ import java.awt.Graphics;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.meritoki.prospero.library.model.node;
 
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -34,8 +32,6 @@ import org.meritoki.prospero.library.model.document.Document;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.table.Table;
-import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Operator;
 import org.meritoki.prospero.library.model.unit.Result;
@@ -49,8 +45,8 @@ import com.meritoki.module.library.model.Node;
 
 public class Variable extends Node {
 
-	@JsonIgnore
 	static Logger logger = LogManager.getLogger(Variable.class.getName());
+	@JsonIgnore
 	public Mode mode = Mode.NULL;
 	@JsonIgnore
 	public String timeZone = "GMT-3";
@@ -73,8 +69,6 @@ public class Variable extends Node {
 	@JsonIgnore
 	public List<String> orderList = new ArrayList<>();
 	@JsonIgnore
-	public Projection projection = new AzimuthalSouth();
-	@JsonIgnore
 	public Data data;
 	@JsonIgnore
 	public Map<String, String> sourceMap = new HashMap<String, String>();
@@ -96,8 +90,11 @@ public class Variable extends Node {
 	public boolean cache = false;
 	@JsonIgnore
 	public Document document = null;
+	@JsonIgnore
+	public boolean paint = false;
 
-	public Variable() {}
+	public Variable() {
+	}
 
 	public Variable(String name) {
 		super(name);
@@ -149,12 +146,12 @@ public class Variable extends Node {
 			}
 			case EXCEPTION: {
 				this.mode = Mode.EXCEPTION;
-				logger.warn("defaultState("+(object != null)+") EXCEPTION");
-				logger.warn("defaultState("+(object != null)+") result.message=" + result.message);
+				logger.warn("defaultState(" + (object != null) + ") EXCEPTION");
+				logger.warn("defaultState(" + (object != null) + ") result.message=" + result.message);
 				break;
 			}
 			default: {
-				logger.warn("defaultState("+(object != null)+") default");
+				logger.warn("defaultState(" + (object != null) + ") default");
 				break;
 			}
 			}
@@ -166,25 +163,26 @@ public class Variable extends Node {
 	 */
 	@JsonIgnore
 	public void init() {
-//		logger.info("init()");
+		logger.debug("init()");
 		try {
 			this.operator = this.query.getOperator();
 			this.script = this.query.getScript();
 			this.timeList = new LinkedList<>();
 		} catch (Exception e) {
-			logger.error("init() e="+e.getMessage());
+			logger.error("init() e=" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * Support Result from Data Source
+	 * 
 	 * @param result
 	 */
 	public void load(Result result) {
-//		logger.info("load(" + (result != null) + ")");
+		logger.debug("load(" + (result != null) + ")");
 	}
-	
+
 	public void complete() {
 		logger.info("complete()");
 	}
@@ -192,21 +190,21 @@ public class Variable extends Node {
 	public boolean isComplete() {
 		return this.mode == Mode.COMPLETE;
 	}
-	
+
 	@JsonIgnore
 	public void query() {
 		this.query(this.query);
 	}
 
 	/**
-	 * Query is an important function. If the query is completely unknown, the global query is set
-	 * for the first time.
+	 * Query is an important function. If the query is completely unknown, the
+	 * global query is set for the first time.
 	 */
 	@JsonIgnore
 	public void query(Query query) {
 		this.query = query;
-		if(query.getSource() != null) {//should only move forward if we have a source
-			query.put("sourceUUID",this.sourceMap.get(query.getSource()));
+		if (query.getSource() != null) {// should only move forward if we have a source
+			query.put("sourceUUID", this.sourceMap.get(query.getSource()));
 			query.calendar = this.calendar;
 			logger.info("query(" + query + ")");
 			if (!query.equals(this.queryStack.peek())) {
@@ -215,12 +213,6 @@ public class Variable extends Node {
 				this.init();
 				try {
 					this.data.add(query);
-//					Page page = this.document.pageMap.get(query.getTime()+"-"+query.getSourceUUID());
-//					if(page == null) {
-//						page = new Page();
-//					}
-//					page.queryList.add(query);
-//					this.document.pageMap.put(query.getTime()+"-"+query.getSourceUUID(),page);
 					this.queryStack.push(new Query(query));
 				} catch (Exception e) {
 					logger.warn("query(" + query + ") Exception " + e.getMessage());
@@ -282,18 +274,17 @@ public class Variable extends Node {
 		}
 		return plotList;
 	}
-	
+
 	public List<Table> getTableList() throws Exception {
 		List<Table> tableList = new ArrayList<>();
-		for (Variable n : this.getList()) {
-			if (n.load) {
-				tableList.addAll(n.getTableList());
-			}
-		}
+//		for (Variable n : this.getList()) {
+//			if (n.load) {
+//				tableList.addAll(n.getTableList());
+//			}
+//		}
 		return tableList;
 	}
-	
-	
+
 	@JsonIgnore
 	public void setDocument(Document document) {
 		this.document = document;
@@ -354,35 +345,12 @@ public class Variable extends Node {
 	}
 
 	@JsonIgnore
-	public void setProjection(Projection projection) {
-		this.projection = projection;
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.setProjection(projection);
-		}
-	}
-
-	@JsonIgnore
-	public void paint(Graphics graphics) throws Exception {
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.paint(graphics);
-		}
-	}
-
-	@JsonIgnore
 	public void plot(Graphics graphics) throws Exception {
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			n.plot(graphics);
 		}
 	}
-
-//	@JsonIgnore
-//	public void unload() {
-//		String sourceUUID = this.sourceMap.get(this.sourceKey);
-//		this.data.unload(sourceUUID);
-//	}
 
 	@JsonIgnore
 	public List<String> getSourceList() {
@@ -398,37 +366,21 @@ public class Variable extends Node {
 	public List<Variable> getChildren() {
 		List<Module> moduleList = new ArrayList<Module>(this.moduleMap.values());
 		List<Variable> variableList = new ArrayList<>();
-//		for(String s: this.orderList) {
-			for (Module m : moduleList) {
-//				System.out.println(s+".equals("+m+")");
-//				if(s.equals(m.toString())) {
-	 				if (m instanceof Variable) {
-						variableList.add((Variable) m);
-					}
-//				}
+		for (Module m : moduleList) {
+			if (m instanceof Variable) {
+				variableList.add((Variable) m);
 			}
-//		}
-//		List<Module> moduleList = new ArrayList<Module>(this.moduleMap.values());
-//		List<Variable> variableList = new ArrayList<>();
-//		for (Module m : moduleList) {
-//			for(String s: this.orderList) {
-//				if (s.equals(m.toString()) && m instanceof Variable) {
-//					variableList.add((Variable) m);
-//				}
-//			}
-//			
-//		}
+		}
 		return variableList;
 	}
 
 	@JsonIgnore
 	public void addChild(Variable child) {
-//		logger.info(this.name+".addChild("+child+")");
+		logger.debug(this.name+".addChild("+child+")");
 		this.orderList.add(child.toString());
 		this.moduleMapPut(child);
 	}
 
-//
 	@JsonIgnore
 	public void addChildren(List<Variable> children) {
 		for (Variable v : children) {
@@ -469,7 +421,53 @@ public class Variable extends Node {
 	public static void printTree(Variable node, String appender) {
 		node.getChildren().forEach(each -> printTree(each, appender + appender));
 	}
+
+	@JsonIgnore
+	public void paint(Graphics graphics) throws Exception {
+		logger.info(this.name+".paint(graphics)");
+		List<Variable> nodeList = this.getChildren();
+		for (Variable n : nodeList) {
+			logger.info(this.name+".paint(graphics) n="+n);
+			n.paint(graphics);
+		}
+	}
 }
+//@JsonIgnore
+//public void setProjection(Projection projection) {
+//	this.projection = projection;
+//	List<Variable> nodeList = this.getChildren();
+//	for (Variable n : nodeList) {
+//		n.setProjection(projection);
+//	}
+//}
+//for(String s: this.orderList) {
+//System.out.println(s+".equals("+m+")");
+//if(s.equals(m.toString())) {
+//}
+//}
+//List<Module> moduleList = new ArrayList<Module>(this.moduleMap.values());
+//List<Variable> variableList = new ArrayList<>();
+//for (Module m : moduleList) {
+//for(String s: this.orderList) {
+//	if (s.equals(m.toString()) && m instanceof Variable) {
+//		variableList.add((Variable) m);
+//	}
+//}
+//
+//}
+//Page page = this.document.pageMap.get(query.getTime()+"-"+query.getSourceUUID());
+//if(page == null) {
+//	page = new Page();
+//}
+//page.queryList.add(query);
+//this.document.pageMap.put(query.getTime()+"-"+query.getSourceUUID(),page);
+//@JsonIgnore
+//public Projection projection = new Globe();
+//@JsonIgnore
+//public void unload() {
+//	String sourceUUID = this.sourceMap.get(this.sourceKey);
+//	this.data.unload(sourceUUID);
+//}
 //public List<Event> filter(List<Event> eventList) throws Exception {
 //if (!Thread.interrupted()) {
 //	if (eventList != null) {

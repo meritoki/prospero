@@ -5,24 +5,13 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.color.Chroma;
-import org.meritoki.prospero.library.model.color.Scheme;
-import org.meritoki.prospero.library.model.grid.Grid;
 import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.query.Query;
-import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.enso.ENSO;
-import org.meritoki.prospero.library.model.terra.lithosphere.earthquake.Earthquake;
-import org.meritoki.prospero.library.model.terra.lithosphere.magnetic.Magnetic;
-import org.meritoki.prospero.library.model.terra.lithosphere.magnetic.anamoly.Anomaly;
+import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.lithosphere.tectonic.Tectonic;
-import org.meritoki.prospero.library.model.terra.lithosphere.volcano.Volcanic;
 import org.meritoki.prospero.library.model.unit.Coordinate;
-import org.meritoki.prospero.library.model.unit.Event;
-import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Result;
 
-public class Lithosphere extends Grid {
+public class Lithosphere extends Terra {
 	
 	static Logger logger = LogManager.getLogger(Lithosphere.class.getName());
 	
@@ -33,6 +22,10 @@ public class Lithosphere extends Grid {
 		this.addChild(new Tectonic());
 //		this.addChild(new Volcanic());
 		this.sourceMap.put("GEBCO", "1aac29c0-e2f6-45e8-9921-c88397957795");
+	}
+	
+	public Lithosphere(String name) {
+		super(name);
 	}
 	
 	@Override

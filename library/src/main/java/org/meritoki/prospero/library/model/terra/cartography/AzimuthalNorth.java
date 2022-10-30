@@ -9,8 +9,8 @@ import org.meritoki.prospero.library.model.unit.Point;
 public class AzimuthalNorth extends Projection {
 
 	public final int DEFAULT_SCALE = 256;
-	private double centerLatitude = 90 * this.radians;
-	private double centerLongitude = 0 * this.radians;
+	private double centerLatitude = Math.toRadians(90);// * this.radians;
+	private double centerLongitude = Math.toRadians(0);// * this.radians;
 
 	public AzimuthalNorth() {
 		super();
@@ -25,8 +25,8 @@ public class AzimuthalNorth extends Projection {
 	@Override
 	public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
 		Coordinate coordinate = null;
-		latitude = latitude * this.radians;// MultiPolygon y
-		longitude = longitude * this.radians; // MultiPolygon x
+		latitude = Math.toRadians(latitude);// * this.radians;// MultiPolygon y
+		longitude = Math.toRadians(longitude);// * this.radians; // MultiPolygon x
 		if (latitude >= 0) {
 			coordinate = new Coordinate();
 			double c = Math.acos(Math.sin(this.centerLatitude) * Math.sin(latitude) + (Math.cos(this.centerLatitude)

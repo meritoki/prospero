@@ -1,7 +1,17 @@
 /*
- * Author Joaquin Osvado Rodriguez
- * Date 201710-201711
- * Copyright 2017 Joaquin Osvaldo Rodriguez All Rights Reserved. 
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.meritoki.prospero.library.model.solar;
 
@@ -13,73 +23,66 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.function.Cosine;
 import org.meritoki.prospero.library.model.function.Sine;
+import org.meritoki.prospero.library.model.helios.Helios;
+import org.meritoki.prospero.library.model.node.Energy;
+import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.node.Orbital;
+import org.meritoki.prospero.library.model.node.Spheroid;
+import org.meritoki.prospero.library.model.node.Triangle;
+import org.meritoki.prospero.library.model.node.Tunnel;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.star.sun.Sun;
-import org.meritoki.prospero.library.model.solar.unit.Energy;
-import org.meritoki.prospero.library.model.solar.unit.Orbital;
-import org.meritoki.prospero.library.model.solar.unit.Space;
-import org.meritoki.prospero.library.model.solar.unit.Triangle;
-import org.meritoki.prospero.library.model.solar.unit.Tunnel;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.Space;
 
-public class Solar extends Orbital {
+/**
+ * 
+ * Reference: https://nssdc.gsfc.nasa.gov/planetary/factsheet.html
+ *
+ */
+public class Solar extends Grid {
 
-	public static final double DEFAULT_SCALE = 1e1;//Unit.ASTRONOMICAL / 10000000;
-
-	public static void main(String[] args) {
-		Solar solar = new Solar();
-		solar.setCalendar(new GregorianCalendar(1990, 3, 19, 0, 0, 0));
-		Sun sun = (Sun) solar.getVariable("Sun");
-		List<Energy> energyList = solar.getEnergyList();
-		for (Energy e : energyList) {
-			if (!(e instanceof Sun)) {
-				System.out.println(e.name + ": " + sun.getElipticDistance(e));
-				System.out.println(e.name + ": " + sun.getRectangularDistance(e));
-			}
-		}
-	}
-
+	static Logger logger = LogManager.getLogger(Solar.class.getName());
+	public static final double DEFAULT_SCALE = 100;// 1/Unit.ASTRONOMICAL * 1000.0;
 	public Color color = Color.YELLOW;
-	Map<String, List<Index>> allAnglePlanetsIndexListMap;
-	Map<String, List<Index>> allDistancePlanetsIndexListMap;
-	Map<String, List<Index>> allGravityForcePlanetsIndexListMap;
-	List<Index> anglePlanetsIndexList;
-	List<Index> distancePlanetsIndexList;
-	List<Index> gravityForcePlanetsIndexList;
-	List<String> planetOrder = Arrays.asList("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus",
+	private Map<String, List<Index>> allAnglePlanetsIndexListMap;
+	private Map<String, List<Index>> allDistancePlanetsIndexListMap;
+	private Map<String, List<Index>> allGravityForcePlanetsIndexListMap;
+	private List<Index> anglePlanetsIndexList;
+	private List<Index> distancePlanetsIndexList;
+	private List<Index> gravityForcePlanetsIndexList;
+	private List<String> planetOrder = Arrays.asList("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus",
 			"Neptune");
-	List<Tunnel> tunnelList = null;
+	private List<Tunnel> tunnelList = null;
+	private Model model;
 
-	public Solar() {
+	public Solar(Model model) {
 		super("Solar");
-		this.moduleMapPut(new Sun());
-		Variable tunnelNode = new Variable("Tunnel");
-		this.tunnelList = this.getTunnelList();
-		for(Tunnel t: this.tunnelList) {
-			tunnelNode.addChild(t);
-		}
-		Variable triangleNode = new Variable("Triangle");
-		this.triangleList = this.getTriangleList("Sun");
-		for(Triangle t: this.triangleList) {
-			triangleNode.addChild(t);
-		}
-		this.addChild(tunnelNode);
-		this.addChild(triangleNode);
+		this.model = model;
+		this.paint = true;
+		this.addChild(new Helios());
+		this.projection.setRadius(39.5);// Astronomical Unit
+		this.projection.setUnit(1);
 		this.setScale(DEFAULT_SCALE);
 	}
 	
+	public Solar(String name) {
+		super(name);
+	}
+
 	@Override
 	public void initVariableMap() {
 		super.initVariableMap();
@@ -88,35 +91,8 @@ public class Solar extends Orbital {
 		this.variableMap.put("Earth Test", false);
 		this.variableMap.put("Solar Cycle", false);
 	}
-	
-	@Override
-	public void paint(Graphics graphics) throws Exception {
-		this.initVariableMap();
-		Variable tunnelNode = this.getVariable("Tunnel");
-		for(Variable t: tunnelNode.getChildren()) {
-			((Tunnel)t).paint(graphics);
-		}
-		
-		Variable triangleNode = this.getVariable("Triangle");
-		
-		for(Variable t: triangleNode.getChildren()) {
-			((Triangle)t).paint(graphics);
-		}
-		Point point = this.getPoint(this.space.getPoint());
-		double x = point.x * scale;
-		double y = point.y * scale;
-		graphics.setColor(this.color);
-		double radius = 5;
-		x = x - (radius / 2);
-		y = y - (radius / 2);
-		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			if(n instanceof Energy) {
-				n.paint(graphics);
-			}
-		}
-	}
+
+
 
 	////////////////////////////
 
@@ -170,10 +146,9 @@ public class Solar extends Orbital {
 		return allIndexList;
 	}
 
-
-
 	/**
-	 * Convert 
+	 * Convert
+	 * 
 	 * @param name
 	 * @return
 	 * @throws Exception
@@ -268,7 +243,7 @@ public class Solar extends Orbital {
 				}
 				index = new Index();
 //					index.value = Math.toRadians(angle) * t.getGravityForce();//(t.j.mass+t.k.mass);
-				index.value = Math.toRadians(angle) * t.getMassSum()/t.getDistanceSum();// (t.j.mass+t.k.mass);
+				index.value = Math.toRadians(angle) * t.getMassSum() / t.getDistanceSum();// (t.j.mass+t.k.mass);
 				index.startCalendar = c;
 				list.add(index);
 				indexListMap.put(t.toString(), list);
@@ -389,52 +364,6 @@ public class Solar extends Orbital {
 		return indexListMap;
 	}
 
-//	public List<Index> getTestIndexList(String name) throws Exception {
-//		List<Index> indexList = new ArrayList<>();
-//		Map<String, List<Index>> indexListMap = new HashMap<>();
-//		List<String> dateList = getDateList("18000101-20200101", Calendar.DATE);
-//		Calendar c = null;
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-//		for (String date : dateList) {
-//			c = Calendar.getInstance();
-//			c.setTime(sdf.parse(date));
-//			this.setCalendar(c);
-//			List<Triangle> triangleList = this.getTriangleList("Sun");
-//			Index index;
-//			for (Triangle t : triangleList) {
-//				double distance = t.a;
-//				List<Index> list = indexListMap.get(t.toString());
-//				if (list == null) {
-//					list = new ArrayList<>();
-//				}
-//				index = new Index();
-//				index.value = distance * t.getMass();
-//				index.startCalendar = c;
-//				list.add(index);
-//				indexListMap.put(t.toString(), list);
-//			}
-//		}
-//
-//		for (String date : dateList) {
-//			c = Calendar.getInstance();
-//			c.setTime(sdf.parse(date));
-//			Index index = new Index();
-//			index.startCalendar = c;
-//			index.value = 0;
-//			indexList.add(index);
-//		}
-//		for (Triangle t : this.getTriangleList("Sun")) {
-//			List<Index> list = indexListMap.get(t.toString());
-//			for (int i = 0; i < dateList.size(); i++) {
-//				Index index = indexList.get(i);
-//				double value = list.get(i).value;
-//				index.value += (value);
-//				indexList.set(i, index);
-//			}
-//		}
-//		return indexList;
-//	}
-
 	public List<Index> getSinePointList(Sine sine) throws Exception {
 		List<Index> pointList = new ArrayList<>();
 		List<String> dateList = getDateList("18000101-20200101", Calendar.DATE);
@@ -466,183 +395,6 @@ public class Solar extends Orbital {
 		}
 		return pointList;
 	}
-
-//	@Override
-//	public List<Plot> getPlotList() throws Exception {
-//		List<Plot> plotList = super.getPlotList();
-//		for (Entry<String, Boolean> variable : this.variableMap.entrySet()) {
-//			String variableKey = variable.getKey();
-//			Boolean variableLoad = variable.getValue();
-//			if (variableLoad) {
-//				TimePlot plot = null;
-//				switch (variableKey) {
-//				case "Solar Cycle": {
-//					Cosine sine = new Cosine(new GregorianCalendar(1816, 0, 1, 0, 0, 0), Long.valueOf("348666451258"));
-//					List<Index> indexList = this.getCosinePointList(sine);
-//					if (indexList != null) {
-//						List<List<Index>> blackPointMatrix = new ArrayList<>();
-//						blackPointMatrix.add((indexList));
-//						TimePlot cPlot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
-//						cPlot.setTitle(variableKey);
-//						cPlot.setXLabel("Time");
-//						cPlot.setYLabel("Distance");
-//						plotList.add(cPlot);
-//					}
-//					break;
-//				}
-//				case "Sun Angle Planets": {
-//					if (this.anglePlanetsIndexList == null)
-//						anglePlanetsIndexList = this.getAllAnglePlanetsIndexList("Sun");
-//					if (anglePlanetsIndexList != null) {
-//						List<List<Index>> blackPointMatrix = new ArrayList<>();
-//						blackPointMatrix.add((anglePlanetsIndexList));
-//						plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
-//						plot.setTitle(variableKey);
-//						plot.setXLabel("Time");
-//						plot.setYLabel("Distance");
-//						plotList.add(plot);
-//					}
-//					break;
-//				}
-//				case "Earth Angle Planets": {
-//					if (this.anglePlanetsIndexList == null)
-//						anglePlanetsIndexList = this.getAllAnglePlanetsIndexList("Earth");
-//					if (anglePlanetsIndexList != null) {
-//						List<List<Index>> blackPointMatrix = new ArrayList<>();
-//						blackPointMatrix.add((anglePlanetsIndexList));
-//						plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
-//						plot.setTitle(variableKey);
-//						plot.setXLabel("Time");
-//						plot.setYLabel("Distance");
-//						plotList.add(plot);
-//					}
-//					break;
-//				}
-//
-//				case "Angle Planets": {
-//					if (this.allAnglePlanetsIndexListMap == null)
-//						allAnglePlanetsIndexListMap = getAnglePlanetsIndexListMap();
-//					for (Entry<String, List<Index>> entry : allAnglePlanetsIndexListMap.entrySet()) {
-//						String key = entry.getKey();
-//						List<List<Index>> blackIndexMatrix = new ArrayList<>();
-//						List<List<Index>> colorIndexMatrix = new ArrayList<>();
-//						List<Index> indexList = entry.getValue();
-//						blackIndexMatrix.add(indexList);
-//						plot = new TimePlot(this.startCalendar, this.endCalendar, blackIndexMatrix, colorIndexMatrix);
-//						plot.setTitle(key + " Angle");
-//						plot.setXLabel("Time");
-//						plot.setYLabel("Distance");
-//						plotList.add(plot);
-//					}
-//					break;
-//				}
-//				case "Distance Planets": {
-//					if (this.allDistancePlanetsIndexListMap == null)
-//						allDistancePlanetsIndexListMap = getDistancePlanetsIndexListMap("Sun");
-//					for (Entry<String, List<Index>> entry : allDistancePlanetsIndexListMap.entrySet()) {
-//						String key = entry.getKey();
-//						List<List<Index>> blackIndexMatrix = new ArrayList<>();
-//						List<List<Index>> colorIndexMatrix = new ArrayList<>();
-//						List<Index> indexList = entry.getValue();
-//						blackIndexMatrix.add(indexList);
-//						plot = new TimePlot(this.startCalendar, this.endCalendar, blackIndexMatrix, colorIndexMatrix);
-//						plot.setTitle("Sun," + key + " Distance");
-//						plot.setXLabel("Time");
-//						plot.setYLabel("Distance");
-//						plotList.add(plot);
-//					}
-//					break;
-//				}
-//				case "Gravity Force Planets": {
-//					if (this.allGravityForcePlanetsIndexListMap == null)
-//						allGravityForcePlanetsIndexListMap = getGravityForcePlanetsIndexListMap("Sun");
-//					for (Entry<String, List<Index>> entry : allGravityForcePlanetsIndexListMap.entrySet()) {
-//						String key = entry.getKey();
-//						List<List<Index>> blackIndexMatrix = new ArrayList<>();
-//						List<List<Index>> colorIndexMatrix = new ArrayList<>();
-//						List<Index> indexList = entry.getValue();
-//						blackIndexMatrix.add(indexList);
-//						plot = new TimePlot(this.startCalendar, this.endCalendar, blackIndexMatrix, colorIndexMatrix);
-//						plot.setTitle("Sun," + key + " Gravity Force");
-//						plot.setXLabel("Time");
-//						plot.setYLabel("Distance");
-//						plotList.add(plot);
-//					}
-//					break;
-//				}
-//
-//				case "Earth Gravity Force": {
-//					List<Index> indexList = this.getAllGravityForceIndexList("Earth");
-//					if (indexList != null) {
-//						List<List<Index>> blackPointMatrix = new ArrayList<>();
-//						blackPointMatrix.add((indexList));
-//						plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
-//						plot.setTitle(variableKey);
-//						plot.setXLabel("Time");
-//						plot.setYLabel("Distance");
-//						plotList.add(plot);
-//					}
-//					break;
-//				}
-//
-//				case "Jupiter Gravity Force": {
-//					List<Index> indexList = this.getAllGravityForceIndexList("Jupiter");
-//					if (indexList != null) {
-//						List<List<Index>> blackPointMatrix = new ArrayList<>();
-//						blackPointMatrix.add((indexList));
-//						plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
-//						plot.setTitle(variableKey);
-//						plot.setXLabel("Time");
-//						plot.setYLabel("Distance");
-//						plotList.add(plot);
-//					}
-//					break;
-//				}
-//				case "Earth Test": {
-//					List<Index> indexList = this.getTestIndexList("Earth");
-//					if (indexList != null) {
-//						List<List<Index>> blackPointMatrix = new ArrayList<>();
-//						blackPointMatrix.add((indexList));
-//						List<List<Index>> colorPointMatrix = null;
-//						// colorPointMatrix.add(this.getAnglePlanetsIndexList());
-//						plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, colorPointMatrix);
-//						plot.setTitle(variableKey);
-//						plot.setXLabel("Time");
-//						plot.setYLabel("Distance");
-//						plotList.add(plot);
-//					}
-//					break;
-//				}
-//				case "Sun Test": {
-//					List<Index> indexList = this.getTestIndexList("Sun");
-//					if (indexList != null) {
-//						List<List<Index>> blackPointMatrix = new ArrayList<>();
-//						blackPointMatrix.add((indexList));
-//						List<List<Index>> colorPointMatrix = null;
-//						// colorPointMatrix.add(this.getAnglePlanetsIndexList());
-//						plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, colorPointMatrix);
-//						plot.setTitle(variableKey);
-//						plot.setXLabel("Time");
-//						plot.setYLabel("Distance");
-//						plotList.add(plot);
-//					}
-//					// List<Point> indexList = this.getTestIndexList("Sun");
-//					// if (indexList != null) {
-//					// List<List<Point>> blackPointMatrix = new ArrayList<>();
-//					// blackPointMatrix.add((indexList));
-//					// CartesianPlot cPlot = new CartesianPlot(blackPointMatrix, null);
-//					// cPlot.setTitle(variableKey);
-//					// cPlot.setXLabel("Time");
-//					// cPlot.setYLabel("Distance");
-//					// plotList.add(cPlot);
-//					// }
-//					break;
-//				}
-//				}
-//			}
-//		}
-//		return plotList;
-//	}
 
 	public static double getMin(List<Index> list) {
 		double min = Double.MAX_VALUE;
@@ -687,26 +439,6 @@ public class Solar extends Orbital {
 	public static double getVolume(double radius) {
 		return (4 / 3) * Math.PI * Math.pow(radius, 3);
 	}
-
-	/////////////////////////////
-
-	public void setAzimuth(int azimuth) {
-//		if(print)System.out.println("setAzimuth("+azimuth+")");
-		this.azimuth = azimuth;
-		for (Energy e : this.getEnergyList()) {
-			e.azimuth = azimuth;
-		}
-	}
-
-	public void setElevation(int elevation) {
-//		if(print)System.out.println("setElevation("+elevation+")");
-		this.elevation = elevation;
-		for (Energy e : this.getEnergyList()) {
-			e.elevation = elevation;
-		}
-	}
-
-
 
 	public List<Coordinate> getCoordinateList(String name) {// Imagine energy is Earth.
 		List<Coordinate> coordinateList = new LinkedList<Coordinate>();
@@ -783,9 +515,9 @@ public class Solar extends Orbital {
 	public double getKineticEnergy() {
 		double kineticEnergy = 0;
 		for (Energy e : this.getEnergyList()) {
-			if (e instanceof Orbital)
+			if (e instanceof Spheroid)
 				kineticEnergy += 0.5 * e.mass * Math.pow(((Orbital) e).angularVelocity, 2)
-						* Math.pow(((Orbital) e).radius, 2);
+						* Math.pow(((Spheroid) e).radius, 2);
 		}
 		return kineticEnergy;
 	}
@@ -865,26 +597,6 @@ public class Solar extends Orbital {
 		return this.calendar;
 	}
 
-//	public void setCalendar(String time) {
-//		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		try {
-//			Date date = formatter.parse(time);
-//			Calendar calendar = Calendar.getInstance();
-//			calendar.setTime(date);
-//			this.setCalendar(calendar);
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-//
-//	}
-
-//	public void setCalendar(Calendar time) {
-//		this.calendar = time;
-//		for (Energy energy : energyList) {
-//			energy.setCalendar(time);
-//		}
-//	}
-
 	public int daysBetween(Date d1, Date d2) {
 		return (int) ((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
 	}
@@ -905,39 +617,6 @@ public class Solar extends Orbital {
 		return sum;
 	}
 
-	public void setScale(double scale) {
-		this.scale = scale;
-		for (Variable e : this.getList()) {
-			if (e instanceof Energy) {
-				((Energy) e).scale = scale;
-			}
-		}
-	}
-
-//	public void getGravity() {
-//		for (Energy energy : this.getEnergyList()) {
-//			for (Energy e : this.getEnergyList()) {
-//				if (energy != e) {
-//					if (energy.mass != 1 && e.mass != 1) {
-//						Vector3D force = e.getGravity(energy);
-//						energy.force = energy.force.subtract(force);
-//						e.force = e.force.add(force);
-//					}
-//				}
-//			}
-//		}
-//
-//	}
-
-//	public void drawDate(Graphics g, Calendar c) {
-//		g.setColor(Color.WHITE);
-//		String calendar = this.getCalendarString(null, c);
-//		int text = g.getFontMetrics().stringWidth(calendar);
-//		g.drawString(calendar, 0 - text / 2, -360);
-//	}
-
-
-
 	public List<Triangle> filterTriangleList(List<Triangle> list) {
 		List<Triangle> tList = new ArrayList<>();
 		for (Triangle t : list) {
@@ -951,10 +630,6 @@ public class Solar extends Orbital {
 		}
 		return tList;
 	}
-	
-
-
-
 
 	public List<Triangle> matchTriangleList(List<Triangle> aList, List<Triangle> bList, double threshold) {
 		List<Triangle> triangleList = new LinkedList<Triangle>();
@@ -970,19 +645,6 @@ public class Solar extends Orbital {
 		return triangleList;
 	}
 
-//	public Space compareSpace(Calendar time, double threshold) {
-//		List<Energy> energyList = this.getEnergyList(time);
-//		List<Triangle> triangleListA = this.getTriangleList(energyList);
-//		List<Triangle> triangleListB = this.getTriangleList(this.energyList);
-//		return this.compareSpace(triangleListA, triangleListB, threshold);
-//	}
-//
-//	public Space compareSpace(Calendar timeA, Calendar timeB, double threshold) {
-//		List<Triangle> triangleListA = this.getTriangleList(this.getEnergyList(timeA));
-//		List<Triangle> triangleListB = this.getTriangleList(this.getEnergyList(timeB));
-//		return this.compareSpace(triangleListA, triangleListB, threshold);
-//	}
-
 	public Space compareSpace(List<Triangle> aList, List<Triangle> bList, double threshold) {
 		List<Triangle> triangleList = this.matchTriangleList(aList, bList, threshold);
 		double total = aList.size();
@@ -992,8 +654,382 @@ public class Solar extends Orbital {
 //		space.match = count / total;
 		return space;
 	}
-}
 
+	@Override
+	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
+		this.initVariableMap();
+		if(this.model.node != null && !(this.model.node instanceof Solar) && !(this.model.node instanceof Model)) {
+			List<Variable> nodeList = this.getChildren();
+			for (Variable n : nodeList) {
+				if(n instanceof Energy) {
+					Energy e = (Energy)n;
+					e.space.rectangular.subtract(((Energy)this.model.node).space.rectangular);
+				}
+				logger.info(this.name+".paint(graphics) n="+n);
+				n.paint(graphics);
+			}
+		}
+	}
+}
+//Variable tunnelNode = this.getVariable("Tunnel");
+//for(Variable t: tunnelNode.getChildren()) {
+//	((Tunnel)t).paint(graphics);
+//}
+//
+//Variable triangleNode = this.getVariable("Triangle");
+//
+//for(Variable t: triangleNode.getChildren()) {
+//	((Triangle)t).paint(graphics);
+//}
+//List<Coordinate> coordinateList = this.projection.getGridCoordinateList(0, 15, 30);
+//graphics.setColor(this.color);
+//for (Coordinate c : coordinateList) {
+//	graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
+//}
+
+//List<Variable> nodeList = this.getChildren();
+//for (Variable n : nodeList) {
+//	if (n instanceof Energy) {
+//		n.paint(graphics);
+//	}
+//}
+//this.projection.setNear((float)this.projection.getRadius(1));
+//this.projection.setNearToObject((float)this.projection.getRadius(1)+1);
+//Variable tunnelNode = new Variable("Tunnel");
+//this.tunnelList = this.getTunnelList();
+//for(Tunnel t: this.tunnelList) {
+//	tunnelNode.addChild(t);
+//}
+//Variable triangleNode = new Variable("Triangle");
+//this.triangleList = this.getTriangleList("Helios");
+//for(Triangle t: this.triangleList) {
+//	triangleNode.addChild(t);
+//}
+//this.addChild(tunnelNode);
+//this.addChild(triangleNode);
+//this.setScale(DEFAULT_SCALE);
+//Point point = this.projection.getPoint(this.space.getPoint());
+//double x = point.x * this.projection.scale;
+//double y = point.y * this.projection.scale;
+//graphics.setColor(this.color);
+//double radius = 5;
+//x = x - (radius / 2);
+//y = y - (radius / 2);
+//graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
+//	@Override
+//public List<Plot> getPlotList() throws Exception {
+//List<Plot> plotList = super.getPlotList();
+//for (Entry<String, Boolean> variable : this.variableMap.entrySet()) {
+//	String variableKey = variable.getKey();
+//	Boolean variableLoad = variable.getValue();
+//	if (variableLoad) {
+//		TimePlot plot = null;
+//		switch (variableKey) {
+//		case "Solar Cycle": {
+//			Cosine sine = new Cosine(new GregorianCalendar(1816, 0, 1, 0, 0, 0), Long.valueOf("348666451258"));
+//			List<Index> indexList = this.getCosinePointList(sine);
+//			if (indexList != null) {
+//				List<List<Index>> blackPointMatrix = new ArrayList<>();
+//				blackPointMatrix.add((indexList));
+//				TimePlot cPlot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
+//				cPlot.setTitle(variableKey);
+//				cPlot.setXLabel("Time");
+//				cPlot.setYLabel("Distance");
+//				plotList.add(cPlot);
+//			}
+//			break;
+//		}
+//		case "Sun Angle Planets": {
+//			if (this.anglePlanetsIndexList == null)
+//				anglePlanetsIndexList = this.getAllAnglePlanetsIndexList("Sun");
+//			if (anglePlanetsIndexList != null) {
+//				List<List<Index>> blackPointMatrix = new ArrayList<>();
+//				blackPointMatrix.add((anglePlanetsIndexList));
+//				plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
+//				plot.setTitle(variableKey);
+//				plot.setXLabel("Time");
+//				plot.setYLabel("Distance");
+//				plotList.add(plot);
+//			}
+//			break;
+//		}
+//		case "Earth Angle Planets": {
+//			if (this.anglePlanetsIndexList == null)
+//				anglePlanetsIndexList = this.getAllAnglePlanetsIndexList("Earth");
+//			if (anglePlanetsIndexList != null) {
+//				List<List<Index>> blackPointMatrix = new ArrayList<>();
+//				blackPointMatrix.add((anglePlanetsIndexList));
+//				plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
+//				plot.setTitle(variableKey);
+//				plot.setXLabel("Time");
+//				plot.setYLabel("Distance");
+//				plotList.add(plot);
+//			}
+//			break;
+//		}
+//
+//		case "Angle Planets": {
+//			if (this.allAnglePlanetsIndexListMap == null)
+//				allAnglePlanetsIndexListMap = getAnglePlanetsIndexListMap();
+//			for (Entry<String, List<Index>> entry : allAnglePlanetsIndexListMap.entrySet()) {
+//				String key = entry.getKey();
+//				List<List<Index>> blackIndexMatrix = new ArrayList<>();
+//				List<List<Index>> colorIndexMatrix = new ArrayList<>();
+//				List<Index> indexList = entry.getValue();
+//				blackIndexMatrix.add(indexList);
+//				plot = new TimePlot(this.startCalendar, this.endCalendar, blackIndexMatrix, colorIndexMatrix);
+//				plot.setTitle(key + " Angle");
+//				plot.setXLabel("Time");
+//				plot.setYLabel("Distance");
+//				plotList.add(plot);
+//			}
+//			break;
+//		}
+//		case "Distance Planets": {
+//			if (this.allDistancePlanetsIndexListMap == null)
+//				allDistancePlanetsIndexListMap = getDistancePlanetsIndexListMap("Sun");
+//			for (Entry<String, List<Index>> entry : allDistancePlanetsIndexListMap.entrySet()) {
+//				String key = entry.getKey();
+//				List<List<Index>> blackIndexMatrix = new ArrayList<>();
+//				List<List<Index>> colorIndexMatrix = new ArrayList<>();
+//				List<Index> indexList = entry.getValue();
+//				blackIndexMatrix.add(indexList);
+//				plot = new TimePlot(this.startCalendar, this.endCalendar, blackIndexMatrix, colorIndexMatrix);
+//				plot.setTitle("Sun," + key + " Distance");
+//				plot.setXLabel("Time");
+//				plot.setYLabel("Distance");
+//				plotList.add(plot);
+//			}
+//			break;
+//		}
+//		case "Gravity Force Planets": {
+//			if (this.allGravityForcePlanetsIndexListMap == null)
+//				allGravityForcePlanetsIndexListMap = getGravityForcePlanetsIndexListMap("Sun");
+//			for (Entry<String, List<Index>> entry : allGravityForcePlanetsIndexListMap.entrySet()) {
+//				String key = entry.getKey();
+//				List<List<Index>> blackIndexMatrix = new ArrayList<>();
+//				List<List<Index>> colorIndexMatrix = new ArrayList<>();
+//				List<Index> indexList = entry.getValue();
+//				blackIndexMatrix.add(indexList);
+//				plot = new TimePlot(this.startCalendar, this.endCalendar, blackIndexMatrix, colorIndexMatrix);
+//				plot.setTitle("Sun," + key + " Gravity Force");
+//				plot.setXLabel("Time");
+//				plot.setYLabel("Distance");
+//				plotList.add(plot);
+//			}
+//			break;
+//		}
+//
+//		case "Earth Gravity Force": {
+//			List<Index> indexList = this.getAllGravityForceIndexList("Earth");
+//			if (indexList != null) {
+//				List<List<Index>> blackPointMatrix = new ArrayList<>();
+//				blackPointMatrix.add((indexList));
+//				plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
+//				plot.setTitle(variableKey);
+//				plot.setXLabel("Time");
+//				plot.setYLabel("Distance");
+//				plotList.add(plot);
+//			}
+//			break;
+//		}
+//
+//		case "Jupiter Gravity Force": {
+//			List<Index> indexList = this.getAllGravityForceIndexList("Jupiter");
+//			if (indexList != null) {
+//				List<List<Index>> blackPointMatrix = new ArrayList<>();
+//				blackPointMatrix.add((indexList));
+//				plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
+//				plot.setTitle(variableKey);
+//				plot.setXLabel("Time");
+//				plot.setYLabel("Distance");
+//				plotList.add(plot);
+//			}
+//			break;
+//		}
+//		case "Earth Test": {
+//			List<Index> indexList = this.getTestIndexList("Earth");
+//			if (indexList != null) {
+//				List<List<Index>> blackPointMatrix = new ArrayList<>();
+//				blackPointMatrix.add((indexList));
+//				List<List<Index>> colorPointMatrix = null;
+//				// colorPointMatrix.add(this.getAnglePlanetsIndexList());
+//				plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, colorPointMatrix);
+//				plot.setTitle(variableKey);
+//				plot.setXLabel("Time");
+//				plot.setYLabel("Distance");
+//				plotList.add(plot);
+//			}
+//			break;
+//		}
+//		case "Sun Test": {
+//			List<Index> indexList = this.getTestIndexList("Sun");
+//			if (indexList != null) {
+//				List<List<Index>> blackPointMatrix = new ArrayList<>();
+//				blackPointMatrix.add((indexList));
+//				List<List<Index>> colorPointMatrix = null;
+//				// colorPointMatrix.add(this.getAnglePlanetsIndexList());
+//				plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, colorPointMatrix);
+//				plot.setTitle(variableKey);
+//				plot.setXLabel("Time");
+//				plot.setYLabel("Distance");
+//				plotList.add(plot);
+//			}
+//			// List<Point> indexList = this.getTestIndexList("Sun");
+//			// if (indexList != null) {
+//			// List<List<Point>> blackPointMatrix = new ArrayList<>();
+//			// blackPointMatrix.add((indexList));
+//			// CartesianPlot cPlot = new CartesianPlot(blackPointMatrix, null);
+//			// cPlot.setTitle(variableKey);
+//			// cPlot.setXLabel("Time");
+//			// cPlot.setYLabel("Distance");
+//			// plotList.add(cPlot);
+//			// }
+//			break;
+//		}
+//		}
+//	}
+//}
+//return plotList;
+//}
+//public void setScale(double scale) {
+//this.projection.scale = scale;
+//for (Variable e : this.getList()) {
+//	if (e instanceof Energy) {
+//		((Energy) e).projection.scale = scale;
+//	}
+//}
+//}
+
+//public void getGravity() {
+//for (Energy energy : this.getEnergyList()) {
+//	for (Energy e : this.getEnergyList()) {
+//		if (energy != e) {
+//			if (energy.mass != 1 && e.mass != 1) {
+//				Vector3D force = e.getGravity(energy);
+//				energy.force = energy.force.subtract(force);
+//				e.force = e.force.add(force);
+//			}
+//		}
+//	}
+//}
+//
+//}
+
+//public void drawDate(Graphics g, Calendar c) {
+//g.setColor(Color.WHITE);
+//String calendar = this.getCalendarString(null, c);
+//int text = g.getFontMetrics().stringWidth(calendar);
+//g.drawString(calendar, 0 - text / 2, -360);
+//}
+
+//public Space compareSpace(Calendar time, double threshold) {
+//List<Energy> energyList = this.getEnergyList(time);
+//List<Triangle> triangleListA = this.getTriangleList(energyList);
+//List<Triangle> triangleListB = this.getTriangleList(this.energyList);
+//return this.compareSpace(triangleListA, triangleListB, threshold);
+//}
+//
+//public Space compareSpace(Calendar timeA, Calendar timeB, double threshold) {
+//List<Triangle> triangleListA = this.getTriangleList(this.getEnergyList(timeA));
+//List<Triangle> triangleListB = this.getTriangleList(this.getEnergyList(timeB));
+//return this.compareSpace(triangleListA, triangleListB, threshold);
+//}
+/////////////////////////////
+
+//public void setAzimuth(int azimuth) {
+////	if(print)System.out.println("setAzimuth("+azimuth+")");
+//	this.azimuth = azimuth;
+//	for (Energy e : this.getEnergyList()) {
+//		e.azimuth = azimuth;
+//	}
+//}
+//
+//public void setElevation(int elevation) {
+////	if(print)System.out.println("setElevation("+elevation+")");
+//	this.elevation = elevation;
+//	for (Energy e : this.getEnergyList()) {
+//		e.elevation = elevation;
+//	}
+//}
+//public List<Index> getTestIndexList(String name) throws Exception {
+//List<Index> indexList = new ArrayList<>();
+//Map<String, List<Index>> indexListMap = new HashMap<>();
+//List<String> dateList = getDateList("18000101-20200101", Calendar.DATE);
+//Calendar c = null;
+//SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+//for (String date : dateList) {
+//	c = Calendar.getInstance();
+//	c.setTime(sdf.parse(date));
+//	this.setCalendar(c);
+//	List<Triangle> triangleList = this.getTriangleList("Sun");
+//	Index index;
+//	for (Triangle t : triangleList) {
+//		double distance = t.a;
+//		List<Index> list = indexListMap.get(t.toString());
+//		if (list == null) {
+//			list = new ArrayList<>();
+//		}
+//		index = new Index();
+//		index.value = distance * t.getMass();
+//		index.startCalendar = c;
+//		list.add(index);
+//		indexListMap.put(t.toString(), list);
+//	}
+//}
+//
+//for (String date : dateList) {
+//	c = Calendar.getInstance();
+//	c.setTime(sdf.parse(date));
+//	Index index = new Index();
+//	index.startCalendar = c;
+//	index.value = 0;
+//	indexList.add(index);
+//}
+//for (Triangle t : this.getTriangleList("Sun")) {
+//	List<Index> list = indexListMap.get(t.toString());
+//	for (int i = 0; i < dateList.size(); i++) {
+//		Index index = indexList.get(i);
+//		double value = list.get(i).value;
+//		index.value += (value);
+//		indexList.set(i, index);
+//	}
+//}
+//return indexList;
+//}
+
+//public static void main(String[] args) {
+//Solar solar = new Solar();
+//solar.setCalendar(new GregorianCalendar(1990, 3, 19, 0, 0, 0));
+//Sun sun = (Sun) solar.getVariable("Sun");
+//List<Energy> energyList = solar.getEnergyList();
+//for (Energy e : energyList) {
+//	if (!(e instanceof Sun)) {
+//		System.out.println(e.name + ": " + sun.getElipticDistance(e));
+//		System.out.println(e.name + ": " + sun.getRectangularDistance(e));
+//	}
+//}
+//}
+//public void setCalendar(String time) {
+//DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//try {
+//	Date date = formatter.parse(time);
+//	Calendar calendar = Calendar.getInstance();
+//	calendar.setTime(date);
+//	this.setCalendar(calendar);
+//} catch (ParseException e) {
+//	e.printStackTrace();
+//}
+//
+//}
+
+//public void setCalendar(Calendar time) {
+//this.calendar = time;
+//for (Energy energy : energyList) {
+//	energy.setCalendar(time);
+//}
+//}
 //public ArrayList<Energy> getEnergyList(String time) {
 //return this.getEnergyList(this.getCalendar("yyyy-MM-dd", time));
 //}

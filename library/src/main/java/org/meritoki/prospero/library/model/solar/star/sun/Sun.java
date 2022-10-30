@@ -1,14 +1,22 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.meritoki.prospero.library.model.solar.star.sun;
 
 import java.awt.Color;
 
-import org.meritoki.prospero.library.model.helios.Helios;
-import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.planet.jupiter.Jupiter;
 import org.meritoki.prospero.library.model.solar.planet.mars.Mars;
 import org.meritoki.prospero.library.model.solar.planet.mercury.Mercury;
@@ -17,34 +25,40 @@ import org.meritoki.prospero.library.model.solar.planet.saturn.Saturn;
 import org.meritoki.prospero.library.model.solar.planet.uranus.Uranus;
 import org.meritoki.prospero.library.model.solar.planet.venus.Venus;
 import org.meritoki.prospero.library.model.solar.star.Star;
+import org.meritoki.prospero.library.model.terra.Terra;
+import org.meritoki.prospero.library.model.terra.cartography.Globe;
+
 
 /**
+ * 
+ * <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html">Reference</a>
  *
- * @author jorodriguez
  */
 public class Sun extends Star {
-
-	public Helios helios = new Helios();
 	
-	public Sun(){
-		super("Sun");
-        this.mass = 1.9891e30;
-        this.radius = 6.96342e5;
+	public Sun(String name){
+		super(name);
+        this.mass = 1.9891e30;//Kilograms
+        this.radius = 696342;// kilometers
+        this.a = this.radius;//Kilometers
+        this.b = this.a;//Kilometers
+        this.c = this.a;//Kilometers
         this.color = Color.YELLOW;
         this.angularVelocity = 2.865329607243705e-06;
-        this.rotation = 0.564263323;//1.997;//km/s
-        this.addChild(new Earth(this));
-        this.addChild(new Jupiter(this));
-        this.addChild(new Mars(this));
-        this.addChild(new Mercury(this));
-        this.addChild(new Neptune(this));
-        this.addChild(new Saturn(this));
-        this.addChild(new Uranus(this));
-        this.addChild(new Venus(this));
-        this.addChildren(this.helios.getChildren());
+        this.rotation = 0.564263323;//Kilometers/Second
+        this.projection = new Globe(this.a,this.b,this.c);
+        this.addChild(new Terra());
+        this.addChild(new Jupiter());
+        this.addChild(new Mars());
+        this.addChild(new Mercury());
+        this.addChild(new Neptune());
+        this.addChild(new Saturn());
+        this.addChild(new Uranus());
+        this.addChild(new Venus());
 	}
 }
-
+//public Helios helios = new Helios();
+//this.addChildren(this.helios.getChildren());
 //public Sun(Calendar calendar) {
 //this.name = "sun";
 //this.mass = 1.9891e30;

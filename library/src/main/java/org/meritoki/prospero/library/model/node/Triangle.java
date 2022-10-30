@@ -1,4 +1,4 @@
-package org.meritoki.prospero.library.model.solar.unit;
+package org.meritoki.prospero.library.model.node;
 
 import java.awt.Graphics;
 import java.text.SimpleDateFormat;

@@ -22,6 +22,32 @@ public class Point {
 		z = Z;
 	}
 	
+	public void add(Point point) {
+		this.add(point.x,point.y,point.z);
+	}
+	
+	public void add(double x, double y, double z) {
+		this.x += x;
+		this.y += y;
+		this.z += z;
+	}
+	
+	public void subtract(Point point) {
+		this.subtract(point.x,point.y,point.z);
+	}
+	
+	public void subtract(double x, double y, double z) {
+		this.x -= x;
+		this.y -= y;
+		this.z -= z;
+	}
+	
+	public void multiply(double value) {
+		this.x *= value;
+		this.y *= value;
+		this.z *= value;
+	}
+	
 	@Override
 	public boolean equals(Object object) {
 		Point point = (object instanceof Point)? (Point)object:null;

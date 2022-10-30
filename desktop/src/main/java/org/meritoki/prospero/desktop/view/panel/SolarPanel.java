@@ -26,7 +26,6 @@ import java.awt.event.MouseMotionListener;
 import org.meritoki.prospero.desktop.view.menu.SavePopupMenu;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.solar.Solar;
-import org.meritoki.prospero.library.model.solar.unit.*;
 
 /**
  *
@@ -47,10 +46,10 @@ public class SolarPanel extends javax.swing.JPanel implements KeyListener, Mouse
      * Creates new form SolarPanel
      */
     public SolarPanel() {
-        initComponents();
-        addKeyListener(this);
-        addMouseListener(this);
-        addMouseMotionListener(this);
+    	this.initComponents();
+    	this.addKeyListener(this);
+    	this.addMouseListener(this);
+    	this.addMouseMotionListener(this);
         this.setSize(1024,512);
     }
     
@@ -82,19 +81,7 @@ public class SolarPanel extends javax.swing.JPanel implements KeyListener, Mouse
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		double scale = ((Solar)this.model.getVariable("Solar")).scale;
+		double scale = ((Solar)this.model.getVariable("Solar")).projection.scale;
 		if (e.isControlDown()) {
 			switch (e.getKeyChar()) {
 			case '+': {
@@ -113,6 +100,18 @@ public class SolarPanel extends javax.swing.JPanel implements KeyListener, Mouse
 			}
 			}
 		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+
 	}
 
 	@Override

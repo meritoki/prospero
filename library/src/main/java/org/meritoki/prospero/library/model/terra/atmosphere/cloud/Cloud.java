@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.grid.Grid;
+import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.N;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;

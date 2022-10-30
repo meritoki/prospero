@@ -21,7 +21,6 @@ import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.cluster.TileWrapper;
-import org.meritoki.prospero.library.model.grid.Grid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.histogram.Histogram;
@@ -29,6 +28,7 @@ import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
+import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density.Density;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.genesis.Genesis;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.lifetime.Lifetime;
@@ -56,7 +56,7 @@ import org.meritoki.prospero.library.model.unit.Time;
 import com.meritoki.library.controller.node.Exit;
 import com.meritoki.library.controller.node.NodeController;
 
-public class Cyclone extends Grid {
+public class Cyclone extends Atmosphere {
 
 	static Logger logger = LogManager.getLogger(Cyclone.class.getName());
 	public String title = this.name;
@@ -104,7 +104,7 @@ public class Cyclone extends Grid {
 	}
 
 	/**
-	 * 
+	 * Method is used to set flags in Event and Coordinate to true or false depending on query parameters
 	 */
 	@Override
 	public void filter(List<Event> eventList) throws Exception {
@@ -1132,13 +1132,14 @@ public class Cyclone extends Grid {
 
 	@Override
 	public void paint(Graphics graphics) throws Exception {
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.paint(graphics);
-		}
-		if (this.load) {
-			super.paint(graphics);
-		}
+		super.paint(graphics);
+//		List<Variable> nodeList = this.getChildren();
+//		for (Variable n : nodeList) {
+//			n.paint(graphics);
+//		}
+//		if (this.load) {
+//			super.paint(graphics);
+//		}
 	}
 }
 //else if(this.bandFlag) {

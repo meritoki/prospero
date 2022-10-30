@@ -2,7 +2,7 @@ package org.meritoki.prospero.library.model.terra.lithosphere.volcano;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.grid.Grid;
+import org.meritoki.prospero.library.model.node.Grid;
 
 public class Volcanic extends Grid {
 

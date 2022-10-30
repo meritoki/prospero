@@ -6,21 +6,20 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.grid.Grid;
+import org.meritoki.prospero.library.model.terra.hydrosphere.Hydrosphere;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.enso.ENSO;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.ice.Ice;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.modulus.Modulus;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.pdo.PDO;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.tempurature.SeaSurfaceTemperature;
 import org.meritoki.prospero.library.model.unit.DataType;
-import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
-public class Ocean extends Grid {
+public class Ocean extends Hydrosphere {
 
 	static Logger logger = LogManager.getLogger(Ocean.class.getName());
 //	public int[][] countMatrix;

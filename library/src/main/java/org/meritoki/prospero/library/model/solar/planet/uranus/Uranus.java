@@ -1,34 +1,66 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.solar.planet.uranus;
 
 import java.awt.Color;
-import java.util.Calendar;
 
 import org.meritoki.prospero.library.model.solar.planet.Planet;
-import org.meritoki.prospero.library.model.solar.star.sun.Sun;
-import org.meritoki.prospero.library.model.solar.unit.Orbital;
-import org.meritoki.prospero.library.model.solar.unit.Unit;
+import org.meritoki.prospero.library.model.terra.cartography.Globe;
 
+/**
+ * 
+ * <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/uranusfact.html">Reference</a>
+ *
+ */
 public class Uranus extends Planet {
 
-    public Uranus(Sun sun) {
+	/**
+	 * 
+	 */
+    public Uranus() {
         super("Uranus");
-        this.centroid = sun;
-        this.mass = 8.681E25;
-        this.radius = 25559;
+        this.mass = 8.681E25;//Kilograms
+        this.radius = 25559;//Kilometers
+        this.a = this.radius;//Kilometers
+        this.b = this.a;//Kilometers
+        this.c = 24973.0;//Kilometers
         this.color = Color.MAGENTA;
-        this.longitudeOfAscendingNode[0] = 74.0005;// o
-        this.longitudeOfAscendingNode[1] = 1.3978E-5;// o
-        this.inclination[0] = 0.7733;// i//0.00005
-        this.inclination[1] = 1.9E-8;// i//0.00005
+        //N
+        this.longitudeOfAscendingNode[0] = 74.0005;
+        this.longitudeOfAscendingNode[1] = 1.3978E-5;
+        //i
+        this.inclination[0] = 0.7733;
+        this.inclination[1] = 1.9E-8;
+        //w
         this.argumentOfPeriapsis[0] = 96.6612;
         this.argumentOfPeriapsis[1] = 3.0565E-5;
-        this.semiMajorAxis[0] = 19.18171;// * Unit.ASTRONOMICAL;// a//1.00000011
-        this.semiMajorAxis[1] = -1.55E-8;// * Unit.ASTRONOMICAL;// a//1.00000011
-        this.eccentricity[0] = 0.047318;// e//0.01671022
-        this.eccentricity[1] = 7.45E-9;// e
+        //a
+        this.semiMajorAxis[0] = 19.18171;//Astronomical Unit
+        this.semiMajorAxis[1] = -1.55E-8;//Astronomical Unit
+        //e
+        this.eccentricity[0] = 0.047318;
+        this.eccentricity[1] = 7.45E-9;
+        //M
         this.meanAnomaly[0] = 142.5905;
         this.meanAnomaly[1] = 0.011725806;
         this.orbitalPeriod = 30688.5;
         this.angularVelocity = -1.041365902144588e-04;
+        this.projection = new Globe(this.a,this.b,this.c);
+		this.projection.setNear((float)this.radius);
+		this.projection.setNearToObject((float)this.radius+1000);
     }
 }
+//this.centroid = (Orbital)this.getRoot();

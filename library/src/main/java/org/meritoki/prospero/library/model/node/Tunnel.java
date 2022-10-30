@@ -1,27 +1,21 @@
-package org.meritoki.prospero.library.model.solar.unit;
+package org.meritoki.prospero.library.model.node;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.meritoki.prospero.library.model.function.Cosine;
-import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.Unit;
 
-public class Tunnel extends Energy {
+public class Tunnel extends Orbital {
 	
 	public Tunnel(Orbital a, Orbital b) {
 		super(a.name+","+b.name);
@@ -612,10 +606,10 @@ public class Tunnel extends Energy {
 		Point pointB = (b.space.getPoint());
 		Point pointC = (new Point(pointA.x-barycenterA.getX(),pointA.y-barycenterA.getY(),pointA.z-barycenterA.getZ()));
 		Point pointD = (new Point(pointB.x-barycenterB.getX(),pointB.y-barycenterB.getY(),pointB.z-barycenterB.getZ()));
-		pointA = this.getPoint(pointA);
-		pointB = this.getPoint(pointB);
-		pointC = this.getPoint(pointC);
-		pointD = this.getPoint(pointD);
+		pointA = this.projection.getPoint(pointA);
+		pointB = this.projection.getPoint(pointB);
+		pointC = this.projection.getPoint(pointC);
+		pointD = this.projection.getPoint(pointD);
 //		System.out.println(pointA+":"+pointB+":"+pointC+":"+pointD);
 //		g.setColor(Color.GRAY);
 //		g.drawLine((int) (pointA.x*scale), (int) (pointA.y*scale), (int) (pointB.x*scale), (int) (pointB.y * scale));
@@ -624,11 +618,11 @@ public class Tunnel extends Energy {
 		if(magnitudeA < magnitudeB) {
 			g.setColor(Color.RED);
 		} 
-		g.drawLine((int) (pointA.x*scale), (int) (pointA.y*scale), (int) (pointC.x*scale), (int) (pointC.y*scale));
+		g.drawLine((int) (pointA.x*this.projection.scale), (int) (pointA.y*this.projection.scale), (int) (pointC.x*this.projection.scale), (int) (pointC.y*this.projection.scale));
 		if(magnitudeA < magnitudeB) {
 			g.setColor(Color.BLUE);
 		}
-		g.drawLine((int) (pointB.x*scale), (int) (pointB.y*scale), (int) (pointD.x*scale), (int) (pointD.y * scale));
+		g.drawLine((int) (pointB.x*this.projection.scale), (int) (pointB.y*this.projection.scale), (int) (pointD.x*this.projection.scale), (int) (pointD.y * this.projection.scale));
 	}
 	
 

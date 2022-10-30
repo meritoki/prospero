@@ -1,4 +1,19 @@
-package org.meritoki.prospero.library.model.grid;
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.meritoki.prospero.library.model.node;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -21,8 +36,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.color.Scheme;
-import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
+import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
 import org.meritoki.prospero.library.model.unit.Band;
@@ -33,14 +48,16 @@ import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Meter;
 import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Station;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.meritoki.prospero.library.model.unit.Unit;
 
-public class Grid extends Variable {
+public class Grid extends Spheroid {
 
 	static Logger logger = LogManager.getLogger(Grid.class.getName());
 	public int latitude = 90;
@@ -684,7 +701,27 @@ public class Grid extends Variable {
 		meter.paint(graphics);
 	}
 
+	@Override
 	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
+		List<Coordinate> coordinateList = this.projection.getGridCoordinateList(0, 15, 30);
+		graphics.setColor(this.color);
+		for (Coordinate c : coordinateList) {
+			graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
+		}
+		if (!(this instanceof Solar)) {
+			Point point = this.projection.getPoint(this.space.getPoint());
+			double x = point.x * this.projection.scale;
+			double y = point.y * this.projection.scale;
+			graphics.setColor(this.color);
+			double radius = 2;//this.projection.getRadius(1/Unit.ASTRONOMICAL)*this.projection.scale;
+			x = x - (radius / 2);
+			y = y - (radius / 2);
+			graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
+			graphics.setColor(Color.black);
+			graphics.drawString(this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "", (int) x,
+					(int) y);
+		}
 		if (this.load) {
 			if (stackFlag) {
 				this.paintStack(graphics);
@@ -700,13 +737,13 @@ public class Grid extends Variable {
 				}
 			}
 		}
-
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.paint(graphics);
-		}
+		
 	}
 }
+//List<Variable> nodeList = this.getChildren();
+//for (Variable n : nodeList) {
+//	n.paint(graphics);
+//}
 //public Map<Integer, Integer> initYearMap() {
 //this.yearMap = new HashMap<>();
 //for (String sample : this.dateList) {

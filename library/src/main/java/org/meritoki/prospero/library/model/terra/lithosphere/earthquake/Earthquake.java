@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.data.source.EarthquakeUSGSEarthquakeHazardProgram;
 import org.meritoki.prospero.library.model.data.source.Source;
 import org.meritoki.prospero.library.model.data.source.VolcanicNOAA;
-import org.meritoki.prospero.library.model.grid.Grid;
+import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.unit.Coordinate;

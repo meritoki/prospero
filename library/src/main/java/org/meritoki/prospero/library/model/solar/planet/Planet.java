@@ -1,32 +1,35 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.solar.planet;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.function.Sine;
-import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.plot.time.TimePlot;
-import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
-import org.meritoki.prospero.library.model.solar.unit.Energy;
-import org.meritoki.prospero.library.model.solar.unit.Orbital;
-import org.meritoki.prospero.library.model.solar.unit.Triangle;
-import org.meritoki.prospero.library.model.solar.unit.Tunnel;
+import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
 
-public class Planet extends Orbital {
+public class Planet extends Grid {
 
+	static Logger logger = LogManager.getLogger(Planet.class.getName());
+	
 	public Planet(String name) {
 		super(name);
 	}
@@ -45,32 +48,26 @@ public class Planet extends Orbital {
 
 	@Override
 	public void paint(Graphics graphics) throws Exception {
-		this.initVariableMap();
-		Point point = this.getPoint(this.space.getPoint());
-		double x = point.x * scale;
-		double y = point.y * scale;
-		graphics.setColor(this.color);
-		double radius = 5;
-		x = x - (radius / 2);
-		y = y - (radius / 2);
-		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
-		graphics.setColor(Color.black);
-		graphics.drawString(this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "", (int) x, (int) y);
-		List<Point> vertexList = this.getOrbit();
-		graphics.setColor(Color.gray);
-		radius = 5;
-		for (int i = 1; i < vertexList.size(); i++) {
-			graphics.drawLine((int) (vertexList.get(i - 1).x * scale),
-					(int) (vertexList.get(i - 1).y * scale), (int) (vertexList.get(i).x * scale),
-					(int) (vertexList.get(i).y * scale));
-		}
+		super.paint(graphics);
+//		this.initVariableMap();
 
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			if(n instanceof Energy) {
-				n.paint(graphics);
-			}
-		}
+
+//		List<Point> vertexList = this.getOrbit();
+//		graphics.setColor(Color.gray);
+//		radius = 5;
+//		for (int i = 1; i < vertexList.size(); i++) {
+//			graphics.drawLine((int) (vertexList.get(i - 1).x * this.projection.scale),
+//					(int) (vertexList.get(i - 1).y * this.projection.scale), (int) (vertexList.get(i).x * this.projection.scale),
+//					(int) (vertexList.get(i).y * this.projection.scale));
+//		}
+
+//		super.paint(graphics);
+//		List<Variable> nodeList = this.getChildren();
+//		for (Variable n : nodeList) {
+//			if(n instanceof Energy) {
+//				n.paint(graphics);
+//			}
+//		}
 	}
 }
 

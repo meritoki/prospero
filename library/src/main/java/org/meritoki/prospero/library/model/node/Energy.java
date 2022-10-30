@@ -1,6 +1,22 @@
-package org.meritoki.prospero.library.model.solar.unit;
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.meritoki.prospero.library.model.node;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,31 +30,27 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.meritoki.prospero.library.model.node.Variable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.Space;
+import org.meritoki.prospero.library.model.unit.Unit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.meritoki.module.library.model.Module;
 
 public class Energy extends Variable {
 
-	public String period = "18000101-20200101";
+	static Logger logger = LogManager.getLogger(Energy.class.getName());
 	@JsonProperty
 	public double mass;
 	@JsonProperty
 	public Space space = new Space();
-	@JsonProperty
-	public double scale;
 	@JsonIgnore
 	protected Color color;
-	@JsonIgnore
-	public int azimuth = 0;
-	@JsonIgnore
-	public int elevation = 0;
+	///////////////////////////////////////
 	@JsonIgnore
 	public List<Tunnel> tunnelList = null;
 	@JsonIgnore
@@ -47,6 +59,8 @@ public class Energy extends Variable {
 	public Map<String, List<Index>> indexListMap;
 	@JsonIgnore
 	public DecimalFormat df = new DecimalFormat("0.######E0");
+	@JsonIgnore
+	public String period = "18000101-20200101";
 
 	public Energy(String name) {
 		super(name);
@@ -355,37 +369,37 @@ public class Energy extends Variable {
 		}
 	}
 
-	public Point getPoint(Point point) {
-		Point p = null;
-		double theta = Math.PI * azimuth / 180.0;
-		double phi = Math.PI * elevation / 180.0;
-		float cosT = (float) Math.cos(theta);
-		float sinT = (float) Math.sin(theta);
-		float cosP = (float) Math.cos(phi);
-		float sinP = (float) Math.sin(phi);
-		float cosTcosP = cosT * cosP;
-		float cosTsinP = cosT * sinP;
-		float sinTcosP = sinT * cosP;
-		float sinTsinP = sinT * sinP;
-		// The following two lines fixed defects when viewing in 3 Dimensions
-		float near = 32; // distance from eye to near plane
-		float nearToObj = 8f; // 1.5// distance from near plane to center of object
-		double x0 = point.x;
-		double y0 = point.y;
-		double z0 = point.z;
-		// compute an orthographic projection
-		float x1 = (float) (cosT * x0 + sinT * z0);
-		float y1 = (float) (-sinTsinP * x0 + cosP * y0 + cosTsinP * z0);
-		// now adjust things to get a perspective projection
-		float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinP * y0);
-		x1 = x1 * near / (z1 + near + nearToObj);
-		y1 = y1 * near / (z1 + near + nearToObj);
-		p = new Point();
-		p.x = x1;
-		p.y = y1;
-		p.z = z1;
-		return p;
-	}
+//	public Point getPoint(Point point) {
+//		Point p = null;
+//		double theta = Math.PI * azimuth / 180.0;
+//		double phi = Math.PI * elevation / 180.0;
+//		float cosT = (float) Math.cos(theta);
+//		float sinT = (float) Math.sin(theta);
+//		float cosP = (float) Math.cos(phi);
+//		float sinP = (float) Math.sin(phi);
+//		float cosTcosP = cosT * cosP;
+//		float cosTsinP = cosT * sinP;
+//		float sinTcosP = sinT * cosP;
+//		float sinTsinP = sinT * sinP;
+//		// The following two lines fixed defects when viewing in 3 Dimensions
+//		float near = 32; // distance from eye to near plane
+//		float nearToObj = 8f; // 1.5// distance from near plane to center of object
+//		double x0 = point.x;
+//		double y0 = point.y;
+//		double z0 = point.z;
+//		// compute an orthographic projection
+//		float x1 = (float) (cosT * x0 + sinT * z0);
+//		float y1 = (float) (-sinTsinP * x0 + cosP * y0 + cosTsinP * z0);
+//		// now adjust things to get a perspective projection
+//		float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinP * y0);
+//		x1 = x1 * near / (z1 + near + nearToObj);
+//		y1 = y1 * near / (z1 + near + nearToObj);
+//		p = new Point();
+//		p.x = x1;
+//		p.y = y1;
+//		p.z = z1;
+//		return p;
+//	}
 
 	public double getMass() {
 		return this.mass;
@@ -457,7 +471,7 @@ public class Energy extends Variable {
 	public double getKineticEnergy() {
 		double kineticEnergy = 0;
 		kineticEnergy += 0.5 * this.mass * Math.pow(((Orbital) this).angularVelocity, 2)
-				* Math.pow(((Orbital) this).radius, 2);
+				* Math.pow(((Spheroid) this).radius, 2);
 		return kineticEnergy;
 	}
 
@@ -469,8 +483,8 @@ public class Energy extends Variable {
 		Vector3D difference = energy.space.eliptic.subtract(this.space.eliptic);
 		double distance = Math.sqrt(Math.pow((double) difference.getX(), 2) + Math.pow((double) difference.getY(), 2)
 				+ Math.pow((double) difference.getZ(), 2));
-		distance *= Unit.ASTRONOMICAL;
-		distance *= 1000;
+		distance *= Unit.ASTRONOMICAL;//Kilometers
+		distance *= 1000;//Meters
 		double gravityForce = (Unit.GRAVITATIONAL_CONSTANT * energy.mass * this.mass) / (Math.pow(distance, 2));
 		Vector3D force = null;
 		if (distance != 0) {
@@ -632,7 +646,18 @@ public class Energy extends Variable {
 		System.out.println(this.name+" Joules:" + this.getJoules());
 		System.out.println(this.name+" Coulomb:" + this.getCoulomb());
 	}
+	
+	@JsonIgnore
+	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
+	}
 }
+//@JsonProperty
+//public double scale;	
+//@JsonIgnore
+//public int azimuth = 0;
+//@JsonIgnore
+//public int elevation = 0;
 //public double getGravityForce(Energy energy) {
 //Vector3D distance = energy.space.eliptic.subtract(this.space.eliptic);// distance is in kilometers
 //System.out.println(energy.mass + ":" + this.mass);

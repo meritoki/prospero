@@ -10,11 +10,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiLineString;
-import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Result;
 
-public class Tectonic extends Variable {
+public class Tectonic extends Lithosphere {
 
 	static Logger logger = LogManager.getLogger(Tectonic.class.getName());
 	public Color color = Color.GRAY;

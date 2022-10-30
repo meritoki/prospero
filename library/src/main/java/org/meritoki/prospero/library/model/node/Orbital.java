@@ -1,36 +1,48 @@
-/**
- * https://stjarnhimlen.se/comp/ppcomp.html
- * http://www.stjarnhimlen.se/comp/tutorial.html
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-package org.meritoki.prospero.library.model.solar.unit;
+package org.meritoki.prospero.library.model.node;
 
+import java.awt.Graphics;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.solar.moon.Moon;
-import org.meritoki.prospero.library.model.solar.planet.Planet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.solar.planet.jupiter.Jupiter;
 import org.meritoki.prospero.library.model.solar.planet.saturn.Saturn;
 import org.meritoki.prospero.library.model.solar.planet.uranus.Uranus;
 import org.meritoki.prospero.library.model.solar.star.sun.Sun;
-import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.Space;
+import org.meritoki.prospero.library.model.unit.Unit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meritoki.module.library.model.Module;
 
-public class Orbital extends Spheroid {
-	
-	public static void main(String[] args) {
-		Orbital orbital = new Orbital();
-		System.out.println(orbital.getTime(orbital.referenceCalendar));
-		System.out.println(orbital.getTime(new GregorianCalendar(1990, 3, 19, 0, 0, 0)));
-		System.out.println(orbital.getTime(new GregorianCalendar(1990, 3, 19, 12, 0, 0)));
-	}
+/**
+ * Citation
+ * <ol type="A">
+ * <li><a href="https://stjarnhimlen.se/comp/ppcomp.html">https://stjarnhimlen.se/comp/ppcomp.html</a></li>
+ * <li><a href="http://www.stjarnhimlen.se/comp/tutorial.html">http://www.stjarnhimlen.se/comp/tutorial.html</a></li>
+ * </ol>
+ */
+public class Orbital extends Energy {
 
+	static Logger logger = LogManager.getLogger(Orbital.class.getName());
 	public Calendar referenceCalendar = (new GregorianCalendar(2000, 0, 0, 0, 0, 0));
 	public double orbitalPeriod;
 	public double obliquity;
@@ -58,14 +70,15 @@ public class Orbital extends Spheroid {
 		Vector3D direction = this.space.rectangular.subtract(energy.space.rectangular);
 		if(centroid != null)
 			direction = direction.subtract(centroid.space.rectangular);
-		direction = direction.normalize();
+		if(direction.getNorm() != 0)
+			direction = direction.normalize();
 		return direction;
 	}
 
 	@JsonIgnore
 	public void setCalendar(Calendar calendar) {
 		this.calendar = calendar;
-		this.space = this.getSpace(this.calendar);
+//		this.space = this.getSpace(this.calendar);
 		List<Variable> nodeList = this.getChildren();
 		for(Variable n: nodeList) {
 			n.setCalendar(calendar);
@@ -79,11 +92,24 @@ public class Orbital extends Spheroid {
 	/**
 	 * Use test date 19 april 1990 to verify model is producing the correct values
 	 * 
-	 * @param c
-	 * @return
+	 * N = longitude of the ascending node
+	 * 
+	 * i = inclination to the ecliptic (plane of the Earth's orbit)
+	 * 
+	 * w = argument of perihelion
+	 * 
+	 * a = semi-major axis, or mean distance from Sun
+	 * 
+	 * e = eccentricity (0=circle, 0-1=ellipse, 1=parabola)
+	 * 
+	 * M = mean anomaly (0 at perihelion; increases uniformly with time)
+	 * 
+	 * Please note that a, the semi-major axis, is given in Earth radii for the Moon, but in Astronomical Units for the Sun and all the planets.
+	 * @param calendar
+	 * @return Space
 	 */
-	public Space getSpace(Calendar c) {
-		double t = this.getTime(c);
+	public Space getSpace(Calendar calendar) {
+		double t = this.getTime(calendar);
 		double N = this.longitudeOfAscendingNode[0] + this.longitudeOfAscendingNode[1] * t;
 		double i = this.inclination[0] + this.inclination[1] * t;
 		double w = this.argumentOfPeriapsis[0] + this.argumentOfPeriapsis[1] * t;
@@ -96,17 +122,11 @@ public class Orbital extends Spheroid {
 		M = this.rev(M);
 		double longitudeCorrection = 0;
 		double latitudeCorrection = 0;
-		//Distance to Meters
-		if (this instanceof Moon) {
-			a = (a*Unit.EARTH_RADII)/Unit.ASTRONOMICAL;
-		}
-		//Perturabations
+		//A - Perturabations
 		if (this instanceof Jupiter) {
 			Sun sun = (Sun) this.getRoot();
 			Saturn saturn = (Saturn) sun.getVariable("Saturn");
 			double Ms = saturn.getMeanAnomaly(t);
-//			System.out.println("Mj="+M);
-//			System.out.println("Ms="+Ms);
 			double one = - 0.332 * Math.sin(Math.toRadians((2 * M) - (5 * Ms) - 67.6));
 			double two = - 0.056 * Math.sin(Math.toRadians(2 * M - 2 * Ms + 21));
 			double three = + 0.042 * Math.sin(Math.toRadians(3 * M - 5 * Ms + 21));
@@ -114,8 +134,6 @@ public class Orbital extends Spheroid {
 			double five = + 0.022 * Math.cos(Math.toRadians(M - Ms));
 			double six = + 0.023 * Math.sin(Math.toRadians(2 * M - 3 * Ms + 52));
 			double seven = - 0.016 * Math.sin(Math.toRadians(M - 5 * Ms - 69));
-//			System.out.println(one);
-//			System.out.println(two);
 			longitudeCorrection = one + two + three + four + five + six + seven;
 		} else if (this instanceof Saturn) {
 			Sun sun = (Sun) this.getRoot();
@@ -141,8 +159,8 @@ public class Orbital extends Spheroid {
 			double three = -0.015 * Math.sin(Math.toRadians(Mj - M + 20));
 			longitudeCorrection = one + two + three;
 		}
-//		System.out.println(this.name+"-> N: "+N+" i:"+i+" w: "+w+" a: "+a+" e: "+e+" M:"+M);
-		//Solving Kepler's Equation
+		logger.debug(this.name+":{N: "+N+", i:"+i+", w: "+w+", a: "+a+", e: "+e+", M:"+M+"}");
+		//A - Solving Kepler's Equation
 		M = Math.toRadians(M);
 		N = Math.toRadians(N);
 		i = Math.toRadians(i);
@@ -156,31 +174,29 @@ public class Orbital extends Spheroid {
 			E0 = E1;
 		}
 		E=E0;
-		//Spheroid Distance and true anomaly
+		//A - Spheroid Distance and true anomaly
 		double xv = a * (Math.cos(E) - e);
 		double yv = a * (Math.sqrt(1.0 - e * e) * Math.sin(E));
 		double v = Math.atan2(yv, xv);
 		double r = Math.sqrt(xv * xv + yv * yv);
-		// Calculate The Position in space
+		//A -  Calculate The Position in space
 		double xh = r * (Math.cos(N) * Math.cos(v+w) - Math.sin(N) * Math.sin(v+w) * Math.cos(i));
 		double yh = r * (Math.sin(N) * Math.cos(v+w) + Math.cos(N) * Math.sin(v+w) * Math.cos(i));
 		double zh = r * Math.sin(v+w) * Math.sin(i);
-		//Correct for Perturbations
+		//A - Correct for Perturbations
 		double lonecl = Math.toRadians(Math.toDegrees(Math.atan2(yh, xh)) + longitudeCorrection);// longitude
 		double latecl = Math.toRadians(Math.toDegrees(Math.asin(zh / Math.sqrt(xh*xh+yh*yh))) + latitudeCorrection);// latitude
-		//Initialize Space Object that will hold all spatial representations
+		//A - Initialize Space Object that will hold all spatial representations
 		Space space = new Space();
 		Vector3D eliptic = new Vector3D(xh, yh, zh);
 		Vector3D spherical = new Vector3D(r, lonecl, latecl);
 		Vector3D rectangular = new Vector3D(r * Math.sin(lonecl) * Math.cos(latecl), r * Math.sin(lonecl) * Math.sin(latecl),
 				r * Math.cos(lonecl));
-		//Place Spheroid in Orbit around Centroid
+		//A - Place Spheroid in Orbit around Centroid
 		if (this.centroid != null) {
-//			System.out.println("Centroid:"+this.centroid.space);
 			space.eliptic = this.centroid.space.eliptic.add(eliptic);
 			space.spherical = spherical;
 			space.rectangular = this.centroid.space.rectangular.add(rectangular);
-//			System.out.println(this.name+":"+space);
 		}
 		return space;
 	}
@@ -266,23 +282,23 @@ public class Orbital extends Spheroid {
 
 
 	
-	public List<Point> getOrbit() {
-		LinkedList<Point> vertexList = new LinkedList<>();
-		if (this.orbitalPeriod != 0) {
-			int resolution = 100;
-			double increment = this.orbitalPeriod / resolution;
-			Calendar c = (Calendar) this.calendar.clone();
-			double count = 0;
-			while (count <= this.orbitalPeriod) {
-				Point position = this.getPoint(this.getSpace(c).getPoint());
-				c.add(Calendar.DATE, (int) (Math.round(increment))); // number of days to ad
-				count += increment;
-				vertexList.add(position);
-			}
-		}
-		return vertexList;
-	}
-	
+//	public List<Point> getOrbit() {
+//		LinkedList<Point> vertexList = new LinkedList<>();
+//		if (this.orbitalPeriod != 0) {
+//			int resolution = 100;
+//			double increment = this.orbitalPeriod / resolution;
+//			Calendar c = (Calendar) this.calendar.clone();
+//			double count = 0;
+//			while (count <= this.orbitalPeriod) {
+//				Point position = this.projection.getPoint(this.getSpace(c).getPoint());
+//				c.add(Calendar.DATE, (int) (Math.round(increment))); // number of days to ad
+//				count += increment;
+//				vertexList.add(position);
+//			}
+//		}
+//		return vertexList;
+//	}
+//	
 	public double getOrbitDistance() {
 		return this.angularVelocity*(this.orbitalPeriod*24*60*60);
 	}
@@ -303,7 +319,26 @@ public class Orbital extends Spheroid {
 		double angle = ratio * 360;
 		return angle;
 	}
+	
+	@Override
+	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
+		if(this.getRoot() instanceof Orbital && !(this.getRoot() instanceof Solar)) {
+			logger.info(this.name+".paint(graphics) this.getRoot()="+this.getRoot());
+			this.centroid = (Orbital)this.getRoot();
+			this.space = this.getSpace(this.calendar);
+			logger.info(this.name+".paint(graphics) space="+space);
+		} else {
+			this.space = new Space();
+		}
+	}
 }
+//public static void main(String[] args) {
+//Orbital orbital = new Orbital();
+//System.out.println(orbital.getTime(orbital.referenceCalendar));
+//System.out.println(orbital.getTime(new GregorianCalendar(1990, 3, 19, 0, 0, 0)));
+//System.out.println(orbital.getTime(new GregorianCalendar(1990, 3, 19, 12, 0, 0)));
+//}
 //public double getOrbitLength() {
 ////List<Point>
 ////for(int i = 0; i <)

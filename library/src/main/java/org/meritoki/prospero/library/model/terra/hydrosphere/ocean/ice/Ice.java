@@ -1,22 +1,19 @@
 package org.meritoki.prospero.library.model.terra.hydrosphere.ocean.ice;
 
-import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.grid.Grid;
+import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.Ocean;
 import org.meritoki.prospero.library.model.unit.Coordinate;
-import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
-import org.meritoki.prospero.library.model.unit.Station;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
-public class Ice extends Grid {
+public class Ice extends Ocean {
 
 	static Logger logger = LogManager.getLogger(Ice.class.getName());
 	
@@ -102,55 +99,55 @@ public class Ice extends Grid {
 		super.load(result);
 		List<Frame> frameList = result.getFrameList();
 		try {
-			this.process(frameList);
+//			this.process(frameList);
 		} catch (Exception e) {
 			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 	
-	public void process(List<Frame> frameList) throws Exception {
-		this.setMatrix(frameList);
-		this.tileList = this.getTileList();
-		this.initTileMinMax();
-	}
+//	public void process(List<Frame> frameList) throws Exception {
+//		this.setMatrix(frameList);
+//		this.tileList = this.getTileList();
+//		this.initTileMinMax();
+//	}
+//	
+//	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, List<Frame> frameList) {
+//		List<Time> timeList = null;
+//		if (frameList != null) {
+//			timeList = new ArrayList<>();
+//			for (Frame f : frameList) {
+//				if (f.flag) {
+//					for (Coordinate c : f.coordinateList) {
+//						if (c.flag) {
+//							int x = (int) ((c.latitude + this.latitude) * this.resolution);
+//							int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+//							int z = c.getMonth()-1;
+//							dataMatrix[x][y][z] += (float)((double)c.attribute.get("density"));
+//							coordinateMatrix[x][y][z]++;
+//							Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
+//							if (!timeList.contains(time)) {
+//								timeList.add(time);
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//		return timeList;
+//	}
 	
-	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, List<Frame> frameList) {
-		List<Time> timeList = null;
-		if (frameList != null) {
-			timeList = new ArrayList<>();
-			for (Frame f : frameList) {
-				if (f.flag) {
-					for (Coordinate c : f.coordinateList) {
-						if (c.flag) {
-							int x = (int) ((c.latitude + this.latitude) * this.resolution);
-							int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-							int z = c.getMonth()-1;
-							dataMatrix[x][y][z] += (float)((double)c.attribute.get("density"));
-							coordinateMatrix[x][y][z]++;
-							Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
-							if (!timeList.contains(time)) {
-								timeList.add(time);
-							}
-						}
-					}
-				}
-			}
-		}
-		return timeList;
-	}
-	
-	public void setMatrix(List<Frame> frameList) {
-		logger.info("setMatrix("+frameList.size()+")");
-		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, frameList);
-		for(Time t: timeList) {
-			if(!this.timeList.contains(t)) {
-				this.timeList.add(t);
-			}
-		}
-		this.initMonthArray(this.timeList);
-		this.initYearMap(this.timeList);
-	}
+//	public void setMatrix(List<Frame> frameList) {
+//		logger.info("setMatrix("+frameList.size()+")");
+//		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, frameList);
+//		for(Time t: timeList) {
+//			if(!this.timeList.contains(t)) {
+//				this.timeList.add(t);
+//			}
+//		}
+//		this.initMonthArray(this.timeList);
+//		this.initYearMap(this.timeList);
+//	}
 	
 //	@Override
 //	public void load(Result result) {

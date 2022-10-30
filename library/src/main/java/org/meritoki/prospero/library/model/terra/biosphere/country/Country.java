@@ -7,12 +7,12 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Polygon;
 import org.meritoki.prospero.library.model.unit.Result;
 
-public class Country extends Variable {
+public class Country extends Biosphere {
 
 	static Logger logger = LogManager.getLogger(Country.class.getName());
 	public Color color = Color.BLACK;

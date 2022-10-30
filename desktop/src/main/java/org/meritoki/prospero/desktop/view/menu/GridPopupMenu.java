@@ -18,7 +18,6 @@ package org.meritoki.prospero.desktop.view.menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,6 +34,7 @@ import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.view.panel.GridPanel;
 import org.meritoki.prospero.desktop.view.panel.SolarPanel;
 import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.terra.cartography.AzimuthalNorth;
 import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
 import org.meritoki.prospero.library.model.terra.cartography.Equirectangular;
@@ -77,23 +77,23 @@ public class GridPopupMenu extends JPopupMenu {
 		JMenuItem equirectangularMenuItem = new JMenuItem("Equirectangular");
 		equirectangularMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				model.setProjection(new Equirectangular());
+				((Spheroid)model.node).setProjection(new Equirectangular());
 				GridPanel panel = (GridPanel) getInvoker();
 				panel.repaint();
 			}
 		});
-		JMenuItem globeMenuItem = new JMenuItem("Globe");
-		globeMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-				model.setProjection(new Globe());
-				GridPanel panel = (GridPanel) getInvoker();
-				panel.repaint();
-			}
-		});
+//		JMenuItem globeMenuItem = new JMenuItem("Globe");
+//		globeMenuItem.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent ev) {
+//				model.setProjection(new Globe());
+//				GridPanel panel = (GridPanel) getInvoker();
+//				panel.repaint();
+//			}
+//		});
 		JMenuItem mercatorMenuItem = new JMenuItem("Mercator");
 		mercatorMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				model.setProjection(new Mercator());
+				((Spheroid)model.node).setProjection(new Mercator());
 				GridPanel panel = (GridPanel) getInvoker();
 				panel.repaint();
 			}
@@ -101,7 +101,7 @@ public class GridPopupMenu extends JPopupMenu {
 		JMenuItem azimuthalNorthMenuItem = new JMenuItem("Azimuthal North");
 		azimuthalNorthMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				model.setProjection(new AzimuthalNorth());
+				((Spheroid)model.node).setProjection(new AzimuthalNorth());
 				GridPanel panel = (GridPanel) getInvoker();
 				panel.repaint();
 			}
@@ -109,12 +109,12 @@ public class GridPopupMenu extends JPopupMenu {
 		JMenuItem azimuthalSouthMenuItem = new JMenuItem("Azimuthal South");
 		azimuthalSouthMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				model.setProjection(new AzimuthalSouth());
+				((Spheroid)model.node).setProjection(new AzimuthalSouth());
 				GridPanel panel = (GridPanel) getInvoker();
 				panel.repaint();
 			}
 		});
-		projectionMenu.add(globeMenuItem);
+//		projectionMenu.add(globeMenuItem);
 		projectionMenu.add(equirectangularMenuItem);
 		projectionMenu.add(mercatorMenuItem);
 		projectionMenu.add(azimuthalNorthMenuItem);

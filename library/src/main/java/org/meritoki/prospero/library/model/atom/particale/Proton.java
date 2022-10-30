@@ -1,6 +1,6 @@
 package org.meritoki.prospero.library.model.atom.particale;
 
-import org.meritoki.prospero.library.model.solar.unit.Spheroid;
+import org.meritoki.prospero.library.model.node.Spheroid;
 
 public class Proton extends Spheroid {
 

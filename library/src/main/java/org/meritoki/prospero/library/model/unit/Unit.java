@@ -1,4 +1,4 @@
-package org.meritoki.prospero.library.model.solar.unit;
+package org.meritoki.prospero.library.model.unit;
 
 public class Unit {
 	
@@ -12,8 +12,8 @@ public class Unit {
 		//System.out.println(Unit.GRAVITY_CHARGE_CONSTANT/OSVALDO);
 	}
 	
-	public static double ASTRONOMICAL = 149597828677.28;
-	public static double EARTH_RADII = 6371*1000;
+	public static double ASTRONOMICAL = 149597828.67728;//Kilometers
+	public static double EARTH_RADII = 6371;//Kilometers
 	public static double GRAVITATIONAL_CONSTANT = 6.673e-11;
 	public static double G=GRAVITATIONAL_CONSTANT;
 	public static double LIGHT_SPEED = 299792458;

@@ -12,22 +12,23 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.data.Data;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.solar.Solar;
-import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.unit.Script;
 
 import com.meritoki.library.controller.node.NodeController;
 import com.meritoki.module.library.model.N;
+import com.meritoki.module.library.model.Node;
 
 public class Model extends Variable {
 
 	static Logger logger = LogManager.getLogger(Model.class.getName());
+	public static final double DEFAULT_SCALE = 1000;
 	public List<System> systemList = new ArrayList<>();
 	public Variable node = this;
 	public boolean cache = false;
 
 	public Model() {
 		super("Model");
-		this.addChild(new Solar());
+		this.addChild(new Solar(this));
 		this.setData(new Data());
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
