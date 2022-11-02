@@ -37,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.color.Scheme;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.terra.analysis.Analysis;
 import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Cluster;
@@ -47,7 +46,6 @@ import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Meter;
 import org.meritoki.prospero.library.model.unit.NetCDF;
-import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
@@ -55,7 +53,6 @@ import org.meritoki.prospero.library.model.unit.Station;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
-import org.meritoki.prospero.library.model.unit.Unit;
 
 public class Grid extends Spheroid {
 
@@ -174,7 +171,6 @@ public class Grid extends Spheroid {
 			this.scheme = this.query.getScheme();
 			this.seriesMap = new TreeMap<>();
 			this.timeList = new ArrayList<>();
-			
 		} catch (Exception e) {
 			logger.error("init() exception=" + e.getMessage());
 			e.printStackTrace();

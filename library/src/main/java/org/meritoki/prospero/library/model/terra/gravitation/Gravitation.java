@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.gravitation.geopotential.Geopotential;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
@@ -15,7 +15,7 @@ import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
-public class Gravitation extends Grid {
+public class Gravitation extends Terra {
 
 	static Logger logger = LogManager.getLogger(Gravitation.class);
 	public DataType dataType;

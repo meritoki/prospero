@@ -14,6 +14,7 @@ import org.meritoki.prospero.library.model.node.Energy;
 import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.solar.Solar;
+import org.meritoki.prospero.library.model.solar.star.sun.Sun;
 import org.meritoki.prospero.library.model.unit.Script;
 
 import com.meritoki.library.controller.node.NodeController;
@@ -32,23 +33,23 @@ public class Model extends Variable {
 		super("Model");
 		this.addChild(this.solar);
 		this.setData(new Data());
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
-		calendar.set(Calendar.YEAR, 2001);
-		calendar.set(Calendar.MONTH, 0);
-		calendar.set(Calendar.DATE, 1);
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		this.setCalendar(calendar);
+		this.calendar = Calendar.getInstance();
+		this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
+		this.calendar.set(Calendar.YEAR, 2001);
+		this.calendar.set(Calendar.MONTH, 0);
+		this.calendar.set(Calendar.DATE, 1);
+		this.calendar.set(Calendar.HOUR_OF_DAY, 0);
+		this.calendar.set(Calendar.MINUTE, 0);
+		this.calendar.set(Calendar.SECOND, 0);
+		this.setCalendar(this.calendar);
 	}
 	
 	public void setNode(Variable variable) {
-		logger.info("setNode("+variable+")");
 		this.node = variable;
 		if(this.node instanceof Orbital) {
 			Energy e = (Energy)this.node;
-			this.solar.setCenter(e.space);
+			logger.info("setNode("+variable+") e.space="+e.space);
+			this.solar.sun.setCenter(e.space);
 		}
 	}
 	

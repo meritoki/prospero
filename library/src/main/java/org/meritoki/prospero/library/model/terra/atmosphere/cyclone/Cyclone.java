@@ -21,7 +21,6 @@ import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.cluster.TileWrapper;
-import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.histogram.Histogram;
 import org.meritoki.prospero.library.model.plot.time.TimePlot;

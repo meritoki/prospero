@@ -47,9 +47,11 @@ public class Energy extends Variable {
 	@JsonProperty
 	public double mass;
 	@JsonProperty
-	public Space space = new Space();
+	public Space space = new Space();//Global X,Y,Z Point
 	@JsonProperty
-	public Space center = new Space();
+	public Space center = new Space();//Global X,Y,Z Center
+	@JsonProperty
+	public Space buffer = new Space();
 	@JsonIgnore
 	protected Color color;
 	///////////////////////////////////////
@@ -98,18 +100,7 @@ public class Energy extends Variable {
 		this.space = space;
 	}
 	
-	@JsonIgnore
-	public void setCenter(Space space) {
-		logger.info(this.name+".setCenter("+space+")");
-		this.center = space;
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			if(n instanceof Energy) {
-				Energy e = (Energy)n;
-				e.setCenter(space);
-			}
-		}
-	}
+
 
 	public List<Energy> getEnergyList() {
 		List<Energy> energyList = new ArrayList<>();
@@ -474,12 +465,12 @@ public class Energy extends Variable {
 		return Unit.COULOMBS;//(this.mass/Unit.ELECTRON_MASS)*Unit.COULOMBS;
 	}
 
-	public double getElipticDistance(Energy energy) {
-		Vector3D difference = this.space.eliptic.subtract(energy.space.eliptic);
-		double distance = Math.sqrt(Math.pow((double) difference.getX(), 2) + Math.pow((double) difference.getY(), 2)
-				+ Math.pow((double) difference.getZ(), 2));
-		return distance;
-	}
+//	public double getElipticDistance(Energy energy) {
+//		Vector3D difference = this.space.elliptic.subtract(energy.space.elliptic);
+//		double distance = Math.sqrt(Math.pow((double) difference.getX(), 2) + Math.pow((double) difference.getY(), 2)
+//				+ Math.pow((double) difference.getZ(), 2));
+//		return distance;
+//	}
 
 	public double getRectangularDistance(Energy energy) {
 		Vector3D difference = this.space.rectangular.subtract(energy.space.rectangular);
@@ -500,7 +491,7 @@ public class Energy extends Variable {
 	}
 
 	public Vector3D getGravity(Energy energy) {
-		Vector3D difference = energy.space.eliptic.subtract(this.space.eliptic);
+		Vector3D difference = energy.space.rectangular.subtract(this.space.rectangular);
 		double distance = Math.sqrt(Math.pow((double) difference.getX(), 2) + Math.pow((double) difference.getY(), 2)
 				+ Math.pow((double) difference.getZ(), 2));
 		distance *= Unit.ASTRONOMICAL;//Kilometers
@@ -543,12 +534,12 @@ public class Energy extends Variable {
 	}
 
 	public double getGravitationalPotentialEnergy(Energy energy) {
-		double distance = this.getElipticDistance(energy);
+		double distance = this.getRectangularDistance(energy);
 		return -(Unit.GRAVITATIONAL_CONSTANT * energy.mass * this.mass) / (distance);
 	}
 
 	public double getGravityForce(Energy energy) {
-		double distance = this.getElipticDistance(energy);
+		double distance = this.getRectangularDistance(energy);
 		return (Unit.GRAVITATIONAL_CONSTANT * ((energy.mass * this.mass) / (Math.pow(distance, 2))));
 	}
 	
@@ -628,9 +619,9 @@ public class Energy extends Variable {
 		return sum;
 	}
 	
-	public void scale(double percentage) {
-		this.space.eliptic = this.space.eliptic.scalarMultiply(percentage);
-	}
+//	public void scale(double percentage) {
+//		this.space.elliptic = this.space.elliptic.scalarMultiply(percentage);
+//	}
 
 	public static List<String> getDateList(String value, int increment) {
 			List<String> dateList = new ArrayList<>();

@@ -46,8 +46,10 @@ import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Space;
 
 /**
- * 
- * Reference: https://nssdc.gsfc.nasa.gov/planetary/factsheet.html
+ * Citation
+ * <ol type="A">
+ * <li><a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet.html">https://nssdc.gsfc.nasa.gov/planetary/factsheet.html</a></li>
+ * </ol>
  *
  */
 public class Solar extends Grid {
@@ -64,14 +66,19 @@ public class Solar extends Grid {
 	private List<String> planetOrder = Arrays.asList("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus",
 			"Neptune");
 	private List<Tunnel> tunnelList = null;
+	public Sun sun = new Sun();
 
 	public Solar() {
 		super("Solar");
 		this.paint = true;
-		this.addChild(new Sun());
+		this.addChild(this.sun);
 		this.projection.setRadius(39.5);// Astronomical Unit
 		this.projection.setUnit(1);
 		this.setScale(DEFAULT_SCALE);
+	}
+	
+	public Sun getSun() {
+		return sun;
 	}
 	
 	public Solar(String name) {
@@ -455,8 +462,8 @@ public class Solar extends Grid {
 		if (energy != null) {
 			for (Energy e : this.getEnergyList()) {
 				if (!e.name.equals(energy.name)) {
-					prime = e.space.eliptic.subtract(energy.space.eliptic);
-					distance = e.space.eliptic.distance(energy.space.eliptic);
+					prime = e.space.rectangular.subtract(energy.space.rectangular);
+					distance = e.space.rectangular.distance(energy.space.rectangular);
 					obliquity = Math.toRadians(((Orbital) energy).obliquity);
 					out = new Vector3D(prime.getX(),
 							((prime.getY() * Math.cos(obliquity)) - (prime.getZ() * Math.sin(obliquity))),
@@ -525,9 +532,9 @@ public class Solar extends Grid {
 		for (Energy e : this.getEnergyList()) {
 			if (!(e instanceof Sun)) {
 				totalMass += e.mass;
-				totalX += e.space.eliptic.getX() * e.mass;
-				totalY += e.space.eliptic.getY() * e.mass;
-				totalZ += e.space.eliptic.getZ() * e.mass;
+				totalX += e.space.rectangular.getX() * e.mass;
+				totalY += e.space.rectangular.getY() * e.mass;
+				totalZ += e.space.rectangular.getZ() * e.mass;
 			}
 		}
 		return new Vector3D(totalX / totalMass, totalY / totalMass, totalZ / totalMass);
@@ -544,9 +551,9 @@ public class Solar extends Grid {
 		for (Energy e : eList) {
 			if (!(e instanceof Sun)) {
 				totalMass += e.mass;
-				totalX += e.space.eliptic.getX() * e.mass;
-				totalY += e.space.eliptic.getY() * e.mass;
-				totalZ += e.space.eliptic.getZ() * e.mass;
+				totalX += e.space.rectangular.getX() * e.mass;
+				totalY += e.space.rectangular.getY() * e.mass;
+				totalZ += e.space.rectangular.getZ() * e.mass;
 			}
 		}
 		return new Vector3D(totalX / totalMass, totalY / totalMass, totalZ / totalMass);
@@ -564,9 +571,9 @@ public class Solar extends Grid {
 		for (Energy e : eList) {
 			if (!(e instanceof Sun)) {
 				totalMass += e.mass;
-				totalX += e.space.eliptic.getX() * e.mass;
-				totalY += e.space.eliptic.getY() * e.mass;
-				totalZ += e.space.eliptic.getZ() * e.mass;
+				totalX += e.space.rectangular.getX() * e.mass;
+				totalY += e.space.rectangular.getY() * e.mass;
+				totalZ += e.space.rectangular.getZ() * e.mass;
 			}
 		}
 		return new Vector3D(totalX / totalMass, totalY / totalMass, totalZ / totalMass);
@@ -580,9 +587,9 @@ public class Solar extends Grid {
 		for (Energy e : eList) {
 			if (!(e instanceof Sun)) {
 				totalMass += e.mass;
-				totalX += e.space.eliptic.getX() * e.mass;
-				totalY += e.space.eliptic.getY() * e.mass;
-				totalZ += e.space.eliptic.getZ() * e.mass;
+				totalX += e.space.rectangular.getX() * e.mass;
+				totalY += e.space.rectangular.getY() * e.mass;
+				totalZ += e.space.rectangular.getZ() * e.mass;
 			}
 		}
 		return new Vector3D(totalX / totalMass, totalY / totalMass, totalZ / totalMass);

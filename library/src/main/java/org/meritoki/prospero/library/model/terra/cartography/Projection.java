@@ -32,6 +32,7 @@ public class Projection implements ProjectionInterface {
 
 	static Logger logger = LogManager.getLogger(Projection.class.getName());
 	public Space space = new Space();
+//	public Space center = new Space();
 	public double radius = 1;
     public double a;
     public double b;
@@ -51,8 +52,15 @@ public class Projection implements ProjectionInterface {
 	public Projection() {}
 	
 	public void setSpace(Space space) {
+		logger.info("setSpace("+space+")");
 		this.space = space;
 	}
+	
+//	public void setCenter(Space space) {
+//		logger.info("setCenter("+space+")");
+//		this.center = space;
+//		this.space.subtract(this.center);
+//	}
 	
 	public void setUnit(double unit) {
 		this.unit = unit;
@@ -259,6 +267,8 @@ public class Projection implements ProjectionInterface {
 	}
 	
 	public Point getPoint(Point point) {
+//		Point spacePoint = this.space.getPoint();
+//		point.add(spacePoint);
 		Point p = null;
 		double theta = Math.PI * azimuth / 180.0;
 		double phi = Math.PI * elevation / 180.0;

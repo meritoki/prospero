@@ -140,7 +140,7 @@ public class CameraPanel extends javax.swing.JPanel
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		this.requestFocus();
 
 	}
 
@@ -174,6 +174,7 @@ public class CameraPanel extends javax.swing.JPanel
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+//		logger.info("keyPressed("+e+")");
 		if (this.model != null && this.model.node != null) {
 			if(model.node instanceof Spheroid) {
 				Spheroid s = (Spheroid)this.model.node;

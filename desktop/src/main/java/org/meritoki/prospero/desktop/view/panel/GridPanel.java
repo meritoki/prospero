@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.GridPopupMenu;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
-import org.meritoki.prospero.library.model.terra.Terra;
+//import org.meritoki.prospero.library.model.terra.Earth;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 
@@ -51,7 +51,7 @@ public class GridPanel extends javax.swing.JPanel
 	protected int mx, my;
 	protected int azimuth = 0;
 	protected int elevation = 0;
-	public Terra terra;
+	public Earth terra;
 	public Dimension dimension;
 
 	/**
@@ -96,21 +96,21 @@ public class GridPanel extends javax.swing.JPanel
 		if (e.isControlDown()) {
 			switch (e.getKeyChar()) {
 			case '+': {
-				double scale = ((Terra)this.model.getVariable("Terra")).projection.scale;
+				double scale = ((Earth)this.model.getVariable("Earth")).projection.scale;
 				scale = scale * this.factor;
-				((Terra)this.model.getVariable("Terra")).projection.scale = scale;
+				((Earth)this.model.getVariable("Earth")).projection.scale = scale;
 				this.repaint();
 				break;
 			}
 			case '-': {
-				double scale = ((Terra)this.model.getVariable("Terra")).projection.scale;
+				double scale = ((Earth)this.model.getVariable("Earth")).projection.scale;
 				scale = scale / this.factor;
-				((Terra)this.model.getVariable("Terra")).projection.scale = scale;
+				((Earth)this.model.getVariable("Earth")).projection.scale = scale;
 				this.repaint();
 				break;
 			}
 			case '1': {// bottom
-				Projection globe = ((Terra)this.model.getVariable("Terra")).projection;
+				Projection globe = ((Earth)this.model.getVariable("Earth")).projection;
 				azimuth = 0;
 				elevation = 0;
 				globe.setAzimuth(azimuth);
@@ -119,7 +119,7 @@ public class GridPanel extends javax.swing.JPanel
 				break;
 			}
 			case '2': {// top
-				Projection globe = ((Terra)this.model.getVariable("Terra")).projection;
+				Projection globe = ((Earth)this.model.getVariable("Earth")).projection;
 				azimuth = 180;
 				elevation = 0;
 				globe.setAzimuth(azimuth);
@@ -128,7 +128,7 @@ public class GridPanel extends javax.swing.JPanel
 				break;
 			}
 			case '3': {
-				Projection globe = ((Terra)this.model.getVariable("Terra")).projection;
+				Projection globe = ((Earth)this.model.getVariable("Earth")).projection;
 				azimuth = 0;
 				elevation = -90;
 				globe.setAzimuth(azimuth);
@@ -137,7 +137,7 @@ public class GridPanel extends javax.swing.JPanel
 				break;
 			}
 			case '4': {
-				Projection globe = ((Terra)this.model.getVariable("Terra")).projection;
+				Projection globe = ((Earth)this.model.getVariable("Earth")).projection;
 				azimuth = 180;
 				elevation = 90;
 				globe.setAzimuth(azimuth);
@@ -146,7 +146,7 @@ public class GridPanel extends javax.swing.JPanel
 				break;
 			}
 			case '5': {
-				Projection globe = ((Terra)this.model.getVariable("Terra")).projection;
+				Projection globe = ((Earth)this.model.getVariable("Earth")).projection;
 				azimuth = 90;
 				elevation = 0;
 				globe.setAzimuth(azimuth);
@@ -155,7 +155,7 @@ public class GridPanel extends javax.swing.JPanel
 				break;
 			}
 			case '6': {
-				Projection projection = ((Terra)this.model.getVariable("Terra")).projection;
+				Projection projection = ((Earth)this.model.getVariable("Earth")).projection;
 				azimuth = -90;
 				elevation = 0;
 				projection.setAzimuth(azimuth);
@@ -164,7 +164,7 @@ public class GridPanel extends javax.swing.JPanel
 				break;
 			}
 			case '7': {
-				Projection projection = ((Terra)this.model.getVariable("Terra")).projection;
+				Projection projection = ((Earth)this.model.getVariable("Earth")).projection;
 				azimuth = 0;
 				elevation = 55;
 				projection.setAzimuth(azimuth);
@@ -173,7 +173,7 @@ public class GridPanel extends javax.swing.JPanel
 				break;
 			}
 			case '8': {
-				Projection globe = ((Terra)this.model.getVariable("Terra")).projection;
+				Projection globe = ((Earth)this.model.getVariable("Earth")).projection;
 				azimuth = 23;
 				elevation = 35;
 				globe.setAzimuth(azimuth);
@@ -240,8 +240,8 @@ public class GridPanel extends javax.swing.JPanel
 			// since the last event
 			azimuth -= new_mx - mx;
 			elevation -= new_my - my;
-			((Terra)this.model.getVariable("Terra")).projection.setAzimuth(azimuth);
-			((Terra)this.model.getVariable("Terra")).projection.setElevation(elevation);
+			((Earth)this.model.getVariable("Earth")).projection.setAzimuth(azimuth);
+			((Earth)this.model.getVariable("Earth")).projection.setElevation(elevation);
 			// update our data
 			mx = new_mx;
 			my = new_my;

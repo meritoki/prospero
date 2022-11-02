@@ -107,7 +107,7 @@ public class ModelPanel extends javax.swing.JPanel {
 					TreePath treePath = jTree1.getPathForLocation(e.getX(), e.getY());
 					if (treePath != null) {
 						Object lastPathComponent = (Object) treePath.getLastPathComponent();
-						if (e.getClickCount() == 1) {
+						if (e.getClickCount() == 2) {
 							if (model != null) {
 								Variable node = model.getVariable(lastPathComponent.toString());
 								if (node != null) {
@@ -122,7 +122,7 @@ public class ModelPanel extends javax.swing.JPanel {
 					TreePath treePath = jTree1.getPathForLocation(e.getX(), e.getY());
 					if (treePath != null) {
 						Object lastPathComponent = (Object) treePath.getLastPathComponent();
-						if (e.getClickCount() == 1) {
+						if (e.getClickCount() == 2) {
 							if (model != null) {
 								Variable node = model.getVariable(lastPathComponent.toString());
 								if (node != null) {

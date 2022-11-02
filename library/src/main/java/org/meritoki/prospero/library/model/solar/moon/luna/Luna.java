@@ -17,7 +17,6 @@ package org.meritoki.prospero.library.model.solar.moon.luna;
 
 import java.awt.Color;
 
-import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.solar.moon.Moon;
 import org.meritoki.prospero.library.model.terra.cartography.Globe;
 import org.meritoki.prospero.library.model.unit.Unit;

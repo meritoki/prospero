@@ -74,21 +74,46 @@ public class Orbital extends Grid {
 	@JsonIgnore
 	public void setCalendar(Calendar calendar) {
 		this.calendar = calendar;
-		// this.space = this.getSpace(this.calendar);
+		this.updateSpace();
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			n.setCalendar(calendar);
 		}
+	}
+	
+	public void updateSpace() {
+		logger.info(this.name+".updateSpace()");
 		Object root = this.getRoot();
-		if (root instanceof Orbital) {//&& !(this.getRoot() instanceof Solar)) {
+		if (root instanceof Orbital) {
 			this.centroid = (Orbital)root;
+			logger.info(this.name+".updateSpace() this.centroid="+this.centroid);
 			this.space = this.getSpace(this.calendar, this.centroid);
-			this.space.subtract(this.center);
-			this.projection.setSpace(this.space);
-			
-			logger.info(this.name + ".paint(graphics) space=" + space);
+			this.buffer = new Space(this.space);
+			this.projection.setSpace(this.buffer);
+//			this.setProjection(this.projection);
+		} else {
+			this.space = new Space();
+			this.buffer = this.space;
+			this.projection.setSpace(this.buffer);
+//			this.setProjection(this.projection);
 		}
-
+	}
+	
+	@JsonIgnore
+	public void setCenter(Space space) {
+		logger.info(this.name+".setCenter("+space+")");
+//		this.updateSpace();
+		this.center = space;
+		this.buffer = new Space(this.space);
+		this.buffer.subtract(this.center);
+		this.projection.setSpace(this.buffer);
+		List<Variable> nodeList = this.getChildren();
+		for (Variable n : nodeList) {
+			if(n instanceof Orbital) {
+				Orbital o = (Orbital)n;
+				o.setCenter(this.center);
+			}
+		}
 	}
 	
 	public List<Point> getOrbit(Orbital centroid) {
@@ -229,8 +254,8 @@ public class Orbital extends Grid {
 				r * Math.sin(lonecl) * Math.sin(latecl), r * Math.cos(lonecl));
 		// A - Place Spheroid in Orbit around Centroid
 		if (centroid != null) {
-			space.eliptic = this.centroid.space.eliptic.add(eliptic);
-			space.spherical = spherical;
+//			space.elliptic = this.centroid.space.elliptic.add(eliptic);
+//			space.spherical = spherical;
 			space.rectangular = this.centroid.space.rectangular.add(rectangular);
 		}
 		return space;

@@ -69,8 +69,8 @@ public class Globe extends Projection {
 		Point spacePoint = this.space.getPoint();
 		point.add(spacePoint);
 		Coordinate coordinate = null;
-		double theta = Math.PI * azimuth / 180.0;
-		double phi = Math.PI * elevation / 180.0;
+		double theta = Math.PI * this.azimuth / 180.0;
+		double phi = Math.PI * this.elevation / 180.0;
 		float cosT = (float) Math.cos(theta);
 		float sinT = (float) Math.sin(theta);
 		float cosP = (float) Math.cos(phi);

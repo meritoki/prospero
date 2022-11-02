@@ -49,8 +49,6 @@ public class Spheroid extends Energy {
 
 	public Spheroid(String name) {
 		super(name);
-//		this.projection = new Globe(this.a,this.b,this.c);
-//		this.projection.setSpace(this.space);
 	}
 
 	public void setProjection(Projection projection) {
@@ -283,7 +281,7 @@ public class Spheroid extends Energy {
 		for (Coordinate c : coordinateList) {
 			graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
 		}
-		Point point = this.projection.getPoint(this.space.getPoint());
+		Point point = this.projection.getPoint(this.buffer.getPoint());
 		double x = point.x * this.projection.scale;
 		double y = point.y * this.projection.scale;
 		graphics.setColor(this.color);
@@ -296,6 +294,8 @@ public class Spheroid extends Energy {
 				(int) y);
 	}
 }
+//this.projection = new Globe(this.a,this.b,this.c);
+//this.projection.setSpace(this.space);
 //List<Coordinate> coordinateList = this.projection.getGridCoordinateList(0, 15, 30);
 //graphics.setColor(this.color);
 //for (Coordinate c : coordinateList) {

@@ -376,7 +376,7 @@ public class Variable extends Node {
 
 	@JsonIgnore
 	public void addChild(Variable child) {
-		logger.info(this.name+".addChild("+child+")");
+		logger.debug(this.name+".addChild("+child+")");
 		this.orderList.add(child.toString());
 		this.moduleMapPut(child);
 	}
