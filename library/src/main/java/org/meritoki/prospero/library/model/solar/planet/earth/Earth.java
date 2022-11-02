@@ -21,6 +21,7 @@ import org.meritoki.prospero.library.model.solar.moon.luna.Luna;
 import org.meritoki.prospero.library.model.solar.planet.Planet;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Space;
 
 /**
@@ -83,11 +84,17 @@ public class Earth extends Planet {
 		this.terra.setProjection(this.projection);
 	}
 	
-//	@Override
-//	public void setProjection(Projection projection) {
-//		super.setProjection(projection);
-//		this.terra.setProjection(projection);
-//	}
+	@Override
+	public void setProjection(Projection projection) {
+		super.setProjection(projection);
+		this.terra.setProjection(projection);
+	}
+	
+	@Override
+	public void setScale(double scale) {
+		super.setScale(scale);
+		this.terra.setScale(scale);
+	}
 
 
 }

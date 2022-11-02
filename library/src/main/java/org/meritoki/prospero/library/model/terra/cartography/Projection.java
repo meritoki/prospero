@@ -267,8 +267,6 @@ public class Projection implements ProjectionInterface {
 	}
 	
 	public Point getPoint(Point point) {
-//		Point spacePoint = this.space.getPoint();
-//		point.add(spacePoint);
 		Point p = null;
 		double theta = Math.PI * azimuth / 180.0;
 		double phi = Math.PI * elevation / 180.0;
@@ -300,6 +298,9 @@ public class Projection implements ProjectionInterface {
 		return p;
 	}
 	
+	public String toString() {
+		return this.space.toString();
+	}
 
 }
 //public double radians = 0.0174532925199433;

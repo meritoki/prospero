@@ -38,13 +38,13 @@ public class Space {
 	
 	public void add(Space space) {
 		this.rectangular = this.rectangular.add(space.rectangular);
-		logger.info("add("+space+") this.rectangular="+this.rectangular);
+//		logger.info("add("+space+") this.rectangular="+this.rectangular);
 	}
 	
 	public void subtract(Space space) {
-		logger.info("subtract("+space+") A this.rectangular="+this.rectangular);
+//		logger.info("subtract("+space+") A this.rectangular="+this.rectangular);
 		this.rectangular = this.rectangular.subtract(space.rectangular);
-		logger.info("subtract("+space+") B this.rectangular="+this.rectangular);
+//		logger.info("subtract("+space+") B this.rectangular="+this.rectangular);
 	}
 	
 	public Point getPoint() {

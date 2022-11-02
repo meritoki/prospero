@@ -90,20 +90,17 @@ public class Orbital extends Grid {
 			this.space = this.getSpace(this.calendar, this.centroid);
 			this.buffer = new Space(this.space);
 			this.projection.setSpace(this.buffer);
-//			this.setProjection(this.projection);
 		} else {
 			this.space = new Space();
 			this.buffer = this.space;
 			this.projection.setSpace(this.buffer);
-//			this.setProjection(this.projection);
 		}
 	}
 	
 	@JsonIgnore
-	public void setCenter(Space space) {
-		logger.info(this.name+".setCenter("+space+")");
-//		this.updateSpace();
-		this.center = space;
+	public void setCenter(Space center) {
+		logger.info(this.name+".setCenter("+center+")");
+		this.center = center;
 		this.buffer = new Space(this.space);
 		this.buffer.subtract(this.center);
 		this.projection.setSpace(this.buffer);
@@ -124,7 +121,9 @@ public class Orbital extends Grid {
 			Calendar calendar = (Calendar) this.calendar.clone();
 			double count = 0;
 			while (count <= resolution) {
-				Point position = this.projection.getPoint(this.getSpace(calendar,centroid).getPoint());
+				Space space = this.getSpace(calendar,centroid);
+				space.subtract(this.center);
+				Point position = this.projection.getPoint(space.getPoint());//this.getSpace(calendar,centroid).getPoint());
 				calendar.add(Calendar.HOUR, (int) (Math.round(increment))); // number of days to ad
 				count++;
 				vertexList.add(position);

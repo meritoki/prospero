@@ -52,6 +52,7 @@ public class Spheroid extends Energy {
 	}
 
 	public void setProjection(Projection projection) {
+		logger.info(this.name+".setProjection("+projection+")");
 		this.projection = projection;
 	}
 
