@@ -9,18 +9,17 @@ public class Helios extends Grid {
 
 	public Helios() {
 		super("Helios");
-		this.paint = true;
+		this.defaultScale = 50000.0;
 		this.addChild(new Photosphere());
 	}
 	
 	public Helios(String name) {
 		super(name);
+		this.defaultScale = 50000.0;
 	}
 	
 	@Override
 	public void paint(Graphics graphics) throws Exception {		
-		if(this.paint) {
-			super.paint(graphics);
-		}
+		super.paint(graphics);
 	}
 }

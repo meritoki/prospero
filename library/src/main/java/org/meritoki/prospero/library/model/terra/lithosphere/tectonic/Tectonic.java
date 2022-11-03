@@ -38,6 +38,7 @@ public class Tectonic extends Lithosphere {
 
 	@Override
 	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
 		if(this.load) { 
 			if (this.multiLineStringList != null) {
 				graphics.setColor(this.color);

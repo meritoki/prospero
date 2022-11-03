@@ -16,6 +16,7 @@
 package org.meritoki.prospero.library.model.solar.star.sun;
 
 import java.awt.Color;
+import java.awt.Graphics;
 
 import org.meritoki.prospero.library.model.helios.Helios;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
@@ -28,6 +29,8 @@ import org.meritoki.prospero.library.model.solar.planet.uranus.Uranus;
 import org.meritoki.prospero.library.model.solar.planet.venus.Venus;
 import org.meritoki.prospero.library.model.solar.star.Star;
 import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
+import org.meritoki.prospero.library.model.unit.Space;
 
 
 /**
@@ -47,10 +50,12 @@ public class Sun extends Star {
         this.b = this.a;//Kilometers
         this.c = this.a;//Kilometers
         this.color = Color.YELLOW;
+        this.helios.color = this.color;
         this.defaultScale = 50000.0;
         this.angularVelocity = 2.865329607243705e-06;
         this.rotation = 0.564263323;//Kilometers/Second
         this.setProjection(new Globe(this.a, this.b, this.c));
+        this.addChild(helios);
         this.addChild(new Earth());
         this.addChild(new Jupiter());
         this.addChild(new Mars());
@@ -60,6 +65,35 @@ public class Sun extends Star {
         this.addChild(new Uranus());
         this.addChild(new Venus());
         
+	}
+	
+	@Override
+	public void updateSpace() {
+		super.updateSpace();
+		this.helios.setProjection(this.projection);
+	}
+	
+	@Override
+	public void setCenter(Space center) {
+		super.setCenter(center);
+		this.helios.setProjection(this.projection);
+	}
+	
+	@Override
+	public void setProjection(Projection projection) {
+		super.setProjection(projection);
+		this.helios.setProjection(projection);
+	}
+	
+	@Override
+	public void setScale(double scale) {
+		super.setScale(scale);
+		this.helios.setScale(scale);
+	}
+	
+	@Override
+	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
 	}
 }
 //public Helios helios = new Helios();

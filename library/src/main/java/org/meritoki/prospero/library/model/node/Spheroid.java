@@ -15,15 +15,11 @@
  */
 package org.meritoki.prospero.library.model.node;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.terra.cartography.Globe;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Coordinate;
@@ -53,7 +49,7 @@ public class Spheroid extends Energy {
 	}
 
 	public void setProjection(Projection projection) {
-		logger.info(this.name+".setProjection("+projection+")");
+//		logger.info(this.name+".setProjection("+projection+")");
 		this.projection = projection;
 	}
 
@@ -284,12 +280,12 @@ public class Spheroid extends Energy {
 		for (Coordinate c : coordinateList) {
 			graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
 		}
-		logger.info(this.name+".paint(graphics) this.projection.space="+this.projection.space);
+//		logger.info(this.name+".paint(graphics) this.projection.space="+this.projection.space);
 		Point point = this.projection.getPoint(this.projection.space.getPoint());//this.buffer
 		double x = point.x * this.projection.scale;
 		double y = point.y * this.projection.scale;
 //		graphics.setColor(this.color);
-		double radius = 8;
+		double radius = 4;
 		x = x - (radius / 2);
 		y = y - (radius / 2);
 		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);

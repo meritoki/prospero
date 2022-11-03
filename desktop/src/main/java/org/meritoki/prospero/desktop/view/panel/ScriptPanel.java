@@ -125,7 +125,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 									Variable node = model.getVariable(variable);
 									if (node != null) {
 										logger.info("query() node="+node);
-										model.node = node;
+										model.setNode(node);
 										node.start();//can be called more than once, no problem
 										try {
 											node.query(query);//discrete finite task that sets a new query, includes process

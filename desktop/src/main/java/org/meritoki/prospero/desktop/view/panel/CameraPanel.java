@@ -31,6 +31,8 @@ import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  *
@@ -196,6 +198,70 @@ public class CameraPanel extends javax.swing.JPanel
 					case '-': {
 						s.setScale(scale / 2);
 						this.repaint();
+						break;
+					}
+					case '1': {// bottom
+						azimuth = 0;
+						elevation = 0;
+						s.setAzimuth(azimuth);
+						s.setElevation(elevation);
+						repaint();
+						break;
+					}
+					case '2': {// top
+						azimuth = 180;
+						elevation = 0;
+						s.setAzimuth(azimuth);
+						s.setElevation(elevation);
+						repaint();
+						break;
+					}
+					case '3': {
+						azimuth = 0;
+						elevation = -90;
+						s.setAzimuth(azimuth);
+						s.setElevation(elevation);
+						repaint();
+						break;
+					}
+					case '4': {
+						azimuth = 180;
+						elevation = 90;
+						s.setAzimuth(azimuth);
+						s.setElevation(elevation);
+						repaint();
+						break;
+					}
+					case '5': {
+						azimuth = 90;
+						elevation = 0;
+						s.setAzimuth(azimuth);
+						s.setElevation(elevation);
+						repaint();
+						break;
+					}
+					case '6': {
+						azimuth = -90;
+						elevation = 0;
+						s.setAzimuth(azimuth);
+						s.setElevation(elevation);
+						repaint();
+						break;
+					}
+					case '7': {
+						azimuth = 0;
+						elevation = 55;
+						s.setAzimuth(azimuth);
+						s.setElevation(elevation);
+						repaint();
+						break;
+					}
+					case '8': {
+						azimuth = 23;
+						elevation = 35;
+						s.setAzimuth(azimuth);
+						s.setElevation(elevation);
+						repaint();
 						break;
 					}
 					}

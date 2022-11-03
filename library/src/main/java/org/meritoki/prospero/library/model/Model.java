@@ -49,7 +49,15 @@ public class Model extends Variable {
 			Orbital e = (Orbital)this.node;
 			e.updateSpace();
 			logger.info("setNode("+variable+") e.space="+e.space);
-			this.solar.sun.setCenter(e.space);
+			this.solar.setCenter(e.space);
+			e.setScale(e.defaultScale);
+		} else if(this.node instanceof Spheroid){
+			Spheroid e = (Spheroid)this.node;
+//			e.updateSpace();
+//			logger.info("setNode("+variable+") e.space="+e.space);
+//			this.solar.setCenter(e.space);
+			e.setElevation(e.projection.elevation);
+			e.setAzimuth(e.projection.azimuth);
 			e.setScale(e.defaultScale);
 		}
 	}

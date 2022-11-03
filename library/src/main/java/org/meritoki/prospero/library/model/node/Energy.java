@@ -53,7 +53,7 @@ public class Energy extends Variable {
 	@JsonProperty
 	public Space buffer = new Space();
 	@JsonIgnore
-	protected Color color = Color.BLACK;
+	public Color color = Color.BLACK;
 	///////////////////////////////////////
 	@JsonIgnore
 	public List<Tunnel> tunnelList = null;
@@ -98,6 +98,12 @@ public class Energy extends Variable {
 	@JsonIgnore
 	public void setSpace(Space space) {
 		this.space = space;
+	}
+	
+	@JsonIgnore
+	public void setCenter(Space center) {
+		logger.info(this.name+".setCenter("+center+")");
+		this.center = center;
 	}
 	
 

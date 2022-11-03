@@ -22,6 +22,10 @@ public class Point {
 		z = Z;
 	}
 	
+	public Point scale(double scale) {
+		return new Point(this.x*scale,this.y*scale,this.z*scale);
+	}
+	
 	public void add(Point point) {
 		this.add(point.x,point.y,point.z);
 	}

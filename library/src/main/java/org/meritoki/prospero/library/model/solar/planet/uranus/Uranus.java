@@ -37,7 +37,7 @@ public class Uranus extends Planet {
         this.a = this.radius;//Kilometers
         this.b = this.a;//Kilometers
         this.c = 24973.0;//Kilometers
-        this.color = Color.MAGENTA;
+        this.color = Color.CYAN;
         this.defaultScale = 2097152.0;
         //N
         this.longitudeOfAscendingNode[0] = 74.0005;

@@ -31,7 +31,7 @@ import javax.swing.JPopupMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
-import org.meritoki.prospero.desktop.view.panel.GridPanel;
+import org.meritoki.prospero.desktop.view.panel.CameraPanel;
 import org.meritoki.prospero.desktop.view.panel.SolarPanel;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Spheroid;
@@ -66,7 +66,7 @@ public class GridPopupMenu extends JPopupMenu {
 				}
 				String uuid = UUID.randomUUID().toString();
 				JPanel panel = (JPanel) getInvoker();
-				if (panel instanceof GridPanel) {
+				if (panel instanceof CameraPanel) {
 					NodeController.savePanel(panel, path, "grid-" + uuid);
 				} else if (panel instanceof SolarPanel) {
 					NodeController.savePanel(panel, path, "solar-" + uuid);
@@ -78,7 +78,7 @@ public class GridPopupMenu extends JPopupMenu {
 		equirectangularMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				((Spheroid)model.node).setProjection(new Equirectangular());
-				GridPanel panel = (GridPanel) getInvoker();
+				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
 		});
@@ -86,7 +86,7 @@ public class GridPopupMenu extends JPopupMenu {
 //		globeMenuItem.addActionListener(new ActionListener() {
 //			public void actionPerformed(ActionEvent ev) {
 //				model.setProjection(new Globe());
-//				GridPanel panel = (GridPanel) getInvoker();
+//				CameraPanel panel = (CameraPanel) getInvoker();
 //				panel.repaint();
 //			}
 //		});
@@ -94,7 +94,7 @@ public class GridPopupMenu extends JPopupMenu {
 		mercatorMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				((Spheroid)model.node).setProjection(new Mercator());
-				GridPanel panel = (GridPanel) getInvoker();
+				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
 		});
@@ -102,7 +102,7 @@ public class GridPopupMenu extends JPopupMenu {
 		azimuthalNorthMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				((Spheroid)model.node).setProjection(new AzimuthalNorth());
-				GridPanel panel = (GridPanel) getInvoker();
+				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
 		});
@@ -110,7 +110,7 @@ public class GridPopupMenu extends JPopupMenu {
 		azimuthalSouthMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				((Spheroid)model.node).setProjection(new AzimuthalSouth());
-				GridPanel panel = (GridPanel) getInvoker();
+				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
 		});

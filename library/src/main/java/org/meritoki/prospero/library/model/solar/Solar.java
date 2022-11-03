@@ -39,6 +39,7 @@ import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Triangle;
 import org.meritoki.prospero.library.model.node.Tunnel;
+import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.star.sun.Sun;
 import org.meritoki.prospero.library.model.unit.Coordinate;
@@ -55,7 +56,6 @@ import org.meritoki.prospero.library.model.unit.Space;
 public class Solar extends Grid {
 
 	static Logger logger = LogManager.getLogger(Solar.class.getName());
-//	public static final double DEFAULT_SCALE = 100;//Astronomical Units In Use
 	public Color color = Color.YELLOW;
 	private Map<String, List<Index>> allAnglePlanetsIndexListMap;
 	private Map<String, List<Index>> allDistancePlanetsIndexListMap;
@@ -74,12 +74,20 @@ public class Solar extends Grid {
 		this.addChild(this.sun);
 		this.projection.setRadius(39.5);// Astronomical Unit
 		this.projection.setUnit(1);
-		this.defaultScale = 100;
+		this.defaultScale = 10;
+		Variable tunnelNode = new Variable("Tunnel");
+		this.tunnelList = this.getTunnelList();
+		for(Tunnel t: this.tunnelList) {
+			tunnelNode.addChild(t);
+		}
+		Variable triangleNode = new Variable("Triangle");
+		this.triangleList = this.getTriangleList("Sun");
+		for(Triangle t: this.triangleList) {
+			triangleNode.addChild(t);
+		}
+		this.addChild(tunnelNode);
+		this.addChild(triangleNode);
 		this.setScale(defaultScale);
-	}
-	
-	public Sun getSun() {
-		return this.sun;
 	}
 	
 	public Solar(String name) {
@@ -95,7 +103,9 @@ public class Solar extends Grid {
 		this.variableMap.put("Solar Cycle", false);
 	}
 
-
+	public Sun getSun() {
+		return this.sun;
+	}
 
 	////////////////////////////
 
@@ -662,6 +672,14 @@ public class Solar extends Grid {
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
 		this.initVariableMap();
+		Variable tunnelNode = this.getVariable("Tunnel");
+		for(Variable t: tunnelNode.getChildren()) {
+			((Tunnel)t).paint(graphics);
+		}
+		Variable triangleNode = this.getVariable("Triangle");
+		for(Variable t: triangleNode.getChildren()) {
+			((Triangle)t).paint(graphics);
+		}
 	}
 }
 //if(this.model.node != null && !(this.model.node instanceof Solar) && !(this.model.node instanceof Model)) {

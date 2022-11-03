@@ -33,7 +33,7 @@ public class Terra extends Grid {
 	
 	public Terra() {
 		super("Terra");
-		this.paint = true;
+		this.defaultScale = 7200000.0;
 		this.addChild(new Lithosphere());
 		this.addChild(new Hydrosphere());
 		this.addChild(new Atmosphere());
@@ -42,6 +42,7 @@ public class Terra extends Grid {
 	
 	public Terra(String name) {
 		super(name);
+		this.defaultScale = 7200000.0;
 	}
 	
 	@Override

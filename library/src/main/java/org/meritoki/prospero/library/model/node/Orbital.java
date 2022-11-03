@@ -87,9 +87,9 @@ public class Orbital extends Grid {
 		Object root = this.getRoot();
 		if (root instanceof Orbital) {
 			this.centroid = (Orbital)root;
-			logger.info(this.name+".updateSpace() this.centroid="+this.centroid);
+//			logger.info(this.name+".updateSpace() this.centroid="+this.centroid);
 			this.space = this.getSpace(this.calendar, this.centroid);
-			logger.info(this.name+".updateSpace() this.space="+this.space);
+//			logger.info(this.name+".updateSpace() this.space="+this.space);
 			this.buffer = new Space(this.space);
 			this.projection.setSpace(this.buffer);
 		} else {
@@ -101,8 +101,7 @@ public class Orbital extends Grid {
 	
 	@JsonIgnore
 	public void setCenter(Space center) {
-		logger.info(this.name+".setCenter("+center+")");
-		this.center = center;
+		super.setCenter(center);
 		this.buffer = new Space(this.space);
 		this.buffer.subtract(this.center);
 		this.projection.setSpace(this.buffer);

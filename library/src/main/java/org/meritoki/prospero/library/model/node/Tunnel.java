@@ -15,7 +15,7 @@ import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Unit;
 
-public class Tunnel extends Orbital {
+public class Tunnel extends Spheroid {
 	
 	public Tunnel(Orbital a, Orbital b) {
 		super(a.name+","+b.name);
@@ -596,16 +596,19 @@ public class Tunnel extends Orbital {
 	}
 	
 	@Override
-	public void paint(Graphics g) {
-//		System.out.println("paint("+this.name+")");
-//		this.print();
+	public void paint(Graphics g) throws Exception {
+		super.paint(g);
 		this.initVariableMap();
 		Vector3D barycenterA = this.getBarycenterA();
 		Vector3D barycenterB = this.getBarycenterB();
-		Point pointA = (a.space.getPoint());
-		Point pointB = (b.space.getPoint());
+		Point pointA = (a.buffer.getPoint());
+		Point pointB = (b.buffer.getPoint());
 		Point pointC = (new Point(pointA.x-barycenterA.getX(),pointA.y-barycenterA.getY(),pointA.z-barycenterA.getZ()));
 		Point pointD = (new Point(pointB.x-barycenterB.getX(),pointB.y-barycenterB.getY(),pointB.z-barycenterB.getZ()));
+		pointA = pointA.scale(this.projection.scale);
+		pointB = pointB.scale(this.projection.scale);
+		pointC = pointC.scale(this.projection.scale);
+		pointD = pointD.scale(this.projection.scale);
 		pointA = this.projection.getPoint(pointA);
 		pointB = this.projection.getPoint(pointB);
 		pointC = this.projection.getPoint(pointC);

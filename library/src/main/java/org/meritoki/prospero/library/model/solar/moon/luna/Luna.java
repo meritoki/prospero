@@ -36,6 +36,7 @@ public class Luna extends Moon {
 		this.b = this.a;//Kilometers
 		this.c = 1736.00;//Kilometers
         this.color = Color.RED;
+        this.defaultScale = 7200000.0;
         //N
         this.longitudeOfAscendingNode[0] = 125.1228;
         this.longitudeOfAscendingNode[1] = -0.0529538083;

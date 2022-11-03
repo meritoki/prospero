@@ -68,6 +68,7 @@ public class Earth extends Planet {
 		this.angularVelocity = 7.292115053925690e-05;
 		this.obliquity = 23.439292;
 		this.rotation = 23.9345;// hour
+		this.terra.color = this.color;
 		this.addChild(this.terra);
 		this.addChild(new Luna());
 		this.setProjection(new Globe(this.a, this.b, this.c));
