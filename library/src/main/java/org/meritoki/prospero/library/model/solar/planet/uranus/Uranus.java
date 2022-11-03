@@ -38,6 +38,7 @@ public class Uranus extends Planet {
         this.b = this.a;//Kilometers
         this.c = 24973.0;//Kilometers
         this.color = Color.MAGENTA;
+        this.defaultScale = 2097152.0;
         //N
         this.longitudeOfAscendingNode[0] = 74.0005;
         this.longitudeOfAscendingNode[1] = 1.3978E-5;
@@ -58,7 +59,7 @@ public class Uranus extends Planet {
         this.meanAnomaly[1] = 0.011725806;
         this.orbitalPeriod = 30688.5;
         this.angularVelocity = -1.041365902144588e-04;
-        this.projection = new Globe(this.a,this.b,this.c);
+        this.setProjection(new Globe(this.a, this.b, this.c));
     }
 }
 //this.centroid = (Orbital)this.getRoot();

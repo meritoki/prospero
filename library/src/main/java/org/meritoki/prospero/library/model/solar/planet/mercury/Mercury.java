@@ -35,6 +35,7 @@ public class Mercury extends Planet {
         this.b = this.a;//Kilometers
         this.c = 2438.3;//Kilometers
 		this.color = Color.green;
+		this.defaultScale = 1.6777216E7;
 		//N
 		this.longitudeOfAscendingNode[0] = 48.3313;
 		this.longitudeOfAscendingNode[1] = 3.24587E-5;
@@ -55,6 +56,6 @@ public class Mercury extends Planet {
 		this.meanAnomaly[1] = 4.0923344368;
 		this.orbitalPeriod = 87.9691;
 		this.angularVelocity = 1.240013441242619e-06;
-        this.projection = new Globe(this.a,this.b,this.c);
+		this.setProjection(new Globe(this.a, this.b, this.c));
 	}
 }

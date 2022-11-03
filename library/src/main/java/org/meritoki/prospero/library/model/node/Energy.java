@@ -53,7 +53,7 @@ public class Energy extends Variable {
 	@JsonProperty
 	public Space buffer = new Space();
 	@JsonIgnore
-	protected Color color;
+	protected Color color = Color.BLACK;
 	///////////////////////////////////////
 	@JsonIgnore
 	public List<Tunnel> tunnelList = null;

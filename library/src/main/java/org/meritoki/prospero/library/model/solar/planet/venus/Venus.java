@@ -38,6 +38,7 @@ public class Venus extends Planet {
         this.b = this.a;//Kilometers
         this.c = this.a;//Kilometers
         this.color = Color.DARK_GRAY;
+        this.defaultScale = 8388608.0;
         //N
         this.longitudeOfAscendingNode[0] = 76.6799;
         this.longitudeOfAscendingNode[1] = 2.46590E-5;
@@ -58,7 +59,7 @@ public class Venus extends Planet {
         this.meanAnomaly[1] = 1.6021302244;
         this.orbitalPeriod = 225;
         this.angularVelocity = 2.99e-07;
-        this.projection = new Globe(this.a,this.b,this.c);
+        this.setProjection(new Globe(this.a, this.b, this.c));
     }
 }
 //this.centroid = (Orbital)this.getRoot();

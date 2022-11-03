@@ -1,24 +1,14 @@
 package org.meritoki.prospero.library.model.terra.lithosphere.earthquake;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.data.source.EarthquakeUSGSEarthquakeHazardProgram;
-import org.meritoki.prospero.library.model.data.source.Source;
-import org.meritoki.prospero.library.model.data.source.VolcanicNOAA;
-import org.meritoki.prospero.library.model.node.Grid;
-import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
-import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Result;
 
-public class Earthquake extends Grid {
+public class Earthquake extends Lithosphere {
 
 	static Logger logger = LogManager.getLogger(Earthquake.class.getName());
 

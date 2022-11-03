@@ -1,23 +1,16 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.temperature;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.locationtech.jts.geom.Point;
-import org.meritoki.prospero.library.model.node.Grid;
-import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
-import org.meritoki.prospero.library.model.terra.biosphere.city.City;
+import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Station;
 
-public class Temperature extends Grid {
+public class Temperature extends Atmosphere {
 	static Logger logger = LogManager.getLogger(Temperature.class.getName());
 	
 	public Temperature() {

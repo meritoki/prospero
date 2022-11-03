@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.terra.lithosphere.magnetic.anamoly.Anomaly;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 
-public class Field extends Grid {
+public class Field extends Lithosphere {
 
 	static Logger logger = LogManager.getLogger(Anomaly.class.getName());
 	

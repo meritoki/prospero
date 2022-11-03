@@ -35,6 +35,7 @@ public class Saturn extends Planet {
         this.b = this.a;//Kilometers
         this.c = 54364.0;//Kilometers
         this.color = Color.CYAN;
+        this.defaultScale = 1048576.0;
         //N
         this.longitudeOfAscendingNode[0] = 113.6634;
         this.longitudeOfAscendingNode[1] = 2.38980E-5;
@@ -55,6 +56,6 @@ public class Saturn extends Planet {
         this.meanAnomaly[1] = 0.0334442282;
         this.orbitalPeriod = 10759.22;
         this.angularVelocity = 1.636246173744684e-04;
-        this.projection = new Globe(this.a,this.b,this.c);
+        this.setProjection(new Globe(this.a, this.b, this.c));
     }
 }

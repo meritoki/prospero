@@ -21,7 +21,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.Grid;
-import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
@@ -50,17 +49,15 @@ public class Terra extends Grid {
 		super.setProjection(projection);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
-			if (n instanceof Spheroid) {
-				((Spheroid) n).setProjection(projection);
+			if (n instanceof Terra) {
+				((Terra) n).setProjection(projection);
 			}
 		}
 	}
 	
 	@Override
 	public void paint(Graphics graphics) throws Exception {	
-//		if(this.paint) {
 		super.paint(graphics);
-//		}
 	}
 }
 //public List<Variable> getList() {

@@ -42,6 +42,7 @@ public class Lithosphere extends Terra {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
 		if (this.load) {
 //			String sourceUUID = this.sourceMap.get(this.sourceKey);
 //			this.coordinateList = (List<Coordinate>) this.data.get(sourceUUID, this.query);
@@ -62,10 +63,10 @@ public class Lithosphere extends Terra {
 				}
 			}
 		}
-		List<Variable> nodeList = this.getChildren();
-		for(Variable n: nodeList) {
-			n.paint(graphics);
-		}
+//		List<Variable> nodeList = this.getChildren();
+//		for(Variable n: nodeList) {
+//			n.paint(graphics);
+//		}
 	}
 }
 //@Override

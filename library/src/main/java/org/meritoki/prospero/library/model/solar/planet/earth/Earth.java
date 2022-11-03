@@ -16,6 +16,7 @@
 package org.meritoki.prospero.library.model.solar.planet.earth;
 
 import java.awt.Color;
+import java.awt.Graphics;
 
 import org.meritoki.prospero.library.model.solar.moon.luna.Luna;
 import org.meritoki.prospero.library.model.solar.planet.Planet;
@@ -44,6 +45,7 @@ public class Earth extends Planet {
 		this.b = this.a;// Kilometers
 		this.c = 6357.00;// Kilometers
 		this.color = Color.BLUE;
+		this.defaultScale = 7200000.0;
 		// N
 		this.longitudeOfAscendingNode[0] = 0;// Degrees
 		this.longitudeOfAscendingNode[1] = 0;// Degrees
@@ -62,12 +64,11 @@ public class Earth extends Planet {
 		// M
 		this.meanAnomaly[0] = 356.0470;
 		this.meanAnomaly[1] = 0.9856002585;
-		this.orbitalPeriod = 365.256363004;
+		this.orbitalPeriod = 365.256363004;//days
 		this.angularVelocity = 7.292115053925690e-05;
 		this.obliquity = 23.439292;
 		this.rotation = 23.9345;// hour
-
-		this.addChildren(this.terra.getChildren());
+		this.addChild(this.terra);
 		this.addChild(new Luna());
 		this.setProjection(new Globe(this.a, this.b, this.c));
 	}
@@ -95,9 +96,13 @@ public class Earth extends Planet {
 		super.setScale(scale);
 		this.terra.setScale(scale);
 	}
-
-
+	
+	@Override
+	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
+	}
 }
+//this.terra.paint(graphics);
 //List<Variable> nodeList = this.getChildren();
 //for (Variable n : nodeList) {
 //	if(n instanceof Spheroid) {

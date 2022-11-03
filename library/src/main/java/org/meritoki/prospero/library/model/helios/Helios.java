@@ -13,6 +13,10 @@ public class Helios extends Grid {
 		this.addChild(new Photosphere());
 	}
 	
+	public Helios(String name) {
+		super(name);
+	}
+	
 	@Override
 	public void paint(Graphics graphics) throws Exception {		
 		if(this.paint) {

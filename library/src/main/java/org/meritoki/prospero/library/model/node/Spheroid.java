@@ -42,6 +42,7 @@ public class Spheroid extends Energy {
 
 	static Logger logger = LogManager.getLogger(Spheroid.class.getName());
 	public Projection projection = new Globe();
+	public double defaultScale = 1;
 	public double radius = 1;
 	public double a = this.radius;
 	public double b = this.radius;
@@ -57,6 +58,7 @@ public class Spheroid extends Energy {
 	}
 
 	public void setScale(double scale) {
+//		logger.info(this.name+".setScale("+scale+")");
 		this.projection.setScale(scale);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
@@ -282,17 +284,18 @@ public class Spheroid extends Energy {
 		for (Coordinate c : coordinateList) {
 			graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
 		}
-		Point point = this.projection.getPoint(this.buffer.getPoint());
+		logger.info(this.name+".paint(graphics) this.projection.space="+this.projection.space);
+		Point point = this.projection.getPoint(this.projection.space.getPoint());//this.buffer
 		double x = point.x * this.projection.scale;
 		double y = point.y * this.projection.scale;
-		graphics.setColor(this.color);
+//		graphics.setColor(this.color);
 		double radius = 8;
 		x = x - (radius / 2);
 		y = y - (radius / 2);
 		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
-		graphics.setColor(Color.black);
-		graphics.drawString(this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "", (int) x,
-				(int) y);
+//		graphics.setColor(Color.black);
+//		graphics.drawString(this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "", (int) x,
+//				(int) y);
 	}
 }
 //this.projection = new Globe(this.a,this.b,this.c);

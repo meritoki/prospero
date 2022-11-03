@@ -10,11 +10,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.data.Data;
-import org.meritoki.prospero.library.model.node.Energy;
 import org.meritoki.prospero.library.model.node.Orbital;
+import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.solar.Solar;
-import org.meritoki.prospero.library.model.solar.star.sun.Sun;
 import org.meritoki.prospero.library.model.unit.Script;
 
 import com.meritoki.library.controller.node.NodeController;
@@ -47,9 +46,11 @@ public class Model extends Variable {
 	public void setNode(Variable variable) {
 		this.node = variable;
 		if(this.node instanceof Orbital) {
-			Energy e = (Energy)this.node;
+			Orbital e = (Orbital)this.node;
+			e.updateSpace();
 			logger.info("setNode("+variable+") e.space="+e.space);
 			this.solar.sun.setCenter(e.space);
+			e.setScale(e.defaultScale);
 		}
 	}
 	

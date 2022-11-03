@@ -35,6 +35,7 @@ public class Neptune extends Planet {
         this.b = this.a;//Kilometers
         this.c = 24341.0;//Kilometers
         this.color = Color.BLUE;
+        this.defaultScale = 2097152.0;
         //N
         this.longitudeOfAscendingNode[0] = 131.6737;
         this.longitudeOfAscendingNode[1] = 0;
@@ -55,6 +56,6 @@ public class Neptune extends Planet {
         this.meanAnomaly[1] = 0.005995147;
         this.orbitalPeriod = 60182;
         this.angularVelocity =  1.083382527619075e-04;
-        this.projection = new Globe(this.a,this.b,this.c);
+        this.setProjection(new Globe(this.a, this.b, this.c));
     }
 }

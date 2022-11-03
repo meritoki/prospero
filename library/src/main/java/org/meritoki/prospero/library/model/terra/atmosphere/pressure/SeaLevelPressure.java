@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Region;
@@ -14,9 +14,7 @@ import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
-import ucar.ma2.ArrayShort;
-
-public class SeaLevelPressure extends Grid {
+public class SeaLevelPressure extends Atmosphere {
 	
 	static Logger logger = LogManager.getLogger(SeaLevelPressure.class.getName());
 	public DataType dataType;

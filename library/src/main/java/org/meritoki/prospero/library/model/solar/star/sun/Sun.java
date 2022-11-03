@@ -47,9 +47,10 @@ public class Sun extends Star {
         this.b = this.a;//Kilometers
         this.c = this.a;//Kilometers
         this.color = Color.YELLOW;
+        this.defaultScale = 50000.0;
         this.angularVelocity = 2.865329607243705e-06;
         this.rotation = 0.564263323;//Kilometers/Second
-        this.projection = new Globe(this.a,this.b,this.c);
+        this.setProjection(new Globe(this.a, this.b, this.c));
         this.addChild(new Earth());
         this.addChild(new Jupiter());
         this.addChild(new Mars());
@@ -58,6 +59,7 @@ public class Sun extends Star {
         this.addChild(new Saturn());
         this.addChild(new Uranus());
         this.addChild(new Venus());
+        
 	}
 }
 //public Helios helios = new Helios();

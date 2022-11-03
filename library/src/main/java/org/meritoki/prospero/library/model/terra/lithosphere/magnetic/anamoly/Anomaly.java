@@ -5,13 +5,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.color.Chroma;
-import org.meritoki.prospero.library.model.color.Scheme;
-import org.meritoki.prospero.library.model.node.Grid;
-import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 
-public class Anomaly extends Grid {
+public class Anomaly extends Lithosphere {
 	
 	static Logger logger = LogManager.getLogger(Anomaly.class.getName());
 	

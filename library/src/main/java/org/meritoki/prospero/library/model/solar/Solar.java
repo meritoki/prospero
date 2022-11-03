@@ -55,7 +55,7 @@ import org.meritoki.prospero.library.model.unit.Space;
 public class Solar extends Grid {
 
 	static Logger logger = LogManager.getLogger(Solar.class.getName());
-	public static final double DEFAULT_SCALE = 100;//Astronomical Units In Use
+//	public static final double DEFAULT_SCALE = 100;//Astronomical Units In Use
 	public Color color = Color.YELLOW;
 	private Map<String, List<Index>> allAnglePlanetsIndexListMap;
 	private Map<String, List<Index>> allDistancePlanetsIndexListMap;
@@ -74,11 +74,12 @@ public class Solar extends Grid {
 		this.addChild(this.sun);
 		this.projection.setRadius(39.5);// Astronomical Unit
 		this.projection.setUnit(1);
-		this.setScale(DEFAULT_SCALE);
+		this.defaultScale = 100;
+		this.setScale(defaultScale);
 	}
 	
 	public Sun getSun() {
-		return sun;
+		return this.sun;
 	}
 	
 	public Solar(String name) {
@@ -661,14 +662,14 @@ public class Solar extends Grid {
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
 		this.initVariableMap();
-//		if(this.model.node != null && !(this.model.node instanceof Solar) && !(this.model.node instanceof Model)) {
-//			if(this.model.node instanceof Energy) {
-//				Energy e = (Energy)this.model.node;
-//				this.setCenter(e.space);
-//			}
-//		}
 	}
 }
+//if(this.model.node != null && !(this.model.node instanceof Solar) && !(this.model.node instanceof Model)) {
+//if(this.model.node instanceof Energy) {
+//	Energy e = (Energy)this.model.node;
+//	this.setCenter(e.space);
+//}
+//}
 //Variable tunnelNode = this.getVariable("Tunnel");
 //for(Variable t: tunnelNode.getChildren()) {
 //	((Tunnel)t).paint(graphics);

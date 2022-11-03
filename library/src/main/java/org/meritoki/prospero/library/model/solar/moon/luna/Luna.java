@@ -55,5 +55,6 @@ public class Luna extends Moon {
         this.meanAnomaly[0] = 115.3654;
         this.meanAnomaly[1] = 13.0649929509;
         this.projection = new Globe(this.a,this.b,this.c);
+        this.orbitalPeriod = 27;
     }
 }

@@ -75,6 +75,7 @@ public class Orbital extends Grid {
 	public void setCalendar(Calendar calendar) {
 		this.calendar = calendar;
 		this.updateSpace();
+//		this.setCenter(this.center);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			n.setCalendar(calendar);
@@ -88,6 +89,7 @@ public class Orbital extends Grid {
 			this.centroid = (Orbital)root;
 			logger.info(this.name+".updateSpace() this.centroid="+this.centroid);
 			this.space = this.getSpace(this.calendar, this.centroid);
+			logger.info(this.name+".updateSpace() this.space="+this.space);
 			this.buffer = new Space(this.space);
 			this.projection.setSpace(this.buffer);
 		} else {
@@ -390,6 +392,17 @@ public class Orbital extends Grid {
 					(int) (vertexList.get(i).y * this.projection.scale));
 		}
 		graphics.setColor(this.color);
+		Point point = this.projection.getPoint(this.projection.space.getPoint());//this.buffer
+		double x = point.x * this.projection.scale;
+		double y = point.y * this.projection.scale;
+		graphics.setColor(this.color);
+		double radius = 8;
+		x = x - (radius / 2);
+		y = y - (radius / 2);
+//		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
+		graphics.setColor(Color.black);
+		graphics.drawString(this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "", (int) x,
+				(int) y);
 	}
 }
 //public static void main(String[] args) {

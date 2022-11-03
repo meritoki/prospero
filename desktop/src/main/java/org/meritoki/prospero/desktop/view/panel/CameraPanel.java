@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.GridPopupMenu;
 import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
 
@@ -74,6 +75,12 @@ public class CameraPanel extends javax.swing.JPanel
 		graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
 		if (this.model != null && this.model.node != null) {
 			Variable node = this.model.node;
+			if(node instanceof Orbital) {
+				Orbital e = (Orbital)node;
+				e.updateSpace();
+				logger.info("paint(graphics) e.space="+e.space);
+				model.solar.sun.setCenter(e.space);
+			}
 			if (node != null) {
 				try {
 					node.paint(graphics);
@@ -211,5 +218,13 @@ public class CameraPanel extends javax.swing.JPanel
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	// End of variables declaration//GEN-END:variables
 }
+//Object root = node.getRoot();
+//while(root instanceof Variable && !((Variable)root).paint) {
+//	root = ((Variable)root).getRoot();
+//	node = (Variable)root;
+//}
+//while(node.getRoot() != null && !node.paint) {
+//node = (Variable)node.getRoot();
+//}
 //graphics.fillRect(0, 0, (int)(this.getWidth()), (int)(this.getHeight()));
 //graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));

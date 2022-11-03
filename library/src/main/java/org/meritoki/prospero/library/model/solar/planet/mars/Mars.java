@@ -36,6 +36,7 @@ public class Mars extends Planet {
 		this.b = this.a;// Kilometers
 		this.c = 3376.2;// Kilometers
 		this.color = Color.RED;
+		this.defaultScale = 9000000.0;
 		// N
 		this.longitudeOfAscendingNode[0] = 49.5574;
 		this.longitudeOfAscendingNode[1] = 2.11081E-5;
@@ -56,6 +57,6 @@ public class Mars extends Planet {
 		this.meanAnomaly[1] = 0.5240207766;
 		this.orbitalPeriod = 686.980;
 		this.angularVelocity = 7.088218127178316e-05;
-		this.projection = new Globe(this.a, this.b, this.c);
+		this.setProjection(new Globe(this.a, this.b, this.c));
 	}
 }

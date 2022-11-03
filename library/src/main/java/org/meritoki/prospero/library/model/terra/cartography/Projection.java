@@ -52,7 +52,7 @@ public class Projection implements ProjectionInterface {
 	public Projection() {}
 	
 	public void setSpace(Space space) {
-		logger.info("setSpace("+space+")");
+//		logger.info("setSpace("+space+")");
 		this.space = space;
 	}
 	
@@ -213,7 +213,7 @@ public class Projection implements ProjectionInterface {
 					coordinateList.add(coordinate);
 			}
 		}
-		for (int i = latitudeMin; i <= latitudeMax; i++) {
+		for (int i = latitudeMin; i <= latitudeMax; i += latitudeInterval) {
 			for (int j = longitudeMin; j <= longitudeMax; j++) {
 				double latitude = i;
 				double longitude = j;

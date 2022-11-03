@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Result;
 
-public class Tornado extends Grid {
+public class Tornado extends Atmosphere {
 	static Logger logger = LogManager.getLogger(Tornado.class.getName());
 
 	public Tornado() {
