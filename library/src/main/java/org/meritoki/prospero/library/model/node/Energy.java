@@ -102,7 +102,7 @@ public class Energy extends Variable {
 	
 	@JsonIgnore
 	public void setCenter(Space center) {
-		logger.info(this.name+".setCenter("+center+")");
+//		logger.info(this.name+".setCenter("+center+")");
 		this.center = center;
 	}
 	

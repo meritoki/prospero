@@ -592,10 +592,12 @@ public class Grid extends Spheroid {
 			}
 		}
 		this.initBandMinMax();
-		Meter meter = new Meter(0.9, (int) (projection.xMax * projection.scale), this.getMax(), this.getMin(),
-				this.unit, this.getIncrement());
-		meter.setChroma(this.chroma);
-		meter.paint(graphics);
+		if (projection.scale >= this.defaultScale) {
+			Meter meter = new Meter(0.9, (int) (projection.xMax * projection.scale), this.getMax(), this.getMin(),
+					this.unit, this.getIncrement());
+			meter.setChroma(this.chroma);
+			meter.paint(graphics);
+		}
 	}
 
 	public void paintTile(Graphics graphics) {
@@ -625,10 +627,12 @@ public class Grid extends Spheroid {
 			}
 		}
 		this.initTileMinMax();
-		Meter meter = new Meter(0.9, (int) (projection.xMax * projection.scale), this.getMax(), this.getMin(),
-				this.unit, this.getIncrement());
-		meter.setChroma(this.chroma);
-		meter.paint(graphics);
+		if (projection.scale >= this.defaultScale) {
+			Meter meter = new Meter(0.9, (int) (projection.xMax * projection.scale), this.getMax(), this.getMin(),
+					this.unit, this.getIncrement());
+			meter.setChroma(this.chroma);
+			meter.paint(graphics);
+		}
 	}
 
 	public void paintEvent(Graphics graphics) {
@@ -640,7 +644,7 @@ public class Grid extends Spheroid {
 				logger.debug(this + ".paintEvent(...) event=" + event.id);
 				List<Coordinate> coordinateList = this.projection.getCoordinateList(0, event.coordinateList);
 				if (coordinateList != null) {
-					for (int j=0;j <coordinateList.size();j++) {//Coordinate c : coordinateList) {
+					for (int j = 0; j < coordinateList.size(); j++) {// Coordinate c : coordinateList) {
 						Coordinate c = coordinateList.get(j);
 						if (c != null && c.flag) {
 							logger.debug(this + ".paint(...) coordinate=" + c);
@@ -655,16 +659,16 @@ public class Grid extends Spheroid {
 			}
 		}
 	}
-	
+
 	public void paintCluster(Graphics graphics) throws Exception {
 		this.chroma = new Chroma(this.scheme);
 		Collections.sort(this.clusterList, new Comparator<Cluster>() {
-		    @Override
-		    public int compare(Cluster o1, Cluster o2) {
-		        return (o1.tileList.size())-(o2.tileList.size());
-		    }
+			@Override
+			public int compare(Cluster o1, Cluster o2) {
+				return (o1.tileList.size()) - (o2.tileList.size());
+			}
 		});
-		for(Cluster cluster: this.clusterList) {
+		for (Cluster cluster : this.clusterList) {
 			Graphics2D g2d = (Graphics2D) graphics;
 			Coordinate a;
 			Coordinate b;
@@ -679,12 +683,10 @@ public class Grid extends Spheroid {
 					c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
 					d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
 					if (a != null && b != null && c != null && d != null) {
-						int xpoints[] = { (int) (a.point.x * projection.scale),
-								(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
-								(int) (d.point.x * projection.scale) };
-						int ypoints[] = { (int) (a.point.y * projection.scale),
-								(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
-								(int) (d.point.y * projection.scale) };
+						int xpoints[] = { (int) (a.point.x * projection.scale), (int) (b.point.x * projection.scale),
+								(int) (c.point.x * projection.scale), (int) (d.point.x * projection.scale) };
+						int ypoints[] = { (int) (a.point.y * projection.scale), (int) (b.point.y * projection.scale),
+								(int) (c.point.y * projection.scale), (int) (d.point.y * projection.scale) };
 						int npoints = 4;
 						g2d.setColor(this.chroma.getColor(cluster.getID(), 0, this.clusterList.size()));
 						g2d.fillPolygon(xpoints, ypoints, npoints);
@@ -692,12 +694,13 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
-		Meter meter = new Meter(0.9, (int) (projection.xMax * projection.scale), this.clusterList.size(), 0,
-				"id", 1);
-		meter.setChroma(this.chroma);
-		meter.paint(graphics);
+		if (projection.scale >= this.defaultScale) {
+			Meter meter = new Meter(0.9, (int) (projection.xMax * projection.scale), this.clusterList.size(), 0, "id", 1);
+			meter.setChroma(this.chroma);
+			meter.paint(graphics);
+		}
 	}
-	
+
 	public void updateSpace() {
 		this.space = new Space();
 		this.buffer = this.space;
@@ -712,7 +715,7 @@ public class Grid extends Spheroid {
 			} else if (this.bandFlag) {
 				this.paintBand(graphics);
 			} else {
-				if(this.clusterList != null && !this.clusterList.isEmpty()) {
+				if (this.clusterList != null && !this.clusterList.isEmpty()) {
 					this.paintCluster(graphics);
 				} else if (this.tileList != null && this.tileList.size() > 0) {
 					this.paintTile(graphics);
