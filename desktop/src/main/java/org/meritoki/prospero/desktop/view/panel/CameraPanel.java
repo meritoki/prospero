@@ -80,6 +80,7 @@ public class CameraPanel extends javax.swing.JPanel
 			if(node instanceof Orbital) {
 				Orbital e = (Orbital)node;
 				e.updateSpace();
+//				e.print();
 				logger.info("paint(graphics) e.space="+e.space);
 				model.solar.sun.setCenter(e.space);
 			}

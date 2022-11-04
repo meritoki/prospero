@@ -80,13 +80,13 @@ public class Solar extends Grid {
 		for(Tunnel t: this.tunnelList) {
 			tunnelNode.addChild(t);
 		}
-		Variable triangleNode = new Variable("Triangle");
-		this.triangleList = this.getTriangleList("Sun");
-		for(Triangle t: this.triangleList) {
-			triangleNode.addChild(t);
-		}
+//		Variable triangleNode = new Variable("Triangle");
+//		this.triangleList = this.getTriangleList("Sun");
+//		for(Triangle t: this.triangleList) {
+//			triangleNode.addChild(t);
+//		}
 		this.addChild(tunnelNode);
-		this.addChild(triangleNode);
+//		this.addChild(triangleNode);
 		this.setScale(defaultScale);
 	}
 	
@@ -676,12 +676,12 @@ public class Solar extends Grid {
 		for(Variable t: tunnelNode.getChildren()) {
 			((Tunnel)t).paint(graphics);
 		}
-		Variable triangleNode = this.getVariable("Triangle");
-		for(Variable t: triangleNode.getChildren()) {
-			((Triangle)t).paint(graphics);
-		}
 	}
 }
+//Variable triangleNode = this.getVariable("Triangle");
+//for(Variable t: triangleNode.getChildren()) {
+//	((Triangle)t).paint(graphics);
+//}
 //if(this.model.node != null && !(this.model.node instanceof Solar) && !(this.model.node instanceof Model)) {
 //if(this.model.node instanceof Energy) {
 //	Energy e = (Energy)this.model.node;

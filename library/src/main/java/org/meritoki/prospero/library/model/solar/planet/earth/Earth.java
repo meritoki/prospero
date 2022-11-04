@@ -46,6 +46,7 @@ public class Earth extends Planet {
 		this.c = 6357.00;// Kilometers
 		this.color = Color.BLUE;
 		this.defaultScale = 7200000.0;
+		this.terra.defaultScale = this.defaultScale;
 		// N
 		this.longitudeOfAscendingNode[0] = 0;// Degrees
 		this.longitudeOfAscendingNode[1] = 0;// Degrees
@@ -77,6 +78,7 @@ public class Earth extends Planet {
 	@Override
 	public void updateSpace() {
 		super.updateSpace();
+		this.terra.updateSpace();
 		this.terra.setProjection(this.projection);
 	}
 	
@@ -103,6 +105,7 @@ public class Earth extends Planet {
 		super.paint(graphics);
 	}
 }
+//this.terra.paint(graphics);
 //this.terra.paint(graphics);
 //List<Variable> nodeList = this.getChildren();
 //for (Variable n : nodeList) {

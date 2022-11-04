@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
@@ -33,7 +34,6 @@ public class Terra extends Grid {
 	
 	public Terra() {
 		super("Terra");
-		this.defaultScale = 7200000.0;
 		this.addChild(new Lithosphere());
 		this.addChild(new Hydrosphere());
 		this.addChild(new Atmosphere());
@@ -61,6 +61,12 @@ public class Terra extends Grid {
 		super.paint(graphics);
 	}
 }
+//this.defaultScale = 7200000.0;
+//Object root = this.getRoot();
+//if(this.name.equals("Terra") && root instanceof Earth) {
+//	Earth variable = (Earth)root;
+//	variable.paint(graphics);
+//}
 //public List<Variable> getList() {
 //return null;
 //}

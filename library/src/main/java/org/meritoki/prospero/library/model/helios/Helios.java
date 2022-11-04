@@ -9,7 +9,6 @@ public class Helios extends Grid {
 
 	public Helios() {
 		super("Helios");
-		this.defaultScale = 50000.0;
 		this.addChild(new Photosphere());
 	}
 	

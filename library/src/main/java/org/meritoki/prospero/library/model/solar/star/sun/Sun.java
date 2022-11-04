@@ -52,6 +52,7 @@ public class Sun extends Star {
         this.color = Color.YELLOW;
         this.helios.color = this.color;
         this.defaultScale = 50000.0;
+        this.helios.defaultScale = this.defaultScale;
         this.angularVelocity = 2.865329607243705e-06;
         this.rotation = 0.564263323;//Kilometers/Second
         this.setProjection(new Globe(this.a, this.b, this.c));

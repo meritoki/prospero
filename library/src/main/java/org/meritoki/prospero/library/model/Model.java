@@ -46,16 +46,13 @@ public class Model extends Variable {
 	public void setNode(Variable variable) {
 		this.node = variable;
 		if(this.node instanceof Orbital) {
-			Orbital e = (Orbital)this.node;
-			e.updateSpace();
-			logger.info("setNode("+variable+") e.space="+e.space);
-			this.solar.setCenter(e.space);
-			e.setScale(e.defaultScale);
+			Orbital o = (Orbital)this.node;
+			o.updateSpace();
+			logger.info("setNode("+variable+") e.space="+o.space);
+			this.solar.setCenter(o.space);
+			o.setScale(o.defaultScale);
 		} else if(this.node instanceof Spheroid){
 			Spheroid e = (Spheroid)this.node;
-//			e.updateSpace();
-//			logger.info("setNode("+variable+") e.space="+e.space);
-//			this.solar.setCenter(e.space);
 			e.setElevation(e.projection.elevation);
 			e.setAzimuth(e.projection.azimuth);
 			e.setScale(e.defaultScale);
@@ -111,3 +108,19 @@ public class Model extends Variable {
 		return script;
 	}
 }
+//Object root = e.getRoot();
+//if(root instanceof Orbital) {
+//	Orbital o = (Orbital)root;
+//	this.solar.setCenter(o.space);
+//	o.setScale(o.defaultScale);
+//}
+//Object root = e.getRoot();
+//if(root instanceof Orbital) {
+//	Orbital o = (Orbital)root;
+//	o.updateSpace();
+//	logger.info("setNode("+variable+") e.space="+o.space);
+//	this.solar.setCenter(o.space);
+//}
+//e.updateSpace();
+//logger.info("setNode("+variable+") e.space="+e.space);
+//this.solar.setCenter(e.space);

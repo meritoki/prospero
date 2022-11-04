@@ -49,6 +49,7 @@ import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
+import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Station;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Tile;
@@ -696,10 +697,15 @@ public class Grid extends Spheroid {
 		meter.setChroma(this.chroma);
 		meter.paint(graphics);
 	}
+	
+	public void updateSpace() {
+		this.space = new Space();
+		this.buffer = this.space;
+		this.projection.setSpace(this.buffer);
+	}
 
 	@Override
 	public void paint(Graphics graphics) throws Exception {
-		super.paint(graphics);
 		if (this.load) {
 			if (stackFlag) {
 				this.paintStack(graphics);
@@ -715,6 +721,7 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
+		super.paint(graphics);
 	}
 }
 //List<Variable> nodeList = this.getChildren();

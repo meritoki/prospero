@@ -285,7 +285,7 @@ public class Spheroid extends Energy {
 		double x = point.x * this.projection.scale;
 		double y = point.y * this.projection.scale;
 //		graphics.setColor(this.color);
-		double radius = 4;
+		double radius = 2;
 		x = x - (radius / 2);
 		y = y - (radius / 2);
 		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);

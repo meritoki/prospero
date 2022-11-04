@@ -1132,15 +1132,15 @@ public class Cyclone extends Atmosphere {
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
-//		List<Variable> nodeList = this.getChildren();
-//		for (Variable n : nodeList) {
-//			n.paint(graphics);
-//		}
-//		if (this.load) {
-//			super.paint(graphics);
-//		}
 	}
 }
+//List<Variable> nodeList = this.getChildren();
+//for (Variable n : nodeList) {
+//	n.paint(graphics);
+//}
+//if (this.load) {
+//	super.paint(graphics);
+//}
 //else if(this.bandFlag) {
 //List<Double> tileLatitudeList = this.getTileLatitudeList(this.tileList);
 //this.bandList = new ArrayList<>();
