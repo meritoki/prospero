@@ -78,7 +78,6 @@ public class Earth extends Planet {
 	@Override
 	public void updateSpace() {
 		super.updateSpace();
-		this.terra.updateSpace();
 		this.terra.setProjection(this.projection);
 	}
 	

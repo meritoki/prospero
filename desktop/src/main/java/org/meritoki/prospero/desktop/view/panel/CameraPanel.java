@@ -28,11 +28,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.GridPopupMenu;
 import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.Energy;
 import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  *
@@ -77,13 +76,34 @@ public class CameraPanel extends javax.swing.JPanel
 		graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
 		if (this.model != null && this.model.node != null) {
 			Variable node = this.model.node;
+//20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
 			if(node instanceof Orbital) {
-				Orbital e = (Orbital)node;
-				e.updateSpace();
-//				e.print();
-				logger.info("paint(graphics) e.space="+e.space);
-				model.solar.sun.setCenter(e.space);
+				Orbital o = (Orbital)node;
+				o.updateSpace();
+				this.model.solar.sun.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
+			} else if(node instanceof Spheroid) {
+				Spheroid s = (Spheroid)node;
+				this.azimuth = s.projection.azimuth;
+				this.elevation = s.projection.elevation;
+				Object root = s.getRoot();
+				while(root != null) {
+					if(root instanceof Orbital) {
+						Orbital o = (Orbital)root;
+						o.updateSpace();
+						this.model.solar.sun.setCenter(o.space);
+						break;
+					} else {
+						root = ((Variable)root).getRoot();
+					}
+				}
+//				Object root = s.getRoot();
+//				if(root instanceof Orbital) {
+//					Orbital o = (Orbital)root;
+//					o.updateSpace();
+//					this.model.solar.sun.setCenter(o.space);
+//				}
 			}
+			
 			if (node != null) {
 				try {
 					node.paint(graphics);

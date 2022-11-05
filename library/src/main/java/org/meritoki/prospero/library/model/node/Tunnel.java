@@ -17,6 +17,9 @@ import org.meritoki.prospero.library.model.unit.Unit;
 
 public class Tunnel extends Spheroid {
 	
+	public Orbital a;
+	public Orbital b;
+	
 	public Tunnel(Orbital a, Orbital b) {
 		super(a.name+","+b.name);
 		this.a = a;
@@ -25,8 +28,7 @@ public class Tunnel extends Spheroid {
 		this.b.addTunnel(this);
 		// TODO Auto-generated constructor stub
 	}
-	public Orbital a;
-	public Orbital b;
+
 	
 	@Override
 	public boolean equals(Object o) {
@@ -605,10 +607,10 @@ public class Tunnel extends Spheroid {
 		Point pointB = (b.buffer.getPoint());
 		Point pointC = (new Point(pointA.x-barycenterA.getX(),pointA.y-barycenterA.getY(),pointA.z-barycenterA.getZ()));
 		Point pointD = (new Point(pointB.x-barycenterB.getX(),pointB.y-barycenterB.getY(),pointB.z-barycenterB.getZ()));
-		pointA = pointA.scale(this.projection.scale);
-		pointB = pointB.scale(this.projection.scale);
-		pointC = pointC.scale(this.projection.scale);
-		pointD = pointD.scale(this.projection.scale);
+//		pointA = pointA.scale(this.projection.scale);
+//		pointB = pointB.scale(this.projection.scale);
+//		pointC = pointC.scale(this.projection.scale);
+//		pointD = pointD.scale(this.projection.scale);
 		pointA = this.projection.getPoint(pointA);
 		pointB = this.projection.getPoint(pointB);
 		pointC = this.projection.getPoint(pointC);

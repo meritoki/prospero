@@ -84,12 +84,12 @@ public class Projection implements ProjectionInterface {
 	}
 	
 	public void setAzimuth(int azimuth) {
-//		if(print)System.out.println("setAzimuth("+azimuth+")");
+		logger.debug("setAzimuth("+azimuth+")");
 		this.azimuth = azimuth;
 	}
 
 	public void setElevation(int elevation) {
-//		if(print)System.out.println("setElevation("+elevation+")");
+		logger.debug("setElevation("+elevation+")");
 		this.elevation = elevation;
 	}
 

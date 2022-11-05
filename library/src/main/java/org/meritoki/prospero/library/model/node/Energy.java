@@ -51,7 +51,7 @@ public class Energy extends Variable {
 	@JsonProperty
 	public Space center = new Space();//Global X,Y,Z Center
 	@JsonProperty
-	public Space buffer = new Space();
+	public Space buffer = new Space();//Global X,Y,Z space minus center 
 	@JsonIgnore
 	public Color color = Color.BLACK;
 	///////////////////////////////////////
@@ -101,9 +101,28 @@ public class Energy extends Variable {
 	}
 	
 	@JsonIgnore
+	public void updateSpace() {
+//		logger.info(this.name+".updateSpace()");
+		this.space = new Space();
+		this.buffer = new Space(this.space);
+	}
+	
+	@JsonIgnore
 	public void setCenter(Space center) {
-//		logger.info(this.name+".setCenter("+center+")");
+//		logger.info(this.name+".setCenter("+center+") this.space="+this.space);
 		this.center = center;
+		this.buffer = new Space(this.space);
+//		logger.info(this.name+".setCenter("+center+") A this.buffer="+this.buffer);
+		this.buffer.subtract(this.center);
+//		logger.info(this.name+".setCenter("+center+") B this.buffer="+this.buffer);
+// Disabled, Must be done by Orbitals
+//		List<Variable> nodeList = this.getChildren();
+//		for (Variable n : nodeList) {
+//			if(n instanceof Energy) {
+//				Energy e = (Energy)n;
+//				e.setCenter(center);
+//			}
+//		}
 	}
 	
 
@@ -482,6 +501,8 @@ public class Energy extends Variable {
 		Vector3D difference = this.space.rectangular.subtract(energy.space.rectangular);
 		double distance = Math.sqrt(Math.pow((double) difference.getX(), 2) + Math.pow((double) difference.getY(), 2)
 				+ Math.pow((double) difference.getZ(), 2));
+		distance *= Unit.ASTRONOMICAL;
+		distance *= 1000;
 		return distance;
 	}
 

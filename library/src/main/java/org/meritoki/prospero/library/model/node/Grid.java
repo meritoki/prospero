@@ -700,11 +700,15 @@ public class Grid extends Spheroid {
 			meter.paint(graphics);
 		}
 	}
-
+	
+	@Override
 	public void updateSpace() {
-		this.space = new Space();
-		this.buffer = this.space;
-		this.projection.setSpace(this.buffer);
+		super.updateSpace();
+	}
+	
+	@Override
+	public void setCenter(Space center) {
+		super.setCenter(center);
 	}
 
 	@Override
@@ -727,6 +731,10 @@ public class Grid extends Spheroid {
 		super.paint(graphics);
 	}
 }
+////logger.info(this.name+".updateSpace()");
+//this.space = new Space();
+//this.buffer = this.space;
+//this.projection.setSpace(this.buffer);
 //List<Variable> nodeList = this.getChildren();
 //for (Variable n : nodeList) {
 //	n.paint(graphics);

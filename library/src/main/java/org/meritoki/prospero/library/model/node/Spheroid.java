@@ -24,6 +24,7 @@ import org.meritoki.prospero.library.model.terra.cartography.Globe;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -46,6 +47,18 @@ public class Spheroid extends Energy {
 
 	public Spheroid(String name) {
 		super(name);
+	}
+	
+	@Override
+	public void updateSpace() {
+		super.updateSpace();
+		this.projection.setSpace(this.buffer);
+	}
+	
+	@JsonIgnore
+	public void setCenter(Space center) {
+		super.setCenter(center);
+		this.projection.setSpace(this.buffer);
 	}
 
 	public void setProjection(Projection projection) {

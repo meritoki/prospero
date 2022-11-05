@@ -43,9 +43,9 @@ public class Globe extends Projection {
 		latitude = Math.toRadians(latitude);// * this.radians;//A
 		longitude = Math.toRadians(longitude);// * this.radians;//A
 		//Kilometers
-		double x = this.getA(this.unit) * Math.cos(latitude) * Math.cos(longitude);
+		double x = -this.getA(this.unit) * Math.cos(latitude) * Math.cos(longitude);
 		double z = this.getC(this.unit)  * Math.cos(latitude) * Math.sin(longitude);
-		double y = -this.getB(this.unit) * Math.sin(latitude);
+		double y = this.getB(this.unit) * Math.sin(latitude);
 		Point point = new Point(x, y, z);
 		Coordinate coordinate = this.getCoordinate(point);
 		if (coordinate != null) {

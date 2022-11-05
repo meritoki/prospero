@@ -75,7 +75,7 @@ public class Orbital extends Grid {
 	public void setCalendar(Calendar calendar) {
 		this.calendar = calendar;
 		this.updateSpace();
-//		this.setCenter(this.center);
+		this.setCenter(this.center);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			n.setCalendar(calendar);
@@ -83,28 +83,27 @@ public class Orbital extends Grid {
 	}
 	
 	public void updateSpace() {
-		logger.info(this.name+".updateSpace()");
 		super.updateSpace();
 		Object root = this.getRoot();
 		if (root instanceof Orbital) {
+			logger.info(this.name+".updateSpace() root="+root);
 			this.centroid = (Orbital)root;
 			this.space = this.getSpace(this.calendar, this.centroid);
 			this.buffer = new Space(this.space);
 			this.projection.setSpace(this.buffer);
+			logger.info(this.name+".updateSpace() this.space="+space);
 		}
 	}
 	
 	@JsonIgnore
+	@Override
 	public void setCenter(Space center) {
 		super.setCenter(center);
-		this.buffer = new Space(this.space);
-		this.buffer.subtract(this.center);
-		this.projection.setSpace(this.buffer);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			if(n instanceof Orbital) {
 				Orbital o = (Orbital)n;
-				o.setCenter(this.center);
+				o.setCenter(center);
 			}
 		}
 	}
@@ -403,6 +402,9 @@ public class Orbital extends Grid {
 				(int) y);
 	}
 }
+//this.buffer = new Space(this.space);
+//this.buffer.subtract(this.center);
+//this.projection.setSpace(this.buffer);
 //public static void main(String[] args) {
 //Orbital orbital = new Orbital();
 //System.out.println(orbital.getTime(orbital.referenceCalendar));

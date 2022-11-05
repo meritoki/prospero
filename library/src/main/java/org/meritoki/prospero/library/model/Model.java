@@ -27,9 +27,13 @@ public class Model extends Variable {
 	public Variable node = this;
 	public boolean cache = false;
 	public Solar solar = new Solar();
+	public int defaultAzimuth = -10;
+	public int defaultElevation = 150;
 
 	public Model() {
 		super("Model");
+		this.solar.setAzimuth(this.defaultAzimuth);
+		this.solar.setElevation(this.defaultElevation);
 		this.addChild(this.solar);
 		this.setData(new Data());
 		this.calendar = Calendar.getInstance();
@@ -45,17 +49,34 @@ public class Model extends Variable {
 	
 	public void setNode(Variable variable) {
 		this.node = variable;
-		if(this.node instanceof Orbital) {
+		if(this.node instanceof Solar) {
+			this.solar.sun.setCenter(this.solar.sun.space);//Must Include Sun b/c Solar is Not Orbital
+			this.solar.setScale(this.solar.defaultScale);
+			this.solar.setAzimuth(-10);
+			this.solar.setElevation(147);
+		} else if(this.node instanceof Orbital) {
+			logger.info("setNode("+variable+") Orbital");
 			Orbital o = (Orbital)this.node;
 			o.updateSpace();
-			logger.info("setNode("+variable+") e.space="+o.space);
-			this.solar.setCenter(o.space);
+			this.solar.sun.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
 			o.setScale(o.defaultScale);
 		} else if(this.node instanceof Spheroid){
-			Spheroid e = (Spheroid)this.node;
-			e.setElevation(e.projection.elevation);
-			e.setAzimuth(e.projection.azimuth);
-			e.setScale(e.defaultScale);
+			logger.info("setNode("+variable+") Spheroid");
+			Spheroid s = (Spheroid)this.node;
+			s.setElevation(s.projection.elevation);
+			s.setAzimuth(s.projection.azimuth);
+			s.setScale(s.defaultScale);
+			Object root = s.getRoot();
+			while(root != null) {
+				if(root instanceof Orbital) {
+					Orbital o = (Orbital)root;
+					o.updateSpace();
+					this.solar.sun.setCenter(o.space);
+					break;
+				} else {
+					root = ((Variable)root).getRoot();
+				}
+			}
 		}
 	}
 	
