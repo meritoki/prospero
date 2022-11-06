@@ -72,7 +72,7 @@ public class Spheroid extends Energy {
 	}
 
 	public void setScale(double scale) {
-		logger.info(this.name+".setScale("+scale+")");
+//		logger.info(this.name+".setScale("+scale+")");
 		this.getProjection().setScale(scale);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {

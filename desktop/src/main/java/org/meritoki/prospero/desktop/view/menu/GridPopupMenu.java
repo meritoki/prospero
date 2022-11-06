@@ -112,12 +112,15 @@ public class GridPopupMenu extends JPopupMenu {
 				panel.repaint();
 			}
 		});
+		
+		if(model.node instanceof Terra) {
 		projectionMenu.add(defaultMenuItem);
 		projectionMenu.add(equirectangularMenuItem);
 		projectionMenu.add(mercatorMenuItem);
 		projectionMenu.add(azimuthalNorthMenuItem);
 		projectionMenu.add(azimuthalSouthMenuItem);
 		this.add(projectionMenu);
+		}
 		this.add(this.saveMenuItem);
 	}
 }

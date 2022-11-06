@@ -58,18 +58,27 @@ public class CameraPanel extends javax.swing.JPanel
 		this.addKeyListener(this);
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
-		this.setSize(1024, 512);
+//		this.setSize(1024, 512);
+		Thread thread = new Thread(this);
+		thread.start();
 	}
 
 	public void setModel(Model model) {
 		this.model = model;
-		this.menu = new GridPopupMenu(this.model);
+//		this.menu = new GridPopupMenu(this.model);
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-
+		while (true) {
+			try {
+				this.repaint();
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -232,7 +241,7 @@ public class CameraPanel extends javax.swing.JPanel
 	}
 
 	private void showSavePopupMenu(MouseEvent e) {
-//		this.menu = new GridPopupMenu(this.model);
+		this.menu = new GridPopupMenu(this.model);
 		if (menu != null)
 			menu.show(e.getComponent(), e.getX(), e.getY());
 	}
