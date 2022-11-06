@@ -17,8 +17,8 @@ package org.meritoki.prospero.library.model.solar.planet.jupiter;
 
 import java.awt.Color;
 
+import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.solar.planet.Planet;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  * 

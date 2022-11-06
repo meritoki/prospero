@@ -35,11 +35,11 @@ import org.meritoki.prospero.desktop.view.panel.CameraPanel;
 import org.meritoki.prospero.desktop.view.panel.SolarPanel;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Spheroid;
+import org.meritoki.prospero.library.model.node.cartography.AzimuthalNorth;
+import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
+import org.meritoki.prospero.library.model.node.cartography.Equirectangular;
+import org.meritoki.prospero.library.model.node.cartography.Mercator;
 import org.meritoki.prospero.library.model.terra.Terra;
-import org.meritoki.prospero.library.model.terra.cartography.AzimuthalNorth;
-import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
-import org.meritoki.prospero.library.model.terra.cartography.Equirectangular;
-import org.meritoki.prospero.library.model.terra.cartography.Mercator;
 
 public class GridPopupMenu extends JPopupMenu {
 	/**
@@ -68,8 +68,6 @@ public class GridPopupMenu extends JPopupMenu {
 				JPanel panel = (JPanel) getInvoker();
 				if (panel instanceof CameraPanel) {
 					NodeController.savePanel(panel, path, "grid-" + uuid);
-				} else if (panel instanceof SolarPanel) {
-					NodeController.savePanel(panel, path, "solar-" + uuid);
 				}
 			}
 		});

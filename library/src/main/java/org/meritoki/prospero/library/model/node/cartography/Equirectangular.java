@@ -1,4 +1,4 @@
-package org.meritoki.prospero.library.model.terra.cartography;
+package org.meritoki.prospero.library.model.node.cartography;
 
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Point;
@@ -11,11 +11,6 @@ public class Equirectangular extends Projection {
 		super();
 		this.scale = DEFAULT_SCALE;
 	}
-	
-//	@Override 
-//	public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
-//		return this.getCoordinate(vertical,latitude, longitude);
-//	}
 
 	@Override
 	public Coordinate getCoordinate(double vertical,double latitude, double longitude) {
@@ -38,3 +33,7 @@ public class Equirectangular extends Projection {
 		return this.getCoordinate(point3D);
 	}
 }
+//@Override 
+//public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
+//	return this.getCoordinate(vertical,latitude, longitude);
+//}

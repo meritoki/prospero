@@ -1,4 +1,4 @@
-package org.meritoki.prospero.library.model.terra.cartography;
+package org.meritoki.prospero.library.model.node.cartography;
 
 import java.awt.Graphics;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.meritoki.prospero.library.model.terra.cartography;
+package org.meritoki.prospero.library.model.node.cartography;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +16,6 @@ public class AzimuthalSouth extends Projection {
 		super();
 		this.scale = DEFAULT_SCALE;
 	}
-	
-//	@Override 
-//	public Coordinate getCoordinate(double latitude, double longitude) {
-//		return this.getCoordinate(0,latitude, longitude);
-//	}
 
 	@Override
 	public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
@@ -84,6 +79,10 @@ public class AzimuthalSouth extends Projection {
 		return coordinateList;
 	}
 }
+//@Override 
+//public Coordinate getCoordinate(double latitude, double longitude) {
+//	return this.getCoordinate(0,latitude, longitude);
+//}
 //@Override
 //public void paint(Graphics graphics) {
 //	super.paint(graphics);

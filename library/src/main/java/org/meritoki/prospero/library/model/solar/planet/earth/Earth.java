@@ -18,11 +18,10 @@ package org.meritoki.prospero.library.model.solar.planet.earth;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.solar.moon.luna.Luna;
 import org.meritoki.prospero.library.model.solar.planet.Planet;
 import org.meritoki.prospero.library.model.terra.Terra;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Space;
 
 /**

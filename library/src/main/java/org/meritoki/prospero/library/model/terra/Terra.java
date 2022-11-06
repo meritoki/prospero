@@ -22,10 +22,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
+import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.terra.hydrosphere.Hydrosphere;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 

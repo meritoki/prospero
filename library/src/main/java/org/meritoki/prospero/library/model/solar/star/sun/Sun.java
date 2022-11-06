@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import org.meritoki.prospero.library.model.helios.Helios;
+import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.planet.jupiter.Jupiter;
 import org.meritoki.prospero.library.model.solar.planet.mars.Mars;
@@ -28,8 +29,6 @@ import org.meritoki.prospero.library.model.solar.planet.saturn.Saturn;
 import org.meritoki.prospero.library.model.solar.planet.uranus.Uranus;
 import org.meritoki.prospero.library.model.solar.planet.venus.Venus;
 import org.meritoki.prospero.library.model.solar.star.Star;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Space;
 
 

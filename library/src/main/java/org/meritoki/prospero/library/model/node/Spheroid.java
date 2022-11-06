@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
+import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Space;
@@ -296,7 +296,7 @@ public class Spheroid extends Energy {
 		double x = point.x * this.projection.scale;
 		double y = point.y * this.projection.scale;
 //		graphics.setColor(this.color);
-		double radius = 4;
+		double radius = 2;
 		x = x - (radius / 2);
 		y = y - (radius / 2);
 		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);

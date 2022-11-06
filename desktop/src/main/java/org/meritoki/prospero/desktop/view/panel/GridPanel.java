@@ -28,9 +28,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.GridPopupMenu;
 import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
-//import org.meritoki.prospero.library.model.terra.Earth;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 
 /**

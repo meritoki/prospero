@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.meritoki.prospero.library.model.terra.cartography;
+package org.meritoki.prospero.library.model.node.cartography;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,12 +49,8 @@ public class Projection implements ProjectionInterface {
 	public double elevation = 0;// 30;
 	public double obliquity = 0;
 	public double angle;
-//	public double alpha = 0;
-//	public double delta = 0;
 	public double yMax = 0;
 	public double xMax = 0;
-//	public int latitudeInterval = 15;
-//	public int longitudeInterval = 30;
 	public float nearEye = 3;
 	public float nearObject = 1.5f;
 	
@@ -69,7 +65,6 @@ public class Projection implements ProjectionInterface {
 	}
 	
 	public void setSpace(Space space) {
-//		logger.info("setSpace("+space+")");
 		this.space = space;
 	}
 	
@@ -233,32 +228,32 @@ public class Projection implements ProjectionInterface {
 	/**
 	 * Reference A: Spherical to Cartesian Coordinates
 	 * 
-	 * <ul>
-	 * <li>r > 0</li>
-	 * <li>theta [0,PI]</li>
-	 * <li>phi [0,2PI]</li>
-	 * </ul>
+
 	 * 
+	 * Standard Spherical to Cartesian Coordinates ISO 80000-2:2019
 	 * <ul>
 	 * <li>x = r * sin(theta) cos(phi) </li>
 	 * <li>y = r * sin(theta) sin(phi) </li>
 	 * <li>z = r * cos(theta)</li>
 	 * </ul>
 	 * 
-	 * cos(theta) = sin((PI/2)-theta)
-	 * 
+	 * <ul>
+	 * <li>r > 0</li>
+	 * <li>theta [0,PI]</li>
+	 * <li>phi [0,2PI]</li>
+	 * </ul>
 	 *
 	 * @param vertical
 	 * 			...,-2,-1,0,1,2,...
-	 * @param latitude - theta 
+	 * @param latitude (theta) 
 	 * 			-90,90 
-	 * @param longitude - phi
+	 * @param longitude (phi)
 	 * 			-180,180
 	 */
 	@Override
 	public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
-		latitude = Math.toRadians(latitude);// * this.radians;//A
-		longitude = Math.toRadians(longitude);// * this.radians;//A
+		latitude = Math.toRadians(latitude);
+		longitude = Math.toRadians(longitude);
 		latitude += Math.PI/2;//Zeros -90 OR -PI/2
 		longitude += Math.PI;//Zeros -180 OR -PI
 		longitude = (longitude+Math.toRadians(angle))%(2*Math.PI);
