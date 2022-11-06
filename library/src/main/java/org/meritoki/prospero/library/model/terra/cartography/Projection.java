@@ -48,6 +48,7 @@ public class Projection implements ProjectionInterface {
 	public double azimuth = 0;// 35;
 	public double elevation = 0;// 30;
 	public double obliquity = 0;
+	public double angle;
 //	public double alpha = 0;
 //	public double delta = 0;
 	public double yMax = 0;
@@ -233,34 +234,47 @@ public class Projection implements ProjectionInterface {
 	 * Reference A: Spherical to Cartesian Coordinates
 	 * 
 	 * <ul>
+	 * <li>r > 0</li>
+	 * <li>theta [0,PI]</li>
+	 * <li>phi [0,2PI]</li>
+	 * </ul>
+	 * 
+	 * <ul>
 	 * <li>x = r * sin(theta) cos(phi) </li>
 	 * <li>y = r * sin(theta) sin(phi) </li>
 	 * <li>z = r * cos(theta)</li>
 	 * </ul>
 	 * 
 	 * cos(theta) = sin((PI/2)-theta)
+	 * 
+	 *
 	 * @param vertical
 	 * 			...,-2,-1,0,1,2,...
-	 * @param latitude 
+	 * @param latitude - theta 
 	 * 			-90,90 
-	 * @param longitude
+	 * @param longitude - phi
 	 * 			-180,180
 	 */
 	@Override
 	public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
 		latitude = Math.toRadians(latitude);// * this.radians;//A
 		longitude = Math.toRadians(longitude);// * this.radians;//A
-		//Kilometers
-		double x = this.getA(this.unit) * Math.cos(latitude) * Math.cos(longitude);
-		double z = this.getC(this.unit) * Math.cos(latitude) * Math.sin(longitude);
-		double y = this.getB(this.unit) * Math.sin(latitude);
-		Point point = new Point(x, y, z);
+		latitude += Math.PI/2;//Zeros -90 OR -PI/2
+		longitude += Math.PI;//Zeros -180 OR -PI
+		longitude = (longitude+Math.toRadians(angle))%(2*Math.PI);
+		//Standard Conversion from Spherical to Cartesian Coordinates
+		double x = this.getA(this.unit) * Math.sin(latitude) * Math.cos(longitude);
+		double y = this.getB(this.unit) * Math.sin(latitude) * Math.sin(longitude);
+		double z = this.getC(this.unit) * Math.cos(latitude);
+		Point point = new Point(-x, -z, y);
+		Point buffer = new Point(point);
+		point.y = buffer.y * Math.cos(Math.toRadians(this.obliquity)) - buffer.z * Math.sin(Math.toRadians(this.obliquity));
+		point.z = buffer.y * Math.sin(Math.toRadians(this.obliquity)) + buffer.z * Math.cos(Math.toRadians(this.obliquity));
 		Coordinate coordinate = this.getCoordinate(point);
 		if (coordinate != null) {
 			if (coordinate.point.x > this.xMax) {
 				this.xMax = coordinate.point.x;
 			}
-	
 			if (coordinate.point.y > this.yMax) {
 				this.yMax = coordinate.point.y;
 			}
@@ -277,8 +291,8 @@ public class Projection implements ProjectionInterface {
 		Point spacePoint = this.space.getPoint();
 		point.add(spacePoint);
 		Coordinate coordinate = null;
-		double theta = Math.PI * this.azimuth/ 180.0;
-		double phi = Math.PI * this.elevation/ 180.0;
+		double theta = Math.toRadians(this.azimuth);//Math.PI * this.azimuth/ 180.0;
+		double phi = Math.toRadians(this.elevation);//Math.PI * this.elevation/ 180.0;
 		float cosTheta = (float) Math.cos(theta);
 		float sinTheta = (float) Math.sin(theta);
 		float cosPhi = (float) Math.cos(phi);
@@ -312,8 +326,8 @@ public class Projection implements ProjectionInterface {
 	 */
 	public Point getPoint(Point point) {
 		Point p = null;
-		double theta = Math.PI * azimuth / 180.0;
-		double phi = Math.PI * elevation / 180.0;
+		double theta = Math.toRadians(this.azimuth);//Math.PI * azimuth / 180.0;
+		double phi = Math.toRadians(this.elevation);//Math.PI * elevation / 180.0;
 		float cosT = (float) Math.cos(theta);
 		float sinT = (float) Math.sin(theta);
 		float cosP = (float) Math.cos(phi);
@@ -339,6 +353,12 @@ public class Projection implements ProjectionInterface {
 		return this.space.toString();
 	}
 }
+//latitude -= Math.toRadians(this.obliquity);
+//latitude -= Math.PI;//Ends up
+//latitude = (latitude - Math.toRadians(this.obliquity)) % Math.PI;
+//double x = this.getA(this.unit) * Math.sin((Math.PI/2)-latitude) * Math.sin((Math.PI/2)-longitude);
+//double z = this.getC(this.unit) * Math.cos(latitude) * Math.sin(longitude);
+//double y = this.getB(this.unit) * Math.sin(latitude);
 //p = new Point(x1,y1,z1);
 //p.x = x1;
 //p.y = y1;

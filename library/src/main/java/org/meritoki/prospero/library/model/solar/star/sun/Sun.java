@@ -55,6 +55,7 @@ public class Sun extends Star {
         this.helios.defaultScale = this.defaultScale;
         this.angularVelocity = 2.865329607243705e-06;
         this.rotation = 0.564263323;//Kilometers/Second
+        this.obliquity = 7.25;
         this.setProjection(new Projection(this.a, this.b, this.c));
         this.addChild(helios);
         this.addChild(new Earth());

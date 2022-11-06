@@ -56,6 +56,7 @@ public class Neptune extends Planet {
         this.meanAnomaly[1] = 0.005995147;
         this.orbitalPeriod = 60182;
         this.angularVelocity =  1.083382527619075e-04;
+        this.obliquity = 28.32;
         this.setProjection(new Projection(this.a, this.b, this.c));
     }
 }

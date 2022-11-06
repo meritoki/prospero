@@ -44,6 +44,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * "https://stjarnhimlen.se/comp/ppcomp.html">https://stjarnhimlen.se/comp/ppcomp.html</a></li>
  * <li><a href=
  * "http://www.stjarnhimlen.se/comp/tutorial.html">http://www.stjarnhimlen.se/comp/tutorial.html</a></li>
+ * <li>Milankovitch (Orbital) Cycles
  * </ol>
  */
 public class Orbital extends Grid {
@@ -87,42 +88,15 @@ public class Orbital extends Grid {
 		super.updateSpace();
 		Object root = this.getRoot();
 		if (root instanceof Orbital) {
-//			logger.info(this.name+".updateSpace() root="+root);
 			this.centroid = (Orbital) root;
 			this.space = this.getSpace(this.calendar, this.centroid);
 			this.buffer = new Space(this.space);
 			this.projection.setSpace(this.buffer);
 			this.projection.obliquity = this.obliquity;
-//			if (this.obliquity > 0) {
-//				double obliquity = Math.toRadians(this.obliquity);
-//				Vector3D prime = this.buffer.rectangular;
-//				Vector3D out = new Vector3D(prime.getX(),
-//						((prime.getY() * Math.cos(obliquity)) - (prime.getZ() * Math.sin(obliquity))),
-//						((prime.getY() * Math.sin(obliquity)) + (prime.getZ() * Math.cos(obliquity))));
-//				double alpha = Math.atan(out.getY() / out.getX());
-//				double delta = Math.atan(out.getZ() / Math.sqrt(out.getX() * out.getX() + out.getY() * out.getY()));
-//				if (out.getX() < 0) {
-//					alpha = alpha + Math.PI;
-//				}
-//				if (out.getX() > 0 && out.getY() < 0) {
-//					alpha = alpha + (2 * Math.PI);
-//				}
-//				alpha = Math.toDegrees(alpha);
-//				delta = Math.toDegrees(delta);
-//				double angle = this.getRotationCorrection(this.calendar);
-//				alpha = alpha + angle;
-//				while (alpha > 180) {
-//					alpha = alpha - 360;
-//				}
-//				while (delta > 90) {
-//					delta -= 180;
-//				}
-//				logger.info(this.name + ".updateSpace() alpha=" + alpha);
-//				logger.info(this.name + ".updateSpace() delta=" + delta);
-//			}
-//			projection.alpha = alpha;
-//			projection.delta = delta;
-//			logger.info(this.name+".updateSpace() this.space="+space);
+			this.projection.angle = this.getRotationCorrection(this.calendar);
+		} else {
+			this.projection.obliquity = this.obliquity;
+			this.projection.angle = this.getRotationCorrection(this.calendar);
 		}
 	}
 
@@ -392,15 +366,18 @@ public class Orbital extends Grid {
 	}
 
 	public double getRotationCorrection(Calendar a) {
-		double t = this.referenceCalendar.getTime().getTime();
-		double T = a.getTime().getTime();
-		double difference = (T - t) / 3600000;
+		double angle = 0;
+		if (this.rotation > 0) {
+			double t = this.referenceCalendar.getTime().getTime();
+			double T = a.getTime().getTime();
+			double difference = (T - t) / 3600000;
 //    	System.out.println("difference: "+difference);
-		double remainder = difference % this.rotation;
+			double remainder = difference % this.rotation;
 //    	System.out.println("remainder: "+remainder);
 //    	System.out.println("rotation:"+ this.rotation);
-		double ratio = remainder / this.rotation;
-		double angle = ratio * 360;
+			double ratio = remainder / this.rotation;
+			angle = ratio * 360;
+		}
 		return angle;
 	}
 
@@ -432,6 +409,36 @@ public class Orbital extends Grid {
 		graphics.drawString(text, (int) x, (int) y);
 	}
 }
+//if (this.obliquity > 0) {
+//double obliquity = Math.toRadians(this.obliquity);
+//Vector3D prime = this.buffer.rectangular;
+//Vector3D out = new Vector3D(prime.getX(),
+//		((prime.getY() * Math.cos(obliquity)) - (prime.getZ() * Math.sin(obliquity))),
+//		((prime.getY() * Math.sin(obliquity)) + (prime.getZ() * Math.cos(obliquity))));
+//double alpha = Math.atan(out.getY() / out.getX());
+//double delta = Math.atan(out.getZ() / Math.sqrt(out.getX() * out.getX() + out.getY() * out.getY()));
+//if (out.getX() < 0) {
+//	alpha = alpha + Math.PI;
+//}
+//if (out.getX() > 0 && out.getY() < 0) {
+//	alpha = alpha + (2 * Math.PI);
+//}
+//alpha = Math.toDegrees(alpha);
+//delta = Math.toDegrees(delta);
+//double angle = this.getRotationCorrection(this.calendar);
+//alpha = alpha + angle;
+//while (alpha > 180) {
+//	alpha = alpha - 360;
+//}
+//while (delta > 90) {
+//	delta -= 180;
+//}
+//logger.info(this.name + ".updateSpace() alpha=" + alpha);
+//logger.info(this.name + ".updateSpace() delta=" + delta);
+//}
+//projection.alpha = alpha;
+//projection.delta = delta;
+//logger.info(this.name+".updateSpace() this.space="+space);
 //this.buffer = new Space(this.space);
 //this.buffer.subtract(this.center);
 //this.projection.setSpace(this.buffer);

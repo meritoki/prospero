@@ -68,7 +68,7 @@ public class Earth extends Planet {
 		this.orbitalPeriod = 365.256363004;//days
 		this.angularVelocity = 7.292115053925690e-05;
 		this.obliquity = 23.439292;//Degrees
-		this.rotation = 23.9345;// hour
+		this.rotation = 23.9345;//Hours
 		this.terra.color = this.color;
 		this.addChild(this.terra);
 		this.addChild(new Luna());

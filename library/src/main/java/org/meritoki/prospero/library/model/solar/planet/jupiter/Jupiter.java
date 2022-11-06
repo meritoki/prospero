@@ -30,12 +30,12 @@ public class Jupiter extends Planet {
 	public Jupiter() {
 		super("Jupiter");
 		this.mass = 1.89813e27;//Kilograms
-		this.radius = 71492;//Kilometers
-		this.a = this.radius;//Kilometers
-		this.b = this.a;//Kilometers
-		this.c = 66854.0;//Kilometers
+		this.radius = 71492;//Kilometers Equator
+		this.a = this.radius;//Kilometers Equator
+		this.b = this.a;//Kilometers Equator
+		this.c = 66854.0;//Kilometers Pole
 		this.color = Color.PINK;
-		this.defaultScale = 1048576.0;
+		this.defaultScale = 800000.0;
 		//N
 		this.longitudeOfAscendingNode[0] = 100.4542;//Degrees
 		this.longitudeOfAscendingNode[1] = 2.76854E-5;//Degrees
@@ -56,12 +56,13 @@ public class Jupiter extends Planet {
 		this.meanAnomaly[1] = 0.0830853001;//Degrees
 		this.angularVelocity = 1.773408215404907e-04;
 		this.orbitalPeriod = 4332.589;//*24*60*60;//days
+		this.rotation = 9.9250;//Hours
 		this.setProjection(new Projection(this.a, this.b, this.c));
-//		this.projection = new Projection(this.a,this.b,this.c);
-//		this.projection.setNear((float)this.radius);
-//		this.projection.setNearToObject((float)this.radius+1000);
 	}
 }
+//this.projection = new Projection(this.a,this.b,this.c);
+//this.projection.setNear((float)this.radius);
+//this.projection.setNearToObject((float)this.radius+1000);
 //public static double getMin(List<Index> list) {
 //double min = Double.MAX_VALUE;
 //for (Index d : list) {

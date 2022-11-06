@@ -37,6 +37,7 @@ public class City extends Biosphere {
 
 	@Override
 	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
 		if(this.load) { 
 			if(this.pointList != null) {
 				graphics.setColor(Color.black);

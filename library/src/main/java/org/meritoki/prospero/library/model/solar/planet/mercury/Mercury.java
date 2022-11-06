@@ -56,6 +56,8 @@ public class Mercury extends Planet {
 		this.meanAnomaly[1] = 4.0923344368;
 		this.orbitalPeriod = 87.9691;
 		this.angularVelocity = 1.240013441242619e-06;
+		this.obliquity = 25.19;
+		this.rotation = 1407.6;
 		this.setProjection(new Projection(this.a, this.b, this.c));
 	}
 }

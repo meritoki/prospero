@@ -11,6 +11,12 @@ public class Point {
 	
 	public Point() {}
 	
+	public Point(Point point) {
+		this.x = point.x;
+		this.y = point.y;
+		this.z = point.z;
+	}
+	
 	public Point(double x, double y) {
 		this.x = x;
 		this.y = y;

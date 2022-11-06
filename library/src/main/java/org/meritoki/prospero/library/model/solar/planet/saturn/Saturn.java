@@ -56,6 +56,7 @@ public class Saturn extends Planet {
         this.meanAnomaly[1] = 0.0334442282;
         this.orbitalPeriod = 10759.22;
         this.angularVelocity = 1.636246173744684e-04;
+        this.obliquity = 26.73;
         this.setProjection(new Projection(this.a, this.b, this.c));
     }
 }

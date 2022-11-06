@@ -56,7 +56,9 @@ public class Mars extends Planet {
 		this.meanAnomaly[0] = 18.6021;
 		this.meanAnomaly[1] = 0.5240207766;
 		this.orbitalPeriod = 686.980;
+		this.obliquity = 25.19;
 		this.angularVelocity = 7.088218127178316e-05;
+		this.rotation = 24.6229;
 		this.setProjection(new Projection(this.a, this.b, this.c));
 	}
 }

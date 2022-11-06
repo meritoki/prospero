@@ -59,6 +59,7 @@ public class Venus extends Planet {
         this.meanAnomaly[1] = 1.6021302244;
         this.orbitalPeriod = 225;
         this.angularVelocity = 2.99e-07;
+        this.obliquity = 177.36;
         this.setProjection(new Projection(this.a, this.b, this.c));
     }
 }
