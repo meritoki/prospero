@@ -18,7 +18,7 @@ package org.meritoki.prospero.library.model.solar.planet.saturn;
 import java.awt.Color;
 
 import org.meritoki.prospero.library.model.solar.planet.Planet;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  * 
@@ -56,6 +56,6 @@ public class Saturn extends Planet {
         this.meanAnomaly[1] = 0.0334442282;
         this.orbitalPeriod = 10759.22;
         this.angularVelocity = 1.636246173744684e-04;
-        this.setProjection(new Globe(this.a, this.b, this.c));
+        this.setProjection(new Projection(this.a, this.b, this.c));
     }
 }

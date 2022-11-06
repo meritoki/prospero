@@ -18,7 +18,7 @@ package org.meritoki.prospero.library.model.solar.planet.neptune;
 import java.awt.Color;
 
 import org.meritoki.prospero.library.model.solar.planet.Planet;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  * 
@@ -56,6 +56,6 @@ public class Neptune extends Planet {
         this.meanAnomaly[1] = 0.005995147;
         this.orbitalPeriod = 60182;
         this.angularVelocity =  1.083382527619075e-04;
-        this.setProjection(new Globe(this.a, this.b, this.c));
+        this.setProjection(new Projection(this.a, this.b, this.c));
     }
 }

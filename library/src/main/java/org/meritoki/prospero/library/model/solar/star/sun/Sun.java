@@ -28,7 +28,7 @@ import org.meritoki.prospero.library.model.solar.planet.saturn.Saturn;
 import org.meritoki.prospero.library.model.solar.planet.uranus.Uranus;
 import org.meritoki.prospero.library.model.solar.planet.venus.Venus;
 import org.meritoki.prospero.library.model.solar.star.Star;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Space;
 
@@ -55,7 +55,7 @@ public class Sun extends Star {
         this.helios.defaultScale = this.defaultScale;
         this.angularVelocity = 2.865329607243705e-06;
         this.rotation = 0.564263323;//Kilometers/Second
-        this.setProjection(new Globe(this.a, this.b, this.c));
+        this.setProjection(new Projection(this.a, this.b, this.c));
         this.addChild(helios);
         this.addChild(new Earth());
         this.addChild(new Jupiter());

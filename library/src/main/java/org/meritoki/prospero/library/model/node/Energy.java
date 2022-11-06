@@ -112,20 +112,8 @@ public class Energy extends Variable {
 //		logger.info(this.name+".setCenter("+center+") this.space="+this.space);
 		this.center = center;
 		this.buffer = new Space(this.space);
-//		logger.info(this.name+".setCenter("+center+") A this.buffer="+this.buffer);
 		this.buffer.subtract(this.center);
-//		logger.info(this.name+".setCenter("+center+") B this.buffer="+this.buffer);
-// Disabled, Must be done by Orbitals
-//		List<Variable> nodeList = this.getChildren();
-//		for (Variable n : nodeList) {
-//			if(n instanceof Energy) {
-//				Energy e = (Energy)n;
-//				e.setCenter(center);
-//			}
-//		}
 	}
-	
-
 
 	public List<Energy> getEnergyList() {
 		List<Energy> energyList = new ArrayList<>();
@@ -498,7 +486,7 @@ public class Energy extends Variable {
 //	}
 
 	public double getRectangularDistance(Energy energy) {
-		Vector3D difference = this.space.rectangular.subtract(energy.space.rectangular);
+		Vector3D difference = this.buffer.rectangular.subtract(energy.buffer.rectangular);
 		double distance = Math.sqrt(Math.pow((double) difference.getX(), 2) + Math.pow((double) difference.getY(), 2)
 				+ Math.pow((double) difference.getZ(), 2));
 		distance *= Unit.ASTRONOMICAL;

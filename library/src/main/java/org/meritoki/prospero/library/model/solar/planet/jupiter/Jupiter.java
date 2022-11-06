@@ -18,7 +18,7 @@ package org.meritoki.prospero.library.model.solar.planet.jupiter;
 import java.awt.Color;
 
 import org.meritoki.prospero.library.model.solar.planet.Planet;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  * 
@@ -56,8 +56,8 @@ public class Jupiter extends Planet {
 		this.meanAnomaly[1] = 0.0830853001;//Degrees
 		this.angularVelocity = 1.773408215404907e-04;
 		this.orbitalPeriod = 4332.589;//*24*60*60;//days
-		this.setProjection(new Globe(this.a, this.b, this.c));
-//		this.projection = new Globe(this.a,this.b,this.c);
+		this.setProjection(new Projection(this.a, this.b, this.c));
+//		this.projection = new Projection(this.a,this.b,this.c);
 //		this.projection.setNear((float)this.radius);
 //		this.projection.setNearToObject((float)this.radius+1000);
 	}

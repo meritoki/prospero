@@ -26,6 +26,7 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.solar.Solar;
+import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.planet.jupiter.Jupiter;
 import org.meritoki.prospero.library.model.solar.planet.saturn.Saturn;
 import org.meritoki.prospero.library.model.solar.planet.uranus.Uranus;
@@ -50,7 +51,7 @@ public class Orbital extends Grid {
 	static Logger logger = LogManager.getLogger(Orbital.class.getName());
 	public Calendar referenceCalendar = (new GregorianCalendar(2000, 0, 0, 0, 0, 0));
 	public double orbitalPeriod;
-	public double obliquity;
+	public double obliquity = 0.0;
 	public double angularVelocity;
 	public double[] semiMajorAxis = new double[3];// a
 	public double[] eccentricity = new double[3];// e
@@ -81,44 +82,74 @@ public class Orbital extends Grid {
 			n.setCalendar(calendar);
 		}
 	}
-	
+
 	public void updateSpace() {
 		super.updateSpace();
 		Object root = this.getRoot();
 		if (root instanceof Orbital) {
-			logger.info(this.name+".updateSpace() root="+root);
-			this.centroid = (Orbital)root;
+//			logger.info(this.name+".updateSpace() root="+root);
+			this.centroid = (Orbital) root;
 			this.space = this.getSpace(this.calendar, this.centroid);
 			this.buffer = new Space(this.space);
 			this.projection.setSpace(this.buffer);
-			logger.info(this.name+".updateSpace() this.space="+space);
+			this.projection.obliquity = this.obliquity;
+//			if (this.obliquity > 0) {
+//				double obliquity = Math.toRadians(this.obliquity);
+//				Vector3D prime = this.buffer.rectangular;
+//				Vector3D out = new Vector3D(prime.getX(),
+//						((prime.getY() * Math.cos(obliquity)) - (prime.getZ() * Math.sin(obliquity))),
+//						((prime.getY() * Math.sin(obliquity)) + (prime.getZ() * Math.cos(obliquity))));
+//				double alpha = Math.atan(out.getY() / out.getX());
+//				double delta = Math.atan(out.getZ() / Math.sqrt(out.getX() * out.getX() + out.getY() * out.getY()));
+//				if (out.getX() < 0) {
+//					alpha = alpha + Math.PI;
+//				}
+//				if (out.getX() > 0 && out.getY() < 0) {
+//					alpha = alpha + (2 * Math.PI);
+//				}
+//				alpha = Math.toDegrees(alpha);
+//				delta = Math.toDegrees(delta);
+//				double angle = this.getRotationCorrection(this.calendar);
+//				alpha = alpha + angle;
+//				while (alpha > 180) {
+//					alpha = alpha - 360;
+//				}
+//				while (delta > 90) {
+//					delta -= 180;
+//				}
+//				logger.info(this.name + ".updateSpace() alpha=" + alpha);
+//				logger.info(this.name + ".updateSpace() delta=" + delta);
+//			}
+//			projection.alpha = alpha;
+//			projection.delta = delta;
+//			logger.info(this.name+".updateSpace() this.space="+space);
 		}
 	}
-	
+
 	@JsonIgnore
 	@Override
 	public void setCenter(Space center) {
 		super.setCenter(center);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
-			if(n instanceof Orbital) {
-				Orbital o = (Orbital)n;
+			if (n instanceof Orbital) {
+				Orbital o = (Orbital) n;
 				o.setCenter(center);
 			}
 		}
 	}
-	
+
 	public List<Point> getOrbit(Orbital centroid) {
 		LinkedList<Point> vertexList = new LinkedList<>();
 		if (this.orbitalPeriod > 0) {
 			double resolution = 512.0;
-			double increment = (this.orbitalPeriod*24) / resolution;
+			double increment = (this.orbitalPeriod * 24) / resolution;
 			Calendar calendar = (Calendar) this.calendar.clone();
 			double count = 0;
 			while (count <= resolution) {
-				Space space = this.getSpace(calendar,centroid);
+				Space space = this.getSpace(calendar, centroid);
 				space.subtract(this.center);
-				Point position = this.projection.getPoint(space.getPoint());//this.getSpace(calendar,centroid).getPoint());
+				Point position = this.projection.getPoint(space.getPoint());// this.getSpace(calendar,centroid).getPoint());
 				calendar.add(Calendar.HOUR, (int) (Math.round(increment))); // number of days to ad
 				count++;
 				vertexList.add(position);
@@ -129,8 +160,8 @@ public class Orbital extends Grid {
 
 	public Vector3D getDirection(Energy energy) {
 		Vector3D direction = this.space.rectangular.subtract(energy.space.rectangular);
-		if (centroid != null)
-			direction = direction.subtract(centroid.space.rectangular);
+		if (this.centroid != null)
+			direction = direction.subtract(this.centroid.space.rectangular);
 		if (direction.getNorm() != 0)
 			direction = direction.normalize();
 		return direction;
@@ -254,7 +285,7 @@ public class Orbital extends Grid {
 		}
 		return space;
 	}
-	
+
 	public void setCentroid(Orbital centroid) {
 		this.centroid = centroid;
 	}
@@ -385,7 +416,7 @@ public class Orbital extends Grid {
 					(int) (vertexList.get(i).y * this.projection.scale));
 		}
 		graphics.setColor(this.color);
-		Point point = this.projection.getPoint(this.projection.space.getPoint());//this.buffer
+		Point point = this.projection.getPoint(this.projection.space.getPoint());// this.buffer
 		double x = point.x * this.projection.scale;
 		double y = point.y * this.projection.scale;
 		graphics.setColor(this.color);
@@ -398,8 +429,7 @@ public class Orbital extends Grid {
 		int width = graphics.getFontMetrics().stringWidth(text);
 		x = x - (width / 2);
 		y -= 2;
-		graphics.drawString(text, (int) x,
-				(int) y);
+		graphics.drawString(text, (int) x, (int) y);
 	}
 }
 //this.buffer = new Space(this.space);

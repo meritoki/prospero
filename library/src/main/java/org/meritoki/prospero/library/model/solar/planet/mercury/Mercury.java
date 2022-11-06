@@ -18,7 +18,7 @@ package org.meritoki.prospero.library.model.solar.planet.mercury;
 import java.awt.Color;
 
 import org.meritoki.prospero.library.model.solar.planet.Planet;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  * 
@@ -56,6 +56,6 @@ public class Mercury extends Planet {
 		this.meanAnomaly[1] = 4.0923344368;
 		this.orbitalPeriod = 87.9691;
 		this.angularVelocity = 1.240013441242619e-06;
-		this.setProjection(new Globe(this.a, this.b, this.c));
+		this.setProjection(new Projection(this.a, this.b, this.c));
 	}
 }

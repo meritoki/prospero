@@ -28,67 +28,78 @@ import org.meritoki.prospero.library.model.unit.Polygon;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
 
+/**
+ * 
+ * <ol type="A">
+ * <li><a href="https://www.geeksforgeeks.org/java-toradians-method-example/">https://www.geeksforgeeks.org/java-toradians-method-example/</a></li>
+ * <li><a href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">https://en.wikipedia.org/wiki/Spherical_coordinate_system</a></li>
+ * </ol>
+ */
 public class Projection implements ProjectionInterface {
 
 	static Logger logger = LogManager.getLogger(Projection.class.getName());
 	public Space space = new Space();
-//	public Space center = new Space();
 	public double radius = 1;
     public double a;
     public double b;
     public double c;
     public double unit = 1/Unit.ASTRONOMICAL;
-	public double scale;
-	public int azimuth = 0;// 35;
-	public int elevation = 0;// 30;
+	public double scale = 1;
+	public double azimuth = 0;// 35;
+	public double elevation = 0;// 30;
+	public double obliquity = 0;
+//	public double alpha = 0;
+//	public double delta = 0;
 	public double yMax = 0;
 	public double xMax = 0;
-	public int latitudeInterval = 15;
-	public int longitudeInterval = 30;
-
-	public float near = 3;
-	public float nearToObject = 1.5f;
+//	public int latitudeInterval = 15;
+//	public int longitudeInterval = 30;
+	public float nearEye = 3;
+	public float nearObject = 1.5f;
 	
 	public Projection() {}
+	
+    public Projection(double radius) {
+		this.setRadius(radius);
+	}
+	
+	public Projection(double a, double b, double c) {
+		this.setRadius(a,b,c);
+	}
 	
 	public void setSpace(Space space) {
 //		logger.info("setSpace("+space+")");
 		this.space = space;
 	}
 	
-//	public void setCenter(Space space) {
-//		logger.info("setCenter("+space+")");
-//		this.center = space;
-//		this.space.subtract(this.center);
-//	}
-	
 	public void setUnit(double unit) {
 		this.unit = unit;
 	}
+	
 	public void setRadius(double radius) {
 		this.radius = radius;
 		this.a = this.radius;
 		this.b = this.radius;
 		this.c = this.radius;
-		this.nearToObject= (float)this.radius;
-		this.near = 2 * this.nearToObject;
+		this.nearObject= (float)this.radius;
+		this.nearEye = 2 * this.nearObject;
 	}
 	
 	public void setRadius(double a, double b, double c) {
 		this.a = a;
 		this.b = b;
 		this.c = c;
-		this.radius = this.a;
-		this.nearToObject= (float)this.a;
-		this.near = 2 * this.nearToObject;
+		this.radius = (this.a*this.b*this.c)/3;
+		this.nearObject= (float)this.radius;
+		this.nearEye = 2 * this.nearObject;
 	}
 	
-	public void setAzimuth(int azimuth) {
+	public void setAzimuth(double azimuth) {
 		logger.debug("setAzimuth("+azimuth+")");
 		this.azimuth = azimuth;
 	}
 
-	public void setElevation(int elevation) {
+	public void setElevation(double elevation) {
 		logger.debug("setElevation("+elevation+")");
 		this.elevation = elevation;
 	}
@@ -97,22 +108,14 @@ public class Projection implements ProjectionInterface {
 		this.scale = scale;
 	}
 
-	public void setNear(float width) {
-		this.near = width;
+	public void setNearEye(float width) {
+		this.nearEye = width;
 	}
 
-	public void setNearToObject(float height) {
-		this.nearToObject = height;
+	public void setNearObject(float height) {
+		this.nearObject = height;
 	}
 
-	/**
-	 * 
-	 */
-	@Override
-	public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
-		return null;
-	}
-	
 	public double getA(double unit) {
 		return this.a*unit;
 	}
@@ -226,46 +229,87 @@ public class Projection implements ProjectionInterface {
 		return coordinateList;
 	}
 	
+	/**
+	 * Reference A: Spherical to Cartesian Coordinates
+	 * 
+	 * <ul>
+	 * <li>x = r * sin(theta) cos(phi) </li>
+	 * <li>y = r * sin(theta) sin(phi) </li>
+	 * <li>z = r * cos(theta)</li>
+	 * </ul>
+	 * 
+	 * cos(theta) = sin((PI/2)-theta)
+	 * @param vertical
+	 * 			...,-2,-1,0,1,2,...
+	 * @param latitude 
+	 * 			-90,90 
+	 * @param longitude
+	 * 			-180,180
+	 */
+	@Override
+	public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
+		latitude = Math.toRadians(latitude);// * this.radians;//A
+		longitude = Math.toRadians(longitude);// * this.radians;//A
+		//Kilometers
+		double x = this.getA(this.unit) * Math.cos(latitude) * Math.cos(longitude);
+		double z = this.getC(this.unit) * Math.cos(latitude) * Math.sin(longitude);
+		double y = this.getB(this.unit) * Math.sin(latitude);
+		Point point = new Point(x, y, z);
+		Coordinate coordinate = this.getCoordinate(point);
+		if (coordinate != null) {
+			if (coordinate.point.x > this.xMax) {
+				this.xMax = coordinate.point.x;
+			}
+	
+			if (coordinate.point.y > this.yMax) {
+				this.yMax = coordinate.point.y;
+			}
+		}
+		return coordinate;
+	}
+
+	/**
+	 * 
+	 * @param point
+	 * @return
+	 */
 	public Coordinate getCoordinate(Point point) {
+		Point spacePoint = this.space.getPoint();
+		point.add(spacePoint);
 		Coordinate coordinate = null;
-		double theta = Math.PI * azimuth/ 180.0;
-		double phi = Math.PI * elevation/ 180.0;
-		float cosT = (float) Math.cos(theta);
-		float sinT = (float) Math.sin(theta);
-		float cosP = (float) Math.cos(phi);
-		float sinP = (float) Math.sin(phi);
-		float cosTcosP = cosT * cosP;
-		float cosTsinP = cosT * sinP;
-		float sinTcosP = sinT * cosP;
-		float sinTsinP = sinT * sinP;
-		float near = (float)(this.near*this.scale);//3; // distance from eye to near plane
-		float nearToObj = (float)(this.nearToObject*this.scale);//1.5f; // distance from near plane to center of object
+		double theta = Math.PI * this.azimuth/ 180.0;
+		double phi = Math.PI * this.elevation/ 180.0;
+		float cosTheta = (float) Math.cos(theta);
+		float sinTheta = (float) Math.sin(theta);
+		float cosPhi = (float) Math.cos(phi);
+		float sinPhi = (float) Math.sin(phi);
+		float cosTcosP = cosTheta * cosPhi;
+		float cosTsinP = cosTheta * sinPhi;
+		float sinTcosP = sinTheta * cosPhi;
+		float sinTsinP = sinTheta * sinPhi;
+		float near = (float)(this.nearEye*this.scale);//3; // distance from eye to near plane
+		float nearToObj = (float)(this.nearObject*this.scale);//1.5f; // distance from near plane to center of object
 		double x0 = point.x;
 		double y0 = point.y;
 		double z0 = point.z;
-
-		// compute an orthographic projection
-		float x1 = (float) (cosT * x0 + sinT * z0);
-		float y1 = (float) (-sinTsinP * x0 + cosP * y0 + cosTsinP * z0);
-
-		// now adjust things to get a perspective projection
-		float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinP * y0);
-//		if (z1 < 0) {
-		x1 = x1 * near / (z1 + near + nearToObj);
-		y1 = y1 * near / (z1 + near + nearToObj);
-		coordinate = new Coordinate();
-//			coordinate.x = (int) (scale * x1 + 0.5);
-//			coordinate.y = (int) (scale * y1 + 0.5);
-		coordinate.point.x = x1;
-		coordinate.point.y = y1;
-		
-
-//		}
-		// x1 and y1 overlap of the other side of globe
-		// the 0.5 is to round off when converting to int
+		float x1 = (float) (cosTheta * x0 + sinTheta * z0);// compute an orthographic projection
+		float y1 = (float) (-sinTsinP * x0 + cosPhi * y0 + cosTsinP * z0);// compute an orthographic projection
+		float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinPhi * y0);// now adjust things to get a perspective projection
+		if (z1 < 0) {
+			x1 = x1 * near / (z1 + near + nearToObj);
+			y1 = y1 * near / (z1 + near + nearToObj);
+			coordinate = new Coordinate();
+			coordinate.point.x = x1;
+			coordinate.point.y = y1;
+		}
 		return coordinate;
 	}
 	
+	/**
+	 * Get Point Directly for Painting
+	 * @param point
+	 * @return
+	 */
 	public Point getPoint(Point point) {
 		Point p = null;
 		double theta = Math.PI * azimuth / 180.0;
@@ -278,31 +322,34 @@ public class Projection implements ProjectionInterface {
 		float cosTsinP = cosT * sinP;
 		float sinTcosP = sinT * cosP;
 		float sinTsinP = sinT * sinP;
-		// The following two lines fixed defects when viewing in 3 Dimensions
-		float near = (float)(this.near*this.scale);//32; // distance from eye to near plane
-		float nearToObj = (float)(this.nearToObject*this.scale);//8f; // 1.5// distance from near plane to center of object
+		float nearEye = (float)(this.nearEye*this.scale);// distance from eye to near plane
+		float nearObject = (float)(this.nearObject*this.scale);//distance from near plane to center of object
 		double x0 = point.x;
 		double y0 = point.y;
 		double z0 = point.z;
-		// compute an orthographic projection
-		float x1 = (float) (cosT * x0 + sinT * z0);
-		float y1 = (float) (-sinTsinP * x0 + cosP * y0 + cosTsinP * z0);
-		// now adjust things to get a perspective projection
-		float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinP * y0);
-		x1 = x1 * near / (z1 + near + nearToObj);
-		y1 = y1 * near / (z1 + near + nearToObj);
-		p = new Point();
-		p.x = x1;
-		p.y = y1;
-		p.z = z1;
-		return p;
+		float x1 = (float) (cosT * x0 + sinT * z0);// compute an orthographic projection
+		float y1 = (float) (-sinTsinP * x0 + cosP * y0 + cosTsinP * z0);// compute an orthographic projection
+		float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinP * y0);// now adjust things to get a perspective projection
+		x1 = x1 * nearEye / (z1 + nearEye + nearObject);
+		y1 = y1 * nearEye / (z1 + nearEye + nearObject);
+		return new Point(x1,y1,z1);
 	}
 	
 	public String toString() {
 		return this.space.toString();
 	}
-
 }
+//p = new Point(x1,y1,z1);
+//p.x = x1;
+//p.y = y1;
+//p.z = z1;
+//coordinate.x = (int) (scale * x1 + 0.5);
+//coordinate.y = (int) (scale * y1 + 0.5);
+//public void setCenter(Space space) {
+//logger.info("setCenter("+space+")");
+//this.center = space;
+//this.space.subtract(this.center);
+//}
 //public double radians = 0.0174532925199433;
 //public Point[] vertices;
 //public Edge[] edges;

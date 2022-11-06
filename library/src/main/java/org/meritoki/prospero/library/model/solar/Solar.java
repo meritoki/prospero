@@ -42,9 +42,12 @@ import org.meritoki.prospero.library.model.node.Tunnel;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.star.sun.Sun;
+import org.meritoki.prospero.library.model.terra.Terra;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Space;
+import org.meritoki.prospero.library.model.unit.Table;
 
 /**
  * Citation
@@ -57,41 +60,67 @@ public class Solar extends Grid {
 
 	static Logger logger = LogManager.getLogger(Solar.class.getName());
 	public Color color = Color.YELLOW;
+	private List<String> planetOrder = Arrays.asList("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus",
+			"Neptune");
+	private List<Tunnel> tunnelList = null;
+	public Sun sun = new Sun();
+	public Variable tunnel = new Variable("Tunnel");
+	
+	//
 	private Map<String, List<Index>> allAnglePlanetsIndexListMap;
 	private Map<String, List<Index>> allDistancePlanetsIndexListMap;
 	private Map<String, List<Index>> allGravityForcePlanetsIndexListMap;
 	private List<Index> anglePlanetsIndexList;
 	private List<Index> distancePlanetsIndexList;
 	private List<Index> gravityForcePlanetsIndexList;
-	private List<String> planetOrder = Arrays.asList("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus",
-			"Neptune");
-	private List<Tunnel> tunnelList = null;
-	public Sun sun = new Sun();
 
 	public Solar() {
 		super("Solar");
 		this.paint = true;
 		this.addChild(this.sun);
+		this.addChild(tunnel);
 		this.projection.setRadius(39.5);// Astronomical Unit
 		this.projection.setUnit(1);
-		this.defaultScale = 10;
-		Variable tunnelNode = new Variable("Tunnel");
+		this.defaultScale = 24;
 		this.tunnelList = this.getTunnelList();
 		for(Tunnel t: this.tunnelList) {
-			tunnelNode.addChild(t);
+			tunnel.addChild(t);
 		}
+		this.setProjection(this.projection);
+		this.setScale(this.defaultScale);
 //		Variable triangleNode = new Variable("Triangle");
 //		this.triangleList = this.getTriangleList("Sun");
 //		for(Triangle t: this.triangleList) {
 //			triangleNode.addChild(t);
 //		}
-		this.addChild(tunnelNode);
+		
 //		this.addChild(triangleNode);
 		this.setScale(defaultScale);
 	}
 	
 	public Solar(String name) {
 		super(name);
+	}
+	
+	@Override
+	public void setProjection(Projection projection) {
+		super.setProjection(projection);
+		List<Variable> nodeList = this.tunnel.getChildren();
+		for (Variable n : nodeList) {
+			if (n instanceof Tunnel) {
+				((Tunnel) n).setProjection(projection);
+			}
+		}
+	}
+	
+	public void setScale(double scale) {
+		super.setScale(scale);
+		List<Variable> nodeList = this.tunnel.getChildren();
+		for (Variable n : nodeList) {
+			if (n instanceof Tunnel) {
+				((Tunnel) n).setScale(scale);
+			}
+		}
 	}
 
 	@Override
@@ -107,6 +136,10 @@ public class Solar extends Grid {
 		return this.sun;
 	}
 
+	@Override
+	public List<Table> getTableList() throws Exception {
+		return this.tableList;
+	}
 	////////////////////////////
 
 	public List<Index> getAllGravityForceIndexList(String name) throws Exception {

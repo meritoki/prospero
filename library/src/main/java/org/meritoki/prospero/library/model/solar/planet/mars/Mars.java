@@ -18,7 +18,7 @@ package org.meritoki.prospero.library.model.solar.planet.mars;
 import java.awt.Color;
 
 import org.meritoki.prospero.library.model.solar.planet.Planet;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  * 
@@ -57,6 +57,6 @@ public class Mars extends Planet {
 		this.meanAnomaly[1] = 0.5240207766;
 		this.orbitalPeriod = 686.980;
 		this.angularVelocity = 7.088218127178316e-05;
-		this.setProjection(new Globe(this.a, this.b, this.c));
+		this.setProjection(new Projection(this.a, this.b, this.c));
 	}
 }

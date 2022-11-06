@@ -18,7 +18,7 @@ package org.meritoki.prospero.library.model.solar.planet.uranus;
 import java.awt.Color;
 
 import org.meritoki.prospero.library.model.solar.planet.Planet;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  * 
@@ -57,9 +57,10 @@ public class Uranus extends Planet {
         //M
         this.meanAnomaly[0] = 142.5905;
         this.meanAnomaly[1] = 0.011725806;
+        this.obliquity = 97.77;
         this.orbitalPeriod = 30688.5;
         this.angularVelocity = -1.041365902144588e-04;
-        this.setProjection(new Globe(this.a, this.b, this.c));
+        this.setProjection(new Projection(this.a, this.b, this.c));
     }
 }
 //this.centroid = (Orbital)this.getRoot();

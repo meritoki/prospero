@@ -21,7 +21,7 @@ import java.awt.Graphics;
 import org.meritoki.prospero.library.model.solar.moon.luna.Luna;
 import org.meritoki.prospero.library.model.solar.planet.Planet;
 import org.meritoki.prospero.library.model.terra.Terra;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Space;
 
@@ -67,12 +67,12 @@ public class Earth extends Planet {
 		this.meanAnomaly[1] = 0.9856002585;
 		this.orbitalPeriod = 365.256363004;//days
 		this.angularVelocity = 7.292115053925690e-05;
-		this.obliquity = 23.439292;
+		this.obliquity = 23.439292;//Degrees
 		this.rotation = 23.9345;// hour
 		this.terra.color = this.color;
 		this.addChild(this.terra);
 		this.addChild(new Luna());
-		this.setProjection(new Globe(this.a, this.b, this.c));
+		this.setProjection(new Projection(this.a, this.b, this.c));
 	}
 	
 	@Override
@@ -118,7 +118,7 @@ public class Earth extends Planet {
 //	this.setPr
 //	this.terra.projection = projection;
 //}
-//this.projection = new Globe(this.a,this.b,this.c);
+//this.projection = new Projection(this.a,this.b,this.c);
 
 //this.projection = 
 //this.terra.projection = this.projection;

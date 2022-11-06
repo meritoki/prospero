@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
 import org.meritoki.prospero.library.model.terra.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Point;
@@ -38,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Spheroid extends Energy {
 
 	static Logger logger = LogManager.getLogger(Spheroid.class.getName());
-	public Projection projection = new Globe();
+	public Projection projection = new Projection();
 	public double defaultScale = 1;
 	public double radius = 1;
 	public double a = this.radius;
@@ -48,13 +47,13 @@ public class Spheroid extends Energy {
 	public Spheroid(String name) {
 		super(name);
 	}
-	
+
 	@Override
 	public void updateSpace() {
 		super.updateSpace();
 		this.projection.setSpace(this.buffer);
 	}
-	
+
 	@JsonIgnore
 	public void setCenter(Space center) {
 		super.setCenter(center);
@@ -77,7 +76,7 @@ public class Spheroid extends Energy {
 		}
 	}
 
-	public void setAzimuth(int azimuth) {
+	public void setAzimuth(double azimuth) {
 		this.projection.setAzimuth(azimuth);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
@@ -87,7 +86,7 @@ public class Spheroid extends Energy {
 		}
 	}
 
-	public void setElevation(int azimuth) {
+	public void setElevation(double azimuth) {
 		this.projection.setElevation(azimuth);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
@@ -104,17 +103,6 @@ public class Spheroid extends Energy {
 	@Override
 	public double getX() {
 		return Unit.C;
-	}
-
-	/**
-	 * Return the quotient of Gravity Force Sum and the Charge Force between all
-	 * tunnels
-	 * 
-	 * @param x
-	 * @return
-	 */
-	public double calculateX(double x) {
-		return this.getGravityForceSum() / this.getChargeForceDifference();// this.calculateChargeForce(x);
 	}
 
 	/**
@@ -183,20 +171,6 @@ public class Spheroid extends Energy {
 		return this.getCentroidGravityForce() / this.getGravityForce();
 	}
 
-	public double calculateGravityForce(double x) {
-		return this.getChargeForce() * x;
-	}
-
-	/**
-	 * Really the Charge Force
-	 * 
-	 * @param x
-	 * @return
-	 */
-	public double calculateChargeForce(double x) {
-		return this.getGravityForceSum() / x;
-	}
-
 	/**
 	 * Vital method, shows the Amperes that can traverse the tunnel over the time it
 	 * takes to reach the barycenter. The time it takes to reach barycenter, it the
@@ -239,8 +213,33 @@ public class Spheroid extends Energy {
 	 */
 	public double getResistance(double time) {
 		double resistance = this.getVoltage() / this.getAmperes(time);
-//		resistance = Double.parseDouble(df.format(resistance));
+		// resistance = Double.parseDouble(df.format(resistance));
 		return resistance;
+	}
+
+	/**
+	 * Return the quotient of Gravity Force Sum and the Charge Force between all
+	 * tunnels
+	 * 
+	 * @param x
+	 * @return
+	 */
+	public double calculateX(double x) {
+		return this.getGravityForceSum() / this.getChargeForceDifference();// this.calculateChargeForce(x);
+	}
+
+	public double calculateGravityForce(double x) {
+		return this.getChargeForce() * x;
+	}
+
+	/**
+	 * Really the Charge Force
+	 * 
+	 * @param x
+	 * @return
+	 */
+	public double calculateChargeForce(double x) {
+		return this.getGravityForceSum() / x;
 	}
 
 	@Override
@@ -282,8 +281,6 @@ public class Spheroid extends Energy {
 		System.out.println(this.name + " Resistance Ratio: " + this.getResistanceRatio());
 	}
 
-
-
 	@JsonIgnore
 	@Override
 	public void paint(Graphics graphics) throws Exception {
@@ -291,14 +288,15 @@ public class Spheroid extends Energy {
 		graphics.setColor(this.color);
 		List<Coordinate> coordinateList = this.projection.getGridCoordinateList(0, 15, 30);
 		for (Coordinate c : coordinateList) {
-			graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
+			graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale),
+					(int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
 		}
 //		logger.info(this.name+".paint(graphics) this.projection.space="+this.projection.space);
-		Point point = this.projection.getPoint(this.projection.space.getPoint());//this.buffer
+		Point point = this.projection.getPoint(this.projection.space.getPoint());// this.buffer
 		double x = point.x * this.projection.scale;
 		double y = point.y * this.projection.scale;
 //		graphics.setColor(this.color);
-		double radius = 2;
+		double radius = 4;
 		x = x - (radius / 2);
 		y = y - (radius / 2);
 		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);

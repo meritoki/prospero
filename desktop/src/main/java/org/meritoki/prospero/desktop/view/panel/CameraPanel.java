@@ -46,8 +46,8 @@ public class CameraPanel extends javax.swing.JPanel
 	public Model model;
 	public double factor = 1.5;
 	protected int xDelta, yDelta;
-	protected int azimuth = 0;
-	protected int elevation = 0;
+	protected double azimuth = 0;
+	protected double elevation = 0;
 	public Dimension dimension;
 
 	/**
@@ -76,8 +76,7 @@ public class CameraPanel extends javax.swing.JPanel
 		graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
 		if (this.model != null && this.model.node != null) {
 			Variable node = this.model.node;
-//20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
-			if(node instanceof Orbital) {
+			if(node instanceof Orbital) {//20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
 				Orbital o = (Orbital)node;
 				o.updateSpace();
 				this.model.solar.sun.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
@@ -96,12 +95,7 @@ public class CameraPanel extends javax.swing.JPanel
 						root = ((Variable)root).getRoot();
 					}
 				}
-//				Object root = s.getRoot();
-//				if(root instanceof Orbital) {
-//					Orbital o = (Orbital)root;
-//					o.updateSpace();
-//					this.model.solar.sun.setCenter(o.space);
-//				}
+
 			}
 			
 			if (node != null) {
@@ -298,6 +292,7 @@ public class CameraPanel extends javax.swing.JPanel
 	}
 
 	private void showSavePopupMenu(MouseEvent e) {
+//		this.menu = new GridPopupMenu(this.model);
 		if (menu != null)
 			menu.show(e.getComponent(), e.getX(), e.getY());
 	}
@@ -305,6 +300,12 @@ public class CameraPanel extends javax.swing.JPanel
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	// End of variables declaration//GEN-END:variables
 }
+//Object root = s.getRoot();
+//if(root instanceof Orbital) {
+//	Orbital o = (Orbital)root;
+//	o.updateSpace();
+//	this.model.solar.sun.setCenter(o.space);
+//}
 //Object root = node.getRoot();
 //while(root instanceof Variable && !((Variable)root).paint) {
 //	root = ((Variable)root).getRoot();

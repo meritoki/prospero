@@ -35,10 +35,10 @@ import org.meritoki.prospero.desktop.view.panel.CameraPanel;
 import org.meritoki.prospero.desktop.view.panel.SolarPanel;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Spheroid;
+import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.cartography.AzimuthalNorth;
 import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
 import org.meritoki.prospero.library.model.terra.cartography.Equirectangular;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
 import org.meritoki.prospero.library.model.terra.cartography.Mercator;
 
 public class GridPopupMenu extends JPopupMenu {
@@ -115,6 +115,7 @@ public class GridPopupMenu extends JPopupMenu {
 			}
 		});
 //		projectionMenu.add(globeMenuItem);
+		
 		projectionMenu.add(equirectangularMenuItem);
 		projectionMenu.add(mercatorMenuItem);
 		projectionMenu.add(azimuthalNorthMenuItem);

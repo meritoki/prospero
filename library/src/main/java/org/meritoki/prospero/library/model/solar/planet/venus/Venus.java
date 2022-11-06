@@ -18,7 +18,7 @@ package org.meritoki.prospero.library.model.solar.planet.venus;
 import java.awt.Color;
 
 import org.meritoki.prospero.library.model.solar.planet.Planet;
-import org.meritoki.prospero.library.model.terra.cartography.Globe;
+import org.meritoki.prospero.library.model.terra.cartography.Projection;
 
 /**
  * 
@@ -59,7 +59,7 @@ public class Venus extends Planet {
         this.meanAnomaly[1] = 1.6021302244;
         this.orbitalPeriod = 225;
         this.angularVelocity = 2.99e-07;
-        this.setProjection(new Globe(this.a, this.b, this.c));
+        this.setProjection(new Projection(this.a, this.b, this.c));
     }
 }
 //this.centroid = (Orbital)this.getRoot();
