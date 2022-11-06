@@ -41,12 +41,12 @@ public class City extends Biosphere {
 		if(this.load) { 
 			if(this.pointList != null) {
 				graphics.setColor(Color.black);
-				List<Coordinate> coordinateList = this.projection.getPointList(0, this.pointList);
+				List<Coordinate> coordinateList = this.getProjection().getPointList(0, this.pointList);
 				if (coordinateList != null) {
 					for (Coordinate c : coordinateList) {
-						graphics.drawLine((int) ((c.point.x) * this.projection.scale),
-								(int) ((c.point.y) * this.projection.scale), (int) ((c.point.x) * this.projection.scale),
-								(int) ((c.point.y) * this.projection.scale));
+						graphics.drawLine((int) ((c.point.x) * this.getProjection().scale),
+								(int) ((c.point.y) * this.getProjection().scale), (int) ((c.point.x) * this.getProjection().scale),
+								(int) ((c.point.y) * this.getProjection().scale));
 					}
 				}
 			}

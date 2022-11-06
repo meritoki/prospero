@@ -50,8 +50,8 @@ public class GridPopupMenu extends JPopupMenu {
 	private JMenuItem saveMenuItem;
 	private Model model;
 
-	public GridPopupMenu(Model model) {
-		this.model = model;
+	public GridPopupMenu(Model m) {
+		this.model = m;
 		this.saveMenuItem = new JMenuItem("Save");
 
 		this.saveMenuItem.addActionListener(new ActionListener() {
@@ -72,26 +72,26 @@ public class GridPopupMenu extends JPopupMenu {
 			}
 		});
 		JMenu projectionMenu = new JMenu("Projection");
-		JMenuItem equirectangularMenuItem = new JMenuItem("Equirectangular");
-		equirectangularMenuItem.addActionListener(new ActionListener() {
+		JMenuItem defaultMenuItem = new JMenuItem("Default");
+		defaultMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid)model.node).setProjection(new Equirectangular());
+				((Spheroid)model.node).setSelectedProjection(null);
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
 		});
-//		JMenuItem globeMenuItem = new JMenuItem("Globe");
-//		globeMenuItem.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent ev) {
-//				model.setProjection(new Globe());
-//				CameraPanel panel = (CameraPanel) getInvoker();
-//				panel.repaint();
-//			}
-//		});
+		JMenuItem equirectangularMenuItem = new JMenuItem("Equirectangular");
+		equirectangularMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				((Spheroid)model.node).setSelectedProjection(new Equirectangular());
+				CameraPanel panel = (CameraPanel) getInvoker();
+				panel.repaint();
+			}
+		});
 		JMenuItem mercatorMenuItem = new JMenuItem("Mercator");
 		mercatorMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid)model.node).setProjection(new Mercator());
+				((Spheroid)model.node).setSelectedProjection(new Mercator());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
@@ -99,7 +99,7 @@ public class GridPopupMenu extends JPopupMenu {
 		JMenuItem azimuthalNorthMenuItem = new JMenuItem("Azimuthal North");
 		azimuthalNorthMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid)model.node).setProjection(new AzimuthalNorth());
+				((Spheroid)model.node).setSelectedProjection(new AzimuthalNorth());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
@@ -107,13 +107,12 @@ public class GridPopupMenu extends JPopupMenu {
 		JMenuItem azimuthalSouthMenuItem = new JMenuItem("Azimuthal South");
 		azimuthalSouthMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid)model.node).setProjection(new AzimuthalSouth());
+				((Spheroid)model.node).setSelectedProjection(new AzimuthalSouth());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
 		});
-//		projectionMenu.add(globeMenuItem);
-		
+		projectionMenu.add(defaultMenuItem);
 		projectionMenu.add(equirectangularMenuItem);
 		projectionMenu.add(mercatorMenuItem);
 		projectionMenu.add(azimuthalNorthMenuItem);
@@ -122,3 +121,11 @@ public class GridPopupMenu extends JPopupMenu {
 		this.add(this.saveMenuItem);
 	}
 }
+//JMenuItem globeMenuItem = new JMenuItem("Globe");
+//globeMenuItem.addActionListener(new ActionListener() {
+//	public void actionPerformed(ActionEvent ev) {
+//		model.setSelectedProjection(new Globe());
+//		CameraPanel panel = (CameraPanel) getInvoker();
+//		panel.repaint();
+//	}
+//});

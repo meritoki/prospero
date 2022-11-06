@@ -40,15 +40,15 @@ public class Country extends Biosphere {
 		if (this.load) {
 			if (this.multiPolygonList != null) {
 				graphics.setColor(this.color);
-				List<Polygon> polygonList = this.projection.getPolygonList(0, this.multiPolygonList);
+				List<Polygon> polygonList = this.getProjection().getPolygonList(0, this.multiPolygonList);
 				for (Polygon p : polygonList) {
 					if (p.coordinateList.size() > 0) {
 						for (int i = 0; i < p.coordinateList.size(); i++) {
 							Coordinate c = p.coordinateList.get(i);
-							graphics.drawLine((int) ((c.point.x) * this.projection.scale),
-									(int) ((c.point.y) * this.projection.scale),
-									(int) ((c.point.x) * this.projection.scale),
-									(int) ((c.point.y) * this.projection.scale));
+							graphics.drawLine((int) ((c.point.x) * this.getProjection().scale),
+									(int) ((c.point.y) * this.getProjection().scale),
+									(int) ((c.point.x) * this.getProjection().scale),
+									(int) ((c.point.y) * this.getProjection().scale));
 						}
 					}
 				}

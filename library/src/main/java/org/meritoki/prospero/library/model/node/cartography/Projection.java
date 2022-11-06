@@ -44,7 +44,7 @@ public class Projection implements ProjectionInterface {
     public double b;
     public double c;
     public double unit = 1/Unit.ASTRONOMICAL;
-	public double scale = 1;
+	public double scale = 7200000.0;;
 	public double azimuth = 0;// 35;
 	public double elevation = 0;// 30;
 	public double obliquity = 0;
@@ -53,6 +53,7 @@ public class Projection implements ProjectionInterface {
 	public double xMax = 0;
 	public float nearEye = 3;
 	public float nearObject = 1.5f;
+	public boolean zFlag = true;
 	
 	public Projection() {}
 	
@@ -91,12 +92,12 @@ public class Projection implements ProjectionInterface {
 	}
 	
 	public void setAzimuth(double azimuth) {
-		logger.debug("setAzimuth("+azimuth+")");
+//		logger.info("setAzimuth("+azimuth+")");
 		this.azimuth = azimuth;
 	}
 
 	public void setElevation(double elevation) {
-		logger.debug("setElevation("+elevation+")");
+//		logger.info("setElevation("+elevation+")");
 		this.elevation = elevation;
 	}
 
@@ -304,7 +305,15 @@ public class Projection implements ProjectionInterface {
 		float x1 = (float) (cosTheta * x0 + sinTheta * z0);// compute an orthographic projection
 		float y1 = (float) (-sinTsinP * x0 + cosPhi * y0 + cosTsinP * z0);// compute an orthographic projection
 		float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinPhi * y0);// now adjust things to get a perspective projection
-		if (z1 < 0) {
+		if (this.zFlag) {
+			if(z1 < 0) {
+				x1 = x1 * near / (z1 + near + nearToObj);
+				y1 = y1 * near / (z1 + near + nearToObj);
+				coordinate = new Coordinate();
+				coordinate.point.x = x1;
+				coordinate.point.y = y1;
+			}
+		} else {
 			x1 = x1 * near / (z1 + near + nearToObj);
 			y1 = y1 * near / (z1 + near + nearToObj);
 			coordinate = new Coordinate();
@@ -344,8 +353,9 @@ public class Projection implements ProjectionInterface {
 		return new Point(x1,y1,z1);
 	}
 	
+	@Override
 	public String toString() {
-		return this.space.toString();
+		return "Projection: {"+this.space.toString()+", scale:"+this.scale+"}";
 	}
 }
 //latitude -= Math.toRadians(this.obliquity);

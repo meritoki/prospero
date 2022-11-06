@@ -42,7 +42,7 @@ public class Model extends Variable {
 	public Variable node = this;
 	public boolean cache = false;
 	public Solar solar = new Solar();
-	public int defaultAzimuth = -10;
+	public int defaultAzimuth = 0;
 	public int defaultElevation = 150;
 
 	public Model() {
@@ -67,8 +67,8 @@ public class Model extends Variable {
 		if(this.node instanceof Solar) {
 			this.solar.sun.setCenter(this.solar.sun.space);//Must Include Sun b/c Solar is Not Orbital
 			this.solar.setScale(this.solar.defaultScale);
-			this.solar.setAzimuth(-10);
-			this.solar.setElevation(147);
+			this.solar.setAzimuth(this.defaultAzimuth);
+			this.solar.setElevation(this.defaultElevation);
 		} else if(this.node instanceof Orbital) {
 			logger.info("setNode("+variable+") Orbital");
 			Orbital o = (Orbital)this.node;
@@ -78,8 +78,8 @@ public class Model extends Variable {
 		} else if(this.node instanceof Spheroid){
 			logger.info("setNode("+variable+") Spheroid");
 			Spheroid s = (Spheroid)this.node;
-			s.setElevation(s.projection.elevation);
-			s.setAzimuth(s.projection.azimuth);
+			s.setElevation(s.getProjection().elevation);
+			s.setAzimuth(s.getProjection().azimuth);
 			s.setScale(s.defaultScale);
 			Object root = s.getRoot();
 			while(root != null) {

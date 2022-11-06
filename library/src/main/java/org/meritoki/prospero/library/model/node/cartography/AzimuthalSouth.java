@@ -8,17 +8,17 @@ import org.meritoki.prospero.library.model.unit.Point;
 
 public class AzimuthalSouth extends Projection {
 
-	public final int DEFAULT_SCALE = 256;
 	private double centerLatitude = Math.toRadians(-90);// * this.radians;
 	private double centerLongitude = Math.toRadians(0);// * this.radians;
 
 	public AzimuthalSouth() {
-		super();
-		this.scale = DEFAULT_SCALE;
+		super(1);
+		this.zFlag = false;
 	}
 
 	@Override
 	public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
+//		logger.info("getCoordinate("+vertical+","+latitude+","+longitude+")");
 		Coordinate coordinate = null;
 		latitude = Math.toRadians(latitude);// * this.radians;// MultiPolygon y
 		longitude = Math.toRadians(longitude);// * this.radians; // MultiPolygon x
@@ -27,8 +27,8 @@ public class AzimuthalSouth extends Projection {
 			double c = Math.acos(Math.sin(this.centerLatitude) * Math.sin(latitude) + (Math.cos(this.centerLatitude)
 					* Math.cos(latitude) * Math.cos(longitude - this.centerLongitude)));
 			double k = c / Math.sin(c);
-			double x = k * (Math.cos(latitude) * Math.sin(longitude - this.centerLongitude));
-			double y = k * (Math.cos(this.centerLatitude) * Math.sin(latitude)
+			double x = k * this.unit * 4000 * (Math.cos(latitude) * Math.sin(longitude - this.centerLongitude));
+			double y = k * this.unit * 4000 * (Math.cos(this.centerLatitude) * Math.sin(latitude)
 					- Math.sin(this.centerLatitude) * Math.cos(latitude) * Math.cos(longitude - this.centerLongitude));
 			coordinate.point.x = x;
 			coordinate.point.y = y;
@@ -49,6 +49,13 @@ public class AzimuthalSouth extends Projection {
 			return null;
 		}
 	}
+	
+//	@Override
+//	public Coordinate getCoordinate(Point point) {
+//		Coordinate coordinate = super.getCoordinate(point);
+//		logger.info("getCoordinate("+point+") coordinate="+coordinate);
+//		return coordinate;
+//	}
 
 	@Override
 	public List<Coordinate> getGridCoordinateList(double vertical, int latitudeInterval, int longitudeInterval) {
@@ -77,6 +84,11 @@ public class AzimuthalSouth extends Projection {
 			}
 		}
 		return coordinateList;
+	}
+	
+	@Override
+	public String toString() {
+		return "AzimuthalSouth: {"+this.space.toString()+", scale:"+this.scale+"}";
 	}
 }
 //@Override 

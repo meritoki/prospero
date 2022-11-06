@@ -5,11 +5,9 @@ import org.meritoki.prospero.library.model.unit.Point;
 
 public class Mercator extends Projection {
 	
-	public final double DEFAULT_SCALE = 200;
-	
 	public Mercator() {
-		super();
-		this.scale = DEFAULT_SCALE;
+		super(1);
+		this.zFlag = false;
 	}
 
 	@Override
@@ -18,8 +16,8 @@ public class Mercator extends Projection {
 		Coordinate coordinate = new Coordinate();
 		coordinate.point.y = Math.log(Math.tan((Math.PI / 4) + (Math.toRadians(latitude)/2)));
 	    coordinate.point.x = Math.toRadians(longitude) ;
-	    double x = coordinate.point.x;
-		double y = coordinate.point.y;
+	    double x = this.unit * 4000 * coordinate.point.x;
+		double y = this.unit * 4000 * coordinate.point.y;
 		double z = 0;
 		if(coordinate.point.x > this.xMax) {
 			this.xMax = coordinate.point.x;
@@ -30,4 +28,10 @@ public class Mercator extends Projection {
 		Point point3D = new Point(x, y, z);
 		return this.getCoordinate(point3D);
 	}
+	
+	@Override
+	public String toString() {
+		return "Mercator: {"+this.space.toString()+"}";
+	}
 }
+//public final double DEFAULT_SCALE = 200;

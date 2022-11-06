@@ -56,10 +56,27 @@ public class Terra extends Grid {
 	}
 	
 	@Override
+	public void setSelectedProjection(Projection projection) {
+		super.setSelectedProjection(projection);
+		List<Variable> nodeList = this.getChildren();
+		for (Variable n : nodeList) {
+			if (n instanceof Terra) {
+				((Terra) n).setSelectedProjection(projection);
+			}
+		}
+	}
+	
+	@Override
 	public void paint(Graphics graphics) throws Exception {	
 		super.paint(graphics);
 	}
 }
+//@Override
+//public Projection getProjection() {
+//	Projection projection = super.projection;
+//	logger.info(this.name+".getProjection() projection="+projection);
+//	return projection;
+//}
 //this.defaultScale = 7200000.0;
 //Object root = this.getRoot();
 //if(this.name.equals("Terra") && root instanceof Earth) {

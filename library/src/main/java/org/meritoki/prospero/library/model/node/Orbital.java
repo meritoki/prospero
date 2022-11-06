@@ -387,15 +387,15 @@ public class Orbital extends Grid {
 		List<Point> vertexList = this.getOrbit(this.centroid);
 		graphics.setColor(Color.gray);
 		for (int i = 1; i < vertexList.size(); i++) {
-			graphics.drawLine((int) (vertexList.get(i - 1).x * this.projection.scale),
-					(int) (vertexList.get(i - 1).y * this.projection.scale),
-					(int) (vertexList.get(i).x * this.projection.scale),
-					(int) (vertexList.get(i).y * this.projection.scale));
+			graphics.drawLine((int) (vertexList.get(i - 1).x * this.getProjection().scale),
+					(int) (vertexList.get(i - 1).y * this.getProjection().scale),
+					(int) (vertexList.get(i).x * this.getProjection().scale),
+					(int) (vertexList.get(i).y * this.getProjection().scale));
 		}
 		graphics.setColor(this.color);
-		Point point = this.projection.getPoint(this.projection.space.getPoint());// this.buffer
-		double x = point.x * this.projection.scale;
-		double y = point.y * this.projection.scale;
+		Point point = this.getProjection().getPoint(this.getProjection().space.getPoint());// this.buffer
+		double x = point.x * this.getProjection().scale;
+		double y = point.y * this.getProjection().scale;
 		graphics.setColor(this.color);
 //		double radius = 8;
 //		x = x - (radius / 2);

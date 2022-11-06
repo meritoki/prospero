@@ -38,6 +38,7 @@ public class Spheroid extends Energy {
 
 	static Logger logger = LogManager.getLogger(Spheroid.class.getName());
 	public Projection projection = new Projection();
+	public Projection selected = null;
 	public double defaultScale = 1;
 	public double radius = 1;
 	public double a = this.radius;
@@ -64,10 +65,15 @@ public class Spheroid extends Energy {
 //		logger.info(this.name+".setProjection("+projection+")");
 		this.projection = projection;
 	}
+	
+	public void setSelectedProjection(Projection projection) {
+		logger.info(this.name+".setSelectedProjection("+projection+")");
+		this.selected = projection;
+	}
 
 	public void setScale(double scale) {
-//		logger.info(this.name+".setScale("+scale+")");
-		this.projection.setScale(scale);
+		logger.info(this.name+".setScale("+scale+")");
+		this.getProjection().setScale(scale);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			if (n instanceof Spheroid) {
@@ -77,7 +83,7 @@ public class Spheroid extends Energy {
 	}
 
 	public void setAzimuth(double azimuth) {
-		this.projection.setAzimuth(azimuth);
+		this.getProjection().setAzimuth(azimuth);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			if (n instanceof Spheroid) {
@@ -87,7 +93,7 @@ public class Spheroid extends Energy {
 	}
 
 	public void setElevation(double azimuth) {
-		this.projection.setElevation(azimuth);
+		this.getProjection().setElevation(azimuth);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			if (n instanceof Spheroid) {
@@ -216,6 +222,15 @@ public class Spheroid extends Energy {
 		// resistance = Double.parseDouble(df.format(resistance));
 		return resistance;
 	}
+	
+	public Projection getProjection() {
+		Projection projection = this.selected;
+		if(projection == null) {
+			projection = this.projection;
+		}
+//		logger.info(this.name+".getProjection() projection="+projection);
+		return projection;
+	}
 
 	/**
 	 * Return the quotient of Gravity Force Sum and the Charge Force between all
@@ -286,15 +301,17 @@ public class Spheroid extends Energy {
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
 		graphics.setColor(this.color);
-		List<Coordinate> coordinateList = this.projection.getGridCoordinateList(0, 15, 30);
+//		logger.info(this.name+".paint(graphics) this.getProjection()="+this.getProjection()+" xMax="+this.getProjection().xMax);
+		List<Coordinate> coordinateList = this.getProjection().getGridCoordinateList(0, 15, 30);
 		for (Coordinate c : coordinateList) {
-			graphics.drawLine((int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale),
-					(int) ((c.point.x) * this.projection.scale), (int) ((c.point.y) * this.projection.scale));
+			graphics.drawLine((int) ((c.point.x) * this.getProjection().scale), (int) ((c.point.y) * this.getProjection().scale),
+					(int) ((c.point.x) * this.getProjection().scale), (int) ((c.point.y) * this.getProjection().scale));
 		}
-//		logger.info(this.name+".paint(graphics) this.projection.space="+this.projection.space);
-		Point point = this.projection.getPoint(this.projection.space.getPoint());// this.buffer
-		double x = point.x * this.projection.scale;
-		double y = point.y * this.projection.scale;
+		
+//		logger.info(this.name+".paint(graphics) this.getProjection().space="+this.getProjection().space);
+		Point point = this.getProjection().getPoint(this.getProjection().space.getPoint());// this.buffer
+		double x = point.x * this.getProjection().scale;
+		double y = point.y * this.getProjection().scale;
 //		graphics.setColor(this.color);
 		double radius = 2;
 		x = x - (radius / 2);

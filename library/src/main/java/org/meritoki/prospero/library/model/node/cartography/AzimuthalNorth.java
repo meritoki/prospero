@@ -8,13 +8,12 @@ import org.meritoki.prospero.library.model.unit.Point;
 
 public class AzimuthalNorth extends Projection {
 
-	public final int DEFAULT_SCALE = 256;
 	private double centerLatitude = Math.toRadians(90);// * this.radians;
 	private double centerLongitude = Math.toRadians(0);// * this.radians;
 
 	public AzimuthalNorth() {
 		super();
-		this.scale = DEFAULT_SCALE;
+		this.zFlag = false;
 	}
 
 	@Override
@@ -27,8 +26,8 @@ public class AzimuthalNorth extends Projection {
 			double c = Math.acos(Math.sin(this.centerLatitude) * Math.sin(latitude) + (Math.cos(this.centerLatitude)
 					* Math.cos(latitude) * Math.cos(longitude - this.centerLongitude)));
 			double k = c / Math.sin(c);
-			double x = k * (Math.cos(latitude) * Math.sin(longitude - this.centerLongitude));
-			double y = k * (Math.cos(this.centerLatitude) * Math.sin(latitude)
+			double x = k * this.unit * 4000 * (Math.cos(latitude) * Math.sin(longitude - this.centerLongitude));
+			double y = k * this.unit * 4000 * (Math.cos(this.centerLatitude) * Math.sin(latitude)
 					- Math.sin(this.centerLatitude) * Math.cos(latitude) * Math.cos(longitude - this.centerLongitude));
 			coordinate.point.x = x;
 			coordinate.point.y = y;
@@ -77,6 +76,11 @@ public class AzimuthalNorth extends Projection {
 			}
 		}
 		return coordinateList;
+	}
+	
+	@Override
+	public String toString() {
+		return "AzimuthalNorth: {"+this.space.toString()+", scale:"+this.scale+"}";
 	}
 }
 //@Override 

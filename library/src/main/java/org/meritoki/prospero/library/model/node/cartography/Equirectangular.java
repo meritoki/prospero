@@ -5,11 +5,9 @@ import org.meritoki.prospero.library.model.unit.Point;
 
 public class Equirectangular extends Projection {
 
-	public final double DEFAULT_SCALE = 200;
-
 	public Equirectangular() {
-		super();
-		this.scale = DEFAULT_SCALE;
+		super(1);
+		this.zFlag = false;
 	}
 
 	@Override
@@ -26,11 +24,16 @@ public class Equirectangular extends Projection {
 				this.yMax = coordinate.point.y;
 			}
 		}
-		double x = coordinate.point.x;
-		double y = coordinate.point.y;
+		double x = this.unit * 4000 * coordinate.point.x ;
+		double y = this.unit * 4000 * coordinate.point.y;
 		double z = vertical;
 		Point point3D = new Point(x, y, z);
 		return this.getCoordinate(point3D);
+	}
+	
+	@Override
+	public String toString() {
+		return "Equirectangular: {"+this.space.toString()+"}";
 	}
 }
 //@Override 
