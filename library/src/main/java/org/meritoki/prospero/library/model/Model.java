@@ -43,7 +43,7 @@ public class Model extends Variable {
 	public boolean cache = false;
 	public Solar solar = new Solar();
 	public int defaultAzimuth = 0;
-	public int defaultElevation = 150;
+	public int defaultElevation = 170;
 
 	public Model() {
 		super("Model");
