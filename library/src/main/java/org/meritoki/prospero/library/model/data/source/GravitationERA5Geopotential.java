@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Mode;

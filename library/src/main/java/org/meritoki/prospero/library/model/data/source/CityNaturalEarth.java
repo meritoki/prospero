@@ -12,7 +12,7 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTReader;
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.opengis.feature.simple.SimpleFeature;

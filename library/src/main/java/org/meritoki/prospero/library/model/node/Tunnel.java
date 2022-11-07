@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.unit.Event;
@@ -39,6 +40,17 @@ public class Tunnel extends Spheroid {
 	public boolean equals(Object o) {
 		Tunnel t = (Tunnel) o;
 		return (this.a == t.a && this.b == t.b) || (this.a == t.b && this.b == t.a);
+	}
+	
+	@Override
+	public void setProjection(Projection projection) {
+		super.setProjection(projection);
+		List<Variable> nodeList = this.getChildren();
+		for (Variable n : nodeList) {
+			if (n instanceof Spheroid) {
+				((Spheroid) n).setProjection(projection);
+			}
+		}
 	}
 
 	@Override
@@ -679,22 +691,22 @@ public class Tunnel extends Spheroid {
 		barycenterB.scalarMultiply(1 / (Unit.ASTRONOMICAL * 1000));
 		Point pointA = (a.buffer.getPoint());
 		Point pointB = (b.buffer.getPoint());
-		pointA = this.projection.getPoint(pointA);
-		pointB = this.projection.getPoint(pointB);
-		pointA = pointA.scale(this.projection.scale);
-		pointB = pointB.scale(this.projection.scale);
-		barycenterA.scalarMultiply(this.projection.scale);
-		barycenterB.scalarMultiply(this.projection.scale);
+		pointA = this.getProjection().getPoint(pointA);
+		pointB = this.getProjection().getPoint(pointB);
+		pointA = pointA.scale(this.getProjection().scale);
+		pointB = pointB.scale(this.getProjection().scale);
+		barycenterA.scalarMultiply(this.getProjection().scale);
+		barycenterB.scalarMultiply(this.getProjection().scale);
 		g.setColor(Color.BLUE);
 		g.drawLine((int) (pointA.x), (int) (pointA.y), (int) (pointB.x), (int) (pointB.y));
 //		Point pointC = (new Point(pointA.x-barycenterA.getX(),pointA.y-barycenterA.getY(),pointA.z-barycenterA.getZ()));
 //		Point pointD = (new Point(pointB.x-barycenterB.getX(),pointB.y-barycenterB.getY(),pointB.z-barycenterB.getZ()));
 
-//		pointC = pointC.scale(this.projection.scale);
-//		pointD = pointD.scale(this.projection.scale);
+//		pointC = pointC.scale(this.getProjection().scale);
+//		pointD = pointD.scale(this.getProjection().scale);
 
-//		pointC = this.projection.getPoint(pointC);
-//		pointD = this.projection.getPoint(pointD);
+//		pointC = this.getProjection().getPoint(pointC);
+//		pointD = this.getProjection().getPoint(pointD);
 //		System.out.println(pointA+":"+pointB+":"+pointC+":"+pointD);
 //		g.setColor(Color.GRAY);
 //		g.drawLine((int) (pointA.x*scale), (int) (pointA.y*scale), (int) (pointB.x*scale), (int) (pointB.y * scale));
@@ -708,11 +720,11 @@ public class Tunnel extends Spheroid {
 //			g.setColor(Color.BLUE);
 //		}
 //		g.drawLine((int) (pointB.x), (int) (pointB.y), (int) (pointD.x), (int) (pointD.y ));
-//		g.drawLine((int) (pointA.x*this.projection.scale), (int) (pointA.y*this.projection.scale), (int) (pointC.x*this.projection.scale), (int) (pointC.y*this.projection.scale));
+//		g.drawLine((int) (pointA.x*this.getProjection().scale), (int) (pointA.y*this.getProjection().scale), (int) (pointC.x*this.getProjection().scale), (int) (pointC.y*this.getProjection().scale));
 //		if(magnitudeA < magnitudeB) {
 //			g.setColor(Color.BLUE);
 //		}
-//		g.drawLine((int) (pointB.x*this.projection.scale), (int) (pointB.y*this.projection.scale), (int) (pointD.x*this.projection.scale), (int) (pointD.y * this.projection.scale));
+//		g.drawLine((int) (pointB.x*this.getProjection().scale), (int) (pointB.y*this.getProjection().scale), (int) (pointD.x*this.getProjection().scale), (int) (pointD.y * this.getProjection().scale));
 	}
 
 }

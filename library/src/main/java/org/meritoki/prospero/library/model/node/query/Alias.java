@@ -1,4 +1,4 @@
-package org.meritoki.prospero.library.model.query;
+package org.meritoki.prospero.library.model.node.query;
 
 import java.util.ArrayList;
 import java.util.List;

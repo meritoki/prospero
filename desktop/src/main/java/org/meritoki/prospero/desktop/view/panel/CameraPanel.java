@@ -59,8 +59,8 @@ public class CameraPanel extends javax.swing.JPanel
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 //		this.setSize(1024, 512);
-		Thread thread = new Thread(this);
-		thread.start();
+//		Thread thread = new Thread(this);
+//		thread.start();
 	}
 
 	public void setModel(Model model) {

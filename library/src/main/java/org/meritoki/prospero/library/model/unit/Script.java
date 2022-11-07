@@ -3,7 +3,7 @@ package org.meritoki.prospero.library.model.unit;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

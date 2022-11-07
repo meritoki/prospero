@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

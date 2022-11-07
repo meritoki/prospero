@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;

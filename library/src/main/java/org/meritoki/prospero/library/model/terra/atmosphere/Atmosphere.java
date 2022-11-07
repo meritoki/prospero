@@ -8,6 +8,15 @@ import org.meritoki.prospero.library.model.terra.atmosphere.tornado.Tornado;
 import org.meritoki.prospero.library.model.terra.atmosphere.wind.Wind;
 import org.meritoki.prospero.library.model.terra.gravitation.Gravitation;
 
+/**
+ * Citation
+ * <ol type="A">
+ * <li><a href=
+ * "https://en.wikipedia.org/wiki/Atmosphere_of_Earth">https://en.wikipedia.org/wiki/Atmosphere_of_Earth</a></li>
+ * <li><a href=
+ * "https://en.wikipedia.org/wiki/Atmospheric_pressure">https://en.wikipedia.org/wiki/Atmospheric_pressure</a></li>
+ * </ol>
+ */
 public class Atmosphere extends Terra {
 	
 	public Atmosphere() {

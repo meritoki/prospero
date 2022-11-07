@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

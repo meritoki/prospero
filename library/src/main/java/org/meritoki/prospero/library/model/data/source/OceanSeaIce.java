@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Interval;

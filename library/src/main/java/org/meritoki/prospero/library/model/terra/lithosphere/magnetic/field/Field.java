@@ -26,7 +26,7 @@ public class Field extends Lithosphere {
 			if (this.coordinateList != null) {
 				String variable = "intensity";
 				this.initCoordinateMinMax(variable,null);
-				List<Coordinate> coordinateList = this.projection.getCoordinateList(0, this.coordinateList);
+				List<Coordinate> coordinateList = this.getProjection().getCoordinateList(0, this.coordinateList);
 				if (coordinateList != null) {
 					for (Coordinate c : coordinateList) {
 						if (c != null) {
@@ -34,8 +34,8 @@ public class Field extends Lithosphere {
 								graphics.setColor(this.chroma.getColor((double) c.attribute.get(variable),
 										this.min, this.max));
 							}
-							graphics.fillOval((int) ((c.point.x) * this.projection.scale),
-									(int) ((c.point.y) * this.projection.scale), (int) 6, (int) 6);
+							graphics.fillOval((int) ((c.point.x) * this.getProjection().scale),
+									(int) ((c.point.y) * this.getProjection().scale), (int) 6, (int) 6);
 						}
 					}
 				}

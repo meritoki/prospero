@@ -8,7 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Mode;

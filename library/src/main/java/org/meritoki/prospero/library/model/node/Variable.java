@@ -29,8 +29,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.data.Data;
 import org.meritoki.prospero.library.model.document.Document;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.query.Query;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Operator;
 import org.meritoki.prospero.library.model.unit.Result;
@@ -90,8 +90,6 @@ public class Variable extends Node {
 	public boolean cache = false;
 	@JsonIgnore
 	public Document document = null;
-	@JsonIgnore
-	public boolean paint = false;
 
 	public Variable() {
 	}
@@ -336,11 +334,11 @@ public class Variable extends Node {
 	}
 
 	@JsonIgnore
-	public void setData(Data filter) {
-		this.data = filter;
+	public void setData(Data data) {
+		this.data = data;
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
-			n.setData(filter);
+			n.setData(data);
 		}
 	}
 

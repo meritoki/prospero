@@ -1,6 +1,6 @@
 package org.meritoki.prospero.library.model.unit;
 
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.node.cartography.Projection;
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Tile;
 

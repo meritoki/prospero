@@ -76,16 +76,15 @@ public class Solar extends Grid {
 
 	public Solar() {
 		super("Solar");
-		this.paint = true;
 		this.addChild(this.sun);
-		this.addChild(tunnel);
 		this.projection.setRadius(39.5);// Astronomical Unit
 		this.projection.setUnit(1);
 		this.defaultScale = 24;
 		this.tunnelList = this.getTunnelList();
 		for(Tunnel t: this.tunnelList) {
-			tunnel.addChild(t);
+			this.tunnel.addChild(t);
 		}
+		this.addChild(this.tunnel);
 		this.setProjection(this.projection);
 		this.setScale(this.defaultScale);
 //		Variable triangleNode = new Variable("Triangle");
@@ -101,6 +100,17 @@ public class Solar extends Grid {
 	public Solar(String name) {
 		super(name);
 	}
+	
+//	@Override
+//	public void setProjection(Projection projection) {
+//		super.setProjection(projection);
+//		List<Variable> nodeList = this.getChildren();
+//		for (Variable n : nodeList) {
+//			if (n instanceof Spheroid) {
+//				((Spheroid) n).setProjection(projection);
+//			}
+//		}
+//	}
 	
 	@Override
 	public void setProjection(Projection projection) {
@@ -705,10 +715,10 @@ public class Solar extends Grid {
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
 		this.initVariableMap();
-		Variable tunnelNode = this.getVariable("Tunnel");
-		for(Variable t: tunnelNode.getChildren()) {
-			((Tunnel)t).paint(graphics);
-		}
+//		Variable tunnelNode = this.getVariable("Tunnel");
+//		for(Variable t: tunnelNode.getChildren()) {
+//			((Tunnel)t).paint(graphics);
+//		}
 	}
 }
 //Variable triangleNode = this.getVariable("Triangle");

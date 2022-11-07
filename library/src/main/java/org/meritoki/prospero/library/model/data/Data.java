@@ -30,7 +30,7 @@ import org.meritoki.prospero.library.model.data.source.TornadoHistoryProject;
 import org.meritoki.prospero.library.model.data.source.VolcanicNOAA;
 import org.meritoki.prospero.library.model.data.source.WindERAInterim;
 import org.meritoki.prospero.library.model.data.source.WindJetstreamERA5;
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 
 import com.meritoki.module.library.model.Node;
 

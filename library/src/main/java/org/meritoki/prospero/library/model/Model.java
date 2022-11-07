@@ -37,8 +37,7 @@ import com.meritoki.module.library.model.N;
 public class Model extends Variable {
 
 	static Logger logger = LogManager.getLogger(Model.class.getName());
-	public static final double DEFAULT_SCALE = 1000;
-	public List<System> systemList = new ArrayList<>();
+//	public List<System> systemList = new ArrayList<>();
 	public Variable node = this;
 	public boolean cache = false;
 	public Solar solar = new Solar();

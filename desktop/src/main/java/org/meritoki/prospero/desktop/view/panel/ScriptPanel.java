@@ -29,7 +29,7 @@ import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.biosphere.country.Country;
 import org.meritoki.prospero.library.model.unit.Script;

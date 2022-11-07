@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classification;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.unit.Count;

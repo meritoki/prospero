@@ -42,10 +42,10 @@ public class Tectonic extends Lithosphere {
 		if(this.load) { 
 			if (this.multiLineStringList != null) {
 				graphics.setColor(this.color);
-				List<Coordinate> coordinateList = projection.getMultiLineStringList(0, multiLineStringList);
+				List<Coordinate> coordinateList = this.getProjection().getMultiLineStringList(0, multiLineStringList);
 				for (Coordinate c : coordinateList) {
-					graphics.fillOval((int) ((c.point.x) * this.projection.scale),
-							(int) ((c.point.y) * this.projection.scale), (int) 2, (int) 2);
+					graphics.fillOval((int) ((c.point.x) * this.getProjection().scale),
+							(int) ((c.point.y) * this.getProjection().scale), (int) 2, (int) 2);
 				}
 			}
 		}
