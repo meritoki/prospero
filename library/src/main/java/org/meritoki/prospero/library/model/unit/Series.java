@@ -105,32 +105,8 @@ public class Series {
 					Point point = index.getPoint(startCalendar);
 					pointList.add(point);
 				}
-				double[][] data = new double[pointList.size()][2];
-				for (int i = 0; i < pointList.size(); i++) {
-					Point p = pointList.get(i);
-					data[i][0] = p.x;
-					data[i][1] = p.y;
-				}
-				SimpleRegression simpleRegression = new SimpleRegression(true);
-				simpleRegression.addData(data);
 				Regression r = new Regression();
-				Map<String, Double> map = new HashMap<>();
-				map.put("intercept", simpleRegression.getIntercept());
-				map.put("interceptStdErr", simpleRegression.getInterceptStdErr());
-				map.put("meanSquareError", simpleRegression.getMeanSquareError());
-//					map.put("n", simpleRegression.getN());
-				map.put("r", simpleRegression.getR());
-				map.put("regressionSumSquares", simpleRegression.getRegressionSumSquares());
-				map.put("rSquare", simpleRegression.getRSquare());
-				map.put("significance", simpleRegression.getSignificance());
-				map.put("slope", simpleRegression.getSlope());
-				map.put("slopeConfidenceInterval", simpleRegression.getSlopeConfidenceInterval());
-				map.put("slopeStdErr", simpleRegression.getSlopeStdErr());
-				map.put("sumOfCrossProducts", simpleRegression.getSumOfCrossProducts());
-				map.put("sumSquaredErrors", simpleRegression.getSumSquaredErrors());
-				map.put("totalSumSquares", simpleRegression.getTotalSumSquares());
-				map.put("xSumSqaures", simpleRegression.getXSumSquares());
-				r.map = map;
+				r.map = Regression.getRegression(pointList);
 				r.startCalendar = startCalendar;
 				r.endCalendar = endCalendar;
 				regressionList.add(r);
@@ -258,6 +234,31 @@ public class Series {
 		return string;
 	}
 }
+//double[][] data = new double[pointList.size()][2];
+//for (int i = 0; i < pointList.size(); i++) {
+//	Point p = pointList.get(i);
+//	data[i][0] = p.x;
+//	data[i][1] = p.y;
+//}
+//SimpleRegression simpleRegression = new SimpleRegression(true);
+//simpleRegression.addData(data);
+//Regression r = new Regression();
+//Map<String, Double> map = new HashMap<>();
+//map.put("intercept", simpleRegression.getIntercept());
+//map.put("interceptStdErr", simpleRegression.getInterceptStdErr());
+//map.put("meanSquareError", simpleRegression.getMeanSquareError());
+////	map.put("n", simpleRegression.getN());
+//map.put("r", simpleRegression.getR());
+//map.put("regressionSumSquares", simpleRegression.getRegressionSumSquares());
+//map.put("rSquare", simpleRegression.getRSquare());
+//map.put("significance", simpleRegression.getSignificance());
+//map.put("slope", simpleRegression.getSlope());
+//map.put("slopeConfidenceInterval", simpleRegression.getSlopeConfidenceInterval());
+//map.put("slopeStdErr", simpleRegression.getSlopeStdErr());
+//map.put("sumOfCrossProducts", simpleRegression.getSumOfCrossProducts());
+//map.put("sumSquaredErrors", simpleRegression.getSumSquaredErrors());
+//map.put("totalSumSquares", simpleRegression.getTotalSumSquares());
+//map.put("xSumSqaures", simpleRegression.getXSumSquares());
 ///**
 //* Function addIndex Index index
 //* 

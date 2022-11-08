@@ -1,7 +1,6 @@
-package org.meritoki.prospero.library.model.cluster;
+package org.meritoki.prospero.library.model.unit;
 
 import org.apache.commons.math3.ml.clustering.Clusterable;
-import org.meritoki.prospero.library.model.unit.Tile;
 
 public class TileWrapper implements Clusterable {
 

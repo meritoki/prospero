@@ -93,5 +93,17 @@ public class Cluster {
 		double value = mean.getResult();
 		return value;
 	}
-
+	
+	public void addTilePoint(double average) {
+		for(Tile tile: this.tileList) {
+			tile.addPoint(new Point(tile.value,average));
+		}
+	}
+	
+	public List<Tile> getTileList() {
+		for(Tile t: this.tileList) {
+			t.value = Float.valueOf(this.id);
+		}
+		return this.tileList;
+	}
 }

@@ -1,6 +1,7 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -8,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +22,6 @@ import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.cluster.TileWrapper;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.histogram.Histogram;
@@ -50,6 +51,7 @@ import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Tile;
+import org.meritoki.prospero.library.model.unit.TileWrapper;
 import org.meritoki.prospero.library.model.unit.Time;
 
 import com.meritoki.library.controller.node.Exit;
@@ -186,6 +188,73 @@ public class Cyclone extends Atmosphere {
 		}
 	}
 
+	/**
+	 * Reviewed 202112160852 Good
+	 */
+	@Override
+	public void process() throws Exception {
+		super.process();// this.init();
+		try {
+			this.process(new ArrayList<>(this.eventList));
+			this.complete();
+		} catch (Exception e) {
+			logger.error("process() exception=" + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	/**
+		 * Process is a singular function that is used to add new events to
+		 * 
+		 * @param eventList
+		 */
+		public void process(List<Event> eventList) throws Exception {
+			this.region = null;
+			this.reset(eventList);
+			this.filter(eventList);
+			this.prune(eventList);
+			List<Time> timeList = this.setEventMap(this.eventMap, eventList);// what we have
+			for (Time time : timeList) {
+				if (!this.timeList.contains(time)) {
+					time.flag = true;
+					this.timeList.add(time);// what we have seen
+				} else {
+					int index = this.timeList.indexOf(time);
+					this.timeList.get(index).flag = true;
+				}
+			}
+			this.setMatrix(eventList);
+			if (this.regionList != null && this.regionList.size() > 0) {
+				for (Time time : this.timeList) {
+					if (!time.flag) {
+						try {
+							eventList = this.eventMap.get(time);
+							if (eventList != null) {
+								for (Region region : this.regionList) {
+									this.region = region;
+									Series series = this.seriesMap.get(region.toString());
+									if (series == null) {
+										series = this.newSeries();
+									}
+									super.filter(eventList);
+									series.addIndex(this.getIndex(time, eventList));
+									this.seriesMap.put(region.toString(), series);
+								}
+								this.initPlotList(this.seriesMap, null);
+	//							this.initTableList(null, null,null);
+								this.eventMap.remove(time);
+							}
+						} catch (Exception e) {
+							logger.error("complete() exception=" + e.getMessage());
+							e.printStackTrace();
+						}
+					} else {
+						time.flag = false;
+					}
+				}
+			}
+		}
+
 	@Override
 	public void complete() {
 		super.complete();
@@ -217,12 +286,21 @@ public class Cyclone extends Atmosphere {
 			this.cluster();
 		}
 		this.initPlotList(this.seriesMap, this.eventList);
-		this.initTableList(this.eventList, this.bandList,this.clusterList);
+		this.initTableList(this.eventList, this.tileList, this.bandList,this.clusterList);
 	}
 
+	/**
+	 * 
+	 */
 	public void cluster() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < this.timeList.size(); i++) { // Time time: this.timeList) {
+		//Tile List Contains All Moments in Time Queried
+		//Time Tile Map Retains All Tiles at Moments in Time
+		//All Tile Lists Same Tile Order
+		//Constructing String for File w/ New Lines
+		//Each Column is a Tile Latitude and Longitude w/ Dimension
+		//Each Row is a moment in Time
+		for (int i = 0; i < this.timeList.size(); i++) {
 			Time time = this.timeList.get(i);
 			List<Tile> tileList = this.timeTileMap.get(time);
 			if (tileList != null) {
@@ -241,6 +319,7 @@ public class Cyclone extends Atmosphere {
 				sb.append("\n");
 			}
 		}
+		//Save String to CSV File
 		Date dateTime = Calendar.getInstance().getTime();
 		String date = new SimpleDateFormat("yyyyMMdd").format(dateTime);
 		String uuid = UUID.randomUUID().toString();
@@ -250,6 +329,15 @@ public class Cyclone extends Atmosphere {
 			directory.mkdirs();
 		}
 		NodeController.saveText(path, uuid + ".csv", sb);
+		
+		//Prepare R Command w/ Parameters
+		//R Script
+		//Parameter One: CSV File w/ Path
+		//Parameter Two: Start Year
+		//Parameter Three: Start Month
+		//Parameter Four: End Year
+		//Parameter Five: End Month
+		//Parameter Six: Output CSV File w/ Path
 		String input = path + File.separatorChar + uuid + ".csv";
 		String output = path + File.separatorChar + "output-" + uuid + ".csv";
 		String rCommand = "Rscript comparison.R " + input;
@@ -267,6 +355,9 @@ public class Cyclone extends Atmosphere {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//Read Output CSV File
+		//CSV Contains Tile Latitude and Longitude and what Cluster it belongs to w/ ID
+		//Must Use ID Returned by Algorithm to Create Lists of Tiles
 		List<String[]> outputList = NodeController.openCsv(output);// "./output.csv");
 		outputList = outputList.subList(2, outputList.size() - 1);
 		List<Tile> tileList = new ArrayList<Tile>();
@@ -286,6 +377,9 @@ public class Cyclone extends Atmosphere {
 			tileList.add(tile);
 			tileMap.put(id, tileList);
 		}
+		//Lists of Tiles are Converted to Cluster Objects
+		//Cluster Object Tile List provides the Latitude, Longitude, and Dimension corresponding to the Cluster
+		//The Tile List does not retain any 
 		List<Cluster> clusterList = new ArrayList<>();
 		Cluster cluster;
 		for (Entry<Integer, List<Tile>> entry : tileMap.entrySet()) {
@@ -296,11 +390,26 @@ public class Cyclone extends Atmosphere {
 		}
 		this.clusterList = clusterList;
 		this.getClusterPlots(this.clusterList);
+		Collections.sort(this.clusterList, new Comparator<Cluster>() {
+			@Override
+			public int compare(Cluster o1, Cluster o2) {
+				return (o1.tileList.size()) - (o2.tileList.size());
+			}
+		});
+		this.tileList = new ArrayList<>();
+		for (Cluster c: this.clusterList) {
+			this.tileList.addAll(c.getTileList());
+		}
 	}
 
 	public void getClusterPlots(List<Cluster> clusterList) {
 		logger.info("getClusterPlots("+clusterList+")");
 		Map<String, Series> seriesMap = new HashMap<>();
+		//Time Tile Map Retains All Tiles at Moments in Time
+		//The Main For Loop Iterates Over a Map w/ Time Key and Tile List Value
+		//Each Cluster Contains a Tile List Describing the Position
+		//Each Tile Can Have a Temporary Real Number Value
+		//The Time Tile List is Loaded into a Cluster Tile List
 		for (Entry<Time, List<Tile>> entry : this.timeTileMap.entrySet()) {
 			Time time = entry.getKey();
 			List<Tile> tileList = entry.getValue();
@@ -311,87 +420,25 @@ public class Cyclone extends Atmosphere {
 					}
 				}
 			}
+			//Given that Each Cluster has a Persistent and Unique ID
+			//We Get a Series from the Series Map by Cluster ID 
+			//We Add and Average of the Cluster Tile List Values to an Index
+			//We Add the Index to the Series Building a Series of Averages for all Tiles Belonging to a Cluster
 			for (Cluster c : clusterList) {
 				Series series = seriesMap.get(c.uuid);
 				if (series == null) {
 					series = this.newSeries();
 					series.map.put("cluster", c.id);
 				}
+				double average = c.getAverageValue();
+				c.addTilePoint(average);
 				Index index = time.getIndex();
-				index.value = c.getAverageValue();
+				index.value = average;
 				series.addIndex(index);
 				seriesMap.put(c.uuid, series);
 			}
 		}
 		this.seriesMap.putAll(seriesMap);
-//		this.initPlotList(this.seriesMap, null);
-	}
-
-	/**
-	 * Reviewed 202112160852 Good
-	 */
-	@Override
-	public void process() throws Exception {
-		super.process();// this.init();
-		try {
-			this.process(new ArrayList<>(this.eventList));
-			this.complete();
-		} catch (Exception e) {
-			logger.error("process() exception=" + e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Process is a singular function that is used to add new events to
-	 * 
-	 * @param eventList
-	 */
-	public void process(List<Event> eventList) throws Exception {
-		this.region = null;
-		this.reset(eventList);
-		this.filter(eventList);
-		this.prune(eventList);
-		List<Time> timeList = this.setEventMap(this.eventMap, eventList);// what we have
-		for (Time time : timeList) {
-			if (!this.timeList.contains(time)) {
-				time.flag = true;
-				this.timeList.add(time);// what we have seen
-			} else {
-				int index = this.timeList.indexOf(time);
-				this.timeList.get(index).flag = true;
-			}
-		}
-		this.setMatrix(eventList);
-		if (this.regionList != null && this.regionList.size() > 0) {
-			for (Time time : this.timeList) {
-				if (!time.flag) {
-					try {
-						eventList = this.eventMap.get(time);
-						if (eventList != null) {
-							for (Region region : this.regionList) {
-								this.region = region;
-								Series series = this.seriesMap.get(region.toString());
-								if (series == null) {
-									series = this.newSeries();
-								}
-								super.filter(eventList);
-								series.addIndex(this.getIndex(time, eventList));
-								this.seriesMap.put(region.toString(), series);
-							}
-							this.initPlotList(this.seriesMap, null);
-//							this.initTableList(null, null,null);
-							this.eventMap.remove(time);
-						}
-					} catch (Exception e) {
-						logger.error("complete() exception=" + e.getMessage());
-						e.printStackTrace();
-					}
-				} else {
-					time.flag = false;
-				}
-			}
-		}
 	}
 
 	public Series newSeries() {
@@ -497,10 +544,13 @@ public class Cyclone extends Atmosphere {
 		this.plotList = plotList;
 	}
 
-	public void initTableList(List<Event> eventList, List<Band> bandList, List<Cluster> clusterList) {
+	public void initTableList(List<Event> eventList, List<Tile> tileList, List<Band> bandList, List<Cluster> clusterList) {
 		List<Table> tableList = new ArrayList<>();
 		if (eventList != null && eventList.size() > 0) {
 			tableList.add(new Table("Cyclone Event(s)", CycloneEvent.getTableModel(eventList)));
+		}
+		if (tileList != null && tileList.size() > 0) {
+			tableList.add(new Table("Tiles(s)", Tile.getTableModel(tileList)));
 		}
 		if (bandList != null && bandList.size() > 0) {
 			tableList.add(new Table("Band(s)", Band.getTableModel(bandList)));
@@ -1134,6 +1184,7 @@ public class Cyclone extends Atmosphere {
 		super.paint(graphics);
 	}
 }
+//this.initPlotList(this.seriesMap, null);
 //List<Variable> nodeList = this.getChildren();
 //for (Variable n : nodeList) {
 //	n.paint(graphics);

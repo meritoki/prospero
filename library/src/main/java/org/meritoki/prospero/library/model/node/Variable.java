@@ -275,11 +275,11 @@ public class Variable extends Node {
 
 	public List<Table> getTableList() throws Exception {
 		List<Table> tableList = new ArrayList<>();
-//		for (Variable n : this.getList()) {
-//			if (n.load) {
-//				tableList.addAll(n.getTableList());
-//			}
-//		}
+		for (Variable n : this.getList()) {
+			if (n.load) {
+				tableList.addAll(n.getTableList());
+			}
+		}
 		return tableList;
 	}
 

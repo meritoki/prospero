@@ -62,7 +62,7 @@ public class TimePlot extends Plot {
 		this.colorIndexMatrix = new ArrayList<>();
 		this.blackIndexMatrix.add(series.indexList);
 		for(Entry<String,List<Regression>> entry:series.regressionMap.entrySet()) {
-			this.colorIndexMatrix.addAll(this.getMatrix(entry.getValue()));
+			this.colorIndexMatrix.addAll(this.getIndexMatrix(entry.getValue()));
 		}
 		Calendar[] window = (series.map.get("window") != null)?(Calendar[])series.map.get("window"):null;
 		if(window != null && window.length == 2) {
@@ -107,7 +107,7 @@ public class TimePlot extends Plot {
 		this.scale = DEFAULT_SCALE;
 	}
 	
-	public List<List<Index>> getMatrix(List<Regression> regressionList) {
+	public List<List<Index>> getIndexMatrix(List<Regression> regressionList) {
 		List<List<Index>> matrix = new ArrayList<>();
 		if (regressionList != null) {
 			for (Regression r : regressionList) {

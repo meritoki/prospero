@@ -394,12 +394,12 @@ public class Query {
 	}
 	
 	@JsonIgnore
-	public Boolean getSignificance() {
+	public Double getSignificance() {
 		String significance = this.map.get("significance");
 		if(significance != null) {
-			return Boolean.valueOf(significance);
+			return Double.valueOf(significance);
 		}
-		return false;
+		return 0.95;
 	}
 	
 	@JsonIgnore

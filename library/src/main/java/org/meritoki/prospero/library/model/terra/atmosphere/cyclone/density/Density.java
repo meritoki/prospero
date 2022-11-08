@@ -121,7 +121,7 @@ public class Density extends Cyclone {
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix);
-		this.timeTileMap.put(key,tileList);
+		this.timeTileMap.put(key,tileList);//All Tiles at Moments in Time
 		if (averageFlag) {
 			index = Tile.getAverage(key, tileList);
 		} else if (sumFlag) {
