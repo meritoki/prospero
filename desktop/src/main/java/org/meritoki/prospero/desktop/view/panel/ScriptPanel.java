@@ -138,6 +138,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 									if (node != null) {
 										logger.info("query() node="+node);
 										model.setNode(terra);
+										model.updateNode();
 										node.start();//can be called more than once, no problem
 										try {
 											node.query(query);//discrete finite task that sets a new query, includes process

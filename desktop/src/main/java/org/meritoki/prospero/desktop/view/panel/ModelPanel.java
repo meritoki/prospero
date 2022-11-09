@@ -26,6 +26,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.desktop.view.menu.VariableMenu;
 import org.meritoki.prospero.library.model.Model;
@@ -41,6 +43,7 @@ public class ModelPanel extends javax.swing.JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -6776181167285776504L;
+	static Logger logger = LogManager.getLogger(ModelPanel.class.getName());
 	private Model model;
 	private MainFrame mainFrame;
 	private VariableMenu nodeMenu;
@@ -127,6 +130,7 @@ public class ModelPanel extends javax.swing.JPanel {
 								Variable node = model.getVariable(lastPathComponent.toString());
 								if (node != null) {
 									model.setNode(node);
+									model.updateNode();
 									mainFrame.init();
 								}
 							}

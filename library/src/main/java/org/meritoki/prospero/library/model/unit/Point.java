@@ -14,6 +14,7 @@ public class Point {
 	public double x, y, z;
 	@JsonProperty
 	public Map<String, Object> attribute = new TreeMap<>();
+	@JsonIgnore
 	public boolean flag;
 	
 	public Point() {}

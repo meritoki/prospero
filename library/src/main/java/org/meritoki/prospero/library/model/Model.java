@@ -63,19 +63,24 @@ public class Model extends Variable {
 	
 	public void setNode(Variable variable) {
 		this.node = variable;
+
+	}
+	
+	@SuppressWarnings("resource")
+	public void updateNode() {
 		if(this.node instanceof Solar) {
 			this.solar.sun.setCenter(this.solar.sun.space);//Must Include Sun b/c Solar is Not Orbital
 			this.solar.setScale(this.solar.defaultScale);
 			this.solar.setAzimuth(this.defaultAzimuth);
 			this.solar.setElevation(this.defaultElevation);
 		} else if(this.node instanceof Orbital) {
-			logger.info("setNode("+variable+") Orbital");
+			logger.info("updateNode() Orbital this.node="+this.node);
 			Orbital o = (Orbital)this.node;
 			o.updateSpace();
 			this.solar.sun.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
 			o.setScale(o.defaultScale);
 		} else if(this.node instanceof Spheroid){
-			logger.info("setNode("+variable+") Spheroid");
+			logger.info("updateNode() Spheroid this.node="+this.node);
 			Spheroid s = (Spheroid)this.node;
 			s.setElevation(s.getProjection().elevation);
 			s.setAzimuth(s.getProjection().azimuth);

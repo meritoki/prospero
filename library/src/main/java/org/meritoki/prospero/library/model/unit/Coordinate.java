@@ -20,8 +20,6 @@ public class Coordinate implements Comparable<Coordinate> {
 	@JsonProperty
 	public Map<String, Object> attribute = new TreeMap<>();
 	@JsonIgnore
-	public Point point = new Point();
-	@JsonIgnore
 	public boolean flag;
 
 	public Coordinate() {
@@ -113,3 +111,5 @@ public class Coordinate implements Comparable<Coordinate> {
 		return this.flag +";"+this.latitude + ";" + this.longitude + ";" + ((this.calendar != null)?this.calendar.getTime():null) + ";" + this.attribute;
 	}
 }
+//@JsonIgnore
+//public Point point = new Point();

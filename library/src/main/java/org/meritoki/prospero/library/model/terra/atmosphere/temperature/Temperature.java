@@ -35,16 +35,16 @@ public class Temperature extends Atmosphere {
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		if(this.load) { 
-//			this.init(this.calendar);
-			if (coordinateList != null) {
-				for (Coordinate c : coordinateList) {
-					if (c != null) {
-						graphics.setColor(this.chroma.getColor((double)c.attribute.get("temperature"), this.min, this.max));
-						graphics.fillOval((int) ((c.point.x) * this.projection.scale),
-								(int) ((c.point.y) * this.projection.scale), (int) 4, (int) 4);
-					}
-				}
-			}
+////			this.init(this.calendar);
+//			if (coordinateList != null) {
+//				for (Coordinate c : coordinateList) {
+//					if (c != null) {
+//						graphics.setColor(this.chroma.getColor((double)c.attribute.get("temperature"), this.min, this.max));
+//						graphics.fillOval((int) ((c.point.x) * this.projection.scale),
+//								(int) ((c.point.y) * this.projection.scale), (int) 4, (int) 4);
+//					}
+//				}
+//			}
 		}
 	}
 }
