@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -259,17 +259,19 @@ public class CameraPanel extends javax.swing.JPanel
 			if(node instanceof Orbital) {//20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
 				Orbital o = (Orbital)node;
 				o.updateSpace();
-				this.model.solar.sun.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
+				this.model.solar.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
 			} else if(node instanceof Spheroid) {
 				Spheroid s = (Spheroid)node;
 				this.azimuth = s.getProjection().azimuth;
 				this.elevation = s.getProjection().elevation;
+//				this.model.solar.setAzimuth(this.azimuth);
+//				this.model.solar.setElevation(this.elevation);
 				Object root = s.getRoot();
 				while(root != null) {
 					if(root instanceof Orbital) {
 						Orbital o = (Orbital)root;
 						o.updateSpace();
-						this.model.solar.sun.setCenter(o.space);
+						this.model.solar.setCenter(o.space);
 						break;
 					} else {
 						root = ((Variable)root).getRoot();
@@ -280,6 +282,7 @@ public class CameraPanel extends javax.swing.JPanel
 			
 			if (node != null) {
 				try {
+//					this.model.solar.paint(graphics);
 					node.paint(graphics);
 				} catch (Exception e) {
 					e.printStackTrace();

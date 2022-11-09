@@ -699,15 +699,15 @@ public class Tunnel extends Spheroid {
 		barycenterB.scalarMultiply(this.getProjection().scale);
 		g.setColor(Color.BLUE);
 		g.drawLine((int) (pointA.x), (int) (pointA.y), (int) (pointB.x), (int) (pointB.y));
-//		Point pointC = (new Point(pointA.x-barycenterA.getX(),pointA.y-barycenterA.getY(),pointA.z-barycenterA.getZ()));
-//		Point pointD = (new Point(pointB.x-barycenterB.getX(),pointB.y-barycenterB.getY(),pointB.z-barycenterB.getZ()));
+		Point pointC = (new Point(pointA.x-barycenterA.getX(),pointA.y-barycenterA.getY(),pointA.z-barycenterA.getZ()));
+		Point pointD = (new Point(pointB.x-barycenterB.getX(),pointB.y-barycenterB.getY(),pointB.z-barycenterB.getZ()));
 
 //		pointC = pointC.scale(this.getProjection().scale);
 //		pointD = pointD.scale(this.getProjection().scale);
 
 //		pointC = this.getProjection().getPoint(pointC);
 //		pointD = this.getProjection().getPoint(pointD);
-//		System.out.println(pointA+":"+pointB+":"+pointC+":"+pointD);
+		System.out.println(pointA+":"+pointB+":"+pointC+":"+pointD);
 //		g.setColor(Color.GRAY);
 //		g.drawLine((int) (pointA.x*scale), (int) (pointA.y*scale), (int) (pointB.x*scale), (int) (pointB.y * scale));
 //		double magnitudeA = this.getMagnitude(barycenterA);

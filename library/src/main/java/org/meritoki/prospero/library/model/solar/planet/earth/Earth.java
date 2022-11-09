@@ -21,6 +21,7 @@ import java.awt.Graphics;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.solar.moon.luna.Luna;
 import org.meritoki.prospero.library.model.solar.planet.Planet;
+import org.meritoki.prospero.library.model.solar.star.Star;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.unit.Space;
 
@@ -44,8 +45,8 @@ public class Earth extends Planet {
 		this.b = this.a;// Kilometers
 		this.c = 6357.00;// Kilometers
 		this.color = Color.BLUE;
-		this.defaultScale = 7200000.0;
-		this.terra.defaultScale = this.defaultScale;
+		this.defaultScale = 16;
+		this.terra.defaultScale = 7200000.0;
 		// N
 		this.longitudeOfAscendingNode[0] = 0;// Degrees
 		this.longitudeOfAscendingNode[1] = 0;// Degrees

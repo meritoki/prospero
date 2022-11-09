@@ -24,7 +24,6 @@ SOFTWARE.
 package org.meritoki.prospero.library.model.color;
 
 import java.awt.Color;
-import java.awt.color.ColorSpace;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

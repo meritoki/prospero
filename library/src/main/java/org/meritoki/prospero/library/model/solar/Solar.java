@@ -116,6 +116,12 @@ public class Solar extends Grid {
 		}
 	}
 	
+	@Override
+	public void setCenter(Space center) {
+		super.setCenter(center);
+		this.sun.setCenter(center);
+	}
+	
 	public void setScale(double scale) {
 		super.setScale(scale);
 		List<Variable> nodeList = this.tunnel.getChildren();
