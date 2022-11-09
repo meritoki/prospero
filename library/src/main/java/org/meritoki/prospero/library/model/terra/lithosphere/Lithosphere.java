@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.lithosphere.tectonic.Tectonic;
 import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Result;
 
 public class Lithosphere extends Terra {
@@ -48,16 +48,16 @@ public class Lithosphere extends Terra {
 //			this.coordinateList = (List<Coordinate>) this.data.get(sourceUUID, this.query);
 			if (this.coordinateList != null) {
 				this.initCoordinateMinMax("elevation", null);
-				List<Coordinate> coordinateList = this.projection.getCoordinateList(0, this.coordinateList);
+				List<Point> coordinateList = this.projection.getCoordinateList(0, this.coordinateList);
 				if (coordinateList != null) {
-					for (Coordinate c : coordinateList) {
+					for (Point c : coordinateList) {
 						if (c != null) {
 							if (c.attribute.get("elevation") != null) {
 								graphics.setColor(this.chroma.getColor((double) c.attribute.get("elevation"),
 										this.min, this.max));
 							}
-							graphics.fillOval((int) ((c.point.x) * this.projection.scale),
-									(int) ((c.point.y) * this.projection.scale), (int) 5, (int) 5);
+							graphics.fillOval((int) ((c.x) * this.projection.scale),
+									(int) ((c.y) * this.projection.scale), (int) 5, (int) 5);
 						}
 					}
 				}

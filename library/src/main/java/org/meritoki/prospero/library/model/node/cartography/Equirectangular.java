@@ -1,34 +1,33 @@
 package org.meritoki.prospero.library.model.node.cartography;
 
-import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Point;
 
 public class Equirectangular extends Projection {
 
 	public Equirectangular() {
 		super(1);
-		this.zFlag = false;
 	}
 
 	@Override
-	public Coordinate getCoordinate(double vertical,double latitude, double longitude) {
+	public Point getPoint(double vertical,double latitude, double longitude) {
 		latitude *= -1;
-		Coordinate coordinate = new Coordinate();
-		coordinate.point.y = Math.toRadians(latitude);
-		coordinate.point.x = Math.toRadians(longitude);
-		if (coordinate != null) {
-			if(coordinate.point.x > this.xMax) {
-				this.xMax = coordinate.point.x;
+		Point point = new Point();
+		point.y = Math.toRadians(latitude);
+		point.x = Math.toRadians(longitude);
+		if (point != null) {
+			if(point.x > this.xMax) {
+				this.xMax = point.x;
 			}
-			if(coordinate.point.y > this.yMax) {
-				this.yMax = coordinate.point.y;
+			if(point.y > this.yMax) {
+				this.yMax = point.y;
 			}
 		}
-		double x = this.unit * 4000 * coordinate.point.x ;
-		double y = this.unit * 4000 * coordinate.point.y;
+		double x = this.unit * 4000 * point.x ;
+		double y = this.unit * 4000 * point.y;
 		double z = vertical;
 		Point point3D = new Point(x, y, z);
-		return this.getCoordinate(point3D);
+		return this.getPoint(point3D);
 	}
 	
 	@Override
@@ -37,6 +36,6 @@ public class Equirectangular extends Projection {
 	}
 }
 //@Override 
-//public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
-//	return this.getCoordinate(vertical,latitude, longitude);
+//public Point getPoint(double vertical, double latitude, double longitude) {
+//	return this.getPoint(vertical,latitude, longitude);
 //}

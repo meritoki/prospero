@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.terra.lithosphere.magnetic.anamoly.Anomaly;
-import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Point;
 
 public class Field extends Lithosphere {
 
@@ -22,20 +22,19 @@ public class Field extends Lithosphere {
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		if (this.load) {
-
 			if (this.coordinateList != null) {
 				String variable = "intensity";
 				this.initCoordinateMinMax(variable,null);
-				List<Coordinate> coordinateList = this.getProjection().getCoordinateList(0, this.coordinateList);
+				List<Point> coordinateList = this.getProjection().getCoordinateList(0, this.coordinateList);
 				if (coordinateList != null) {
-					for (Coordinate c : coordinateList) {
+					for (Point c : coordinateList) {
 						if (c != null) {
 							if (c.attribute.get(variable) != null) {
 								graphics.setColor(this.chroma.getColor((double) c.attribute.get(variable),
 										this.min, this.max));
 							}
-							graphics.fillOval((int) ((c.point.x) * this.getProjection().scale),
-									(int) ((c.point.y) * this.getProjection().scale), (int) 6, (int) 6);
+							graphics.fillOval((int) ((c.x) * this.getProjection().scale),
+									(int) ((c.y) * this.getProjection().scale), (int) 6, (int) 6);
 						}
 					}
 				}

@@ -3,7 +3,7 @@ package org.meritoki.prospero.library.model.node.cartography;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Point;
 
 public class AzimuthalNorth extends Projection {
@@ -13,52 +13,51 @@ public class AzimuthalNorth extends Projection {
 
 	public AzimuthalNorth() {
 		super();
-		this.zFlag = false;
 	}
 
 	@Override
-	public Coordinate getCoordinate(double vertical, double latitude, double longitude) {
-		Coordinate coordinate = null;
+	public Point getPoint(double vertical, double latitude, double longitude) {
+		Point point = null;
 		latitude = Math.toRadians(latitude);// * this.radians;// MultiPolygon y
 		longitude = Math.toRadians(longitude);// * this.radians; // MultiPolygon x
 		if (latitude >= 0) {
-			coordinate = new Coordinate();
+			point = new Point();
 			double c = Math.acos(Math.sin(this.centerLatitude) * Math.sin(latitude) + (Math.cos(this.centerLatitude)
 					* Math.cos(latitude) * Math.cos(longitude - this.centerLongitude)));
 			double k = c / Math.sin(c);
 			double x = k * this.unit * 4000 * (Math.cos(latitude) * Math.sin(longitude - this.centerLongitude));
 			double y = k * this.unit * 4000 * (Math.cos(this.centerLatitude) * Math.sin(latitude)
 					- Math.sin(this.centerLatitude) * Math.cos(latitude) * Math.cos(longitude - this.centerLongitude));
-			coordinate.point.x = x;
-			coordinate.point.y = y;
+			point.x = x;
+			point.y = y;
 		}
-		if (coordinate != null) {
-			if(coordinate.point.x > this.xMax) {
-				this.xMax = coordinate.point.x;
+		if (point != null) {
+			if(point.x > this.xMax) {
+				this.xMax = point.x;
 			}
-			if(coordinate.point.y > this.yMax) {
-				this.yMax = coordinate.point.y;
+			if(point.y > this.yMax) {
+				this.yMax = point.y;
 			}
-			double x = coordinate.point.x;
-			double y = -coordinate.point.y;
+			double x = point.x;
+			double y = -point.y;
 			double z = vertical;
-			Point point3D = new Point(x, y, z);
-			return this.getCoordinate(point3D);
+//			Point point3D = new Point(x, y, z);
+			return this.getPoint(new Point(x, y, z));
 		} else {
 			return null;
 		}
 	}
 
 	@Override
-	public List<Coordinate> getGridCoordinateList(double vertical, int latitudeInterval, int longitudeInterval) {
-		List<Coordinate> coordinateList = new ArrayList<>();
-		Coordinate coordinate;
+	public List<Point> getGridPointList(double vertical, int latitudeInterval, int longitudeInterval) {
+		List<Point> coordinateList = new ArrayList<>();
+		Point coordinate;
 		for (int i = -90; i < 90; i++) {
 			for (int j = -180; j < 180; j += longitudeInterval) {
 				double latitude = i;
 				double longitude = j;
 				if (latitude >= 0) {
-					coordinate = this.getCoordinate(vertical, latitude, longitude);
+					coordinate = this.getPoint(vertical, latitude, longitude);
 					if (coordinate != null)
 						coordinateList.add(coordinate);
 				}
@@ -69,7 +68,7 @@ public class AzimuthalNorth extends Projection {
 				double latitude = i;
 				double longitude = j;
 				if (latitude >= 0) {
-					coordinate = this.getCoordinate(vertical, latitude, longitude);
+					coordinate = this.getPoint(vertical, latitude, longitude);
 					if (coordinate != null)
 						coordinateList.add(coordinate);
 				}
@@ -84,8 +83,8 @@ public class AzimuthalNorth extends Projection {
 	}
 }
 //@Override 
-//public Coordinate getCoordinate(double latitude, double longitude) {
-//	return this.getCoordinate(0,latitude, longitude);
+//public Point getPoint(double latitude, double longitude) {
+//	return this.getPoint(0,latitude, longitude);
 //}
 //@Override
 //public void paint(Graphics graphics) {

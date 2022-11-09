@@ -22,6 +22,7 @@ public class Tile {
 	public double longitude;
 	public double dimension;
 	public float value;
+	public boolean flag;
 
 	public Tile(Tile tile) {
 		if (tile != null) {

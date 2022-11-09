@@ -298,8 +298,9 @@ public class Cyclone extends Atmosphere {
 		//Time Tile Map Retains All Tiles at Moments in Time
 		//All Tile Lists Same Tile Order
 		//Constructing String for File w/ New Lines
-		//Each Column is a Tile Latitude and Longitude w/ Dimension
+		//Each Column is a Tile Latitude and Longitude
 		//Each Row is a moment in Time
+		//Must be Monthly Averages
 		for (int i = 0; i < this.timeList.size(); i++) {
 			Time time = this.timeList.get(i);
 			List<Tile> tileList = this.timeTileMap.get(time);

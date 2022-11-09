@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiLineString;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
-import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Result;
 
 public class Tectonic extends Lithosphere {
@@ -42,10 +42,10 @@ public class Tectonic extends Lithosphere {
 		if(this.load) { 
 			if (this.multiLineStringList != null) {
 				graphics.setColor(this.color);
-				List<Coordinate> coordinateList = this.getProjection().getMultiLineStringList(0, multiLineStringList);
-				for (Coordinate c : coordinateList) {
-					graphics.fillOval((int) ((c.point.x) * this.getProjection().scale),
-							(int) ((c.point.y) * this.getProjection().scale), (int) 2, (int) 2);
+				List<Point> coordinateList = this.getProjection().getMultiLineStringList(0, multiLineStringList);
+				for (Point c : coordinateList) {
+					graphics.fillOval((int) ((c.x) * this.getProjection().scale),
+							(int) ((c.y) * this.getProjection().scale), (int) 2, (int) 2);
 				}
 			}
 		}

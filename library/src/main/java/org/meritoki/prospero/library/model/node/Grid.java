@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +45,7 @@ import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Meter;
 import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
@@ -504,10 +504,10 @@ public class Grid extends Spheroid {
 				this.min = this.getMeters(maxLevel);
 				this.max = this.getMeters(minLevel);
 			}
-			Coordinate a;
-			Coordinate b;
-			Coordinate c;
-			Coordinate d;
+			Point a;
+			Point b;
+			Point c;
+			Point d;
 			for (Entry<Integer, List<Tile>> entry : this.tileListMap.entrySet()) {
 				((Graphics2D) graphics).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 				int level = entry.getKey();
@@ -518,17 +518,17 @@ public class Grid extends Spheroid {
 				double vertical = index * interval;
 				if (tileList != null && tileList.size() > 0) {
 					for (Tile t : tileList) {
-						a = projection.getCoordinate(vertical, t.latitude, t.longitude);
-						b = projection.getCoordinate(vertical, t.latitude + t.dimension, t.longitude);
-						c = projection.getCoordinate(vertical, t.latitude + t.dimension, t.longitude + t.dimension);
-						d = projection.getCoordinate(vertical, t.latitude, t.longitude + t.dimension);
+						a = projection.getPoint(vertical, t.latitude, t.longitude);
+						b = this.getProjection().getPoint(vertical, t.latitude + t.dimension, t.longitude);
+						c = this.getProjection().getPoint(vertical, t.latitude + t.dimension, t.longitude + t.dimension);
+						d = this.getProjection().getPoint(vertical, t.latitude, t.longitude + t.dimension);
 						if (a != null && b != null && c != null && d != null) {
-							int xpoints[] = { (int) (a.point.x * projection.scale),
-									(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
-									(int) (d.point.x * projection.scale) };
-							int ypoints[] = { (int) (a.point.y * projection.scale),
-									(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
-									(int) (d.point.y * projection.scale) };
+							int xpoints[] = { (int) (a.x * this.getProjection().scale),
+									(int) (b.x * this.getProjection().scale), (int) (c.x * this.getProjection().scale),
+									(int) (d.x * this.getProjection().scale) };
+							int ypoints[] = { (int) (a.y * this.getProjection().scale),
+									(int) (b.y * this.getProjection().scale), (int) (c.y * this.getProjection().scale),
+									(int) (d.y * this.getProjection().scale) };
 							int npoints = 4;
 
 							if (this.clearFlag) {
@@ -574,21 +574,21 @@ public class Grid extends Spheroid {
 
 	public void paintBand(Graphics graphics) {
 		this.chroma = new Chroma(scheme);
-		Coordinate a;
-		Coordinate b;
-		Coordinate c;
-		Coordinate d;
+		Point a;
+		Point b;
+		Point c;
+		Point d;
 		for (Band band : this.bandList) {
 			for (Tile t : band.tileList) {
-				a = projection.getCoordinate(0, t.latitude, t.longitude);
-				b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
-				c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
-				d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+				a = this.getProjection().getPoint(0, t.latitude, t.longitude);
+				b = this.getProjection().getPoint(0, t.latitude + t.dimension, t.longitude);
+				c = this.getProjection().getPoint(0, t.latitude + t.dimension, t.longitude + t.dimension);
+				d = this.getProjection().getPoint(0, t.latitude, t.longitude + t.dimension);
 				if (a != null && b != null && c != null && d != null) {
-					int xpoints[] = { (int) (a.point.x * projection.scale), (int) (b.point.x * projection.scale),
-							(int) (c.point.x * projection.scale), (int) (d.point.x * projection.scale) };
-					int ypoints[] = { (int) (a.point.y * projection.scale), (int) (b.point.y * projection.scale),
-							(int) (c.point.y * projection.scale), (int) (d.point.y * projection.scale) };
+					int xpoints[] = { (int) (a.x * this.getProjection().scale), (int) (b.x * this.getProjection().scale),
+							(int) (c.x * this.getProjection().scale), (int) (d.x * this.getProjection().scale) };
+					int ypoints[] = { (int) (a.y * this.getProjection().scale), (int) (b.y * this.getProjection().scale),
+							(int) (c.y * this.getProjection().scale), (int) (d.y * this.getProjection().scale) };
 					int npoints = 4;
 					graphics.setColor(this.chroma.getColor(band.value, this.getMin(), this.getMax()));
 					graphics.fillPolygon(xpoints, ypoints, npoints);
@@ -597,7 +597,7 @@ public class Grid extends Spheroid {
 		}
 		this.initBandMinMax();
 		if (projection.scale >= this.defaultScale) {
-			Meter meter = new Meter(0.9, (int) (projection.xMax * projection.scale), this.getMax(), this.getMin(),
+			Meter meter = new Meter(0.9, (int) (projection.xMax * this.getProjection().scale), this.getMax(), this.getMin(),
 					this.unit, this.getIncrement());
 			meter.setChroma(this.chroma);
 			meter.paint(graphics);
@@ -607,27 +607,27 @@ public class Grid extends Spheroid {
 	public void paintTile(Graphics graphics) {
 		logger.debug(this + ".paintTile(...) tileList.size() = " + this.tileList.size());
 		this.chroma = new Chroma(this.scheme);
-		Coordinate a;
-		Coordinate b;
-		Coordinate c;
-		Coordinate d;
+		Point a;
+		Point b;
+		Point c;
+		Point d;
 		java.util.Iterator<Tile> iterator = this.tileList.iterator();
 		while (iterator.hasNext()) {
 			Tile t = new Tile(iterator.next());
 			if (t != null) {
-				a = this.getProjection().getCoordinate(0, t.latitude, t.longitude);
-				b = this.getProjection().getCoordinate(0, t.latitude + t.dimension, t.longitude);
-				c = this.getProjection().getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
-				d = this.getProjection().getCoordinate(0, t.latitude, t.longitude + t.dimension);
+				a = this.getProjection().getPoint(0, t.latitude, t.longitude);
+				b = this.getProjection().getPoint(0, t.latitude + t.dimension, t.longitude);
+				c = this.getProjection().getPoint(0, t.latitude + t.dimension, t.longitude + t.dimension);
+				d = this.getProjection().getPoint(0, t.latitude, t.longitude + t.dimension);
 				if (a != null && b != null && c != null && d != null) {
-					int xpoints[] = { (int) (a.point.x * this.getProjection().scale),
-							(int) (b.point.x * this.getProjection().scale),
-							(int) (c.point.x * this.getProjection().scale),
-							(int) (d.point.x * this.getProjection().scale) };
-					int ypoints[] = { (int) (a.point.y * this.getProjection().scale),
-							(int) (b.point.y * this.getProjection().scale),
-							(int) (c.point.y * this.getProjection().scale),
-							(int) (d.point.y * this.getProjection().scale) };
+					int xpoints[] = { (int) (a.x * this.getProjection().scale),
+							(int) (b.x * this.getProjection().scale),
+							(int) (c.x * this.getProjection().scale),
+							(int) (d.x * this.getProjection().scale) };
+					int ypoints[] = { (int) (a.y * this.getProjection().scale),
+							(int) (b.y * this.getProjection().scale),
+							(int) (c.y * this.getProjection().scale),
+							(int) (d.y * this.getProjection().scale) };
 					int npoints = 4;
 					graphics.setColor(this.chroma.getColor(t.value, this.getMin(), this.getMax()));
 					graphics.fillPolygon(xpoints, ypoints, npoints);
@@ -640,10 +640,10 @@ public class Grid extends Spheroid {
 						graphics.setColor(Color.WHITE);
 					}
 					Coordinate center = t.getCenter();
-					Coordinate s = this.getProjection().getCoordinate(0, center.latitude, center.longitude);
+					Point s = this.getProjection().getPoint(0, center.latitude, center.longitude);
 					double radius = 4;
-					double x = (s.point.x * this.getProjection().scale) - (radius / 2);
-					double y = (s.point.y * this.getProjection().scale) - (radius / 2);
+					double x = (s.x * this.getProjection().scale) - (radius / 2);
+					double y = (s.y * this.getProjection().scale) - (radius / 2);
 					graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
 				}
 			}
@@ -664,17 +664,17 @@ public class Grid extends Spheroid {
 			Event event = (Event) this.eventList.get(i);
 			if (event.flag) {
 				logger.debug(this + ".paintEvent(...) event=" + event.id);
-				List<Coordinate> coordinateList = this.getProjection().getCoordinateList(0, event.coordinateList);
+				List<Point> coordinateList = this.getProjection().getCoordinateList(0, event.coordinateList);
 				if (coordinateList != null) {
 					for (int j = 0; j < coordinateList.size(); j++) {// Coordinate c : coordinateList) {
-						Coordinate c = coordinateList.get(j);
-						if (c != null && c.flag) {
+						Point c = coordinateList.get(j);
+						if (c.flag) {
 							logger.debug(this + ".paint(...) coordinate=" + c);
 							graphics.setColor(this.chroma.getColor(j, 0, coordinateList.size()));
-							graphics.drawLine((int) ((c.point.x) * this.getProjection().scale),
-									(int) ((c.point.y) * this.getProjection().scale),
-									(int) ((c.point.x) * this.getProjection().scale),
-									(int) ((c.point.y) * this.getProjection().scale));
+							graphics.drawLine((int) ((c.x) * this.getProjection().scale),
+									(int) ((c.y) * this.getProjection().scale),
+									(int) ((c.x) * this.getProjection().scale),
+									(int) ((c.y) * this.getProjection().scale));
 						}
 					}
 				}
@@ -847,17 +847,17 @@ public class Grid extends Spheroid {
 //						while (iterator.hasNext()) {
 //							Tile t = new Tile(iterator.next());
 //							if (t != null) {
-//								a = projection.getCoordinate(0, t.latitude, t.longitude);
-//								b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
-//								c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
-//								d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+//								a = this.getProjection().getCoordinate(0, t.latitude, t.longitude);
+//								b = this.getProjection().getCoordinate(0, t.latitude + t.dimension, t.longitude);
+//								c = this.getProjection().getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+//								d = this.getProjection().getCoordinate(0, t.latitude, t.longitude + t.dimension);
 //								if (a != null && b != null && c != null && d != null) {
-//									int xpoints[] = { (int) (a.point.x * projection.scale),
-//											(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
-//											(int) (d.point.x * projection.scale) };
-//									int ypoints[] = { (int) (a.point.y * projection.scale),
-//											(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
-//											(int) (d.point.y * projection.scale) };
+//									int xpoints[] = { (int) (a.point.x * this.getProjection().scale),
+//											(int) (b.point.x * this.getProjection().scale), (int) (c.point.x * this.getProjection().scale),
+//											(int) (d.point.x * this.getProjection().scale) };
+//									int ypoints[] = { (int) (a.point.y * this.getProjection().scale),
+//											(int) (b.point.y * this.getProjection().scale), (int) (c.point.y * this.getProjection().scale),
+//											(int) (d.point.y * this.getProjection().scale) };
 //									int npoints = 4;
 //									g2d.setColor(this.chroma.getColor(count, 0, this.clusterList.size()));
 //									g2d.fillPolygon(xpoints, ypoints, npoints);
@@ -895,17 +895,17 @@ public class Grid extends Spheroid {
 //								while (iterator.hasNext()) {
 //									Tile t = new Tile(iterator.next());
 //									if (t != null && region.contains(t)) {
-//										a = projection.getCoordinate(0, t.latitude, t.longitude);
-//										b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
-//										c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
-//										d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+//										a = this.getProjection().getCoordinate(0, t.latitude, t.longitude);
+//										b = this.getProjection().getCoordinate(0, t.latitude + t.dimension, t.longitude);
+//										c = this.getProjection().getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+//										d = this.getProjection().getCoordinate(0, t.latitude, t.longitude + t.dimension);
 //										if (a != null && b != null && c != null && d != null) {
-//											int xpoints[] = { (int) (a.point.x * projection.scale),
-//													(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
-//													(int) (d.point.x * projection.scale) };
-//											int ypoints[] = { (int) (a.point.y * projection.scale),
-//													(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
-//													(int) (d.point.y * projection.scale) };
+//											int xpoints[] = { (int) (a.point.x * this.getProjection().scale),
+//													(int) (b.point.x * this.getProjection().scale), (int) (c.point.x * this.getProjection().scale),
+//													(int) (d.point.x * this.getProjection().scale) };
+//											int ypoints[] = { (int) (a.point.y * this.getProjection().scale),
+//													(int) (b.point.y * this.getProjection().scale), (int) (c.point.y * this.getProjection().scale),
+//													(int) (d.point.y * this.getProjection().scale) };
 //											int npoints = 4;
 //											if(significance != null) {
 //												g2d.setColor(significanceChroma.getColor(significance, 0, 1));
@@ -919,7 +919,7 @@ public class Grid extends Spheroid {
 //					}
 //				}
 //				double increment = 0;
-//				Meter meter = new Meter(0.9, (int)(projection.xMax * projection.scale), 1, 0,null,increment);
+//				Meter meter = new Meter(0.9, (int)(projection.xMax * this.getProjection().scale), 1, 0,null,increment);
 //				meter.setChroma(this.chroma);
 //				meter.paint(graphics);
 //				break;
@@ -937,24 +937,24 @@ public class Grid extends Spheroid {
 //					while (iterator.hasNext()) {
 //						Tile t = new Tile(iterator.next());
 //						if (t != null) {
-//							a = projection.getCoordinate(0, t.latitude, t.longitude);
-//							b = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude);
-//							c = projection.getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
-//							d = projection.getCoordinate(0, t.latitude, t.longitude + t.dimension);
+//							a = this.getProjection().getCoordinate(0, t.latitude, t.longitude);
+//							b = this.getProjection().getCoordinate(0, t.latitude + t.dimension, t.longitude);
+//							c = this.getProjection().getCoordinate(0, t.latitude + t.dimension, t.longitude + t.dimension);
+//							d = this.getProjection().getCoordinate(0, t.latitude, t.longitude + t.dimension);
 //							if (a != null && b != null && c != null && d != null) {
-//								int xpoints[] = { (int) (a.point.x * projection.scale),
-//										(int) (b.point.x * projection.scale), (int) (c.point.x * projection.scale),
-//										(int) (d.point.x * projection.scale) };
-//								int ypoints[] = { (int) (a.point.y * projection.scale),
-//										(int) (b.point.y * projection.scale), (int) (c.point.y * projection.scale),
-//										(int) (d.point.y * projection.scale) };
+//								int xpoints[] = { (int) (a.point.x * this.getProjection().scale),
+//										(int) (b.point.x * this.getProjection().scale), (int) (c.point.x * this.getProjection().scale),
+//										(int) (d.point.x * this.getProjection().scale) };
+//								int ypoints[] = { (int) (a.point.y * this.getProjection().scale),
+//										(int) (b.point.y * this.getProjection().scale), (int) (c.point.y * this.getProjection().scale),
+//										(int) (d.point.y * this.getProjection().scale) };
 //								int npoints = 4;
 //								g2d.setColor(this.chroma.getColor(t.value, this.getMin(), this.getMax()));
 //								g2d.fillPolygon(xpoints, ypoints, npoints);
 //							}
 //						}
 //					}
-//					Meter meter = new Meter(0.9, (int)(projection.xMax * projection.scale), this.getMax(), this.getMin(),this.unit,this.getIncrement());
+//					Meter meter = new Meter(0.9, (int)(projection.xMax * this.getProjection().scale), this.getMax(), this.getMin(),this.unit,this.getIncrement());
 //					meter.setChroma(this.chroma);
 //					meter.paint(graphics);
 //				} else if (this.eventList != null && this.eventList.size() > 0) {

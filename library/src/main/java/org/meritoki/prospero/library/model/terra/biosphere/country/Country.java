@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
-import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Polygon;
 import org.meritoki.prospero.library.model.unit.Result;
 
@@ -44,11 +44,11 @@ public class Country extends Biosphere {
 				for (Polygon p : polygonList) {
 					if (p.coordinateList.size() > 0) {
 						for (int i = 0; i < p.coordinateList.size(); i++) {
-							Coordinate c = p.coordinateList.get(i);
-							graphics.drawLine((int) ((c.point.x) * this.getProjection().scale),
-									(int) ((c.point.y) * this.getProjection().scale),
-									(int) ((c.point.x) * this.getProjection().scale),
-									(int) ((c.point.y) * this.getProjection().scale));
+							Point c = p.coordinateList.get(i);
+							graphics.drawLine((int) ((c.x) * this.getProjection().scale),
+									(int) ((c.y) * this.getProjection().scale),
+									(int) ((c.x) * this.getProjection().scale),
+									(int) ((c.y) * this.getProjection().scale));
 						}
 					}
 				}

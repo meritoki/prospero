@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Point;
 
 public class Anomaly extends Lithosphere {
 	
@@ -26,16 +27,16 @@ public class Anomaly extends Lithosphere {
 
 			if (this.coordinateList != null) {
 				this.initCoordinateMinMax("z",99999.0);
-				List<Coordinate> coordinateList = this.getProjection().getCoordinateList(0, this.coordinateList);
+				List<Point> coordinateList = this.getProjection().getCoordinateList(0, this.coordinateList);
 				if (coordinateList != null) {
-					for (Coordinate c : coordinateList) {
+					for (Point c : coordinateList) {
 						if (c != null) {
 							if (c.attribute.get("z") != null) {
 								graphics.setColor(this.chroma.getColor((double) c.attribute.get("z"),
 										this.min, this.max));
 							}
-							graphics.fillOval((int) ((c.point.x) * this.getProjection().scale),
-									(int) ((c.point.y) * this.getProjection().scale), (int) 3, (int) 3);
+							graphics.fillOval((int) ((c.x) * this.getProjection().scale),
+									(int) ((c.y) * this.getProjection().scale), (int) 3, (int) 3);
 						}
 					}
 				}

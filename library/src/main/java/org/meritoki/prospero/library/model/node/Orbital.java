@@ -71,6 +71,7 @@ public class Orbital extends Grid {
 
 	public Orbital(String name) {
 		super(name);
+		
 	}
 
 	@JsonIgnore
@@ -114,19 +115,24 @@ public class Orbital extends Grid {
 	}
 
 	public List<Point> getOrbit(Orbital centroid) {
+//		System.out.println("getOrbit(" + centroid + ")");
 		LinkedList<Point> vertexList = new LinkedList<>();
-		if (this.orbitalPeriod > 0) {
-			double resolution = 512.0;
-			double increment = (this.orbitalPeriod * 24) / resolution;
-			Calendar calendar = (Calendar) this.calendar.clone();
-			double count = 0;
-			while (count <= resolution) {
-				Space space = this.getSpace(calendar, centroid);
-				space.subtract(this.center);
-				Point position = this.projection.getPoint(space.getPoint());// this.getSpace(calendar,centroid).getPoint());
-				calendar.add(Calendar.HOUR, (int) (Math.round(increment))); // number of days to ad
-				count++;
-				vertexList.add(position);
+		if (centroid != null) {
+			if (this.orbitalPeriod > 0) {
+				double resolution = 512.0;
+				double increment = (this.orbitalPeriod * 24) / resolution;
+				Calendar calendar = (Calendar) this.calendar.clone();
+				double count = 0;
+				while (count <= resolution) {
+					Space space = this.getSpace(calendar, centroid);
+					space.subtract(this.center);
+					Point position = this.getProjection().getPoint(space.getPoint());// this.getSpace(calendar,centroid).getPoint());
+					if (position != null) {
+						calendar.add(Calendar.HOUR, (int) -(Math.round(increment))); // number of days to ad
+						vertexList.add(position);
+					}
+					count++;
+				}
 			}
 		}
 		return vertexList;
@@ -393,20 +399,23 @@ public class Orbital extends Grid {
 					(int) (vertexList.get(i).y * this.getProjection().scale));
 		}
 		graphics.setColor(this.color);
+		
 		Point point = this.getProjection().getPoint(this.getProjection().space.getPoint());// this.buffer
-		double x = point.x * this.getProjection().scale;
-		double y = point.y * this.getProjection().scale;
-		graphics.setColor(this.color);
-//		double radius = 8;
-//		x = x - (radius / 2);
-//		y = y - (radius / 2);
-//		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
-		graphics.setColor(Color.black);
-		String text = this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "";
-		int width = graphics.getFontMetrics().stringWidth(text);
-		x = x - (width / 2);
-		y -= 2;
-		graphics.drawString(text, (int) x, (int) y);
+		if (point != null) {
+			double x = point.x * this.getProjection().scale;
+			double y = point.y * this.getProjection().scale;
+			graphics.setColor(this.color);
+			double radius = 4;
+			x = x - (radius / 2);
+			y = y - (radius / 2);
+			graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
+			graphics.setColor(Color.black);
+			String text = this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "";
+			int width = graphics.getFontMetrics().stringWidth(text);
+			x = x - (width / 2);
+			y -= 2;
+			graphics.drawString(text, (int) x, (int) y);
+		}
 	}
 }
 //if (this.obliquity > 0) {

@@ -1,13 +1,20 @@
 package org.meritoki.prospero.library.model.unit;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Point {
+	@JsonProperty
 	public double x, y, z;
+	@JsonProperty
+	public Map<String, Object> attribute = new TreeMap<>();
+	public boolean flag;
 	
 	public Point() {}
 	

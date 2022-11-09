@@ -6,47 +6,49 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.locationtech.jts.geom.Point;
+//import org.locationtech.jts.geom.Point;
 import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
 import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Result;
 
 public class City extends Biosphere {
 
 	static Logger logger = LogManager.getLogger(City.class.getName());
 	public Color color = Color.BLACK;
-	public List<Point> pointList;
-	
+	public List<org.locationtech.jts.geom.Point> pointList;
+
 	public City() {
 		super("City");
 		this.sourceMap.put("Natural Earth", "9bc2dd83-85c9-48fe-818f-f62db97c594a");
 	}
-	
+
 	@Override
 	public void load(Result result) {
 		Object object = result.map.get("pointList");
-		if(object != null) {
-			this.pointList = (List<Point>)object;
+		if (object != null) {
+			this.pointList = (List<org.locationtech.jts.geom.Point>) object;
 			if (this.pointList.size() == 0) {
 				logger.warn("load(...) this.pointList.size() == 0");
 			}
 		}
 	}
 
-
-
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
-		if(this.load) { 
-			if(this.pointList != null) {
+		if (this.load) {
+			if (this.pointList != null) {
 				graphics.setColor(Color.black);
-				List<Coordinate> coordinateList = this.getProjection().getPointList(0, this.pointList);
+				List<Point> coordinateList = this.getProjection().getPointList(0, this.pointList);
 				if (coordinateList != null) {
-					for (Coordinate c : coordinateList) {
-						graphics.drawLine((int) ((c.point.x) * this.getProjection().scale),
-								(int) ((c.point.y) * this.getProjection().scale), (int) ((c.point.x) * this.getProjection().scale),
-								(int) ((c.point.y) * this.getProjection().scale));
+					for (Point c : coordinateList) {
+						if (c != null) {
+							graphics.drawLine((int) ((c.x) * this.getProjection().scale),
+									(int) ((c.y) * this.getProjection().scale),
+									(int) ((c.x) * this.getProjection().scale),
+									(int) ((c.y) * this.getProjection().scale));
+						}
 					}
 				}
 			}

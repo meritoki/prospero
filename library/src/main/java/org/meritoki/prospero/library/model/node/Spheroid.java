@@ -52,20 +52,20 @@ public class Spheroid extends Energy {
 	@Override
 	public void updateSpace() {
 		super.updateSpace();
-		this.projection.setSpace(this.buffer);
+		this.getProjection().setSpace(this.buffer);
 	}
 
 	@JsonIgnore
 	public void setCenter(Space center) {
 		super.setCenter(center);
-		this.projection.setSpace(this.buffer);
+		this.getProjection().setSpace(this.buffer);
 	}
 
 	public void setProjection(Projection projection) {
 //		logger.info(this.name+".setProjection("+projection+")");
 		this.projection = projection;
 	}
-	
+
 	public void setSelectedProjection(Projection selected) {
 //		logger.info(this.name+".setSelectedProjection("+selected+")");
 		this.selected = selected;
@@ -222,11 +222,11 @@ public class Spheroid extends Energy {
 		// resistance = Double.parseDouble(df.format(resistance));
 		return resistance;
 	}
-	
+
 	public Projection getProjection() {
-		Projection projection = this.selected;
-		if(projection == null) {
-			projection = this.projection;
+		Projection projection = this.projection;//this.selected;
+		if (this.selected != null) {
+			projection = this.selected;
 		}
 //		logger.info(this.name+".getProjection() projection="+projection);
 		return projection;
@@ -302,21 +302,23 @@ public class Spheroid extends Energy {
 		super.paint(graphics);
 		graphics.setColor(this.color);
 //		logger.info(this.name+".paint(graphics) this.getProjection()="+this.getProjection()+" xMax="+this.getProjection().xMax);
-		List<Coordinate> coordinateList = this.getProjection().getGridCoordinateList(0, 15, 30);
-		for (Coordinate c : coordinateList) {
-			graphics.drawLine((int) ((c.point.x) * this.getProjection().scale), (int) ((c.point.y) * this.getProjection().scale),
-					(int) ((c.point.x) * this.getProjection().scale), (int) ((c.point.y) * this.getProjection().scale));
+		List<Point> coordinateList = this.getProjection().getGridPointList(0, 15, 30);
+		for (Point c : coordinateList) {
+			graphics.drawLine((int) ((c.x) * this.getProjection().scale), (int) ((c.y) * this.getProjection().scale),
+					(int) ((c.x) * this.getProjection().scale), (int) ((c.y) * this.getProjection().scale));
 		}
-		
+
 //		logger.info(this.name+".paint(graphics) this.getProjection().space="+this.getProjection().space);
 		Point point = this.getProjection().getPoint(this.getProjection().space.getPoint());// this.buffer
-		double x = point.x * this.getProjection().scale;
-		double y = point.y * this.getProjection().scale;
+		if (point != null) {
+			double x = point.x * this.getProjection().scale;
+			double y = point.y * this.getProjection().scale;
 //		graphics.setColor(this.color);
-		double radius = 2;
-		x = x - (radius / 2);
-		y = y - (radius / 2);
-		graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
+			double radius = 2;
+			x = x - (radius / 2);
+			y = y - (radius / 2);
+			graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
+		}
 //		graphics.setColor(Color.black);
 //		graphics.drawString(this.name.substring(0, 1).toUpperCase() + this.name.substring(1) + "", (int) x,
 //				(int) y);
