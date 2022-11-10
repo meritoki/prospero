@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Region {
 	static Logger logger = LogManager.getLogger(Region.class.getName());
+	//20221109 Future Use Coordinate
 	public double latitudeA;
 	public double longitudeA;
 	public double latitudeB;

@@ -23,13 +23,14 @@ import java.util.TimeZone;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.data.Data;
 import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.node.data.Data;
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.unit.Script;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.controller.node.NodeController;
 import com.meritoki.module.library.model.N;
 
@@ -37,22 +38,30 @@ public class Model extends Variable {
 
 	static Logger logger = LogManager.getLogger(Model.class.getName());
 	public Variable node = this;
+	public Data data = new Data();
 	public Solar solar = new Solar();
 	public int defaultAzimuth = 0;
 	public int defaultElevation = 150;
 
 	public Model() {
 		super("Model");
+		this.data.setBasePath("/home/jorodriguez/Prospero/prospero-data/");
 		this.solar.setAzimuth(this.defaultAzimuth);
 		this.solar.setElevation(this.defaultElevation);
 		this.addChild(this.solar);
-		this.setData(new Data());
+		this.setData(this.data);
 		this.calendar = Calendar.getInstance();
 		this.calendar.setTime(new Date());
 		this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
 		this.setCalendar(this.calendar);
 	}
 	
+	@JsonIgnore
+	public void setDataBasePath(String basePath) {
+		this.data.setBasePath(basePath);
+	}
+	
+	@JsonIgnore
 	public void setNode(Variable variable) {
 		this.node = variable;
 	}

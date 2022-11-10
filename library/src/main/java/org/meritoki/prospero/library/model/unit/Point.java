@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -27,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class Point {
 	@JsonProperty
 	public double x, y, z;
-	@JsonProperty
+	@JsonInclude(Include.NON_EMPTY)
 	public Map<String, Object> attribute = new TreeMap<>();
 	@JsonIgnore
 	public boolean flag;

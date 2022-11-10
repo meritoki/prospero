@@ -689,14 +689,15 @@ public class Tunnel extends Spheroid {
 		Vector3D barycenterB = this.getBarycenterB();
 		barycenterA.scalarMultiply(1 / (Unit.ASTRONOMICAL * 1000));
 		barycenterB.scalarMultiply(1 / (Unit.ASTRONOMICAL * 1000));
+		barycenterA.scalarMultiply(this.getProjection().scale);
+		barycenterB.scalarMultiply(this.getProjection().scale);
 		Point pointA = (a.buffer.getPoint());
 		Point pointB = (b.buffer.getPoint());
 		pointA = this.getProjection().getPoint(pointA);
 		pointB = this.getProjection().getPoint(pointB);
 		pointA = pointA.scale(this.getProjection().scale);
 		pointB = pointB.scale(this.getProjection().scale);
-		barycenterA.scalarMultiply(this.getProjection().scale);
-		barycenterB.scalarMultiply(this.getProjection().scale);
+
 		g.setColor(Color.BLUE);
 		g.drawLine((int) (pointA.x), (int) (pointA.y), (int) (pointB.x), (int) (pointB.y));
 		Point pointC = (new Point(pointA.x-barycenterA.getX(),pointA.y-barycenterA.getY(),pointA.z-barycenterA.getZ()));
@@ -710,15 +711,15 @@ public class Tunnel extends Spheroid {
 		System.out.println(pointA+":"+pointB+":"+pointC+":"+pointD);
 //		g.setColor(Color.GRAY);
 //		g.drawLine((int) (pointA.x*scale), (int) (pointA.y*scale), (int) (pointB.x*scale), (int) (pointB.y * scale));
-//		double magnitudeA = this.getMagnitude(barycenterA);
-//		double magnitudeB = this.getMagnitude(barycenterB);
-//		if(magnitudeA < magnitudeB) {
-//			g.setColor(Color.RED);
-//		} 
+		double magnitudeA = this.getMagnitude(barycenterA);
+		double magnitudeB = this.getMagnitude(barycenterB);
+		if(magnitudeA < magnitudeB) {
+			g.setColor(Color.RED);
+		} 
 //		g.drawLine((int) (pointA.x), (int) (pointA.y), (int) (pointC.x), (int) (pointC.y));
-//		if(magnitudeA < magnitudeB) {
-//			g.setColor(Color.BLUE);
-//		}
+		if(magnitudeB < magnitudeA) {
+			g.setColor(Color.BLUE);
+		}
 //		g.drawLine((int) (pointB.x), (int) (pointB.y), (int) (pointD.x), (int) (pointD.y ));
 //		g.drawLine((int) (pointA.x*this.getProjection().scale), (int) (pointA.y*this.getProjection().scale), (int) (pointC.x*this.getProjection().scale), (int) (pointC.y*this.getProjection().scale));
 //		if(magnitudeA < magnitudeB) {

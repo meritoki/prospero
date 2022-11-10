@@ -33,10 +33,10 @@ import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.color.Chroma;
-import org.meritoki.prospero.library.model.color.Scheme;
+import org.meritoki.prospero.library.model.node.color.Chroma;
+import org.meritoki.prospero.library.model.node.color.Scheme;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.terra.analysis.Analysis;
+import org.meritoki.prospero.library.model.unit.Analysis;
 import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Coordinate;

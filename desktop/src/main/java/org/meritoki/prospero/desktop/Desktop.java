@@ -39,7 +39,10 @@ public class Desktop {
 	public static Option cacheOption = new Option("c", "cache", false, "Cache data between queries, requires memory");
 	public static Option scriptPathOption = Option.builder("s").longOpt("script").desc("Option to input script file or folder path")
 			.hasArg().build();
+	public static Option dataPathOption = Option.builder("d").longOpt("data").desc("Option to input data folder path")
+			.hasArg().build();
 	public static String scriptPath = null;
+	public static String dataPath = null;
 	public static boolean mainFlag = false;
 	public static boolean cacheFlag = false;
 
@@ -49,6 +52,7 @@ public class Desktop {
 		options.addOption(cacheOption);
 		options.addOption(helpOption);
 		options.addOption(scriptPathOption);
+		options.addOption(dataPathOption);
 		options.addOption(versionOption);
 		CommandLineParser parser = new DefaultParser();
 		try {

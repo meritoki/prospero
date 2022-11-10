@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class Coordinate implements Comparable<Coordinate> {
 
@@ -32,7 +34,7 @@ public class Coordinate implements Comparable<Coordinate> {
 	public double latitude;
 	@JsonProperty
 	public double longitude;
-	@JsonProperty
+	@JsonInclude(Include.NON_EMPTY)
 	public Map<String, Object> attribute = new TreeMap<>();
 	@JsonIgnore
 	public boolean flag;

@@ -188,10 +188,11 @@ public class Projection implements ProjectionInterface {
 		Point point;
 		for (org.meritoki.prospero.library.model.unit.Coordinate coordinate : coordinateList) {
 			point = this.getPoint(vertical, coordinate.latitude, coordinate.longitude);
-			point.flag = coordinate.flag;
-
-			point.attribute.putAll(coordinate.attribute);
-			pointList.add(point);
+			if (point != null) {
+				point.flag = coordinate.flag;
+				point.attribute.putAll(coordinate.attribute);
+				pointList.add(point);
+			}
 
 		}
 		logger.debug("getCoordinateList(" + vertical + ", " + coordinateList.size() + ") coordinateList.size()="

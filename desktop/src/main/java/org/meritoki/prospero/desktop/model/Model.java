@@ -27,9 +27,7 @@ import org.meritoki.prospero.library.model.document.Document;
 public class Model extends org.meritoki.prospero.library.model.Model {
 
 	private static final Logger logger = LogManager.getLogger(Model.class.getName());
-	
 	public System system = new System();
-	
 	public Resource resource = new Resource();
 	
 	public void newDocument() {

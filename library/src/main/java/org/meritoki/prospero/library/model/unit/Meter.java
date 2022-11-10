@@ -21,7 +21,7 @@ import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import org.meritoki.prospero.library.model.color.Chroma;
+import org.meritoki.prospero.library.model.node.color.Chroma;
 
 
 /**

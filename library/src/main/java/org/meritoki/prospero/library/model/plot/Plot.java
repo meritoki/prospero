@@ -11,8 +11,8 @@ import javax.swing.JPanel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.node.color.Chroma;
 import org.meritoki.prospero.library.model.unit.Table;
 
 public class Plot { //extends JPanel {

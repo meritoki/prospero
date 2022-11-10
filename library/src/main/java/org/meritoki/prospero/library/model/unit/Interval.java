@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class Interval {
 
 	static Logger logger = LogManager.getLogger(Interval.class.getName());
+	//20221109 Future: Convert to Use Time Object
 	@JsonProperty
 	public int startYear = -1;
 	@JsonProperty
