@@ -28,10 +28,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.GridPopupMenu;
 import org.meritoki.prospero.library.model.Model;
-import org.meritoki.prospero.library.model.node.Energy;
 import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.solar.star.Star;
 
 /**
  *
@@ -255,13 +255,16 @@ public class CameraPanel extends javax.swing.JPanel
 		graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
 		graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
 		if (this.model != null && this.model.node != null) {
-			Variable node = this.model.node;
-			if(node instanceof Orbital) {//20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
-				Orbital o = (Orbital)node;
+//			Variable node = this.model.node;
+			if(this.model.node instanceof Orbital) {//20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
+				Orbital o = (Orbital)this.model.node;
 				o.updateSpace();
 				this.model.solar.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
-			} else if(node instanceof Spheroid) {
-				Spheroid s = (Spheroid)node;
+//				this.model.solar.setAzimuth(this.azimuth);
+//				this.model.solar.setElevation(this.elevation);
+//				this.model.node = this.model.solar.sun;
+			} else if(this.model.node instanceof Spheroid) {
+				Spheroid s = (Spheroid)this.model.node;
 				this.azimuth = s.getProjection().azimuth;
 				this.elevation = s.getProjection().elevation;
 //				this.model.solar.setAzimuth(this.azimuth);
@@ -272,18 +275,18 @@ public class CameraPanel extends javax.swing.JPanel
 						Orbital o = (Orbital)root;
 						o.updateSpace();
 						this.model.solar.setCenter(o.space);
+//						this.model.node = this.model.solar.sun;
 						break;
 					} else {
 						root = ((Variable)root).getRoot();
 					}
 				}
-	
 			}
 			
-			if (node != null) {
+			if (this.model.node != null) {
 				try {
 //					this.model.solar.paint(graphics);
-					node.paint(graphics);
+					this.model.node.paint(graphics);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -314,6 +317,16 @@ public class CameraPanel extends javax.swing.JPanel
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	// End of variables declaration//GEN-END:variables
 }
+//Object root = o.getRoot();
+//while(root != null) {
+//	if(root instanceof Star) {
+//		Star s = (Star)root;
+//		node = s;
+//		break;
+//	} else {
+//		root = ((Variable)root).getRoot();
+//	}
+//}
 //Object root = s.getRoot();
 //if(root instanceof Orbital) {
 //	Orbital o = (Orbital)root;

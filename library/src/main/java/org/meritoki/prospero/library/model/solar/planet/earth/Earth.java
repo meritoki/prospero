@@ -45,7 +45,7 @@ public class Earth extends Planet {
 		this.b = this.a;// Kilometers
 		this.c = 6357.00;// Kilometers
 		this.color = Color.BLUE;
-		this.defaultScale = 16;
+		this.defaultScale = 7200000.0;
 		this.terra.defaultScale = 7200000.0;
 		// N
 		this.longitudeOfAscendingNode[0] = 0;// Degrees

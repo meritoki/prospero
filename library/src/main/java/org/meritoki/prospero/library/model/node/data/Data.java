@@ -98,6 +98,7 @@ public class Data extends Node {
 	}
 	
 	public void setBasePath(String basePath) {
+		logger.info("setBasePath("+basePath+")");
 		for(Entry<String,Source> entry: this.sourceMap.entrySet()) {
 			Source source = entry.getValue();
 			source.setBasePath(basePath);

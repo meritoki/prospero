@@ -16,6 +16,7 @@
 package org.meritoki.prospero.desktop.model;
 
 import java.io.File;
+import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +30,24 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 	private static final Logger logger = LogManager.getLogger(Model.class.getName());
 	public System system = new System();
 	public Resource resource = new Resource();
+//	public Properties properties = NodeController.openPropertiesXML(new File("prospero.xml"));
+	
+	public Model() {
+		super();
+		this.initProperties();
+	}
+	
+	public void initProperties() {
+		Properties properties = null;
+		File propertiesFile = new File("prospero.xml");
+		if(propertiesFile.exists()) {
+			properties = NodeController.openPropertiesXML(propertiesFile);
+		} else {
+			properties = new Properties();
+			NodeController.savePropertiesXML(properties, "prospero.xml", "Prospero");
+		}
+		this.setProperties(properties);
+	}
 	
 	public void newDocument() {
 		logger.info("newDocument()");

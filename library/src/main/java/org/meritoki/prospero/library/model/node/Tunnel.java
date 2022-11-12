@@ -708,7 +708,7 @@ public class Tunnel extends Spheroid {
 
 //		pointC = this.getProjection().getPoint(pointC);
 //		pointD = this.getProjection().getPoint(pointD);
-		System.out.println(pointA+":"+pointB+":"+pointC+":"+pointD);
+//		System.out.println(pointA+":"+pointB+":"+pointC+":"+pointD);
 //		g.setColor(Color.GRAY);
 //		g.drawLine((int) (pointA.x*scale), (int) (pointA.y*scale), (int) (pointB.x*scale), (int) (pointB.y * scale));
 		double magnitudeA = this.getMagnitude(barycenterA);

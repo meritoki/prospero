@@ -71,6 +71,10 @@ public class Desktop {
 				if (commandLine.hasOption("cache")) {
 					cacheFlag = true;
 				}
+				if(commandLine.hasOption("data")) {
+					dataPath = commandLine.getOptionValue("data");
+					logger.info("main(args) data=" + dataPath);
+				}
 				mainFlag = true;
 			}
 		} catch (org.apache.commons.cli.ParseException ex) {
@@ -82,6 +86,7 @@ public class Desktop {
 			final SplashWindow splashWindow = new SplashWindow("/Splash.png", mainFrame, 2000);
 			final Model model = new Model();
 			model.setCache(cacheFlag);
+			model.setBasePath(dataPath);
 			try {
 				model.setScriptPath(scriptPath);
 				mainFrame.setModel(model);

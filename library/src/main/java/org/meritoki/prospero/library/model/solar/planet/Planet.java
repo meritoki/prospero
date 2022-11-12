@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.function.Sine;
 import org.meritoki.prospero.library.model.node.Orbital;
+import org.meritoki.prospero.library.model.solar.star.Star;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
 
@@ -47,7 +48,6 @@ public class Planet extends Orbital {
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
-
 	}
 }
 //this.initVariableMap();

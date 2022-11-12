@@ -18,6 +18,7 @@ package org.meritoki.prospero.library.model;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Properties;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
@@ -37,6 +38,7 @@ import com.meritoki.module.library.model.N;
 public class Model extends Variable {
 
 	static Logger logger = LogManager.getLogger(Model.class.getName());
+	public Properties properties;
 	public Variable node = this;
 	public Data data = new Data();
 	public Solar solar = new Solar();
@@ -45,7 +47,6 @@ public class Model extends Variable {
 
 	public Model() {
 		super("Model");
-		this.data.setBasePath("/home/jorodriguez/Prospero/prospero-data/");
 		this.solar.setAzimuth(this.defaultAzimuth);
 		this.solar.setElevation(this.defaultElevation);
 		this.addChild(this.solar);
@@ -57,8 +58,19 @@ public class Model extends Variable {
 	}
 	
 	@JsonIgnore
-	public void setDataBasePath(String basePath) {
-		this.data.setBasePath(basePath);
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+		Object basePath = this.properties.get("basePath");
+		if(basePath instanceof String) {
+			this.data.setBasePath((String)basePath);
+		}
+	}
+	
+	@JsonIgnore
+	public void setBasePath(String basePath) {
+		if(basePath != null) {
+			this.data.setBasePath(basePath);
+		}
 	}
 	
 	@JsonIgnore
@@ -148,6 +160,7 @@ public class Model extends Variable {
 		return script;
 	}
 }
+//this.data.setBasePath("/home/jorodriguez/Prospero/prospero-data/");
 //this.calendar.set(Calendar.YEAR, 2001);
 //this.calendar.set(Calendar.MONTH, 0);
 //this.calendar.set(Calendar.DATE, 1);
