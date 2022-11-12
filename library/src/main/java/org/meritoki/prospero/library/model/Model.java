@@ -90,7 +90,7 @@ public class Model extends Variable {
 			Orbital o = (Orbital)this.node;
 			o.updateSpace();
 			this.solar.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
-			o.setScale(o.defaultScale);
+//			o.setScale(o.defaultScale);
 		} else if(this.node instanceof Spheroid){
 			logger.info("updateNode() "+this.node+" instanceof Spheroid");
 			Spheroid s = (Spheroid)this.node;

@@ -255,15 +255,16 @@ public class CameraPanel extends javax.swing.JPanel
 		graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
 		graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
 		if (this.model != null && this.model.node != null) {
-//			Variable node = this.model.node;
 			if(this.model.node instanceof Orbital) {//20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
+				logger.info("paint("+(graphics != null)+") "+this.model.node+" instanceof Orbital");
 				Orbital o = (Orbital)this.model.node;
 				o.updateSpace();
 				this.model.solar.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
-//				this.model.solar.setAzimuth(this.azimuth);
-//				this.model.solar.setElevation(this.elevation);
-//				this.model.node = this.model.solar.sun;
+				this.model.solar.setAzimuth(this.azimuth);
+				this.model.solar.setElevation(this.elevation);
+				this.model.node = this.model.solar;
 			} else if(this.model.node instanceof Spheroid) {
+				logger.info("paint("+(graphics != null)+") "+this.model.node+" instanceof Spheroid");
 				Spheroid s = (Spheroid)this.model.node;
 				this.azimuth = s.getProjection().azimuth;
 				this.elevation = s.getProjection().elevation;
@@ -275,6 +276,7 @@ public class CameraPanel extends javax.swing.JPanel
 						Orbital o = (Orbital)root;
 						o.updateSpace();
 						this.model.solar.setCenter(o.space);
+//						this.model.node = this.model.solar;
 //						this.model.node = this.model.solar.sun;
 						break;
 					} else {
@@ -317,6 +319,7 @@ public class CameraPanel extends javax.swing.JPanel
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	// End of variables declaration//GEN-END:variables
 }
+//Variable node = this.model.node;
 //Object root = o.getRoot();
 //while(root != null) {
 //	if(root instanceof Star) {
