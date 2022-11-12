@@ -32,7 +32,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.view.panel.CameraPanel;
-import org.meritoki.prospero.desktop.view.panel.SolarPanel;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.cartography.AzimuthalNorth;

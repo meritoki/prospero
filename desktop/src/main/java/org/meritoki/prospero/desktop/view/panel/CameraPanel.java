@@ -68,7 +68,7 @@ public class CameraPanel extends javax.swing.JPanel
 	public void setModel(Model model) {
 		this.model = model;
 		this.node = this.model.node;
-//		this.menu = new GridPopupMenu(this.model);
+		this.menu = new GridPopupMenu(this.model);
 	}
 
 	@Override
@@ -168,66 +168,66 @@ public class CameraPanel extends javax.swing.JPanel
 						break;
 					}
 					case '1': {// bottom
-						azimuth = 0;
-						elevation = 0;
-						s.setAzimuth(azimuth);
-						s.setElevation(elevation);
+						this.azimuth = 0;
+						this.elevation = 0;
+						s.setAzimuth(this.azimuth);
+						s.setElevation(this.elevation);
 						repaint();
 						break;
 					}
 					case '2': {// top
-						azimuth = 180;
-						elevation = 0;
-						s.setAzimuth(azimuth);
-						s.setElevation(elevation);
+						this.azimuth = 180;
+						this.elevation = 0;
+						s.setAzimuth(this.azimuth);
+						s.setElevation(this.elevation);
 						repaint();
 						break;
 					}
 					case '3': {
-						azimuth = 0;
-						elevation = -90;
-						s.setAzimuth(azimuth);
-						s.setElevation(elevation);
+						this.azimuth = 0;
+						this.elevation = -90;
+						s.setAzimuth(this.azimuth);
+						s.setElevation(this.elevation);
 						repaint();
 						break;
 					}
 					case '4': {
-						azimuth = 180;
-						elevation = 90;
-						s.setAzimuth(azimuth);
-						s.setElevation(elevation);
+						this.azimuth = 180;
+						this.elevation = 90;
+						s.setAzimuth(this.azimuth);
+						s.setElevation(this.elevation);
 						repaint();
 						break;
 					}
 					case '5': {
-						azimuth = 90;
-						elevation = 0;
-						s.setAzimuth(azimuth);
-						s.setElevation(elevation);
+						this.azimuth = 90;
+						this.elevation = 0;
+						s.setAzimuth(this.azimuth);
+						s.setElevation(this.elevation);
 						repaint();
 						break;
 					}
 					case '6': {
-						azimuth = -90;
-						elevation = 0;
-						s.setAzimuth(azimuth);
-						s.setElevation(elevation);
+						this.azimuth = -90;
+						this.elevation = 0;
+						s.setAzimuth(this.azimuth);
+						s.setElevation(this.elevation);
 						repaint();
 						break;
 					}
 					case '7': {
-						azimuth = 0;
-						elevation = 55;
-						s.setAzimuth(azimuth);
-						s.setElevation(elevation);
+						this.azimuth = 0;
+						this.elevation = 55;
+						s.setAzimuth(this.azimuth);
+						s.setElevation(this.elevation);
 						repaint();
 						break;
 					}
 					case '8': {
-						azimuth = 23;
-						elevation = 35;
-						s.setAzimuth(azimuth);
-						s.setElevation(elevation);
+						this.azimuth = 23;
+						this.elevation = 35;
+						s.setAzimuth(this.azimuth);
+						s.setElevation(this.elevation);
 						repaint();
 						break;
 					}
@@ -259,7 +259,7 @@ public class CameraPanel extends javax.swing.JPanel
 		graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
 		if (this.model != null && this.model.node != null) {
 			if(this.model.node instanceof Orbital) {//20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
-				logger.info("paint("+(graphics != null)+") "+this.model.node+" instanceof Orbital");
+				logger.debug("paint("+(graphics != null)+") "+this.model.node+" instanceof Orbital");
 				Orbital o = (Orbital)this.model.node;
 				o.updateSpace();
 				this.model.solar.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
@@ -267,7 +267,7 @@ public class CameraPanel extends javax.swing.JPanel
 				this.model.solar.setElevation(this.elevation);
 				this.node = this.model.solar;
 			} else if(this.model.node instanceof Spheroid) {
-				logger.info("paint("+(graphics != null)+") "+this.model.node+" instanceof Spheroid");
+				logger.debug("paint("+(graphics != null)+") "+this.model.node+" instanceof Spheroid");
 				Spheroid s = (Spheroid)this.model.node;
 				this.azimuth = s.getProjection().azimuth;
 				this.elevation = s.getProjection().elevation;
