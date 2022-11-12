@@ -39,9 +39,9 @@ public class Model extends Variable {
 
 	static Logger logger = LogManager.getLogger(Model.class.getName());
 	public Properties properties;
-	public Variable node = this;
 	public Data data = new Data();
 	public Solar solar = new Solar();
+	public Variable node = solar;
 	public int defaultAzimuth = 0;
 	public int defaultElevation = 150;
 

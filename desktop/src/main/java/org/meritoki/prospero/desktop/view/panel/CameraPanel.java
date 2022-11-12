@@ -44,10 +44,12 @@ public class CameraPanel extends javax.swing.JPanel
 	static Logger logger = LogManager.getLogger(CameraPanel.class.getName());
 	protected GridPopupMenu menu;
 	public Model model;
+	public Variable node;
 	public double factor = 1.5;
 	protected int xDelta, yDelta;
 	protected double azimuth = 0;
 	protected double elevation = 0;
+	protected double scale = 1;
 	public Dimension dimension;
 
 	/**
@@ -65,6 +67,7 @@ public class CameraPanel extends javax.swing.JPanel
 
 	public void setModel(Model model) {
 		this.model = model;
+		this.node = this.model.node;
 //		this.menu = new GridPopupMenu(this.model);
 	}
 
@@ -83,13 +86,13 @@ public class CameraPanel extends javax.swing.JPanel
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (this.model != null && this.model.node != null) {
+		if (this.node != null) {
 			int xDelta = e.getX();
 			int yDelta = e.getY();
 			this.azimuth -= xDelta - this.xDelta;
 			this.elevation -= yDelta - this.yDelta;
-			if(model.node instanceof Spheroid) {
-				Spheroid s = (Spheroid)this.model.node;
+			if(this.node instanceof Spheroid) {
+				Spheroid s = (Spheroid)this.node;
 				s.setAzimuth(this.azimuth);
 				s.setElevation(this.elevation);
 			}
@@ -148,9 +151,9 @@ public class CameraPanel extends javax.swing.JPanel
 	@Override
 	public void keyPressed(KeyEvent e) {
 //		logger.info("keyPressed("+e+")");
-		if (this.model != null && this.model.node != null) {
-			if(model.node instanceof Spheroid) {
-				Spheroid s = (Spheroid)this.model.node;
+		if (this.model != null && this.node != null) {
+			if(this.node instanceof Spheroid) {
+				Spheroid s = (Spheroid)this.node;
 				double scale = s.getProjection().scale;
 				if (e.isControlDown()) {
 					switch (e.getKeyChar()) {
@@ -262,20 +265,23 @@ public class CameraPanel extends javax.swing.JPanel
 				this.model.solar.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
 				this.model.solar.setAzimuth(this.azimuth);
 				this.model.solar.setElevation(this.elevation);
-				this.model.node = this.model.solar;
+				this.node = this.model.solar;
 			} else if(this.model.node instanceof Spheroid) {
 				logger.info("paint("+(graphics != null)+") "+this.model.node+" instanceof Spheroid");
 				Spheroid s = (Spheroid)this.model.node;
 				this.azimuth = s.getProjection().azimuth;
 				this.elevation = s.getProjection().elevation;
-//				this.model.solar.setAzimuth(this.azimuth);
-//				this.model.solar.setElevation(this.elevation);
+				this.scale = s.getProjection().scale;
+				this.model.solar.setAzimuth(this.azimuth);
+				this.model.solar.setElevation(this.elevation);
+				this.model.solar.setScale(this.scale);
 				Object root = s.getRoot();
 				while(root != null) {
 					if(root instanceof Orbital) {
 						Orbital o = (Orbital)root;
 						o.updateSpace();
 						this.model.solar.setCenter(o.space);
+						
 //						this.model.node = this.model.solar;
 //						this.model.node = this.model.solar.sun;
 						break;
@@ -283,12 +289,13 @@ public class CameraPanel extends javax.swing.JPanel
 						root = ((Variable)root).getRoot();
 					}
 				}
+				this.node = this.model.node;
 			}
 			
-			if (this.model.node != null) {
+			if (this.node != null) {
 				try {
 //					this.model.solar.paint(graphics);
-					this.model.node.paint(graphics);
+					this.node.paint(graphics);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
