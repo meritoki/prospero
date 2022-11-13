@@ -12,7 +12,7 @@ public class AzimuthalNorth extends Projection {
 	private double centerLongitude = Math.toRadians(0);// * this.radians;
 
 	public AzimuthalNorth() {
-		super();
+		super(1);
 	}
 
 	@Override
@@ -25,8 +25,8 @@ public class AzimuthalNorth extends Projection {
 			double c = Math.acos(Math.sin(this.centerLatitude) * Math.sin(latitude) + (Math.cos(this.centerLatitude)
 					* Math.cos(latitude) * Math.cos(longitude - this.centerLongitude)));
 			double k = c / Math.sin(c);
-			double x = k * this.unit * 4000 * (Math.cos(latitude) * Math.sin(longitude - this.centerLongitude));
-			double y = k * this.unit * 4000 * (Math.cos(this.centerLatitude) * Math.sin(latitude)
+			double x = k * this.unit * 5000 * (Math.cos(latitude) * Math.sin(longitude - this.centerLongitude));
+			double y = k * this.unit * 5000 * (Math.cos(this.centerLatitude) * Math.sin(latitude)
 					- Math.sin(this.centerLatitude) * Math.cos(latitude) * Math.cos(longitude - this.centerLongitude));
 			point.x = x;
 			point.y = y;

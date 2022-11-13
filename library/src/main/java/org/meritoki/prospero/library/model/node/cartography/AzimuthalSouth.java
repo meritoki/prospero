@@ -41,7 +41,7 @@ public class AzimuthalSouth extends Projection {
 			}
 			double x = point.x;
 			double y = -point.y;
-			double z = vertical;
+			double z = vertical*5000*this.unit;
 //			Point point = new Point(x, y, z);
 			return this.getPoint(new Point(x, y, z));
 		} else {

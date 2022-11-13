@@ -56,6 +56,7 @@ public class Projection implements ProjectionInterface {
 	public float nearEye = 3;
 	public float nearObject = 1.5f;
 	public boolean zFlag = true;
+	public List<Double> verticalList = new ArrayList<>();
 
 	public Projection() {
 	}
@@ -132,19 +133,19 @@ public class Projection implements ProjectionInterface {
 		return this.radius * unit;
 	}
 
-	public List<Point> getPointList(double vertical, List<org.locationtech.jts.geom.Point> pointList) {
-		List<Point> coordinateList = new ArrayList<>();
+	public List<Point> getPointList(double vertical, List<org.locationtech.jts.geom.Point> pList) {
+		List<Point> pointList = new ArrayList<>();
 		org.locationtech.jts.geom.Coordinate[] a;
 		Point coordinate;
-		for (org.locationtech.jts.geom.Point m : pointList) {
+		for (org.locationtech.jts.geom.Point m : pList) {
 			a = m.getCoordinates();
 			for (int i = 0; i < a.length; i++) {
 				coordinate = this.getPoint(vertical, a[i].y, a[i].x);
 //				if (coordinate != null)
-				coordinateList.add(coordinate);
+				pointList.add(coordinate);
 			}
 		}
-		return coordinateList;
+		return pointList;
 	}
 
 	public List<Polygon> getPolygonList(double vertical, List<MultiPolygon> multiPolygonList) {
@@ -157,7 +158,7 @@ public class Projection implements ProjectionInterface {
 			for (int i = 0; i < a.length; i++) {
 				Point coordinate = this.getPoint(vertical, a[i].y, a[i].x);
 				if (coordinate != null) {
-					polygon.coordinateList.add(coordinate);
+					polygon.pointList.add(coordinate);
 				}
 			}
 			polygonList.add(polygon);
@@ -229,6 +230,15 @@ public class Projection implements ProjectionInterface {
 //				+ ") coordinateList.size()=" + coordinateList.size());
 		return coordinateList;
 	}
+	
+//	public Point getPoint(double latitude,double longitude) {
+//		Point point;
+//		if(this.verticalList.size() > 0) {
+//			for(Double vertical: this.verticalList) {
+//				
+//			}
+//		}
+//	}
 
 	/**
 	 * Reference A: Spherical to Cartesian Coordinates

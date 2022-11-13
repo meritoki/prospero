@@ -21,6 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Polygon {
-	public List<Point> coordinateList = new ArrayList<>();
+	public List<Point> pointList = new ArrayList<>();
 	public Map<String, Object> attribute = new HashMap<>();
 }

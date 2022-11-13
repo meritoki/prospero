@@ -394,6 +394,15 @@ public class Query {
 	}
 	
 	@JsonIgnore
+	public Double getInterval() {
+		String interval = this.map.get("interval");
+		if(interval != null) {
+			return Double.valueOf(interval);
+		}
+		return 1.0;
+	}
+	
+	@JsonIgnore
 	public Double getSignificance() {
 		String significance = this.map.get("significance");
 		if(significance != null) {

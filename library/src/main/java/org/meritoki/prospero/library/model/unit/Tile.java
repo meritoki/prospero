@@ -44,14 +44,14 @@ public class Tile {
 	}
 
 	public Tile(double latitude, double longitude, double dimension) {
-		logger.debug("Tile(" + latitude + "," + longitude + "," + dimension + "," + value + ")");
+//		logger.debug("Tile(" + latitude + "," + longitude + "," + dimension + "," + value + ")");
 		this.coordinate.latitude = latitude;
 		this.coordinate.longitude = longitude;
 		this.dimension = dimension;
 	}
 
 	public Tile(double latitude, double longitude, double dimension, double value) {
-		logger.debug("Tile(" + latitude + "," + longitude + "," + dimension + "," + value + ")");
+//		logger.debug("Tile(" + latitude + "," + longitude + "," + dimension + "," + value + ")");
 		this.coordinate.latitude = latitude;
 		this.coordinate.longitude = longitude;
 		this.dimension = dimension;
