@@ -39,6 +39,10 @@ public class Dimension {
 		
 	}
 	
+	public Dimension(double value) {
+		this.width = this.height = value;
+	}
+	
 	public Dimension(Dimension dimension) {
 		this.width = dimension.width;
 		this.height = dimension.height;

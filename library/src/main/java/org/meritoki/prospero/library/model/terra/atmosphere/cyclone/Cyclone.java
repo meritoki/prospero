@@ -119,7 +119,8 @@ public class Cyclone extends Atmosphere {
 	}
 
 	/**
-	 * Method is used to set flags in Event and Coordinate to true or false depending on query parameters
+	 * Method is used to set flags in Event and Coordinate to true or false
+	 * depending on query parameters
 	 */
 	@Override
 	public void filter(List<Event> eventList) throws Exception {
@@ -218,56 +219,56 @@ public class Cyclone extends Atmosphere {
 	}
 
 	/**
-		 * Process is a singular function that is used to add new events to
-		 * 
-		 * @param eventList
-		 */
-		public void process(List<Event> eventList) throws Exception {
-			this.region = null;
-			this.reset(eventList);
-			this.filter(eventList);
-			this.prune(eventList);
-			List<Time> timeList = this.setEventMap(this.eventMap, eventList);// what we have
-			for (Time time : timeList) {
-				if (!this.timeList.contains(time)) {
-					time.flag = true;
-					this.timeList.add(time);// what we have seen
-				} else {
-					int index = this.timeList.indexOf(time);
-					this.timeList.get(index).flag = true;
-				}
+	 * Process is a singular function that is used to add new events to
+	 * 
+	 * @param eventList
+	 */
+	public void process(List<Event> eventList) throws Exception {
+		this.region = null;
+		this.reset(eventList);
+		this.filter(eventList);
+		this.prune(eventList);
+		List<Time> timeList = this.setEventMap(this.eventMap, eventList);// what we have
+		for (Time time : timeList) {
+			if (!this.timeList.contains(time)) {
+				time.flag = true;
+				this.timeList.add(time);// what we have seen
+			} else {
+				int index = this.timeList.indexOf(time);
+				this.timeList.get(index).flag = true;
 			}
-			this.setMatrix(eventList);
-			if (this.regionList != null && this.regionList.size() > 0) {
-				for (Time time : this.timeList) {
-					if (!time.flag) {
-						try {
-							eventList = this.eventMap.get(time);
-							if (eventList != null) {
-								for (Region region : this.regionList) {
-									this.region = region;
-									Series series = this.seriesMap.get(region.toString());
-									if (series == null) {
-										series = this.newSeries();
-									}
-									super.filter(eventList);
-									series.addIndex(this.getIndex(time, eventList));
-									this.seriesMap.put(region.toString(), series);
+		}
+		this.setMatrix(eventList);
+		if (this.regionList != null && this.regionList.size() > 0) {
+			for (Time time : this.timeList) {
+				if (!time.flag) {
+					try {
+						eventList = this.eventMap.get(time);
+						if (eventList != null) {
+							for (Region region : this.regionList) {
+								this.region = region;
+								Series series = this.seriesMap.get(region.toString());
+								if (series == null) {
+									series = this.newSeries();
 								}
-								this.initPlotList(this.seriesMap, null);
-	//							this.initTableList(null, null,null);
-								this.eventMap.remove(time);
+								super.filter(eventList);
+								series.addIndex(this.getIndex(time, eventList));
+								this.seriesMap.put(region.toString(), series);
 							}
-						} catch (Exception e) {
-							logger.error("complete() exception=" + e.getMessage());
-							e.printStackTrace();
+							this.initPlotList(this.seriesMap, null);
+							// this.initTableList(null, null,null);
+							this.eventMap.remove(time);
 						}
-					} else {
-						time.flag = false;
+					} catch (Exception e) {
+						logger.error("complete() exception=" + e.getMessage());
+						e.printStackTrace();
 					}
+				} else {
+					time.flag = false;
 				}
 			}
 		}
+	}
 
 	@Override
 	public void complete() {
@@ -300,7 +301,7 @@ public class Cyclone extends Atmosphere {
 			this.cluster();
 		}
 		this.initPlotList(this.seriesMap, this.eventList);
-		this.initTableList(this.eventList, this.tileList, this.bandList,this.clusterList);
+		this.initTableList(this.eventList, this.tileList, this.bandList, this.clusterList);
 	}
 
 	/**
@@ -308,13 +309,13 @@ public class Cyclone extends Atmosphere {
 	 */
 	public void cluster() {
 		StringBuilder sb = new StringBuilder();
-		//Tile List Contains All Moments in Time Queried
-		//Time Tile Map Retains All Tiles at Moments in Time
-		//All Tile Lists Same Tile Order
-		//Constructing String for File w/ New Lines
-		//Each Column is a Tile Latitude and Longitude
-		//Each Row is a moment in Time
-		//Must be Monthly Averages
+		// Tile List Contains All Moments in Time Queried
+		// Time Tile Map Retains All Tiles at Moments in Time
+		// All Tile Lists Same Tile Order
+		// Constructing String for File w/ New Lines
+		// Each Column is a Tile Latitude and Longitude
+		// Each Row is a moment in Time
+		// Must be Monthly Averages
 		for (int i = 0; i < this.timeList.size(); i++) {
 			Time time = this.timeList.get(i);
 			List<Tile> tileList = this.timeTileMap.get(time);
@@ -334,7 +335,7 @@ public class Cyclone extends Atmosphere {
 				sb.append("\n");
 			}
 		}
-		//Save String to CSV File
+		// Save String to CSV File
 		Date dateTime = Calendar.getInstance().getTime();
 		String date = new SimpleDateFormat("yyyyMMdd").format(dateTime);
 		String uuid = UUID.randomUUID().toString();
@@ -344,15 +345,15 @@ public class Cyclone extends Atmosphere {
 			directory.mkdirs();
 		}
 		NodeController.saveText(path, uuid + ".csv", sb);
-		
-		//Prepare R Command w/ Parameters
-		//R Script
-		//Parameter One: CSV File w/ Path
-		//Parameter Two: Start Year
-		//Parameter Three: Start Month
-		//Parameter Four: End Year
-		//Parameter Five: End Month
-		//Parameter Six: Output CSV File w/ Path
+
+		// Prepare R Command w/ Parameters
+		// R Script
+		// Parameter One: CSV File w/ Path
+		// Parameter Two: Start Year
+		// Parameter Three: Start Month
+		// Parameter Four: End Year
+		// Parameter Five: End Month
+		// Parameter Six: Output CSV File w/ Path
 		String input = path + File.separatorChar + uuid + ".csv";
 		String output = path + File.separatorChar + "output-" + uuid + ".csv";
 		String rCommand = "Rscript comparison.R " + input;
@@ -370,9 +371,9 @@ public class Cyclone extends Atmosphere {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//Read Output CSV File
-		//CSV Contains Tile Latitude and Longitude and what Cluster it belongs to w/ ID
-		//Must Use ID Returned by Algorithm to Create Lists of Tiles
+		// Read Output CSV File
+		// CSV Contains Tile Latitude and Longitude and what Cluster it belongs to w/ ID
+		// Must Use ID Returned by Algorithm to Create Lists of Tiles
 		List<String[]> outputList = NodeController.openCsv(output);// "./output.csv");
 		outputList = outputList.subList(2, outputList.size() - 1);
 		List<Tile> tileList = new ArrayList<Tile>();
@@ -392,9 +393,10 @@ public class Cyclone extends Atmosphere {
 			tileList.add(tile);
 			tileMap.put(id, tileList);
 		}
-		//Lists of Tiles are Converted to Cluster Objects
-		//Cluster Object Tile List provides the Latitude, Longitude, and Dimension corresponding to the Cluster
-		//The Tile List does not retain any 
+		// Lists of Tiles are Converted to Cluster Objects
+		// Cluster Object Tile List provides the Latitude, Longitude, and Dimension
+		// corresponding to the Cluster
+		// The Tile List does not retain any
 		List<Cluster> clusterList = new ArrayList<>();
 		Cluster cluster;
 		for (Entry<Integer, List<Tile>> entry : tileMap.entrySet()) {
@@ -412,19 +414,19 @@ public class Cyclone extends Atmosphere {
 			}
 		});
 		this.tileList = new ArrayList<>();
-		for (Cluster c: this.clusterList) {
+		for (Cluster c : this.clusterList) {
 			this.tileList.addAll(c.getTileList());
 		}
 	}
 
 	public void getClusterPlots(List<Cluster> clusterList) {
-		logger.info("getClusterPlots("+clusterList+")");
+		logger.info("getClusterPlots(" + clusterList + ")");
 		Map<String, Series> seriesMap = new HashMap<>();
-		//Time Tile Map Retains All Tiles at Moments in Time
-		//The Main For Loop Iterates Over a Map w/ Time Key and Tile List Value
-		//Each Cluster Contains a Tile List Describing the Position
-		//Each Tile Can Have a Temporary Real Number Value
-		//The Time Tile List is Loaded into a Cluster Tile List
+		// Time Tile Map Retains All Tiles at Moments in Time
+		// The Main For Loop Iterates Over a Map w/ Time Key and Tile List Value
+		// Each Cluster Contains a Tile List Describing the Position
+		// Each Tile Can Have a Temporary Real Number Value
+		// The Time Tile List is Loaded into a Cluster Tile List
 		for (Entry<Time, List<Tile>> entry : this.timeTileMap.entrySet()) {
 			Time time = entry.getKey();
 			List<Tile> tileList = entry.getValue();
@@ -435,10 +437,11 @@ public class Cyclone extends Atmosphere {
 					}
 				}
 			}
-			//Given that Each Cluster has a Persistent and Unique ID
-			//We Get a Series from the Series Map by Cluster ID 
-			//We Add and Average of the Cluster Tile List Values to an Index
-			//We Add the Index to the Series Building a Series of Averages for all Tiles Belonging to a Cluster
+			// Given that Each Cluster has a Persistent and Unique ID
+			// We Get a Series from the Series Map by Cluster ID
+			// We Add and Average of the Cluster Tile List Values to an Index
+			// We Add the Index to the Series Building a Series of Averages for all Tiles
+			// Belonging to a Cluster
 			for (Cluster c : clusterList) {
 				Series series = seriesMap.get(c.uuid);
 				if (series == null) {
@@ -559,7 +562,8 @@ public class Cyclone extends Atmosphere {
 		this.plotList = plotList;
 	}
 
-	public void initTableList(List<Event> eventList, List<Tile> tileList, List<Band> bandList, List<Cluster> clusterList) {
+	public void initTableList(List<Event> eventList, List<Tile> tileList, List<Band> bandList,
+			List<Cluster> clusterList) {
 		List<Table> tableList = new ArrayList<>();
 		if (eventList != null && eventList.size() > 0) {
 			tableList.add(new Table("Cyclone Event(s)", CycloneEvent.getTableModel(eventList)));
@@ -570,7 +574,7 @@ public class Cyclone extends Atmosphere {
 		if (bandList != null && bandList.size() > 0) {
 			tableList.add(new Table("Band(s)", Band.getTableModel(bandList)));
 		}
-		if(clusterList != null && clusterList.size() >0) {
+		if (clusterList != null && clusterList.size() > 0) {
 			tableList.add(new Table("Cluster(s)", Cluster.getTableModel(clusterList)));
 		}
 		this.tableList = tableList;
