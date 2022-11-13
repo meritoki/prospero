@@ -41,9 +41,9 @@ public class Triangle extends Energy {
 	}
 	
 	public void update() {
-		this.a = j.getRectangularDistance(k);
-		this.b = i.getRectangularDistance(k);
-		this.c = i.getRectangularDistance(j);
+		this.a = j.getDistance(k);
+		this.b = i.getDistance(k);
+		this.c = i.getDistance(j);
 		this.A = (Math.pow(this.b, 2) + Math.pow(this.c, 2) - Math.pow(this.a, 2)) / (2 * this.b * this.c);
 		this.A = Math.acos(this.A);
 		this.A = Math.toDegrees(this.A);

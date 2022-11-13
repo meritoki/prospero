@@ -252,7 +252,7 @@ public class CameraPanel extends javax.swing.JPanel
 	@Override
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-		logger.debug("paint(" + (graphics != null) + ")");
+//		logger.debug("paint(" + (graphics != null) + ")");
 		this.dimension = this.getSize();
 		graphics.setColor(Color.white);
 		graphics.fillRect(0, 0, this.getWidth(), this.getHeight());

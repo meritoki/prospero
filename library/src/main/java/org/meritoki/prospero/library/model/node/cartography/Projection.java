@@ -195,8 +195,8 @@ public class Projection implements ProjectionInterface {
 			}
 
 		}
-		logger.debug("getCoordinateList(" + vertical + ", " + coordinateList.size() + ") coordinateList.size()="
-				+ pointList.size());
+//		logger.debug("getCoordinateList(" + vertical + ", " + coordinateList.size() + ") coordinateList.size()="
+//				+ pointList.size());
 		return pointList;
 	}
 
@@ -225,8 +225,8 @@ public class Projection implements ProjectionInterface {
 					coordinateList.add(coordinate);
 			}
 		}
-		logger.debug("getGridCoordinateList(" + vertical + "," + latitudeInterval + "," + longitudeInterval
-				+ ") coordinateList.size()=" + coordinateList.size());
+//		logger.debug("getGridCoordinateList(" + vertical + "," + latitudeInterval + "," + longitudeInterval
+//				+ ") coordinateList.size()=" + coordinateList.size());
 		return coordinateList;
 	}
 

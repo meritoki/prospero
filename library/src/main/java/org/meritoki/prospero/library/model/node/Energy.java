@@ -41,6 +41,10 @@ import org.meritoki.prospero.library.model.unit.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Energy object provides mass parameter used to calculate Joules
+ *
+ */
 public class Energy extends Variable {
 
 	static Logger logger = LogManager.getLogger(Energy.class.getName());
@@ -393,37 +397,7 @@ public class Energy extends Variable {
 		}
 	}
 
-//	public Point getPoint(Point point) {
-//		Point p = null;
-//		double theta = Math.PI * azimuth / 180.0;
-//		double phi = Math.PI * elevation / 180.0;
-//		float cosT = (float) Math.cos(theta);
-//		float sinT = (float) Math.sin(theta);
-//		float cosP = (float) Math.cos(phi);
-//		float sinP = (float) Math.sin(phi);
-//		float cosTcosP = cosT * cosP;
-//		float cosTsinP = cosT * sinP;
-//		float sinTcosP = sinT * cosP;
-//		float sinTsinP = sinT * sinP;
-//		// The following two lines fixed defects when viewing in 3 Dimensions
-//		float near = 32; // distance from eye to near plane
-//		float nearToObj = 8f; // 1.5// distance from near plane to center of object
-//		double x0 = point.x;
-//		double y0 = point.y;
-//		double z0 = point.z;
-//		// compute an orthographic projection
-//		float x1 = (float) (cosT * x0 + sinT * z0);
-//		float y1 = (float) (-sinTsinP * x0 + cosP * y0 + cosTsinP * z0);
-//		// now adjust things to get a perspective projection
-//		float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinP * y0);
-//		x1 = x1 * near / (z1 + near + nearToObj);
-//		y1 = y1 * near / (z1 + near + nearToObj);
-//		p = new Point();
-//		p.x = x1;
-//		p.y = y1;
-//		p.z = z1;
-//		return p;
-//	}
+
 
 	public double getMass() {
 		return this.mass;
@@ -485,12 +459,17 @@ public class Energy extends Variable {
 //		return distance;
 //	}
 
-	public double getRectangularDistance(Energy energy) {
+	/**
+	 * Function returns distance in AU
+	 * @param energy
+	 * @return
+	 */
+	public double getDistance(Energy energy) {
 		Vector3D difference = this.buffer.rectangular.subtract(energy.buffer.rectangular);
 		double distance = Math.sqrt(Math.pow((double) difference.getX(), 2) + Math.pow((double) difference.getY(), 2)
 				+ Math.pow((double) difference.getZ(), 2));
-		distance *= Unit.ASTRONOMICAL;
-		distance *= 1000;
+//		distance *= Unit.ASTRONOMICAL;
+//		distance *= 1000;
 		return distance;
 	}
 
@@ -545,16 +524,16 @@ public class Energy extends Variable {
 	}
 
 	public double getBaryCenter(Energy energy) {
-		return this.getRectangularDistance(energy) * (energy.mass) / (this.mass + energy.mass);
+		return this.getDistance(energy) * (energy.mass) / (this.mass + energy.mass);
 	}
 
 	public double getGravitationalPotentialEnergy(Energy energy) {
-		double distance = this.getRectangularDistance(energy);
+		double distance = this.getDistance(energy);
 		return -(Unit.GRAVITATIONAL_CONSTANT * energy.mass * this.mass) / (distance);
 	}
 
 	public double getGravityForce(Energy energy) {
-		double distance = this.getRectangularDistance(energy);
+		double distance = this.getDistance(energy);
 		return (Unit.GRAVITATIONAL_CONSTANT * ((energy.mass * this.mass) / (Math.pow(distance, 2))));
 	}
 	
@@ -678,6 +657,37 @@ public class Energy extends Variable {
 		super.paint(graphics);
 	}
 }
+//public Point getPoint(Point point) {
+//Point p = null;
+//double theta = Math.PI * azimuth / 180.0;
+//double phi = Math.PI * elevation / 180.0;
+//float cosT = (float) Math.cos(theta);
+//float sinT = (float) Math.sin(theta);
+//float cosP = (float) Math.cos(phi);
+//float sinP = (float) Math.sin(phi);
+//float cosTcosP = cosT * cosP;
+//float cosTsinP = cosT * sinP;
+//float sinTcosP = sinT * cosP;
+//float sinTsinP = sinT * sinP;
+//// The following two lines fixed defects when viewing in 3 Dimensions
+//float near = 32; // distance from eye to near plane
+//float nearToObj = 8f; // 1.5// distance from near plane to center of object
+//double x0 = point.x;
+//double y0 = point.y;
+//double z0 = point.z;
+//// compute an orthographic projection
+//float x1 = (float) (cosT * x0 + sinT * z0);
+//float y1 = (float) (-sinTsinP * x0 + cosP * y0 + cosTsinP * z0);
+//// now adjust things to get a perspective projection
+//float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinP * y0);
+//x1 = x1 * near / (z1 + near + nearToObj);
+//y1 = y1 * near / (z1 + near + nearToObj);
+//p = new Point();
+//p.x = x1;
+//p.y = y1;
+//p.z = z1;
+//return p;
+//}
 //@JsonProperty
 //public double scale;	
 //@JsonIgnore

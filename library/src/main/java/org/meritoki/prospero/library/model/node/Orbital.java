@@ -58,9 +58,8 @@ public class Orbital extends Grid {
 	public double[] eccentricity = new double[3];// e
 	public double[] inclination = new double[3];// i
 	public double[] meanLongitude = new double[3];// l
-	public double[] longitudeOfPeriapsis = new double[3];
 	public double[] longitudeOfAscendingNode = new double[3];// N
-	public double[] argumentOfPeriapsis = new double[3];
+	public double[] argumentOfPeriapsis = new double[3];//w
 	public double[] meanAnomaly = new double[3];
 	public double rotation;
 	public Orbital centroid;
@@ -115,7 +114,7 @@ public class Orbital extends Grid {
 	}
 
 	public List<Point> getOrbit(Orbital centroid) {
-//		System.out.println("getOrbit(" + centroid + ")");
+//		logger.debug("getOrbit(" + centroid + ")");
 		LinkedList<Point> vertexList = new LinkedList<>();
 		if (centroid != null) {
 			if (this.orbitalPeriod > 0) {
@@ -152,24 +151,17 @@ public class Orbital extends Grid {
 	}
 
 	/**
-	 * Use test date 19 april 1990 to verify model is producing the correct values
-	 * 
-	 * N = longitude of the ascending node
-	 * 
-	 * i = inclination to the ecliptic (plane of the Earth's orbit)
-	 * 
-	 * w = argument of perihelion
-	 * 
-	 * a = semi-major axis, or mean distance from Sun
-	 * 
-	 * e = eccentricity (0=circle, 0-1=ellipse, 1=parabola)
-	 * 
-	 * M = mean anomaly (0 at perihelion; increases uniformly with time)
-	 * 
-	 * Please note that a, the semi-major axis, is given in Earth radii for the
-	 * Moon, but in Astronomical Units for the Sun and all the planets.
+	 * <ul>
+	 * <li>N = longitude of the ascending node</li>
+	 * <li>i = inclination to the ecliptic (plane of the Earth's orbit)</li>
+	 * <li>w = argument of perihelion</li>
+	 * <li>a = semi-major axis, or mean distance from Sun</li>
+	 * <li>e = eccentricity (0=circle, 0-1=ellipse, 1=parabola)</li>
+	 * <li>M = mean anomaly (0 at perihelion; increases uniformly with time)</li>
+	 * </ul>
 	 * 
 	 * @param calendar
+	 * @param centroid
 	 * @return Space
 	 */
 	public Space getSpace(Calendar calendar, Orbital centroid) {
@@ -180,10 +172,10 @@ public class Orbital extends Grid {
 		double a = this.semiMajorAxis[0] + this.semiMajorAxis[1] * t;
 		double e = this.eccentricity[0] + this.eccentricity[1] * t;
 		double M = this.getMeanAnomaly(t);
-		N = this.rev(N);
-		i = this.rev(i);
-		w = this.rev(w);
-		M = this.rev(M);
+		N = this.revolution(N);
+		i = this.revolution(i);
+		w = this.revolution(w);
+		M = this.revolution(M);
 		double longitudeCorrection = 0;
 		double latitudeCorrection = 0;
 		// A - Perturabations
@@ -223,7 +215,7 @@ public class Orbital extends Grid {
 			double three = -0.015 * Math.sin(Math.toRadians(Mj - M + 20));
 			longitudeCorrection = one + two + three;
 		}
-		logger.debug(this.name + ":{N: " + N + ", i:" + i + ", w: " + w + ", a: " + a + ", e: " + e + ", M:" + M + "}");
+//		logger.debug(this.name + ":{N: " + N + ", i:" + i + ", w: " + w + ", a: " + a + ", e: " + e + ", M:" + M + "}");
 		// A - Solving Kepler's Equation
 		M = Math.toRadians(M);
 		N = Math.toRadians(N);
@@ -259,8 +251,6 @@ public class Orbital extends Grid {
 				r * Math.sin(lonecl) * Math.sin(latecl), r * Math.cos(lonecl));
 		// A - Place Spheroid in Orbit around Centroid
 		if (centroid != null) {
-//			space.elliptic = this.centroid.space.elliptic.add(eliptic);
-//			space.spherical = spherical;
 			space.rectangular = this.centroid.space.rectangular.add(rectangular);
 		}
 		return space;
@@ -270,46 +260,17 @@ public class Orbital extends Grid {
 		this.centroid = centroid;
 	}
 
-//	public Coordinate getCoordinate(Point point) {
-//		System.out.println("azimuth=" + azimuth);
-//		System.out.println("elevation=" + elevation);
-//		Coordinate coordinate = null;
-//		double theta = Math.PI * azimuth / 180.0;
-//		double phi = Math.PI * elevation / 180.0;
-//		float cosT = (float) Math.cos(theta);
-//		float sinT = (float) Math.sin(theta);
-//		float cosP = (float) Math.cos(phi);
-//		float sinP = (float) Math.sin(phi);
-//		float cosTcosP = cosT * cosP;
-//		float cosTsinP = cosT * sinP;
-//		float sinTcosP = sinT * cosP;
-//		float sinTsinP = sinT * sinP;
-//		float near = 16;
-//		float nearToObj = 1.5f;
-//		double x0 = point.x;
-//		double y0 = point.y;
-//		double z0 = point.z;
-//		float x1 = (float) (cosT * x0 + sinT * z0);
-//		float y1 = (float) (-sinTsinP * x0 + cosP * y0 + cosTsinP * z0);
-//		float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinP * y0);
-////		if (z1 < 0) {
-//		x1 = x1 * near / (z1 + near + nearToObj);
-//		y1 = y1 * near / (z1 + near + nearToObj);
-//		coordinate = new Coordinate();
-//		coordinate.point.x = x1;
-//		coordinate.point.y = y1;
-////		}
-//		return coordinate;
-//	}
+
 
 	/**
 	 * Returns time in days with decimal representing Hour, Minute, and Second
+	 * Use test date 19 april 1990 to verify model is producing the correct values
 	 * 
 	 * @param calendar
-	 * @return
+	 * @return double
 	 */
 	public double getTime(Calendar calendar) {
-//		System.out.println(calendar.getTime());
+//		logger.debug(this+".getTime("+calendar.getTime()+")");
 		int year = calendar.get(Calendar.YEAR);
 		int month = calendar.get(Calendar.MONTH) + 1;
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -338,7 +299,7 @@ public class Orbital extends Grid {
 		return hour + (minute / 60.0) + (second / 3600.0);
 	}
 
-	public double rev(double x) {
+	public double revolution(double x) {
 		double rv = x - Math.round(x / 360.0) * 360;
 		if (rv < 0.0) {
 			rv = rv + 360;
@@ -346,23 +307,6 @@ public class Orbital extends Grid {
 		return rv;
 	}
 
-//	public List<Point> getOrbit() {
-//		LinkedList<Point> vertexList = new LinkedList<>();
-//		if (this.orbitalPeriod != 0) {
-//			int resolution = 100;
-//			double increment = this.orbitalPeriod / resolution;
-//			Calendar c = (Calendar) this.calendar.clone();
-//			double count = 0;
-//			while (count <= this.orbitalPeriod) {
-//				Point position = this.projection.getPoint(this.getSpace(c).getPoint());
-//				c.add(Calendar.DATE, (int) (Math.round(increment))); // number of days to ad
-//				count += increment;
-//				vertexList.add(position);
-//			}
-//		}
-//		return vertexList;
-//	}
-//	
 	public double getOrbitDistance() {
 		return this.angularVelocity * (this.orbitalPeriod * 24 * 60 * 60);
 	}
@@ -377,10 +321,7 @@ public class Orbital extends Grid {
 			double t = this.referenceCalendar.getTime().getTime();
 			double T = a.getTime().getTime();
 			double difference = (T - t) / 3600000;
-//    	System.out.println("difference: "+difference);
 			double remainder = difference % this.rotation;
-//    	System.out.println("remainder: "+remainder);
-//    	System.out.println("rotation:"+ this.rotation);
 			double ratio = remainder / this.rotation;
 			angle = ratio * 360;
 		}
@@ -399,7 +340,6 @@ public class Orbital extends Grid {
 					(int) (vertexList.get(i).y * this.getProjection().scale));
 		}
 		graphics.setColor(this.color);
-		
 		Point point = this.getProjection().getPoint(this.getProjection().space.getPoint());// this.buffer
 		if (point != null) {
 			double x = point.x * this.getProjection().scale;
@@ -418,6 +358,60 @@ public class Orbital extends Grid {
 		}
 	}
 }
+//public double[] longitudeOfPeriapsis = new double[3];
+//System.out.println("difference: "+difference);
+//System.out.println("remainder: "+remainder);
+//System.out.println("rotation:"+ this.rotation);
+//space.elliptic = this.centroid.space.elliptic.add(eliptic);
+//space.spherical = spherical;
+//public List<Point> getOrbit() {
+//LinkedList<Point> vertexList = new LinkedList<>();
+//if (this.orbitalPeriod != 0) {
+//	int resolution = 100;
+//	double increment = this.orbitalPeriod / resolution;
+//	Calendar c = (Calendar) this.calendar.clone();
+//	double count = 0;
+//	while (count <= this.orbitalPeriod) {
+//		Point position = this.projection.getPoint(this.getSpace(c).getPoint());
+//		c.add(Calendar.DATE, (int) (Math.round(increment))); // number of days to ad
+//		count += increment;
+//		vertexList.add(position);
+//	}
+//}
+//return vertexList;
+//}
+//
+//public Coordinate getCoordinate(Point point) {
+//System.out.println("azimuth=" + azimuth);
+//System.out.println("elevation=" + elevation);
+//Coordinate coordinate = null;
+//double theta = Math.PI * azimuth / 180.0;
+//double phi = Math.PI * elevation / 180.0;
+//float cosT = (float) Math.cos(theta);
+//float sinT = (float) Math.sin(theta);
+//float cosP = (float) Math.cos(phi);
+//float sinP = (float) Math.sin(phi);
+//float cosTcosP = cosT * cosP;
+//float cosTsinP = cosT * sinP;
+//float sinTcosP = sinT * cosP;
+//float sinTsinP = sinT * sinP;
+//float near = 16;
+//float nearToObj = 1.5f;
+//double x0 = point.x;
+//double y0 = point.y;
+//double z0 = point.z;
+//float x1 = (float) (cosT * x0 + sinT * z0);
+//float y1 = (float) (-sinTsinP * x0 + cosP * y0 + cosTsinP * z0);
+//float z1 = (float) (cosTcosP * z0 - sinTcosP * x0 - sinP * y0);
+////if (z1 < 0) {
+//x1 = x1 * near / (z1 + near + nearToObj);
+//y1 = y1 * near / (z1 + near + nearToObj);
+//coordinate = new Coordinate();
+//coordinate.point.x = x1;
+//coordinate.point.y = y1;
+////}
+//return coordinate;
+//}
 //if (this.obliquity > 0) {
 //double obliquity = Math.toRadians(this.obliquity);
 //Vector3D prime = this.buffer.rectangular;

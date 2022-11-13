@@ -374,7 +374,7 @@ public class Solar extends Grid {
 			Index index;
 			for (Energy e : this.getEnergyList()) {
 				if (!e.name.equals(name)) {
-					double distance = energy.getRectangularDistance(e);
+					double distance = energy.getDistance(e);
 					List<Index> list = indexListMap.get(e.name);
 					if (list == null) {
 						list = new ArrayList<>();

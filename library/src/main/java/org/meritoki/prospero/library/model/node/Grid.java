@@ -58,9 +58,9 @@ import org.meritoki.prospero.library.model.unit.Time;
 public class Grid extends Spheroid {
 
 	static Logger logger = LogManager.getLogger(Grid.class.getName());
-	public int latitude = 90;
+	public int latitude = 90;//Eventually need to implement with 180
 	public int longitude = 360;
-	public int resolution = 1;
+	public int resolution = 1;//Need to Clean Dimension Resolution Implementation
 	public int[] monthArray;
 	public double dimension = 2;
 	public double max;
@@ -111,8 +111,8 @@ public class Grid extends Spheroid {
 	public boolean cubeFlag;
 	public boolean monthFlag;
 	public boolean yearFlag;
-	private boolean print = false;
-	private boolean detail = false;
+//	private boolean print = false;
+//	private boolean detail = false;
 	public boolean clearFlag = false;
 	public boolean level = false;
 
@@ -319,8 +319,8 @@ public class Grid extends Spheroid {
 		return cList;
 	}
 
-	public void setCalendarEventList(Calendar calendar, List<Event> coordinateList) {
-		for (Event c : coordinateList) {
+	public void setCalendarEventList(Calendar calendar, List<Event> eventList) {
+		for (Event c : eventList) {
 			if (c.containsCalendar(calendar)) {
 				c.flag = true;
 			} else {
@@ -362,8 +362,8 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
-		if (print && detail)
-			logger.info("initMonthArray() this.monthArray=" + Arrays.toString(this.monthArray));
+//		if (print && detail)
+		logger.debug("initMonthArray() this.monthArray=" + Arrays.toString(this.monthArray));
 	}
 
 	public int getMonthCount() {
@@ -373,8 +373,8 @@ public class Grid extends Spheroid {
 				monthCount++;
 			}
 		}
-		if (print && detail)
-			logger.info("getMonthCount() monthCount=" + monthCount);
+//		if (print && detail)
+		logger.debug("getMonthCount() monthCount=" + monthCount);
 		return monthCount;
 	}
 
@@ -392,8 +392,8 @@ public class Grid extends Spheroid {
 				this.yearMap.put(year, count);
 			}
 		}
-		if (print && detail)
-			logger.info("initYearMap() this.yearMap=" + yearMap);
+//		if (print && detail)
+		logger.debug("initYearMap() this.yearMap=" + yearMap);
 		return this.yearMap;
 	}
 
@@ -404,8 +404,8 @@ public class Grid extends Spheroid {
 				yearCount++;
 			}
 		}
-		if (print && detail)
-			logger.info("getYearCount() yearCount=" + yearCount);
+//		if (print && detail)
+		logger.debug("getYearCount() yearCount=" + yearCount);
 		return yearCount;
 	}
 

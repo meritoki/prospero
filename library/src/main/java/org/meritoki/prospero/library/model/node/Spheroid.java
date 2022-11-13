@@ -21,18 +21,18 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
-import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-//
 /**
- * 
- * <a href="https://en.wikipedia.org/wiki/Spheroid">Reference</a>
- *
+ * Citation
+ * <ol type="A">
+ * <li><a href=
+ * "https://en.wikipedia.org/wiki/Spheroid">https://en.wikipedia.org/wiki/Spheroid</a></li>
+ * </ol>
  */
 public class Spheroid extends Energy {
 
