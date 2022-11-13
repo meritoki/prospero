@@ -30,16 +30,14 @@ public class Tile {
 
 	static Logger logger = LogManager.getLogger(Tile.class.getName());
 	public List<Point> pointList = new ArrayList<>();
-	public double latitude;
-	public double longitude;
+	public Coordinate coordinate = new Coordinate();
 	public double dimension;
 	public float value;
 	public boolean flag;
 
 	public Tile(Tile tile) {
 		if (tile != null) {
-			this.latitude = tile.latitude;
-			this.longitude = tile.longitude;
+			this.coordinate = new Coordinate(tile.coordinate);
 			this.dimension = tile.dimension;
 			this.value = tile.value;
 		}
@@ -47,15 +45,15 @@ public class Tile {
 
 	public Tile(double latitude, double longitude, double dimension) {
 		logger.debug("Tile(" + latitude + "," + longitude + "," + dimension + "," + value + ")");
-		this.latitude = latitude;
-		this.longitude = longitude;
+		this.coordinate.latitude = latitude;
+		this.coordinate.longitude = longitude;
 		this.dimension = dimension;
 	}
 
 	public Tile(double latitude, double longitude, double dimension, double value) {
 		logger.debug("Tile(" + latitude + "," + longitude + "," + dimension + "," + value + ")");
-		this.latitude = latitude;
-		this.longitude = longitude;
+		this.coordinate.latitude = latitude;
+		this.coordinate.longitude = longitude;
 		this.dimension = dimension;
 		this.value = (float) value;// (float) Math.abs(value);
 	}
@@ -63,15 +61,15 @@ public class Tile {
 	public boolean equals(Object o) {
 		if (o instanceof Tile) {
 			Tile t = (Tile) o;
-			return t.latitude == this.latitude && t.longitude == this.longitude && t.dimension == this.dimension;
+			return t.coordinate.latitude == this.coordinate.latitude && t.coordinate.longitude == this.coordinate.longitude && t.dimension == this.dimension;
 		}
 		return false;
 	}
 	
 	public Coordinate getCenter() {
 		Coordinate center = new Coordinate();
-		center.latitude = this.latitude+(this.dimension/2);
-		center.longitude = this.longitude+(this.dimension/2);
+		center.latitude = this.coordinate.latitude+(this.dimension/2);
+		center.longitude = this.coordinate.longitude+(this.dimension/2);
 		return center;
 	}
 
@@ -97,8 +95,8 @@ public class Tile {
 						dataMatrix[i][3] = "value";
 						dataMatrix[i][4] = "significance";
 					}
-					dataMatrix[i + 1][0] = tile.latitude;
-					dataMatrix[i + 1][1] = tile.longitude;
+					dataMatrix[i + 1][0] = tile.coordinate.latitude;
+					dataMatrix[i + 1][1] = tile.coordinate.longitude;
 					dataMatrix[i + 1][2] = tile.dimension;
 					dataMatrix[i + 1][3] = tile.value;
 					dataMatrix[i + 1][4] = tile.getSignificance();
@@ -151,9 +149,13 @@ public class Tile {
 	}
 
 	public String toString() {
-		return "latitude=" + this.latitude + ", longitude=" + this.longitude + ", dimension=" + dimension;
+		return "latitude=" + this.coordinate.latitude + ", longitude=" + this.coordinate.longitude + ", dimension=" + dimension;
 		// + ", value=" + value;
 	}
 }
+//public double latitude;
+//public double longitude;
+//this.latitude = tile.latitude;
+//this.longitude = tile.longitude;
 //public Map<String, Double> regressionMap = null;
 //DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");

@@ -35,9 +35,7 @@ public class Dimension {
 	@JsonProperty
 	public double height;
 	
-	public Dimension() {
-		
-	}
+	public Dimension() {}
 	
 	public Dimension(double value) {
 		this.width = this.height = value;

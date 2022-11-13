@@ -26,7 +26,7 @@ import java.awt.event.MouseMotionListener;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.desktop.view.menu.GridPopupMenu;
+import org.meritoki.prospero.desktop.view.menu.CameraPopupMenu;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
@@ -42,7 +42,7 @@ public class CameraPanel extends javax.swing.JPanel
 
 	private static final long serialVersionUID = 1L;
 	static Logger logger = LogManager.getLogger(CameraPanel.class.getName());
-	protected GridPopupMenu menu;
+	protected CameraPopupMenu menu;
 	public Model model;
 	public Variable node;
 	public double factor = 1.5;
@@ -68,7 +68,7 @@ public class CameraPanel extends javax.swing.JPanel
 	public void setModel(Model model) {
 		this.model = model;
 		this.node = this.model.node;
-		this.menu = new GridPopupMenu(this.model);
+		this.menu = new CameraPopupMenu(this.model);
 	}
 
 	@Override
@@ -244,7 +244,7 @@ public class CameraPanel extends javax.swing.JPanel
 	}
 
 	private void showSavePopupMenu(MouseEvent e) {
-		this.menu = new GridPopupMenu(this.model);
+		this.menu = new CameraPopupMenu(this.model);
 		if (menu != null)
 			menu.show(e.getComponent(), e.getX(), e.getY());
 	}

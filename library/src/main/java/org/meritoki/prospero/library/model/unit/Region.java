@@ -93,7 +93,7 @@ public class Region {
 	
 	public boolean contains(Tile tile) {
 		boolean flag = false;
-		flag = (latitudeA <= tile.latitude && (tile.latitude+tile.dimension) <= latitudeB && longitudeA <= tile.longitude && (tile.longitude+tile.dimension) <= longitudeB);
+		flag = (latitudeA <= tile.coordinate.latitude && (tile.coordinate.latitude+tile.dimension) <= latitudeB && longitudeA <= tile.coordinate.longitude && (tile.coordinate.longitude+tile.dimension) <= longitudeB);
 		return flag;
 	}
 	

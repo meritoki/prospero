@@ -30,7 +30,7 @@ public class Cluster {
 	
 	public String uuid;
 	public Integer id;
-	public List<Tile> tileList = new ArrayList<>();
+	public List<Tile> tileList = new ArrayList<>();//Tile List Could Use Flag to Determine which Tiles Belong to Cluster
 	
 	public Cluster() {
 		this.uuid = UUID.randomUUID().toString();

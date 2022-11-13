@@ -29,7 +29,7 @@ import javax.swing.BoxLayout;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.desktop.view.menu.SavePopupMenu;
+import org.meritoki.prospero.desktop.view.menu.PlotPopupMenu;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.plot.Plot;
 
@@ -44,7 +44,7 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 	 */
 	private static final long serialVersionUID = 7660685341781127285L;
 	static Logger logger = LogManager.getLogger(PlotPanel.class.getName());
-	public SavePopupMenu savePopupMenu;
+	public PlotPopupMenu plotPopupMenu;
 	public Model model;
 	public Plot plot;
 	public List<Plot> plotList;
@@ -62,7 +62,7 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 
 	public void setModel(Model model) {
 		this.model = model;
-		this.savePopupMenu = new SavePopupMenu(this.model);
+		this.plotPopupMenu = new PlotPopupMenu(this.model);
 	}
 
 	public void setPlot(Plot plot) {
@@ -98,35 +98,12 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 	
 	
 
-	private void showSavePopupMenu(MouseEvent e) {
+	private void showPlotPopupMenu(MouseEvent e) {
 		System.out.println("showSavepopupMenu(" + e + ")");
-		if (savePopupMenu != null)
+		if (plotPopupMenu != null)
 			System.out.println("showSavepopupMenu(" + e + ") savePopupMenu != null");
-		savePopupMenu.show(e.getComponent(), e.getX(), e.getY());
+		plotPopupMenu.show(e.getComponent(), e.getX(), e.getY());
 	}
-
-//	public void init() {
-//		if (this.model != null) {
-//			logger.debug("init() this.model != null");
-//			this.removeAll();
-//			logger.debug("init() this.removeAll()");
-//			this.setBackground(Color.white);
-//			this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-//			try {
-//				List<Plot> plotList = this.model.getPlotList();
-//				for (Plot plot : plotList) {
-//					PlotPanel plotPanel = new PlotPanel(plot);
-//					plotPanel.setModel(this.model);
-//					this.add(plotPanel);
-//					this.revalidate();
-//				}
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-////			this.revalidate();
-//			this.repaint();
-//		}
-//	}
 
 	@Override
 	public void run() {
@@ -158,7 +135,7 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 	public void mousePressed(MouseEvent e) {
 		e.consume();
 		if (e.isPopupTrigger())
-			showSavePopupMenu(e);
+			showPlotPopupMenu(e);
 	}
 
 	@Override
@@ -187,3 +164,25 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	// End of variables declaration//GEN-END:variables
 }
+//public void init() {
+//if (this.model != null) {
+//	logger.debug("init() this.model != null");
+//	this.removeAll();
+//	logger.debug("init() this.removeAll()");
+//	this.setBackground(Color.white);
+//	this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+//	try {
+//		List<Plot> plotList = this.model.getPlotList();
+//		for (Plot plot : plotList) {
+//			PlotPanel plotPanel = new PlotPanel(plot);
+//			plotPanel.setModel(this.model);
+//			this.add(plotPanel);
+//			this.revalidate();
+//		}
+//	} catch (Exception e) {
+//		e.printStackTrace();
+//	}
+////	this.revalidate();
+//	this.repaint();
+//}
+//}

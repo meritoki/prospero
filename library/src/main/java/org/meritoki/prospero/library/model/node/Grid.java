@@ -342,8 +342,8 @@ public class Grid extends Spheroid {
 	public List<Double> getTileLatitudeList(List<Tile> tileList) {
 		List<Double> tileLatitudeList = new ArrayList<>();
 		for (Tile t : tileList) {
-			if (!tileLatitudeList.contains(t.latitude)) {
-				tileLatitudeList.add(t.latitude);
+			if (!tileLatitudeList.contains(t.coordinate.latitude)) {
+				tileLatitudeList.add(t.coordinate.latitude);
 			}
 		}
 		return tileLatitudeList;
@@ -518,10 +518,10 @@ public class Grid extends Spheroid {
 				double vertical = index * interval;
 				if (tileList != null && tileList.size() > 0) {
 					for (Tile t : tileList) {
-						a = projection.getPoint(vertical, t.latitude, t.longitude);
-						b = this.getProjection().getPoint(vertical, t.latitude + t.dimension, t.longitude);
-						c = this.getProjection().getPoint(vertical, t.latitude + t.dimension, t.longitude + t.dimension);
-						d = this.getProjection().getPoint(vertical, t.latitude, t.longitude + t.dimension);
+						a = projection.getPoint(vertical, t.coordinate.latitude, t.coordinate.longitude);
+						b = this.getProjection().getPoint(vertical, t.coordinate.latitude + t.dimension, t.coordinate.longitude);
+						c = this.getProjection().getPoint(vertical, t.coordinate.latitude + t.dimension, t.coordinate.longitude + t.dimension);
+						d = this.getProjection().getPoint(vertical, t.coordinate.latitude, t.coordinate.longitude + t.dimension);
 						if (a != null && b != null && c != null && d != null) {
 							int xpoints[] = { (int) (a.x * this.getProjection().scale),
 									(int) (b.x * this.getProjection().scale), (int) (c.x * this.getProjection().scale),
@@ -580,10 +580,10 @@ public class Grid extends Spheroid {
 		Point d;
 		for (Band band : this.bandList) {
 			for (Tile t : band.tileList) {
-				a = this.getProjection().getPoint(0, t.latitude, t.longitude);
-				b = this.getProjection().getPoint(0, t.latitude + t.dimension, t.longitude);
-				c = this.getProjection().getPoint(0, t.latitude + t.dimension, t.longitude + t.dimension);
-				d = this.getProjection().getPoint(0, t.latitude, t.longitude + t.dimension);
+				a = this.getProjection().getPoint(0, t.coordinate.latitude, t.coordinate.longitude);
+				b = this.getProjection().getPoint(0, t.coordinate.latitude + t.dimension, t.coordinate.longitude);
+				c = this.getProjection().getPoint(0, t.coordinate.latitude + t.dimension, t.coordinate.longitude + t.dimension);
+				d = this.getProjection().getPoint(0, t.coordinate.latitude, t.coordinate.longitude + t.dimension);
 				if (a != null && b != null && c != null && d != null) {
 					int xpoints[] = { (int) (a.x * this.getProjection().scale), (int) (b.x * this.getProjection().scale),
 							(int) (c.x * this.getProjection().scale), (int) (d.x * this.getProjection().scale) };
@@ -615,10 +615,10 @@ public class Grid extends Spheroid {
 		while (iterator.hasNext()) {
 			Tile t = new Tile(iterator.next());
 			if (t != null) {
-				a = this.getProjection().getPoint(0, t.latitude, t.longitude);
-				b = this.getProjection().getPoint(0, t.latitude + t.dimension, t.longitude);
-				c = this.getProjection().getPoint(0, t.latitude + t.dimension, t.longitude + t.dimension);
-				d = this.getProjection().getPoint(0, t.latitude, t.longitude + t.dimension);
+				a = this.getProjection().getPoint(0, t.coordinate.latitude, t.coordinate.longitude);
+				b = this.getProjection().getPoint(0, t.coordinate.latitude + t.dimension, t.coordinate.longitude);
+				c = this.getProjection().getPoint(0, t.coordinate.latitude + t.dimension, t.coordinate.longitude + t.dimension);
+				d = this.getProjection().getPoint(0, t.coordinate.latitude, t.coordinate.longitude + t.dimension);
 				if (a != null && b != null && c != null && d != null) {
 					int xpoints[] = { (int) (a.x * this.getProjection().scale),
 							(int) (b.x * this.getProjection().scale),

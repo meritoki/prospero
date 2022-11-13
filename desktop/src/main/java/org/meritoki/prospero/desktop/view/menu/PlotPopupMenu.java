@@ -38,16 +38,16 @@ import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
 
-public class SavePopupMenu extends JPopupMenu {
+public class PlotPopupMenu extends JPopupMenu {
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 4405713496092773322L;
-	static Logger logger = LogManager.getLogger(SavePopupMenu.class.getName());
+	static Logger logger = LogManager.getLogger(PlotPopupMenu.class.getName());
 	private JMenuItem saveMenuItem;
 	private JMenuItem exportMenuItem;
 	private Model model;
-    public SavePopupMenu(Model model) {
+    public PlotPopupMenu(Model model) {
     	this.model = model;
         this.saveMenuItem = new JMenuItem("Save");
         this.add(this.saveMenuItem);

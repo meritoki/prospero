@@ -323,8 +323,8 @@ public class Cyclone extends Atmosphere {
 				if (i == 0) {
 					sb.append("\"\"");
 					for (Tile tile : tileList) {
-						sb.append(",\"" + String.valueOf(tile.latitude).replace("-", "N") + "_"
-								+ String.valueOf(tile.longitude).replace("-", "N") + "\"");
+						sb.append(",\"" + String.valueOf(tile.coordinate.latitude).replace("-", "N") + "_"
+								+ String.valueOf(tile.coordinate.longitude).replace("-", "N") + "\"");
 					}
 					sb.append("\n");
 				}
@@ -618,7 +618,7 @@ public class Cyclone extends Atmosphere {
 			for (Double latitude : tileLatitudeList) {
 				List<Tile> bandTileList = new ArrayList<>();
 				for (Tile t : tileList) {
-					if (latitude.equals(t.latitude)) {
+					if (latitude.equals(t.coordinate.latitude)) {
 						bandTileList.add(t);
 					}
 				}

@@ -40,16 +40,16 @@ import org.meritoki.prospero.library.model.node.cartography.Equirectangular;
 import org.meritoki.prospero.library.model.node.cartography.Mercator;
 import org.meritoki.prospero.library.model.terra.Terra;
 
-public class GridPopupMenu extends JPopupMenu {
+public class CameraPopupMenu extends JPopupMenu {
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 4405713496092773322L;
-	static Logger logger = LogManager.getLogger(GridPopupMenu.class.getName());
+	static Logger logger = LogManager.getLogger(CameraPopupMenu.class.getName());
 	private JMenuItem saveMenuItem;
 	private Model model;
 
-	public GridPopupMenu(Model m) {
+	public CameraPopupMenu(Model m) {
 		this.model = m;
 		this.saveMenuItem = new JMenuItem("Save");
 
