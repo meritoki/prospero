@@ -25,7 +25,7 @@ public class Equirectangular extends Projection {
 		}
 		double x = this.unit * 4000 * point.x ;
 		double y = this.unit * 4000 * point.y;
-		double z = vertical;
+		double z = vertical * this.unit * 4000;
 		Point point3D = new Point(x, y, z);
 		return this.getPoint(point3D);
 	}

@@ -50,12 +50,22 @@ public class Event {
 	@JsonProperty
 	public Duration duration;
 	@JsonIgnore
+	public DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	@JsonIgnore
 	public boolean flag = false;
 	@JsonIgnore
 	public boolean print = false;
 	
 	public Event() {
 		
+	}
+	
+	public Event(Event event) {
+		this.id = event.id;
+		this.coordinateList = new ArrayList<>(event.coordinateList);
+		this.attribute = new TreeMap<>(event.attribute);
+		this.duration = event.duration;
+		this.flag = event.flag;
 	}
 	
 	public Event(List<Coordinate> coordinateList) {

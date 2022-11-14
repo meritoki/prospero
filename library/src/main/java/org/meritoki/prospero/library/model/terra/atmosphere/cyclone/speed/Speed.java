@@ -127,7 +127,7 @@ public class Speed extends Cyclone {
 			timeList = new ArrayList<>();
 			for (Event e : eventList) {
 				if (e.flag) {
-					Coordinate c = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
+					Coordinate c = ((CycloneEvent) e).getHalfTimeLowerMostCoordinate(null);
 					if (c != null) {
 						coordinateMatrix[(int) ((c.latitude + this.latitude)
 								* this.resolution)][(int) ((c.longitude + this.longitude / 2) * this.resolution)][c

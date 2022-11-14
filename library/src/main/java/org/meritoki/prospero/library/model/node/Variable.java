@@ -143,6 +143,7 @@ public class Variable extends Node {
 				break;
 			}
 			case EXCEPTION: {
+				complete();
 				this.mode = Mode.EXCEPTION;
 				logger.warn("defaultState(" + (object != null) + ") EXCEPTION");
 				logger.warn("defaultState(" + (object != null) + ") result.message=" + result.message);
@@ -186,7 +187,11 @@ public class Variable extends Node {
 	}
 
 	public boolean isComplete() {
-		return this.mode == Mode.COMPLETE;
+		return this.mode == Mode.COMPLETE;// || this.mode == Mode.EXCEPTION;
+	}
+	
+	public boolean isException() {
+		return this.mode == Mode.EXCEPTION;
 	}
 
 	@JsonIgnore
@@ -224,7 +229,10 @@ public class Variable extends Node {
 						logger.warn("query(" + query + ") Exception " + e.getMessage());
 						e.printStackTrace();
 					}
-				}
+				} 
+//				else if(this.mode == Mode.EXCEPTION) {
+//					this.reset();
+//				}
 			}
 		}
 	}

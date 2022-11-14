@@ -17,7 +17,7 @@ public class Mercator extends Projection {
 	    point.x = Math.toRadians(longitude) ;
 	    double x = this.unit * 4000 * point.x;
 		double y = this.unit * 4000 * point.y;
-		double z = 0;
+		double z = vertical * this.unit * 4000;
 		if(point.x > this.xMax) {
 			this.xMax = point.x;
 		}

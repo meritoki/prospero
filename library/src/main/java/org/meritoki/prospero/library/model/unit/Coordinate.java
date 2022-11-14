@@ -53,6 +53,9 @@ public class Coordinate implements Comparable<Coordinate> {
 		this.attribute = new TreeMap<>(coordinate.attribute);
 	}
 
+	/**
+	 * Need to Generalize, maybe not use Pressure as Default
+	 */
 	@JsonIgnore
 	@Override
 	public int compareTo(Coordinate p) {

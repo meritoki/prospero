@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +42,7 @@ public class CycloneSource extends Source {
 	protected Map<String, List<Event>> eventMap = new HashMap<>();
 	public LinkedList<String> eventQueue = new LinkedList<>();
 	public List<Index> indexList = new ArrayList<>();
+	public Map<String, Time> idTimeMap = new TreeMap<>();
 //	public List<Event> eventList;
 	public String order = "tb";
 	public Count count = new Count('>', 1);
@@ -58,27 +60,96 @@ public class CycloneSource extends Source {
 	public void query(Query query) throws Exception {
 		this.intervalList = query.getIntervalList(this.getStartYear(), this.getEndYear());
 		if (this.intervalList != null) {
-			for (Interval i : this.intervalList) {
-				this.load(query, i);
+			List<String> idList = query.getIDList();
+			if (idList.size() > 0) {
+				List<Event> eventList = new ArrayList<>();
+				for (String id : idList) {
+					Time t = this.idTimeMap.get(id);
+					if (t != null) {
+						List<Event> loadList = this.load(t);
+						for (Event e : loadList) {
+							if (e.id.equals(id)) {
+								eventList.add(e);
+							}
+						}
+					} else {
+						loop:
+						for (Interval i : this.intervalList) {
+							List<Time> timeList = Time.getTimeList(i);
+							for (Time time : timeList) {
+								List<Event> loadList = this.load(time);
+								this.setIDTimeMap(loadList, time);
+								for (Event e : loadList) {
+									if (e.id.equals(id)) {
+										eventList.add(e);
+										break loop;
+									}
+								}
+							}
+						}
+					}
+				}
+				if (eventList.size() > 0) {
+					Result result = new Result();
+					result.map.put("eventList", eventList);
+					query.objectList.add(result);
+				}
+				query.objectListAdd(new Result(Mode.COMPLETE));
+			} else {
+				for (Interval i : this.intervalList) {
+					List<Time> timeList = Time.getTimeList(i);
+					for (Time time : timeList) {
+						List<Event> loadList = this.load(time);
+						this.setIDTimeMap(loadList, time);
+						Result result = new Result();
+						result.map.put("time", time);
+						result.map.put("eventList", new ArrayList<Event>((loadList)));
+						query.objectList.add(result);
+					}
+
+				}
+				query.objectListAdd(new Result(Mode.COMPLETE));
 			}
-			query.objectListAdd(new Result(Mode.COMPLETE));
+			
 		}
 	}
-	
-	public void load(Query query, Interval interval) throws Exception {
-		List<Time> timeList = Time.getTimeList(interval);
-		List<Event> loadList;
-		for(Time time: timeList) {
-			if (!Thread.interrupted()) {
-				loadList = this.eventMapGet(time.year, time.month);
-				Result result = new Result();
-				result.map.put("time", time);
-				result.map.put("eventList", new ArrayList<Event>((loadList)));
-				query.objectList.add(result);
-			} else {
-				throw new InterruptedException();
-			}
+
+	public List<Event> load(Time time) throws Exception {
+
+		List<Event> loadList = new ArrayList<>();
+		;
+//		for (Time time : timeList) {
+		if (!Thread.interrupted()) {
+			loadList = this.eventMapGet(time.year, time.month);
+//				this.setIDTimeMap(loadList,time.year,time.month);
+//				List<String> idList = query.getIDList();
+//				if (idList.size() > 0) {
+//					List<Event> eventList = new ArrayList<>();
+//					for (String id : idList) {
+//						for (Event e : loadList) {
+//							if (e.id.equals(id)) {
+//								eventList.add(e);
+//							}
+//						}
+//					}
+//					if (eventList.size() > 0) {
+//						Result result = new Result();
+//						result.map.put("eventList", eventList);
+//						query.objectList.add(result);
+////						if(idList.size() == 1) {
+////							query.objectListAdd(new Result(Mode.COMPLETE));
+////							throw new Exception("Event ID "+idList.get(0) + " Found");
+////						}
+//					}
+//
+//				} else {
+
+//				}
+		} else {
+			throw new InterruptedException();
 		}
+		return loadList;
+//		}
 	}
 
 	public int[] getLevelArray() {
@@ -753,6 +824,18 @@ public class CycloneSource extends Source {
 		}
 //	logger.info("getSingleCountList("+listA+","+listB+") listB="+listB);
 		return eventList;
+	}
+
+	public void setIDTimeMap(List<Event> eventList, Time t) {
+		for (Event e : eventList) {
+			Time time = this.idTimeMap.get(e.id);
+			if (time == null) {
+				time = new Time();
+				time.year = t.year;
+				time.month = t.month;
+			}
+			this.idTimeMap.put(e.id, time);
+		}
 	}
 
 	public boolean isValidLevel(String value, int[] levelArray) {

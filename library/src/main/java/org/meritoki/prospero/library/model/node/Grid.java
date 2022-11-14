@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
@@ -36,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.color.Chroma;
 import org.meritoki.prospero.library.model.node.color.Scheme;
 import org.meritoki.prospero.library.model.plot.Plot;
+import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.unit.Analysis;
 import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Cluster;
@@ -43,6 +43,7 @@ import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Index;
+import org.meritoki.prospero.library.model.unit.Link;
 import org.meritoki.prospero.library.model.unit.Meter;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Point;
@@ -77,7 +78,7 @@ public class Grid extends Spheroid {
 	public List<Frame> frameList = new ArrayList<>();
 	public List<NetCDF> netCDFList = new ArrayList<>();
 	public List<Coordinate> coordinateList = new ArrayList<>();
-	public List<Event> eventList = new ArrayList<>();
+	public List<Event> eventList = Collections.synchronizedList(new ArrayList<>());
 	public List<Time> timeList = new ArrayList<>();
 	public List<Station> stationList = new ArrayList<>();
 	public List<Plot> plotList = new ArrayList<>();
@@ -107,12 +108,13 @@ public class Grid extends Spheroid {
 	public boolean averageFlag;
 	public boolean sumFlag;
 	public boolean stackFlag;
+	public boolean trajectoryFlag;
 	public boolean bandFlag;
 	public boolean cubeFlag;
 	public boolean monthFlag;
 	public boolean yearFlag;
-	public boolean clearFlag = false;
-	public boolean level = true;
+	public boolean clearFlag;
+//	public boolean level = true;
 
 	public Grid(String name) {
 		super(name);
@@ -129,7 +131,7 @@ public class Grid extends Spheroid {
 		this.bandList = new ArrayList<>();
 		this.frameList = new ArrayList<>();
 		this.coordinateList = new ArrayList<>();
-		this.eventList = new ArrayList<>();
+		this.eventList = Collections.synchronizedList(new ArrayList<>());
 		this.stationList = new ArrayList<>();
 		this.plotList = new ArrayList<>();
 		this.clusterList = new ArrayList<>();
@@ -164,6 +166,7 @@ public class Grid extends Spheroid {
 			this.averageFlag = this.query.getAverage();
 			this.bandFlag = this.query.getBand();
 			this.stackFlag = this.query.getStack();
+			this.trajectoryFlag = this.query.getTrajectory();
 			this.clearFlag = this.query.getClear();
 			this.regionList = this.query.getRegionList();
 			this.dimension = this.query.getDimension();
@@ -491,7 +494,7 @@ public class Grid extends Spheroid {
 		this.chroma = new Chroma(this.scheme);
 		if (this.tileListMap.size() > 0) {
 			int size = this.tileListMap.size();
-			double interval = this.interval;
+//			double interval = this.interval;
 			int index = (size / 2);
 			this.tileListMap = new TreeMap<Integer, List<Tile>>(this.tileListMap).descendingMap();
 //			Set<Integer> levelSet = this.tileListMap.keySet();
@@ -504,15 +507,16 @@ public class Grid extends Spheroid {
 
 			for (Entry<Integer, List<Tile>> entry : this.tileListMap.entrySet()) {
 				((Graphics2D) graphics).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-				int level = entry.getKey();
+//				int level = entry.getKey();
 				List<Tile> tileList = entry.getValue();
-				double vertical = index * interval;
+				double vertical = index * this.interval;
 				if (!this.getProjection().verticalList.contains(vertical)) {
 					this.getProjection().verticalList.add(vertical);
 				}
 				if (tileList != null && tileList.size() > 0) {
 					for (Tile t : tileList) {
-						Point a = this.getProjection().getPoint(vertical, t.coordinate.latitude, t.coordinate.longitude);
+						Point a = this.getProjection().getPoint(vertical, t.coordinate.latitude,
+								t.coordinate.longitude);
 						Point b = this.getProjection().getPoint(vertical, t.coordinate.latitude + t.dimension,
 								t.coordinate.longitude);
 						Point c = this.getProjection().getPoint(vertical, t.coordinate.latitude + t.dimension,
@@ -530,12 +534,12 @@ public class Grid extends Spheroid {
 							if (this.clearFlag) {
 								if (t.value != 0) {
 									Color color = null;
-									if (this.level) {
-										color = this.chroma.getColor(this.getMeters(level), this.getMin(),
-												this.getMax());
-									} else {
-										color = this.chroma.getColor(t.value, this.getMin(), this.getMax());
-									}
+//									if (this.level) {
+//										color = this.chroma.getColor(this.getMeters(level), this.getMin(),
+//												this.getMax());
+//									} else {
+									color = this.chroma.getColor(t.value, this.getMin(), this.getMax());
+//									}
 									if (color != null) {
 										graphics.setColor(color);
 										graphics.fillPolygon(xpoints, ypoints, npoints);
@@ -550,18 +554,18 @@ public class Grid extends Spheroid {
 					}
 				}
 				graphics.setColor(Color.BLACK);
-				List<Point> coordinateList = this.getProjection().getGridPointList(vertical, 15, 30);
-				for (Point p : coordinateList) {
+				List<Point> pointList = this.getProjection().getGridPointList(vertical, 15, 30);
+				for (Point p : pointList) {
 					graphics.drawLine((int) ((p.x) * this.getProjection().scale),
 							(int) ((p.y) * this.getProjection().scale), (int) ((p.x) * this.getProjection().scale),
 							(int) ((p.y) * this.getProjection().scale));
 				}
 				index--;
 			}
-			
+
 			if (this.getProjection().scale >= this.defaultScale) {
-				Meter meter = new Meter(0.9, (int) (this.getProjection().xMax * this.getProjection().scale), this.getMax(),
-						this.getMin(), this.unit, this.getIncrement());
+				Meter meter = new Meter(0.9, (int) (this.getProjection().xMax * this.getProjection().scale),
+						this.getMax(), this.getMin(), this.unit, this.getIncrement());
 				meter.setChroma(this.chroma);
 				meter.paint(graphics);
 			}
@@ -658,22 +662,118 @@ public class Grid extends Spheroid {
 	public void paintEvent(Graphics graphics) {
 		logger.debug(this + ".paintEvent(...) eventList.size() = " + this.eventList.size());
 		this.chroma = new Chroma();
-		for (int i = 0; i < this.eventList.size(); i++) {
-			Event event = (Event) this.eventList.get(i);
-			if (event.flag) {
-				logger.debug(this + ".paintEvent(...) event=" + event.id);
-				List<Point> coordinateList = this.getProjection().getCoordinateList(0, event.coordinateList);
-				if (coordinateList != null) {
-					for (int j = 0; j < coordinateList.size(); j++) {// Coordinate c : coordinateList) {
-						Point c = coordinateList.get(j);
-						if (c.flag) {
-							logger.debug(this + ".paint(...) coordinate=" + c);
-							graphics.setColor(this.chroma.getColor(j, 0, coordinateList.size()));
-							graphics.drawLine((int) ((c.x) * this.getProjection().scale),
-									(int) ((c.y) * this.getProjection().scale),
-									(int) ((c.x) * this.getProjection().scale),
-									(int) ((c.y) * this.getProjection().scale));
+		if(this.trajectoryFlag) {
+			this.paintTrajectory(graphics);
+		} else {
+			for (int i = 0; i < this.eventList.size(); i++) {
+				Event event = (Event) this.eventList.get(i);
+				if (event.flag) {
+					logger.debug(this + ".paintEvent(...) event=" + event.id);
+					List<Point> coordinateList = this.getProjection().getCoordinateList(0, event.coordinateList);
+					if (coordinateList != null) {
+						for (int j = 0; j < coordinateList.size(); j++) {// Coordinate c : coordinateList) {
+							Point c = coordinateList.get(j);
+							if (c.flag) {
+								logger.debug(this + ".paint(...) coordinate=" + c);
+								graphics.setColor(this.chroma.getColor(j, 0, coordinateList.size()));
+								graphics.drawLine((int) ((c.x) * this.getProjection().scale),
+										(int) ((c.y) * this.getProjection().scale),
+										(int) ((c.x) * this.getProjection().scale),
+										(int) ((c.y) * this.getProjection().scale));
+							}
 						}
+					}
+				}
+			}
+		}
+	}
+
+	public void paintTrajectory(Graphics graphics) {
+		if (this.eventList != null) {
+			Point aPoint;
+			Point bPoint;
+			Coordinate aCoordinate;
+			Coordinate bCoordinate;
+//			List<Event> eventList = new ArrayList<>(this.eventList);
+			for (Event event : this.eventList) {
+				if (event.flag && event instanceof CycloneEvent) {
+					Map<Integer, List<Coordinate>> pressureCoordinateLinkMap = ((CycloneEvent) event)
+							.getPressureCoordinateLinkMap();
+					int size = pressureCoordinateLinkMap.size();
+					int index = (size / 2);
+					for (Map.Entry<Integer, List<Coordinate>> entry : pressureCoordinateLinkMap.entrySet()) {
+						Integer key = entry.getKey();
+						List<Coordinate> coordinateList = pressureCoordinateLinkMap.get(key);
+						((CycloneEvent) event).setPointColor(coordinateList);
+						double vertical = index * this.interval;
+//						if (!this.getProjection().verticalList.contains(vertical)) {
+//							this.getProjection().verticalList.add(vertical);
+//						}
+						for (int i = 0; i < coordinateList.size(); i++) {
+							if (i + 1 < coordinateList.size()) {
+								aCoordinate = coordinateList.get(i);
+								bCoordinate = coordinateList.get(i + 1);
+								if (aCoordinate instanceof Link && bCoordinate instanceof Link) {
+									Link linkA = (Link) aCoordinate;
+									Link linkB = (Link) bCoordinate;
+									if (linkA.type == Link.START && linkB.type == Link.STOP) {
+										aPoint = this.getProjection().getPoint(vertical,aCoordinate.latitude, (aCoordinate.longitude));
+										bPoint = this.getProjection().getPoint(vertical,bCoordinate.latitude, (bCoordinate.longitude));
+										graphics.setColor(aCoordinate.getColor());
+										if (aPoint != null && bPoint != null) {
+											graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
+													(int) ((aPoint.y) * this.getProjection().scale),
+													(int) ((bPoint.x) * this.getProjection().scale),
+													(int) ((bPoint.y) * this.getProjection().scale));
+										}
+									}
+								} else if (aCoordinate instanceof Link) {
+									Link linkA = (Link) aCoordinate;
+									if (linkA.type == Link.START) {
+										aPoint = this.getProjection().getPoint(vertical,aCoordinate.latitude, (aCoordinate.longitude));
+										bPoint = this.getProjection().getPoint(vertical,bCoordinate.latitude, (bCoordinate.longitude));
+										graphics.setColor(aCoordinate.getColor());
+										if (aPoint != null && bPoint != null) {
+											graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
+													(int) ((aPoint.y) * this.getProjection().scale),
+													(int) ((bPoint.x) * this.getProjection().scale),
+													(int) ((bPoint.y) * this.getProjection().scale));
+										}
+									}
+								} else if (bCoordinate instanceof Link) {
+									Link linkB = (Link) bCoordinate;
+									if (linkB.type == Link.STOP) {
+										aPoint = this.getProjection().getPoint(vertical,aCoordinate.latitude, (aCoordinate.longitude));
+										bPoint = this.getProjection().getPoint(vertical,bCoordinate.latitude, (bCoordinate.longitude));
+										graphics.setColor(aCoordinate.getColor());
+										if (aPoint != null && bPoint != null) {
+											graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
+													(int) ((aPoint.y) * this.getProjection().scale),
+													(int) ((bPoint.x) * this.getProjection().scale),
+													(int) ((bPoint.y) * this.getProjection().scale));
+										}
+									}
+								} else {
+									aPoint = this.getProjection().getPoint(vertical,aCoordinate.latitude, (aCoordinate.longitude));
+									bPoint = this.getProjection().getPoint(vertical,bCoordinate.latitude, (bCoordinate.longitude));
+									graphics.setColor(aCoordinate.getColor());
+									if (aPoint != null && bPoint != null) {
+										graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
+												(int) ((aPoint.y) * this.getProjection().scale),
+												(int) ((bPoint.x) * this.getProjection().scale),
+												(int) ((bPoint.y) * this.getProjection().scale));
+									}
+								}
+							}
+						}
+						graphics.setColor(Color.GRAY);
+						List<Point> pointList = this.getProjection().getGridPointList(vertical, 15, 30);
+						for (Point p : pointList) {
+							graphics.drawLine((int) ((p.x) * this.getProjection().scale),
+									(int) ((p.y) * this.getProjection().scale), (int) ((p.x) * this.getProjection().scale),
+									(int) ((p.y) * this.getProjection().scale));
+						}
+						index--;
 					}
 				}
 			}

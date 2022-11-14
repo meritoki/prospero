@@ -84,6 +84,8 @@ public class Query {
 		if(object instanceof Query) {
 			Query q = (Query)object;
 			boolean flag = this.getTime().equals(q.getTime()) && this.getSource().equals(q.getSource());//&& this.map.equals(q.map);
+			boolean idFlag = (this.getID() != null)?this.getID().equals(q.getID()):false;
+			flag = (flag)?idFlag:false;
 //			logger.debug(this+".equals("+q+") flag="+flag);
 			return flag;
 		} 
@@ -371,6 +373,15 @@ public class Query {
 		String stack = this.map.get("stack");
 		if(stack != null) {
 			return Boolean.valueOf(stack);
+		}
+		return false;
+	}
+	
+	@JsonIgnore
+	public Boolean getTrajectory() {
+		String trajectory = this.map.get("trajectory");
+		if(trajectory != null) {
+			return Boolean.valueOf(trajectory);
 		}
 		return false;
 	}
