@@ -26,6 +26,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+/**
+ * <ul>
+ * <li>20221115: Add Equals Method</li>
+ * </ul>
+ * @author jorodriguez
+ *
+ */
 public class Coordinate implements Comparable<Coordinate> {
 
 	@JsonProperty

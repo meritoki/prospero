@@ -308,14 +308,14 @@ public class Cyclone extends Atmosphere {
 	 * 
 	 */
 	public void cluster() {
-		StringBuilder sb = new StringBuilder();
 		// Tile List Contains All Moments in Time Queried
-		// Time Tile Map Retains All Tiles at Moments in Time
-		// All Tile Lists Same Tile Order
+		// Time Tile Map Retains All Tiles at Moments in Time (Key)
+		// All Tile Lists Have Same Tile Order
 		// Constructing String for File w/ New Lines
 		// Each Column is a Tile Latitude and Longitude
 		// Each Row is a moment in Time
 		// Must be Monthly Averages
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < this.timeList.size(); i++) {
 			Time time = this.timeList.get(i);
 			List<Tile> tileList = this.timeTileMap.get(time);
@@ -345,7 +345,6 @@ public class Cyclone extends Atmosphere {
 			directory.mkdirs();
 		}
 		NodeController.saveText(path, uuid + ".csv", sb);
-
 		// Prepare R Command w/ Parameters
 		// R Script
 		// Parameter One: CSV File w/ Path
@@ -368,16 +367,15 @@ public class Cyclone extends Atmosphere {
 				throw new Exception("Non-Zero Exit Value: " + exit.value);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// Read Output CSV File
 		// CSV Contains Tile Latitude and Longitude and what Cluster it belongs to w/ ID
 		// Must Use ID Returned by Algorithm to Create Lists of Tiles
-		List<String[]> outputList = NodeController.openCsv(output);// "./output.csv");
+		List<String[]> outputList = NodeController.openCsv(output);
 		outputList = outputList.subList(2, outputList.size() - 1);
 		List<Tile> tileList = new ArrayList<Tile>();
-		Map<Integer, List<Tile>> tileMap = new HashMap<>();
+		Map<Integer, List<Tile>> tileListMap = new HashMap<>();
 		for (String[] stringArray : outputList) {
 			String coordinate = stringArray[0];
 			coordinate = coordinate.replace("\"", "");
@@ -385,13 +383,14 @@ public class Cyclone extends Atmosphere {
 			double latitude = Double.parseDouble(coordinateArray[0].replace("N", "-"));
 			double longitude = Double.parseDouble(coordinateArray[1].replace("N", "-"));
 			Integer id = Integer.parseInt(stringArray[1]);
-			tileList = tileMap.get(id);
+			tileList = tileListMap.get(id);
 			if (tileList == null) {
 				tileList = new ArrayList<>();
 			}
 			Tile tile = new Tile(latitude, longitude, this.dimension);
+			tile.flag = true;
 			tileList.add(tile);
-			tileMap.put(id, tileList);
+			tileListMap.put(id, tileList);
 		}
 		// Lists of Tiles are Converted to Cluster Objects
 		// Cluster Object Tile List provides the Latitude, Longitude, and Dimension
@@ -399,7 +398,7 @@ public class Cyclone extends Atmosphere {
 		// The Tile List does not retain any
 		List<Cluster> clusterList = new ArrayList<>();
 		Cluster cluster;
-		for (Entry<Integer, List<Tile>> entry : tileMap.entrySet()) {
+		for (Entry<Integer, List<Tile>> entry : tileListMap.entrySet()) {
 			cluster = new Cluster();
 			cluster.id = entry.getKey();
 			cluster.tileList = entry.getValue();
@@ -407,16 +406,7 @@ public class Cyclone extends Atmosphere {
 		}
 		this.clusterList = clusterList;
 		this.getClusterPlots(this.clusterList);
-		Collections.sort(this.clusterList, new Comparator<Cluster>() {
-			@Override
-			public int compare(Cluster o1, Cluster o2) {
-				return (o1.tileList.size()) - (o2.tileList.size());
-			}
-		});
-		this.tileList = new ArrayList<>();
-		for (Cluster c : this.clusterList) {
-			this.tileList.addAll(c.getTileList());
-		}
+
 	}
 
 	public void getClusterPlots(List<Cluster> clusterList) {
@@ -430,30 +420,24 @@ public class Cyclone extends Atmosphere {
 		for (Entry<Time, List<Tile>> entry : this.timeTileMap.entrySet()) {
 			Time time = entry.getKey();
 			List<Tile> tileList = entry.getValue();
-			for (Tile t : tileList) {
-				for (Cluster c : clusterList) {
-					if (c.contains(t)) {
-						c.setTile(t);
-					}
-				}
-			}
 			// Given that Each Cluster has a Persistent and Unique ID
 			// We Get a Series from the Series Map by Cluster ID
 			// We Add and Average of the Cluster Tile List Values to an Index
 			// We Add the Index to the Series Building a Series of Averages for all Tiles
 			// Belonging to a Cluster
-			for (Cluster c : clusterList) {
-				Series series = seriesMap.get(c.uuid);
+			for (Cluster cluster : clusterList) {
+				Series series = seriesMap.get(cluster.uuid);
 				if (series == null) {
 					series = this.newSeries();
-					series.map.put("cluster", c.id);
+					series.map.put("cluster", cluster.id);
 				}
-				double average = c.getAverageValue();
-				c.addTilePoint(average);
+				cluster.setTileList(tileList);
+				double average = cluster.getAverageValue();
+				cluster.addTilePoint(average);
 				Index index = time.getIndex();
 				index.value = average;
 				series.addIndex(index);
-				seriesMap.put(c.uuid, series);
+				seriesMap.put(cluster.uuid, series);
 			}
 		}
 		this.seriesMap.putAll(seriesMap);
@@ -1203,6 +1187,23 @@ public class Cyclone extends Atmosphere {
 		super.paint(graphics);
 	}
 }
+//Collections.sort(this.clusterList, new Comparator<Cluster>() {
+//@Override
+//public int compare(Cluster o1, Cluster o2) {
+//	return (o1.tileList.size()) - (o2.tileList.size());
+//}
+//});
+//this.tileList = new ArrayList<>();
+//for (Cluster c : this.clusterList) {
+//this.tileList.addAll(c.getTileList());
+//}
+//for (Tile t : tileList) {
+//for (Cluster cluster : clusterList) {
+//	if (cluster.contains(t)) {
+//		cluster.setTile(t);
+//	}
+//}
+//}
 //this.initPlotList(this.seriesMap, null);
 //List<Variable> nodeList = this.getChildren();
 //for (Variable n : nodeList) {

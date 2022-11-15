@@ -36,6 +36,30 @@ public class Cluster {
 		this.uuid = UUID.randomUUID().toString();
 	}
 	
+	public boolean contains(Tile tile) {
+		boolean flag = false;
+		for(Tile t: this.tileList) {
+			if(t.equals(tile)) {
+				flag = true;
+				break;
+			}
+		}
+		return flag;
+	}
+
+	public double getAverageValue() {
+		StandardDeviation standardDeviation = new StandardDeviation();
+		Mean mean = new Mean();
+		for (Tile tile : this.tileList) {
+			if(tile.flag) {
+				standardDeviation.increment(tile.value);
+				mean.increment(tile.value);
+			}
+		}
+		double value = mean.getResult();
+		return value;
+	}
+
 	public static TableModel getTableModel(List<Cluster> clusterList) {
 		Object[] objectArray = getObjectArray(clusterList);
 		return new javax.swing.table.DefaultTableModel((Object[][]) objectArray[1], (Object[]) objectArray[0]);
@@ -71,54 +95,48 @@ public class Cluster {
 		return objectArray;
 	}
 	
-	public boolean contains(Tile tile) {
-		boolean flag = false;
-		for(Tile t: this.tileList) {
-			if(t.equals(tile)) {
-				flag = true;
-				break;
-			}
-		}
-		return flag;
-	}
-	
 	public int getID() {
 		return (id != null)?id:0;
 	}
-	
+
+	public List<Tile> getTileList() {
+		for(Tile t: this.tileList) {
+			t.value = Float.valueOf(this.id);
+		}
+		return this.tileList;
+	}
+
 	public boolean setTile(Tile tile) {
 		boolean flag = false;
 		for(Tile t: this.tileList) {
 			if(t.equals(tile)) {
-				flag = true;
 				t.value = tile.value;
+				flag = true;
 				break;
 			}
 		}
 		return flag;
 	}
 	
-	public double getAverageValue() {
-		StandardDeviation standardDeviation = new StandardDeviation();
-		Mean mean = new Mean();
-		for (Tile tile : this.tileList) {
-			standardDeviation.increment(tile.value);
-			mean.increment(tile.value);
+	/**
+	 * Tile List Represents One Moment in Time, i.e. One Month Average
+	 * @param tileList
+	 * @return
+	 */
+	public boolean setTileList(List<Tile> tileList) {
+		for(Tile tile: tileList) {
+			if(this.tileList.contains(tile)) {
+				this.setTile(tile);
+			} else {
+				this.tileList.add(new Tile(tile));
+			}
 		}
-		double value = mean.getResult();
-		return value;
+		return false;
 	}
 	
 	public void addTilePoint(double average) {
 		for(Tile tile: this.tileList) {
 			tile.addPoint(new Point(tile.value,average));
 		}
-	}
-	
-	public List<Tile> getTileList() {
-		for(Tile t: this.tileList) {
-			t.value = Float.valueOf(this.id);
-		}
-		return this.tileList;
 	}
 }

@@ -58,6 +58,9 @@ public class Tile {
 		this.value = (float) value;// (float) Math.abs(value);
 	}
 
+	/**
+	 * Need to Use Coordiante Equals
+	 */
 	public boolean equals(Object o) {
 		if (o instanceof Tile) {
 			Tile t = (Tile) o;
@@ -118,6 +121,10 @@ public class Tile {
 
 	public Double getSignificance() {
 		return this.getRegressionMap().get("significance");
+	}
+	
+	public Double getCorrelation() {
+		return this.getRegressionMap().get("r");
 	}
 
 	public static Index getAverage(Time key, List<Tile> tileList) {

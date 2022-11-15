@@ -81,7 +81,7 @@ public class Solar extends Grid {
 		for(Tunnel t: this.tunnelList) {
 			this.tunnel.addChild(t);
 		}
-		this.addChild(this.tunnel);
+//		this.addChild(this.tunnel);
 		this.defaultScale = 16;
 		this.setScale(this.defaultScale);
 		this.getProjection().setRadius(39.5);// Astronomical Unit

@@ -58,10 +58,10 @@ public class Regression {
 			map.put("intercept", simpleRegression.getIntercept());
 			map.put("interceptStdErr", simpleRegression.getInterceptStdErr());
 			map.put("meanSquareError", simpleRegression.getMeanSquareError());
-			map.put("r", simpleRegression.getR());
+			map.put("r", simpleRegression.getR());//Pearson's Correlation Coefficient, i.e. Correlation
 			map.put("regressionSumSquares", simpleRegression.getRegressionSumSquares());
 			map.put("rSquare", simpleRegression.getRSquare());
-			map.put("significance", simpleRegression.getSignificance());
+			map.put("significance", simpleRegression.getSignificance());//Less Than 0.05 Considered Statistically Significant
 			map.put("slope", simpleRegression.getSlope());
 			map.put("slopeConfidenceInterval", simpleRegression.getSlopeConfidenceInterval());
 			map.put("slopeStdErr", simpleRegression.getSlopeStdErr());

@@ -25,7 +25,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-
+/**
+ * <ul>
+ * <li>20221115: Convert All Double Dimensions to Dimension Object</li>
+ * </ul>
+ *
+ */
 public class Dimension {
 
 	@JsonIgnore
