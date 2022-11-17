@@ -17,15 +17,15 @@ package org.meritoki.prospero.desktop.view.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
-import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Operator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,6 +40,9 @@ public class VariableMenu extends JPopupMenu {
 	private static final long serialVersionUID = 288610046583103334L;
 
 	public VariableMenu(Model model, MainFrame mainFrame) {
+		JCheckBoxMenuItem newMenuItem = new JCheckBoxMenuItem("New");
+		this.add(newMenuItem);
+		this.add(new JSeparator());
 		for (String source : model.node.getSourceList()) {
 			JCheckBoxMenuItem sourceMenuItem = new JCheckBoxMenuItem(source);
 			if (source.equals(model.node.query.getSource())) {

@@ -78,7 +78,7 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 
 	public void init() {
-//		logger.info("init()");
+		logger.debug("init()");
 		this.mainDialog.init();
 		this.plotPanel.repaint();
 //		this.solarPanel.repaint();
@@ -125,6 +125,11 @@ public class MainFrame extends javax.swing.JFrame {
 		this.savePlotPanel(path, name, uuid);
 	}
 	
+	/**
+	 * Panel Paint Has Already Been Called
+	 * @param path
+	 * @param name
+	 */
 	public void saveGridPanel(String path, String name) {
 		NodeController.savePanel(this.cameraPanel1, path,"grid-"+((name !=null)?name:""));
 	}

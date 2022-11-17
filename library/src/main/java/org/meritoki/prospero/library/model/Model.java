@@ -16,8 +16,10 @@
 package org.meritoki.prospero.library.model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -44,6 +46,7 @@ public class Model extends Variable {
 	public Variable node = solar;
 	public int defaultAzimuth = 0;
 	public int defaultElevation = 150;
+	public List<Variable> nodeList = new ArrayList<>();
 
 	public Model() {
 		super("Model");
@@ -56,61 +59,102 @@ public class Model extends Variable {
 		this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
 		this.setCalendar(this.calendar);
 	}
-	
+
 	@JsonIgnore
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 		Object basePath = this.properties.get("basePath");
-		if(basePath instanceof String) {
-			this.data.setBasePath((String)basePath);
+		if (basePath instanceof String) {
+			this.data.setBasePath((String) basePath);
 		}
 	}
-	
+
 	@JsonIgnore
 	public void setBasePath(String basePath) {
-		if(basePath != null) {
+		if (basePath != null) {
 			this.data.setBasePath(basePath);
 		}
 	}
-	
+
+	/**
+	 * Add Node to Node List
+	 * @param variable
+	 */
 	@JsonIgnore
-	public void setNode(Variable variable) {
+	public void addNode(Variable variable) {
 		this.node = variable;
 	}
-	
+
 	@SuppressWarnings("resource")
-	public void updateNode() {
-		if(this.node instanceof Solar) {
-			this.solar.setCenter(this.solar.sun.space);//Must Include Sun b/c Solar is Not Orbital
-			this.solar.setScale(this.solar.defaultScale);
-			this.solar.setAzimuth(this.defaultAzimuth);
-			this.solar.setElevation(this.defaultElevation);
-		} else if(this.node instanceof Orbital) {
-			logger.info("updateNode() "+this.node+" instanceof Orbital");
-			Orbital o = (Orbital)this.node;
-			o.updateSpace();
-			this.solar.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
-//			o.setScale(o.defaultScale);
-		} else if(this.node instanceof Spheroid){
-			logger.info("updateNode() "+this.node+" instanceof Spheroid");
-			Spheroid s = (Spheroid)this.node;
-			s.setElevation(s.getProjection().elevation);
-			s.setAzimuth(s.getProjection().azimuth);
-			s.setScale(s.defaultScale);
-			Object root = s.getRoot();
-			while(root != null) {
-				if(root instanceof Orbital) {
-					Orbital o = (Orbital)root;
+	public void updateNodeList() {
+		if (this.nodeList.size() > 0) {
+			for (Variable node : this.nodeList) {
+				if (node instanceof Solar) {
+					this.solar.setCenter(this.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
+					this.solar.setScale(this.solar.defaultScale);
+					this.solar.setAzimuth(this.defaultAzimuth);
+					this.solar.setElevation(this.defaultElevation);
+				} else if (node instanceof Orbital) {
+					logger.info("updateNode() " + node + " instanceof Orbital");
+					Orbital o = (Orbital) node;
 					o.updateSpace();
-					this.solar.setCenter(o.space);
-					break;
-				} else {
-					root = ((Variable)root).getRoot();
+					this.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
+//					o.setScale(o.defaultScale);
+				} else if (node instanceof Spheroid) {
+					logger.info("updateNode() " + node + " instanceof Spheroid");
+					Spheroid s = (Spheroid) node;
+					s.setElevation(s.getProjection().elevation);
+					s.setAzimuth(s.getProjection().azimuth);
+					s.setScale(s.defaultScale);
+					Object root = s.getRoot();
+					while (root != null) {
+						if (root instanceof Orbital) {
+							Orbital o = (Orbital) root;
+							o.updateSpace();
+							this.solar.setCenter(o.space);
+							break;
+						} else {
+							root = ((Variable) root).getRoot();
+						}
+					}
 				}
 			}
 		}
 	}
-	
+
+	@SuppressWarnings("resource")
+	public void updateNode() {
+		if (this.node instanceof Solar) {
+			this.solar.setCenter(this.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
+			this.solar.setScale(this.solar.defaultScale);
+			this.solar.setAzimuth(this.defaultAzimuth);
+			this.solar.setElevation(this.defaultElevation);
+		} else if (this.node instanceof Orbital) {
+			logger.info("updateNode() " + this.node + " instanceof Orbital");
+			Orbital o = (Orbital) this.node;
+			o.updateSpace();
+			this.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
+//			o.setScale(o.defaultScale);
+		} else if (this.node instanceof Spheroid) {
+			logger.info("updateNode() " + this.node + " instanceof Spheroid");
+			Spheroid s = (Spheroid) this.node;
+			s.setElevation(s.getProjection().elevation);
+			s.setAzimuth(s.getProjection().azimuth);
+			s.setScale(s.defaultScale);
+			Object root = s.getRoot();
+			while (root != null) {
+				if (root instanceof Orbital) {
+					Orbital o = (Orbital) root;
+					o.updateSpace();
+					this.solar.setCenter(o.space);
+					break;
+				} else {
+					root = ((Variable) root).getRoot();
+				}
+			}
+		}
+	}
+
 	public void setCache(boolean cache) {
 		this.cache = cache;
 	}
@@ -128,7 +172,7 @@ public class Model extends Variable {
 				File[] inputArray = input.listFiles();
 				if (inputArray.length > 0) {
 					for (File i : inputArray) {
-						if(i.isFile()) {
+						if (i.isFile()) {
 							Script script = this.getScript(i);
 							if (script != null) {
 								this.scriptList.add(script);
@@ -150,7 +194,7 @@ public class Model extends Variable {
 	}
 
 	public Script getScript(File file) throws Exception {
-		logger.info("getScript("+file+")");
+		logger.info("getScript(" + file + ")");
 		Script script = null;
 		if (FilenameUtils.getExtension(file.getAbsolutePath()).equals("json")) {
 			script = (Script) NodeController.openJson(file, Script.class);

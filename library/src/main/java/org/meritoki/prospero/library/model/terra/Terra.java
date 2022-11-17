@@ -37,6 +37,7 @@ public class Terra extends Grid {
 		this.addChild(new Hydrosphere());
 		this.addChild(new Atmosphere());
 		this.addChild(new Biosphere());
+		this.visible = true;
 	}
 	
 	public Terra(String name) {

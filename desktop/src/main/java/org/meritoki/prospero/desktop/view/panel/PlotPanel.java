@@ -56,8 +56,8 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 		this.addMouseListener(this);	
 		this.setFocusable(true);
 		this.setBackground(Color.white);
-		Thread thread = new Thread(this);
-		thread.start();
+//		Thread thread = new Thread(this);
+//		thread.start();
 	}
 
 	public void setModel(Model model) {
