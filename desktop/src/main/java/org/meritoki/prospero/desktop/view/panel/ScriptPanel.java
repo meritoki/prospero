@@ -75,7 +75,7 @@ public class ScriptPanel extends javax.swing.JPanel {
     
     public void initTextArea() {
     	if(this.model != null) {
-    		Variable node = this.model.node;
+    		Variable node = this.model.getNode();
     		if(node != null) {
     			Script script = node.script;
     			if(script != null) {
@@ -137,8 +137,8 @@ public class ScriptPanel extends javax.swing.JPanel {
 									
 									if (node != null) {
 										logger.info("query() node="+node);
-										model.addNode(terra);
-										model.updateNode();
+										model.setNode(terra);
+										model.updateNode(terra);
 										node.start();//can be called more than once, no problem
 										try {
 											node.query(query);//discrete finite task that sets a new query, includes process

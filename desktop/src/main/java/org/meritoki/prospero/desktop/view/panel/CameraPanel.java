@@ -47,15 +47,15 @@ public class CameraPanel extends javax.swing.JPanel
 	static Logger logger = LogManager.getLogger(CameraPanel.class.getName());
 	protected CameraPopupMenu menu;
 	public Model model;
-	public Variable node;
+//	public Variable node;
 	public double factor = 1.5;
 	protected int xDelta, yDelta;
 	protected double azimuth = 0;
 	protected double elevation = 0;
 	protected double scale = 1;
 	public Dimension dimension;
-	public List<Variable> nodeList = new ArrayList<>();
-	public int index = 0;
+//	public List<Variable> nodeList = new ArrayList<>();
+//	public int model.index = 0;
 
 	/**
 	 * Creates new form CameraPanel
@@ -72,8 +72,15 @@ public class CameraPanel extends javax.swing.JPanel
 
 	public void setModel(Model model) {
 		this.model = model;
-		this.node = this.model.node;
 		this.menu = new CameraPopupMenu(this.model);
+	}
+	
+	public void init() {
+		if(this.model != null) {
+		Dimension dimension = new Dimension(this.getWidth(), this.getHeight());
+		this.setPreferredSize(new java.awt.Dimension((int) dimension.width,
+		(int) ((this.model.nodeList.size()) * dimension.height)));
+		}
 	}
 
 	@Override
@@ -91,13 +98,13 @@ public class CameraPanel extends javax.swing.JPanel
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (this.node != null) {
+		if (this.model.getNode() != null) {
 			int xDelta = e.getX();
 			int yDelta = e.getY();
 			this.azimuth -= xDelta - this.xDelta;
 			this.elevation -= yDelta - this.yDelta;
-			if (this.node instanceof Spheroid) {
-				Spheroid s = (Spheroid) this.node;
+			if (this.model.getNode() instanceof Spheroid) {
+				Spheroid s = (Spheroid) this.model.getNode();
 				s.setAzimuth(this.azimuth);
 				s.setElevation(this.elevation);
 			}
@@ -155,33 +162,44 @@ public class CameraPanel extends javax.swing.JPanel
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		logger.info("keyPressed("+e+")");
-		if (this.model != null && this.node != null) {
-			if (this.node instanceof Spheroid) {
-				Spheroid s = (Spheroid) this.node;
+		logger.debug("keyPressed(" + e + ")");
+		if (this.model != null && this.model.getNode() != null) {
+			if (this.model.getNode() instanceof Spheroid) {
+				Spheroid s = (Spheroid) this.model.getNode();
 				double scale = s.getProjection().scale;
 				e.consume();
 				if (e.isControlDown()) {
 					switch (e.getKeyCode()) {
 					case KeyEvent.VK_UP: {
-						if(index > 0) {
-							index -=1;
+						if (model.index > 0) {
+							model.index -= 1;
 							this.repaint();
 						}
-//						this.repaint();
-						logger.info("keyPressed(e) UP index="+index);
-						
+						logger.info("keyPressed(e) UP model.index=" + model.index);
+						break;
+					}
+					case KeyEvent.VK_LEFT: {
+						if (model.index > 0) {
+							model.index -= 1;
+							this.repaint();
+						}
+						logger.info("keyPressed(e) LEFT model.index=" + model.index);
 						break;
 					}
 					case KeyEvent.VK_DOWN: {
-						if(index < this.nodeList.size()-1) {
-							index +=1;
+						if (model.index < this.model.nodeList.size() - 1) {
+							model.index += 1;
 							this.repaint();
 						}
-//						this.repaint();
-//						index = (index < this.nodeList.size())?index++:index;
-						logger.info("keyPressed(e) DOWN index="+index);
-//						this.repaint();
+						logger.info("keyPressed(e) DOWN model.index=" + model.index);
+						break;
+					}
+					case KeyEvent.VK_RIGHT: {
+						if (model.index < this.model.nodeList.size() - 1) {
+							model.index += 1;
+							this.repaint();
+						}
+						logger.info("keyPressed(e) RIGHT model.index=" + model.index);
 						break;
 					}
 					}
@@ -197,12 +215,12 @@ public class CameraPanel extends javax.swing.JPanel
 						break;
 					}
 //					case KeyEvent.VK_UP: {
-//						index = (index > 0)?index-1:index;
+//						model.index = (model.index > 0)?model.index-1:model.index;
 //						this.repaint();
 //						break;
 //					}
 //					case KeyEvent.VK_DOWN: {
-//						index = (index < this.nodeList.size())?index+1:index;
+//						model.index = (model.index < this.nodeList.size())?model.index+1:model.index;
 //						this.repaint();
 //						break;
 //					}
@@ -293,79 +311,81 @@ public class CameraPanel extends javax.swing.JPanel
 		super.paint(graphics);
 		logger.debug("paint(" + (graphics != null) + ")");
 		if (this.model != null) {
+			Dimension dimension = new Dimension(this.getWidth(), this.getHeight());
 			try {
-				this.nodeList = this.model.getVisibleList();
-				logger.debug("paint(" + (graphics != null) + ") this.nodeList.size()="+this.nodeList.size());
-				Dimension dimension = new Dimension(this.getWidth(), this.getHeight());
-//				for (int i = 0; i < this.nodeList.size(); i++) {
-//					if(i == index) {
-					if(this.nodeList.size() > 0) {
-						Variable node = this.nodeList.get(index);
+				logger.debug(
+						"paint(" + (graphics != null) + ") this.model.nodeList.size()=" + this.model.nodeList.size());
+				
+				if (this.model.nodeList.size() > 0) {
+					for (int i = 0; i < this.model.nodeList.size(); i++) {
+						Image image = createImage((int) dimension.width, (int) dimension.height);
+						Variable node = this.model.getNode(i);
 						if (node != null) {
-							logger.debug("paint(" + (graphics != null) + ") node="+node);
-							this.node = node;
-							Image image = createImage((int) dimension.width, (int) dimension.height);
+							logger.debug("paint(" + (graphics != null) + ") node=" + node);
 							node.dimension = dimension;
-							this.processNode(this.node);
-							image = this.node.getImage(image);
+//							this.processNode(node);
+							image = node.getImage(image);
 							node.setImage(image);
+						}
+//						graphics.drawImage(image, 0, (int)(i*dimension.height), null);
+						if (i == model.index) {
 							graphics.drawImage(image, 0, 0, null);
 						}
 					}
-//				}
-//				this.setPreferredSize(new java.awt.Dimension((int) dimension.width,
-//						(int) ((this.nodeList.size()) * dimension.height)));
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
+//	this.setPreferredSize(new java.awt.Dimension((int) dimension.width,
+//	(int) ((this.nodeList.size()) * dimension.height)));
 
-	public Variable processNode(Variable node) {
-		logger.debug("processNode("+node+")");
-		Variable n = null;
-		if (node instanceof Solar) {
-			this.model.solar.setCenter(this.model.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
-			this.model.solar.setScale(this.model.solar.defaultScale);
-			this.model.solar.setAzimuth(this.model.defaultAzimuth);
-			this.model.solar.setElevation(this.model.defaultElevation);
-		} else if (node instanceof Orbital) {// 20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
-//			logger.debug("paint(" + (graphics != null) + ") " + node + " instanceof Orbital");
-			logger.debug("processNode("+node+") instanceof Orbital");
-			Orbital o = (Orbital) node;
-			o.updateSpace();
-			this.model.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
-			this.model.solar.setScale(o.defaultScale);
-			//			this.model.solar.setAzimuth(this.azimuth);
+//	public Variable processNode(Variable node) {
+//		logger.debug("processNode(" + node + ")");
+//		Variable n = null;
+//		if (node instanceof Solar) {
+//			this.model.solar.setCenter(this.model.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
+//			this.model.solar.setScale(this.model.solar.defaultScale);
+//			this.model.solar.setAzimuth(this.model.defaultAzimuth);
+//			this.model.solar.setElevation(this.model.defaultElevation);
+//		} else if (node instanceof Orbital) {// 20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
+////			logger.debug("paint(" + (graphics != null) + ") " + node + " instanceof Orbital");
+//			logger.debug("processNode(" + node + ") instanceof Orbital");
+//			Orbital o = (Orbital) node;
+//			o.updateSpace();
+//			this.model.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
+//			this.model.solar.setScale(o.defaultScale);
+//			// this.model.solar.setAzimuth(this.azimuth);
+////			this.model.solar.setElevation(this.elevation);
+//			n = this.model.solar;
+//		} else if (node instanceof Spheroid) {
+//			logger.debug("processNode(" + node + ") instanceof Spheroid");
+////			logger.debug("paint(" + (graphics != null) + ") " + this.model.node + " instanceof Spheroid");
+//			Spheroid s = (Spheroid) node;
+//			this.azimuth = s.getProjection().azimuth;
+//			this.elevation = s.getProjection().elevation;
+//			this.scale = s.getProjection().scale;
+//			this.model.solar.setAzimuth(this.azimuth);
 //			this.model.solar.setElevation(this.elevation);
-			n = this.model.solar;
-		} else if (node instanceof Spheroid) {
-			logger.debug("processNode("+node+") instanceof Spheroid");
-//			logger.debug("paint(" + (graphics != null) + ") " + this.model.node + " instanceof Spheroid");
-			Spheroid s = (Spheroid) node;
-			this.azimuth = s.getProjection().azimuth;
-			this.elevation = s.getProjection().elevation;
-			this.scale = s.getProjection().scale;
-			this.model.solar.setAzimuth(this.azimuth);
-			this.model.solar.setElevation(this.elevation);
-			this.model.solar.setScale(this.scale);
-			Object root = s.getRoot();
-			while (root != null) {
-				if (root instanceof Orbital) {
-					Orbital o = (Orbital) root;
-					o.updateSpace();
-					this.model.solar.setCenter(o.space);
-
-//				this.model.node = this.model.solar;
-//				this.model.node = this.model.solar.sun;
-					break;
-				} else {
-					root = ((Variable) root).getRoot();
-				}
-			}
-		}
-		return n;
-	}
+//			this.model.solar.setScale(this.scale);
+//			Object root = s.getRoot();
+//			while (root != null) {
+//				if (root instanceof Orbital) {
+//					Orbital o = (Orbital) root;
+//					o.updateSpace();
+//					this.model.solar.setCenter(o.space);
+//
+////				this.model.node = this.model.solar;
+////				this.model.node = this.model.solar.sun;
+//					break;
+//				} else {
+//					root = ((Variable) root).getRoot();
+//				}
+//			}
+//		}
+//		return n;
+//	}
 
 //	@Override
 //	public void paint(Graphics graphics) {

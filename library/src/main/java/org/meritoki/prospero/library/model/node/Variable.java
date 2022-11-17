@@ -467,6 +467,10 @@ public class Variable extends Node {
 		this.paint(graphics);
 		return image;
 	}
+	
+	public Image getImage() {
+		return this.image;
+	}
 
 	@JsonIgnore
 	public void paint(Graphics graphics) throws Exception {

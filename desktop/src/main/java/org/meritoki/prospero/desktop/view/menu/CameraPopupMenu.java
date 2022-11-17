@@ -74,7 +74,7 @@ public class CameraPopupMenu extends JPopupMenu {
 		JMenuItem defaultMenuItem = new JMenuItem("Default");
 		defaultMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid)model.node).setSelectedProjection(null);
+				((Spheroid) model.getNode()).setSelectedProjection(null);
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
@@ -82,7 +82,7 @@ public class CameraPopupMenu extends JPopupMenu {
 		JMenuItem equirectangularMenuItem = new JMenuItem("Equirectangular");
 		equirectangularMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid)model.node).setSelectedProjection(new Equirectangular());
+				((Spheroid) model.getNode()).setSelectedProjection(new Equirectangular());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
@@ -90,7 +90,7 @@ public class CameraPopupMenu extends JPopupMenu {
 		JMenuItem mercatorMenuItem = new JMenuItem("Mercator");
 		mercatorMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid)model.node).setSelectedProjection(new Mercator());
+				((Spheroid) model.getNode()).setSelectedProjection(new Mercator());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
@@ -98,7 +98,7 @@ public class CameraPopupMenu extends JPopupMenu {
 		JMenuItem azimuthalNorthMenuItem = new JMenuItem("Azimuthal North");
 		azimuthalNorthMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid)model.node).setSelectedProjection(new AzimuthalNorth());
+				((Spheroid) model.getNode()).setSelectedProjection(new AzimuthalNorth());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
@@ -106,19 +106,19 @@ public class CameraPopupMenu extends JPopupMenu {
 		JMenuItem azimuthalSouthMenuItem = new JMenuItem("Azimuthal South");
 		azimuthalSouthMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid)model.node).setSelectedProjection(new AzimuthalSouth());
+				((Spheroid) model.getNode()).setSelectedProjection(new AzimuthalSouth());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
 		});
-		
-		if(model.node instanceof Terra) {
-		projectionMenu.add(defaultMenuItem);
-		projectionMenu.add(equirectangularMenuItem);
-		projectionMenu.add(mercatorMenuItem);
-		projectionMenu.add(azimuthalNorthMenuItem);
-		projectionMenu.add(azimuthalSouthMenuItem);
-		this.add(projectionMenu);
+
+		if (this.model.getNode() instanceof Terra) {
+			projectionMenu.add(defaultMenuItem);
+			projectionMenu.add(equirectangularMenuItem);
+			projectionMenu.add(mercatorMenuItem);
+			projectionMenu.add(azimuthalNorthMenuItem);
+			projectionMenu.add(azimuthalSouthMenuItem);
+			this.add(projectionMenu);
 		}
 		this.add(this.saveMenuItem);
 	}

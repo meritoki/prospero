@@ -98,7 +98,7 @@ public class ModelPanel extends javax.swing.JPanel {
 			public void valueChanged(TreeSelectionEvent e) {
 				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
 				if (selectedNode != null && !selectedNode.equals("null")) {
-					model.addNode(model.getVariable(selectedNode.toString()));
+					model.setNode(model.getVariable(selectedNode.toString()));
 					mainFrame.init();
 				}
 			}
@@ -108,7 +108,7 @@ public class ModelPanel extends javax.swing.JPanel {
 	public void initDataTreeMouseListener() {
 		MouseListener ml = new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				logger.info("initDataTreeMouseListener() e.getClickCount()="+e.getClickCount());
+				logger.debug("initDataTreeMouseListener() e.getClickCount()="+e.getClickCount());
 				if (e.isPopupTrigger()) {
 					TreePath treePath = jTree1.getPathForLocation(e.getX(), e.getY());
 					if (treePath != null) {
@@ -117,7 +117,7 @@ public class ModelPanel extends javax.swing.JPanel {
 							if (model != null) {
 								Variable node = model.getVariable(lastPathComponent.toString());
 								if (node != null) {
-									model.addNode(node);
+									model.setNode(node);
 									nodeMenu = new VariableMenu(model, mainFrame);//can conceivably pass model
 									nodeMenu.show(e.getComponent(), e.getX(), e.getY());
 								}
@@ -132,8 +132,8 @@ public class ModelPanel extends javax.swing.JPanel {
 							if (model != null) {
 								Variable node = model.getVariable(lastPathComponent.toString());
 								if (node != null) {
-									model.addNode(node);
-									model.updateNode();
+									model.setNode(node);
+									model.updateNode(node);
 									mainFrame.init();
 								}
 							}

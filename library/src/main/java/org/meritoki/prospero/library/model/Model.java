@@ -31,6 +31,7 @@ import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.data.Data;
 import org.meritoki.prospero.library.model.solar.Solar;
+import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.unit.Script;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -43,16 +44,21 @@ public class Model extends Variable {
 	public Properties properties;
 	public Data data = new Data();
 	public Solar solar = new Solar();
-	public Variable node = solar;
+//	public Variable node = solar;
 	public int defaultAzimuth = 0;
 	public int defaultElevation = 150;
+	protected double azimuth = 0;
+	protected double elevation = 0;
+	protected double scale = 1;
 	public List<Variable> nodeList = new ArrayList<>();
+	public int index;
 
 	public Model() {
 		super("Model");
 		this.solar.setAzimuth(this.defaultAzimuth);
 		this.solar.setElevation(this.defaultElevation);
 		this.addChild(this.solar);
+		this.addNode(this.solar);
 		this.setData(this.data);
 		this.calendar = Calendar.getInstance();
 		this.calendar.setTime(new Date());
@@ -75,72 +81,64 @@ public class Model extends Variable {
 			this.data.setBasePath(basePath);
 		}
 	}
-
+	
 	/**
 	 * Add Node to Node List
-	 * @param variable
+	 * @param node
 	 */
 	@JsonIgnore
-	public void addNode(Variable variable) {
-		this.node = variable;
-	}
-
-	@SuppressWarnings("resource")
-	public void updateNodeList() {
-		if (this.nodeList.size() > 0) {
-			for (Variable node : this.nodeList) {
-				if (node instanceof Solar) {
-					this.solar.setCenter(this.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
-					this.solar.setScale(this.solar.defaultScale);
-					this.solar.setAzimuth(this.defaultAzimuth);
-					this.solar.setElevation(this.defaultElevation);
-				} else if (node instanceof Orbital) {
-					logger.info("updateNode() " + node + " instanceof Orbital");
-					Orbital o = (Orbital) node;
-					o.updateSpace();
-					this.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
-//					o.setScale(o.defaultScale);
-				} else if (node instanceof Spheroid) {
-					logger.info("updateNode() " + node + " instanceof Spheroid");
-					Spheroid s = (Spheroid) node;
-					s.setElevation(s.getProjection().elevation);
-					s.setAzimuth(s.getProjection().azimuth);
-					s.setScale(s.defaultScale);
-					Object root = s.getRoot();
-					while (root != null) {
-						if (root instanceof Orbital) {
-							Orbital o = (Orbital) root;
-							o.updateSpace();
-							this.solar.setCenter(o.space);
-							break;
-						} else {
-							root = ((Variable) root).getRoot();
-						}
-					}
-				}
-			}
+	public void addNode(Variable node) {
+		if(node != null) {
+			this.nodeList.add(node);
+			this.index = this.nodeList.size()-1;
+			logger.info(this+".addNode("+node+") this.index="+this.index);
 		}
 	}
 
+	/**
+	 * Add Node to Node List
+	 * @param node
+	 */
+	@JsonIgnore
+	public void setNode(Variable node) {
+		this.nodeList.set(this.index, node);
+	}
+	
+	@JsonIgnore
+	public Variable getNode() {
+		return this.nodeList.get(this.index);
+	}
+	
+	@JsonIgnore
+	public Variable getNode(int index) {
+		Variable node = this.nodeList.get(index);
+		this.updateNode(node);
+		return node; 
+	}
+
 	@SuppressWarnings("resource")
-	public void updateNode() {
-		if (this.node instanceof Solar) {
+	public void updateNode(Variable node) {
+		if (node instanceof Solar) {
 			this.solar.setCenter(this.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
-			this.solar.setScale(this.solar.defaultScale);
-			this.solar.setAzimuth(this.defaultAzimuth);
-			this.solar.setElevation(this.defaultElevation);
-		} else if (this.node instanceof Orbital) {
-			logger.info("updateNode() " + this.node + " instanceof Orbital");
-			Orbital o = (Orbital) this.node;
+//			this.solar.setScale(this.solar.defaultScale);
+//			this.solar.setAzimuth(this.defaultAzimuth);
+//			this.solar.setElevation(this.defaultElevation);
+		} else if (node instanceof Orbital) {
+			logger.info("updateNode(" + node+ ") instanceof Orbital");
+			Orbital o = (Orbital) node;
 			o.updateSpace();
 			this.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
 //			o.setScale(o.defaultScale);
-		} else if (this.node instanceof Spheroid) {
-			logger.info("updateNode() " + this.node + " instanceof Spheroid");
-			Spheroid s = (Spheroid) this.node;
-			s.setElevation(s.getProjection().elevation);
-			s.setAzimuth(s.getProjection().azimuth);
-			s.setScale(s.defaultScale);
+		} else if (node instanceof Spheroid) {
+			logger.info("updateNode(" + node+ ") instanceof Spheroid");
+			Spheroid s = (Spheroid) node;
+			this.azimuth = s.getProjection().azimuth;
+			this.elevation = s.getProjection().elevation;
+			this.scale = s.getProjection().scale;
+			this.solar.setAzimuth(this.azimuth);
+			this.solar.setElevation(this.elevation);
+			this.solar.setScale(this.scale);
+			
 			Object root = s.getRoot();
 			while (root != null) {
 				if (root instanceof Orbital) {
@@ -204,6 +202,44 @@ public class Model extends Variable {
 		return script;
 	}
 }
+//@SuppressWarnings("resource")
+//public void updateNodeList() {
+//	if (this.nodeList.size() > 0) {
+//		for (Variable node : this.nodeList) {
+//			if (node instanceof Solar) {
+//				this.solar.setCenter(this.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
+//				this.solar.setScale(this.solar.defaultScale);
+//				this.solar.setAzimuth(this.defaultAzimuth);
+//				this.solar.setElevation(this.defaultElevation);
+//			} else if(node instanceof Terra)  {
+//				
+//			} else if (node instanceof Orbital) {
+//				logger.info("updateNode() " + node + " instanceof Orbital");
+//				Orbital o = (Orbital) node;
+//				o.updateSpace();
+//				this.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
+////				o.setScale(o.defaultScale);
+//			} else if (node instanceof Spheroid) {
+//				logger.info("updateNode() " + node + " instanceof Spheroid");
+//				Spheroid s = (Spheroid) node;
+//				s.setElevation(s.getProjection().elevation);
+//				s.setAzimuth(s.getProjection().azimuth);
+//				s.setScale(s.defaultScale);
+//				Object root = s.getRoot();
+//				while (root != null) {
+//					if (root instanceof Orbital) {
+//						Orbital o = (Orbital) root;
+//						o.updateSpace();
+//						this.solar.setCenter(o.space);
+//						break;
+//					} else {
+//						root = ((Variable) root).getRoot();
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
 //this.data.setBasePath("/home/jorodriguez/Prospero/prospero-data/");
 //this.calendar.set(Calendar.YEAR, 2001);
 //this.calendar.set(Calendar.MONTH, 0);

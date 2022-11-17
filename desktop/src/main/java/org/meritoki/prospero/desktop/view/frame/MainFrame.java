@@ -30,8 +30,9 @@ import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.model.Model;
 import org.meritoki.prospero.desktop.view.dialog.AboutDialog;
 import org.meritoki.prospero.desktop.view.dialog.MainDialog;
-import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
 import org.meritoki.prospero.desktop.view.dialog.OpenDialog;
+import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
+import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.unit.Script;
@@ -121,7 +122,7 @@ public class MainFrame extends javax.swing.JFrame {
 		script.queryList.add(query);
 		name += "-"+uuid;
 		NodeController.saveJson(path, name+".json", script);
-		this.saveGridPanel(path, name);
+		this.saveCameraPanel(path, name, uuid);
 		this.savePlotPanel(path, name, uuid);
 	}
 	
@@ -130,8 +131,24 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param path
 	 * @param name
 	 */
-	public void saveGridPanel(String path, String name) {
-		NodeController.savePanel(this.cameraPanel1, path,"grid-"+((name !=null)?name:""));
+	public void saveCameraPanel(String path, String name, String uuid) {
+//		NodeController.savePanel(this.cameraPanel1, path,"grid-"+((name !=null)?name:""));
+    	for(Variable plot: this.model.nodeList) {
+			if(plot != null) {
+
+				Image image = plot.getImage();
+				if(image != null) {
+					String fileName;
+					fileName = "grid-"+plot.data+"-"+uuid+".png";
+					try {
+						NodeController.savePng(path, fileName, NodeController.toBufferedImage(image));
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 	
 	public void savePlotPanel(String path, String name, String uuid) throws Exception {

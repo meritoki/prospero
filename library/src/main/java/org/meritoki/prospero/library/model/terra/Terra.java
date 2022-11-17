@@ -37,7 +37,7 @@ public class Terra extends Grid {
 		this.addChild(new Hydrosphere());
 		this.addChild(new Atmosphere());
 		this.addChild(new Biosphere());
-		this.visible = true;
+		this.defaultScale = 7200000.0;
 	}
 	
 	public Terra(String name) {

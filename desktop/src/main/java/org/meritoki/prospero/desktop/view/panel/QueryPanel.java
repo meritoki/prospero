@@ -59,7 +59,7 @@ public class QueryPanel extends javax.swing.JPanel {
 	}
     
 	public void initList() {
-		Variable node = (this.model != null) ? this.model.node : null;
+		Variable node = (this.model != null) ? this.model.getNode(): null;
 		if (node != null) {
 			this.initQueryList(node.query.getList());
 		} else {
@@ -150,7 +150,7 @@ public class QueryPanel extends javax.swing.JPanel {
         String value = this.valueTextField.getText();
         key = (!key.isEmpty()) ? key.trim() : null;
         value = (!value.isEmpty()) ? value.trim() : null;
-        Variable node = (this.model != null) ? this.model.node : null;
+        Variable node = (this.model != null) ? this.model.getNode(): null;
         if (key != null && value != null && node != null) {
             node.query.put(key, value);
             try {
@@ -164,7 +164,7 @@ public class QueryPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_addButtonActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
-        Variable node = (this.model != null) ? this.model.node : null;
+        Variable node = (this.model != null) ? this.model.getNode() : null;
         String attribute = this.keyValueList.getSelectedValue();
         if (attribute != null && node != null) {
             String[] pair = attribute.split("=");

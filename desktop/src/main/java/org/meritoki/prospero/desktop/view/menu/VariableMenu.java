@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
@@ -40,12 +41,26 @@ public class VariableMenu extends JPopupMenu {
 	private static final long serialVersionUID = 288610046583103334L;
 
 	public VariableMenu(Model model, MainFrame mainFrame) {
-		JCheckBoxMenuItem newMenuItem = new JCheckBoxMenuItem("New");
+		JMenuItem newMenuItem = new JMenuItem("New");
+		newMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+//				JMenuItem menuItem = (JMenuItem) ev.getSource();
+				model.addNode(model.getNode());
+//				if (menuItem.isSelected()) {
+//					System.out.println(ev.getActionCommand());
+//					model.getNode().start();
+//					model.getNode().variableMap.put(ev.getActionCommand(), true);
+//				} else {
+//					model.getNode().stop();
+//					model.getNode().variableMap.put(ev.getActionCommand(), false);
+//				}
+			}
+		});
 		this.add(newMenuItem);
 		this.add(new JSeparator());
-		for (String source : model.node.getSourceList()) {
+		for (String source : model.getNode().getSourceList()) {
 			JCheckBoxMenuItem sourceMenuItem = new JCheckBoxMenuItem(source);
-			if (source.equals(model.node.query.getSource())) {
+			if (source.equals(model.getNode().query.getSource())) {
 				sourceMenuItem.setState(true);
 			}
 			sourceMenuItem.addActionListener(new ActionListener() {
@@ -53,34 +68,34 @@ public class VariableMenu extends JPopupMenu {
 					JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) e.getSource();
 					if (menuItem.isSelected()) {
 						String source = e.getActionCommand();
-						logger.info("VariableMenu(" + model.node + ") source=" + source);
-						model.node.source = source;
-						model.node.start();
-						model.node.query.map.put("source",source);
-						model.node.query.map.put("variable",model.node.name);//Consider generalizing and allowing in all cases, especifally if we want a user to ba able to save and rerun any script
-						model.node.init();
-						if(model.node.query.getOperator()== Operator.OR) {//Here we detect OR and know we MUST process as a script
-							model.scriptList.add(model.node.script);
+						logger.info("VariableMenu(" + model.getNode() + ") source=" + source);
+						model.getNode().source = source;
+						model.getNode().start();
+						model.getNode().query.map.put("source",source);
+						model.getNode().query.map.put("variable",model.getNode().name);//Consider generalizing and allowing in all cases, especifally if we want a user to ba able to save and rerun any script
+						model.getNode().init();
+						if(model.getNode().query.getOperator()== Operator.OR) {//Here we detect OR and know we MUST process as a script
+							model.scriptList.add(model.getNode().script);
 							mainFrame.getMainDialog().getModelPanel().getScriptPanel().init();
 							mainFrame.getMainDialog().getModelPanel().getScriptPanel().query();
 							int index = mainFrame.getMainDialog().getModelPanel().getTabbedPane().indexOfTab("Script");
 							mainFrame.getMainDialog().getModelPanel().getTabbedPane().setSelectedIndex(index);
 						} else {//IF an AND, we can run the query
-							model.node.query();//model.node.query);
+							model.getNode().query();//model.node.query);
 						}
 						mainFrame.init();
 					} else {
-						logger.info("VariableMenu(" + model.node + ") !menuItem.isSelected()");
-						model.node.stop();
-						model.node.query.map.put("source",null);
+						logger.info("VariableMenu(" + model.getNode() + ") !menuItem.isSelected()");
+						model.getNode().stop();
+						model.getNode().query.map.put("source",null);
 					}
 				}
 			});
 			this.add(sourceMenuItem);
 		}
-		for (String variable : model.node.getVariableList()) {
+		for (String variable : model.getNode().getVariableList()) {
 			JCheckBoxMenuItem variableMenuItem = new JCheckBoxMenuItem(variable);
-			boolean loaded = model.node.variableMap.get(variable);
+			boolean loaded = model.getNode().variableMap.get(variable);
 			if (loaded) {
 				variableMenuItem.setState(true);
 			}
@@ -89,11 +104,11 @@ public class VariableMenu extends JPopupMenu {
 					JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) ev.getSource();
 					if (menuItem.isSelected()) {
 						System.out.println(ev.getActionCommand());
-						model.node.start();
-						model.node.variableMap.put(ev.getActionCommand(), true);
+						model.getNode().start();
+						model.getNode().variableMap.put(ev.getActionCommand(), true);
 					} else {
-						model.node.stop();
-						model.node.variableMap.put(ev.getActionCommand(), false);
+						model.getNode().stop();
+						model.getNode().variableMap.put(ev.getActionCommand(), false);
 					}
 				}
 			});
