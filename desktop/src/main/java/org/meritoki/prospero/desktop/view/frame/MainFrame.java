@@ -32,6 +32,7 @@ import org.meritoki.prospero.desktop.view.dialog.AboutDialog;
 import org.meritoki.prospero.desktop.view.dialog.MainDialog;
 import org.meritoki.prospero.desktop.view.dialog.OpenDialog;
 import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
+import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
@@ -133,13 +134,13 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	public void saveCameraPanel(String path, String name, String uuid) {
 //		NodeController.savePanel(this.cameraPanel1, path,"grid-"+((name !=null)?name:""));
-    	for(Variable plot: this.model.nodeList) {
-			if(plot != null) {
-
-				Image image = plot.getImage();
+    	for(Camera camera: this.model.cameraList) {
+			if(camera != null) {
+				Variable node = camera.getNode();
+				Image image = camera.getImage();
 				if(image != null) {
 					String fileName;
-					fileName = "grid-"+plot.data+"-"+uuid+".png";
+					fileName = "grid-"+node.data+"-"+uuid+".png";
 					try {
 						NodeController.savePng(path, fileName, NodeController.toBufferedImage(image));
 					} catch (Exception e) {

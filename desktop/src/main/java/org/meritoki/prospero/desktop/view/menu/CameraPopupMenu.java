@@ -15,6 +15,7 @@
  */
 package org.meritoki.prospero.desktop.view.menu;
 
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -33,7 +34,9 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.view.panel.CameraPanel;
 import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.Spheroid;
+import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.cartography.AzimuthalNorth;
 import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
 import org.meritoki.prospero.library.model.node.cartography.Equirectangular;
@@ -52,7 +55,6 @@ public class CameraPopupMenu extends JPopupMenu {
 	public CameraPopupMenu(Model m) {
 		this.model = m;
 		this.saveMenuItem = new JMenuItem("Save");
-
 		this.saveMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				Date dateTime = Calendar.getInstance().getTime();
@@ -66,7 +68,25 @@ public class CameraPopupMenu extends JPopupMenu {
 				String uuid = UUID.randomUUID().toString();
 				JPanel panel = (JPanel) getInvoker();
 				if (panel instanceof CameraPanel) {
-					NodeController.savePanel(panel, path, "grid-" + uuid);
+					panel.repaint();
+//					NodeController.savePanel(panel, path, "grid-" + uuid);
+					for(Camera camera: model.cameraList) {
+						if(camera != null) {
+							Variable node = camera.getNode();
+							Image image = camera.getImage();
+							logger.info("CameraPopupMenu(model) image="+image);
+							if(image != null) {
+								String fileName;
+								fileName = "grid-"+node.data+"-"+UUID.randomUUID().toString()+"-"+uuid+".png";
+								try {
+									NodeController.savePng(path, fileName, NodeController.toBufferedImage(image));
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+					}
 				}
 			}
 		});
@@ -74,7 +94,7 @@ public class CameraPopupMenu extends JPopupMenu {
 		JMenuItem defaultMenuItem = new JMenuItem("Default");
 		defaultMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid) model.getNode()).setSelectedProjection(null);
+				((Spheroid) model.getCamera().getNode()).setSelectedProjection(null);
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
@@ -82,7 +102,7 @@ public class CameraPopupMenu extends JPopupMenu {
 		JMenuItem equirectangularMenuItem = new JMenuItem("Equirectangular");
 		equirectangularMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid) model.getNode()).setSelectedProjection(new Equirectangular());
+				((Spheroid) model.getCamera().getNode()).setSelectedProjection(new Equirectangular());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
@@ -90,7 +110,7 @@ public class CameraPopupMenu extends JPopupMenu {
 		JMenuItem mercatorMenuItem = new JMenuItem("Mercator");
 		mercatorMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid) model.getNode()).setSelectedProjection(new Mercator());
+				((Spheroid) model.getCamera().getNode()).setSelectedProjection(new Mercator());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
@@ -98,7 +118,7 @@ public class CameraPopupMenu extends JPopupMenu {
 		JMenuItem azimuthalNorthMenuItem = new JMenuItem("Azimuthal North");
 		azimuthalNorthMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid) model.getNode()).setSelectedProjection(new AzimuthalNorth());
+				((Spheroid) model.getCamera().getNode()).setSelectedProjection(new AzimuthalNorth());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
@@ -106,13 +126,13 @@ public class CameraPopupMenu extends JPopupMenu {
 		JMenuItem azimuthalSouthMenuItem = new JMenuItem("Azimuthal South");
 		azimuthalSouthMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				((Spheroid) model.getNode()).setSelectedProjection(new AzimuthalSouth());
+				((Spheroid) model.getCamera().getNode()).setSelectedProjection(new AzimuthalSouth());
 				CameraPanel panel = (CameraPanel) getInvoker();
 				panel.repaint();
 			}
 		});
 
-		if (this.model.getNode() instanceof Terra) {
+		if (this.model.getCamera().getNode() instanceof Terra) {
 			projectionMenu.add(defaultMenuItem);
 			projectionMenu.add(equirectangularMenuItem);
 			projectionMenu.add(mercatorMenuItem);

@@ -761,7 +761,7 @@ public class Cyclone extends Atmosphere {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-mean-velocity-count-histogram";
 		Map<Integer, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Total Mean Velocity Count");
+		histogram.setTitle("Mean Velocity Count");
 		histogram.setXLabel("Event Mean Velocity (km/s)");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -794,7 +794,7 @@ public class Cyclone extends Atmosphere {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-mean-vorticity-count-histogram";
 		Map<String, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Total Mean Vorticity Count");
+		histogram.setTitle("Mean Vorticity Count");
 		histogram.setXLabel("Event Mean Vorticity");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -828,7 +828,7 @@ public class Cyclone extends Atmosphere {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-duration-count-histogram";
 		Map<Integer, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Total Duration Count");
+		histogram.setTitle("Duration Count");
 		histogram.setXLabel("Event Duration (Days)");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -861,7 +861,7 @@ public class Cyclone extends Atmosphere {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-distance-count-histogram";
 		Map<Integer, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Total Distance Count");
+		histogram.setTitle("Distance Count");
 		histogram.setXLabel("Event Distance (1000 Kilometers)");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -899,8 +899,8 @@ public class Cyclone extends Atmosphere {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-level-count-histogram";
 		Map<String, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Level Percentage (%)");
-		histogram.setXLabel("Event Level");
+		histogram.setTitle("Pressure Percentage (%)");
+		histogram.setXLabel("Event Pressure");
 		histogram.setYLabel("Event Percentage (%)");
 		if (eventList != null) {
 			Integer count = 0;
@@ -935,7 +935,7 @@ public class Cyclone extends Atmosphere {
 		Histogram histogram = new Histogram();
 		Map<String, Integer> countMap = new HashMap<>();
 		histogram.data = "event-lowermost-level-count-histogram";
-		histogram.setTitle("Event Lowermost Level Count");
+		histogram.setTitle("Lowermost Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -968,7 +968,7 @@ public class Cyclone extends Atmosphere {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-level-count-histogram";
 		Map<Integer, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Total Level Count");
+		histogram.setTitle("Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -1001,7 +1001,7 @@ public class Cyclone extends Atmosphere {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-uppermost-level-count-histogram";
 		Map<String, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Uppermost Level Count");
+		histogram.setTitle("Uppermost Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {

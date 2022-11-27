@@ -9,7 +9,7 @@
 	<groupId>org.meritoki</groupId>
 	<artifactId>prospero</artifactId>
 	<packaging>pom</packaging>
-	<version>0.14.202211</version>
+	<version>0.15.202211</version>
 
 	<!-- sub modules -->
 	<modules>
@@ -20,12 +20,12 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.17</version>
+			<version>5.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>3.17</version>
+			<version>5.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>

@@ -94,6 +94,20 @@ public class Earth extends Planet {
 	}
 	
 	@Override
+	public void setSelectedProjection(Projection projection) {
+		super.setSelectedProjection(projection);
+		this.terra.setSelectedProjection(projection);
+	}
+	
+	
+	@Override
+	public void setSelectable(boolean selectable) {
+		super.setSelectable(selectable);
+		this.terra.setSelectable(selectable);
+		
+	}
+	
+	@Override
 	public void setScale(double scale) {
 		super.setScale(scale);
 		this.terra.setScale(scale);

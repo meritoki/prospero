@@ -83,8 +83,7 @@ public class Variable extends Node {
 	public Document document;
 	@JsonIgnore
 	public Dimension dimension = new Dimension();
-	@JsonIgnore
-	public Image image;
+
 	@JsonIgnore
 	public String source;
 	@JsonIgnore
@@ -309,10 +308,7 @@ public class Variable extends Node {
 		}
 	}
 	
-	@JsonIgnore
-	public void setImage(Image image) {
-		this.image = image;
-	}
+
 
 	@JsonIgnore
 	public void setCalendar(Calendar calendar) {
@@ -468,9 +464,6 @@ public class Variable extends Node {
 		return image;
 	}
 	
-	public Image getImage() {
-		return this.image;
-	}
 
 	@JsonIgnore
 	public void paint(Graphics graphics) throws Exception {
