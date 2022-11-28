@@ -115,8 +115,6 @@ public class ScriptPanel extends javax.swing.JPanel {
 		this.runnable = new Runnable() {
 			public void run() {
 				Thread.currentThread().setName("Script");
-
-				
 				if(model.scriptList.size() > 0) {
 					Terra terra = (Terra)model.getVariable("Terra");
 					terra.setSelectedProjection(new AzimuthalSouth());
@@ -143,8 +141,8 @@ public class ScriptPanel extends javax.swing.JPanel {
 											node.query(query);//discrete finite task that sets a new query, includes process
 											while (!node.isComplete() && !Thread.interrupted()) {
 //												logger.info("query() node="+node+" node.isComplete()="+node.isComplete());
-												mainFrame.init();
-												Thread.sleep(16000);
+//												mainFrame.init();
+												Thread.sleep(4000);
 											}
 											logger.info("query() node.isComplete()="+node.isComplete());
 											// wait for node to be in complete state
