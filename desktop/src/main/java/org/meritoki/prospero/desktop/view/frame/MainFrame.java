@@ -67,7 +67,6 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 
 	public void setModel(Model model) {
-//		logger.info("setModel("+model+")");
 		this.model = model;
 		this.mainDialog.setModel(this.model);
 		this.mainDialog.setVisible(true);
@@ -78,11 +77,11 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 
 	public void init() {
-		logger.info("init()");
+		logger.debug("init()");
 		this.mainDialog.init();
 		this.cameraPanel1.init();
 		this.plotPanel.init();
-		this.tablePanel.repaint();
+		this.tablePanel.init();
 	}
 
 	public void save() {
