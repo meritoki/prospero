@@ -69,7 +69,7 @@ public class Spheroid extends Energy {
 	}
 
 	public void setSelectedProjection(Projection selected) {
-		logger.info(this.name+".setSelectedProjection("+selected+")");
+//		logger.info(this.name+".setSelectedProjection("+selected+")");
 		this.selected = selected;
 	}
 	

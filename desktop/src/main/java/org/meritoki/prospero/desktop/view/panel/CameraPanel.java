@@ -15,6 +15,7 @@
  */
 package org.meritoki.prospero.desktop.view.panel;
 
+import java.awt.Color;
 //import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -37,14 +38,14 @@ import org.meritoki.prospero.library.model.unit.Dimension;
  *
  * @author jorodriguez
  */
-public class CameraPanel extends javax.swing.JPanel
-		implements KeyListener, MouseListener, MouseMotionListener, Runnable {
+public class CameraPanel extends javax.swing.JPanel implements KeyListener, MouseListener, MouseMotionListener {
 
 	private static final long serialVersionUID = 1L;
 	static Logger logger = LogManager.getLogger(CameraPanel.class.getName());
 	protected CameraPopupMenu menu;
 	public Model model;
 	public Dimension dimension;
+	public Image image;
 
 	/**
 	 * Creates new form CameraPanel
@@ -54,6 +55,7 @@ public class CameraPanel extends javax.swing.JPanel
 		this.addKeyListener(this);
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
+		this.setBackground(Color.white);
 	}
 
 	public void setModel(Model model) {
@@ -63,22 +65,22 @@ public class CameraPanel extends javax.swing.JPanel
 
 	public void init() {
 		if (this.model != null) {
-			Dimension dimension = new Dimension(this.getWidth(), this.getHeight());
-			this.setPreferredSize(new java.awt.Dimension((int) dimension.width,
-					(int) ((this.model.cameraList.size()) * dimension.height)));
-		}
-	}
-
-	@Override
-	public void run() {
-		while (true) {
 			try {
-				this.repaint();
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				for (int i = 0; i < this.model.cameraList.size(); i++) {
+					Image image = null;
+					Camera camera = this.model.getCamera(i);//
+					if (camera != null) {
+						this.model.setCameraBuffer(camera);
+						image = camera.initImage(this);
+					}
+					if (i == model.index && image != null) {
+						this.image = image;
+					}
+				}
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			this.repaint();
 		}
 	}
 
@@ -90,34 +92,24 @@ public class CameraPanel extends javax.swing.JPanel
 			if (camera != null) {
 				camera.mouseDragged(e);
 				e.consume();
-				this.repaint();
+				this.init();
 			}
 		}
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void mouseMoved(MouseEvent e) {}
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
+	public void mouseClicked(MouseEvent e) {
 		this.requestFocus();
-
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void mouseEntered(MouseEvent e) {}
 
 	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void mouseExited(MouseEvent e) {}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
@@ -128,15 +120,13 @@ public class CameraPanel extends javax.swing.JPanel
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		e.consume();
 		if (e.isPopupTrigger())
 			showSavePopupMenu(e);
-
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-
-	}
+	public void keyTyped(KeyEvent e) {}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -146,15 +136,12 @@ public class CameraPanel extends javax.swing.JPanel
 			Camera camera = this.model.getCamera();
 			camera.keyPressed(e);
 			e.consume();
-			this.repaint();
+			this.init();
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void keyReleased(KeyEvent e) {}
 
 	private void showSavePopupMenu(MouseEvent e) {
 		this.menu = new CameraPopupMenu(this.model);
@@ -165,25 +152,8 @@ public class CameraPanel extends javax.swing.JPanel
 	@Override
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-		logger.info("paint(" + (graphics != null) + ")");
-		if (this.model != null) {
-			try {
-//				logger.info("paint(" + (graphics != null) + ") this.model.cameraList.size()="
-//						+ this.model.cameraList.size());
-				for (int i = 0; i < this.model.cameraList.size(); i++) {
-					Image image = null;
-					Camera camera = this.model.getCamera(i);//
-					if (camera != null) {
-						this.model.setCameraBuffer(camera);
-						image = camera.initImage(this);
-					}
-					if (i == model.index && image != null) {
-						graphics.drawImage(image, 0, 0, null);
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		if(this.image != null) {
+			graphics.drawImage(this.image, 0, 0, null);
 		}
 	}
 
@@ -208,6 +178,40 @@ public class CameraPanel extends javax.swing.JPanel
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	// End of variables declaration//GEN-END:variables
 }
+//Dimension dimension = new Dimension(this.getWidth(), this.getHeight());
+//this.setPreferredSize(new java.awt.Dimension((int) dimension.width,
+//		(int) ((this.model.cameraList.size()) * dimension.height)));
+//if (this.model != null) {
+//try {
+////	logger.info("paint(" + (graphics != null) + ") this.model.cameraList.size()="
+////			+ this.model.cameraList.size());
+//	for (int i = 0; i < this.model.cameraList.size(); i++) {
+//		Image image = null;
+//		Camera camera = this.model.getCamera(i);//
+//		if (camera != null) {
+//			this.model.setCameraBuffer(camera);
+//			image = camera.initImage(this);
+//		}
+//		if (i == model.index && image != null) {
+//			graphics.drawImage(image, 0, 0, null);
+//		}
+//	}
+//} catch (Exception e) {
+//	e.printStackTrace();
+//}
+//}
+//@Override
+//public void run() {
+//	while (true) {
+//		try {
+//			this.repaint();
+//			Thread.sleep(3000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//}
 //if (this.model.cameraList.size() > 0) {
 //}
 //graphics.drawImage(image, 0, (int)(i*dimension.height), null);

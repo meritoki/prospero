@@ -86,7 +86,7 @@ public class Solar extends Grid {
 		this.getProjection().setRadius(39.5);// Astronomical Unit
 		this.getProjection().setUnit(1);
 		this.setProjection(this.projection);
-		this.visible = true;
+//		this.visible = true;
 		
 	}
 	

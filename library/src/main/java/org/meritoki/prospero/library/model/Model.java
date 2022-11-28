@@ -34,6 +34,8 @@ import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.data.Data;
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.terra.Terra;
+import org.meritoki.prospero.library.model.unit.Mode;
+import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -59,6 +61,12 @@ public class Model extends Variable {
 		this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
 		this.setCalendar(this.calendar);
 	}
+	
+	@Override
+	public void start() {
+		super.start();
+		logger.info(this+".start()");
+	}
 
 	@JsonIgnore
 	public void setProperties(Properties properties) {
@@ -73,6 +81,24 @@ public class Model extends Variable {
 	public void setBasePath(String basePath) {
 		if (basePath != null) {
 			this.data.setBasePath(basePath);
+		}
+	}
+	
+	@Override
+	protected void defaultState(Object object) {
+		if (object instanceof Result) {
+			Result result = (Result) object;
+			switch (result.mode) {
+			case PAINT: {
+				logger.debug("defaultState(" + (object != null) + ") result.mode="+result.mode);
+				this.init();
+				break;
+			}
+			default: {
+				logger.warn("defaultState(" + (object != null) + ") default");
+				break;
+			}
+			}
 		}
 	}
 
@@ -150,14 +176,14 @@ public class Model extends Variable {
 	public void setCameraBuffer(Camera c) {
 		Variable node = c.getNode();
 		if (node instanceof Solar) {
-			logger.info("updateCamera(" + node + ") instanceof Solar");
+			logger.debug("updateCamera(" + node + ") instanceof Solar");
 			this.solar.setCenter(this.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
 			this.solar.setAzimuth(c.azimuth);
 			this.solar.setElevation(c.elevation);
 			this.solar.setScale(c.scale);
 			c.buffer = this.solar;
 		} else if (node instanceof Orbital) {
-			logger.info("updateCamera(" + node + ") instanceof Orbital");
+			logger.debug("updateCamera(" + node + ") instanceof Orbital");
 			Orbital o = (Orbital) node;
 			o.updateSpace();
 			this.solar.setSelectable(false);
@@ -167,7 +193,7 @@ public class Model extends Variable {
 			this.solar.setScale(c.scale);//o.getProjection().scale);
 			c.buffer = this.solar;
 		} else if (node instanceof Spheroid) {
-			logger.info("updateCamera(" + node + ") instanceof Spheroid");
+			logger.debug("updateCamera(" + node + ") instanceof Spheroid");
 			Spheroid s = (Spheroid) node;
 			s.setSelectable(true);
 			s.setAzimuth(c.azimuth);

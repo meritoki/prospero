@@ -137,7 +137,7 @@ public class SaveAsDialog extends javax.swing.JDialog {
 		/* Create and display the dialog */
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				SaveAsDialog dialog = new SaveAsDialog(new javax.swing.JFrame(), true, new Model());
+				SaveAsDialog dialog = new SaveAsDialog(new javax.swing.JFrame(), true, new Model(null));
 				dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 					@Override
 					public void windowClosing(java.awt.event.WindowEvent e) {

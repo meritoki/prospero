@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.model.resource.Resource;
 import org.meritoki.prospero.desktop.model.system.System;
+import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.document.Document;
 
 public class Model extends org.meritoki.prospero.library.model.Model {
@@ -30,11 +31,19 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 	private static final Logger logger = LogManager.getLogger(Model.class.getName());
 	public System system = new System();
 	public Resource resource = new Resource();
+	public MainFrame mainFrame;
 //	public Properties properties = NodeController.openPropertiesXML(new File("prospero.xml"));
 	
-	public Model() {
+	public Model(MainFrame mainFrame) {
 		super();
+		this.mainFrame = mainFrame;
 		this.initProperties();
+	}
+	
+	@Override
+	public void init() {
+//		logger.info(this+".init()");
+		this.mainFrame.init();
 	}
 	
 	public void initProperties() {

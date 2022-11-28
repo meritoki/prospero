@@ -96,8 +96,8 @@ public class Variable extends Node {
 	public boolean correlation;
 	@JsonIgnore
 	public boolean cache;
-	@JsonIgnore
-	public boolean visible;
+//	@JsonIgnore
+//	public boolean visible;
 
 
 	public Variable() {
@@ -139,11 +139,13 @@ public class Variable extends Node {
 			case LOAD: {
 				this.mode = Mode.LOAD;
 				this.load(result);
+				this.addRootObject(new Result(Mode.PAINT));
 				break;
 			}
 			case COMPLETE: {
 				this.complete();
 				this.mode = Mode.COMPLETE;
+				this.addRootObject(new Result(Mode.PAINT));
 				break;
 			}
 			case EXCEPTION: {
@@ -381,6 +383,22 @@ public class Variable extends Node {
 	public Calendar getCalendar() {
 		return this.calendar;
 	}
+	
+	@JsonIgnore
+	
+	public void addRootObject(Object object) {
+		Module module = this.getModel();
+		logger.debug(module+".addRootObject("+(object!=null)+")");
+		module.add(object);
+	}
+	
+
+	public Module getModel() {
+		if(this.getParents()== null) {
+			return this;
+		} 
+		return this.getParents().getModel();
+	}
 
 	public List<Variable> getList() {
 		List<Variable> nodeList = new ArrayList<>();
@@ -397,16 +415,16 @@ public class Variable extends Node {
 		}
 	}
 	
-	public List<Variable> getVisibleList() {
-		List<Variable> nodeList = this.getList();
-		List<Variable> nList = new ArrayList<>();
-		for (Variable n : nodeList) {
-			if(n.visible) {
-				nList.add(n);
-			}
-		}
-		return nList;
-	}
+//	public List<Variable> getVisibleList() {
+//		List<Variable> nodeList = this.getList();
+//		List<Variable> nList = new ArrayList<>();
+//		for (Variable n : nodeList) {
+//			if(n.visible) {
+//				nList.add(n);
+//			}
+//		}
+//		return nList;
+//	}
 
 //	public void getVisibleList(Variable node, List<Variable> nodeList) {
 //		List<Variable> nList = this.getChildren();
@@ -433,6 +451,9 @@ public class Variable extends Node {
 		module.getChildren().forEach(each -> getTree(each, m));
 	}
 
+	public Variable getParents() {
+		return (Variable)this.getRoot();
+	}
 
 
 	@JsonIgnore

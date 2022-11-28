@@ -17,6 +17,7 @@ package org.meritoki.prospero.library.model.unit;
 
 public enum Mode {
 	NULL,
+	PAINT,
 	LOAD,
 	COMPLETE,
 	EXCEPTION

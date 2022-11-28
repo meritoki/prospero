@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +58,7 @@ import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Duration;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
+import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Regression;
 import org.meritoki.prospero.library.model.unit.Result;
@@ -197,6 +197,7 @@ public class Cyclone extends Atmosphere {
 		this.eventList.addAll(new ArrayList<>(eventList));
 		try {
 			this.process(eventList);
+//			this.addRootObject(new Result(Mode.PAINT));
 		} catch (Exception e) {
 			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
 			e.printStackTrace();
@@ -302,6 +303,7 @@ public class Cyclone extends Atmosphere {
 		}
 		this.initPlotList(this.seriesMap, this.eventList);
 		this.initTableList(this.eventList, this.tileList, this.bandList, this.clusterList);
+		this.addRootObject(new Result(Mode.PAINT));
 	}
 
 	/**

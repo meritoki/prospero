@@ -84,9 +84,10 @@ public class Desktop {
 		if(mainFlag) {
 			final MainFrame mainFrame = new MainFrame();
 			final SplashWindow splashWindow = new SplashWindow("/Splash.png", mainFrame, 2000);
-			final Model model = new Model();
+			final Model model = new Model(mainFrame);
 			model.setCache(cacheFlag);
 			model.setBasePath(dataPath);
+			model.start();
 			try {
 				model.setScriptPath(scriptPath);
 				mainFrame.setModel(model);
