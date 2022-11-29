@@ -54,7 +54,7 @@ public class Model extends Variable {
 	public Model() {
 		super("Model");
 		this.addChild(this.solar);
-		this.addCamera(this.solar);
+		this.addCamera(new Camera(this.solar));
 		this.setData(this.data);
 		this.calendar = Calendar.getInstance();
 		this.calendar.setTime(new Date());
@@ -66,6 +66,10 @@ public class Model extends Variable {
 	public void start() {
 		super.start();
 		logger.info(this+".start()");
+	}
+	
+	public void removeCameras() {
+		this.cameraList = new ArrayList<>();
 	}
 
 	@JsonIgnore
@@ -105,14 +109,14 @@ public class Model extends Variable {
 	/**
 	 * Add Camera to Camera List
 	 * 
-	 * @param node
+	 * @param camera
 	 */
 	@JsonIgnore
-	public void addCamera(Variable node) {
-		if (node != null) {
-			this.cameraList.add(new Camera(node));//, this.scale, this.azimuth, this.elevation));
+	public void addCamera(Camera camera) {
+		if (camera != null) {
+			this.cameraList.add(camera);//, this.scale, this.azimuth, this.elevation));
 			this.index = this.cameraList.size() - 1;
-			logger.info(this + ".addCamera(" + node + ") this.index=" + this.index);
+			logger.info(this + ".addCamera(" + camera + ") this.index=" + this.index);
 		}
 	}
 

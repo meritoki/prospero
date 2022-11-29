@@ -117,8 +117,8 @@ public class MainFrame extends javax.swing.JFrame {
 		script.queryList.add(query);
 		name += "-" + uuid;
 		NodeController.saveJson(path, name + ".json", script);
-		this.saveCameraPanel(path, name, uuid);
-		this.savePlotPanel(path, name, uuid);
+		this.saveCameras(path, name, uuid);
+		this.savePlots(path, name, uuid);
 	}
 
 	/**
@@ -127,19 +127,18 @@ public class MainFrame extends javax.swing.JFrame {
 	 * @param path
 	 * @param name
 	 */
-	public void saveCameraPanel(String path, String name, String uuid) {
-//		NodeController.savePanel(this.cameraPanel1, path,"grid-"+((name !=null)?name:""));
+	public void saveCameras(String path, String name, String uuid) {
+		logger.info("saveCameras("+path+", "+name+", "+uuid+")");
 		for (Camera camera : this.model.cameraList) {
 			if (camera != null) {
 				Variable node = camera.getNode();
 				Image image = camera.getImage();
 				if (image != null) {
 					String fileName;
-					fileName = "grid-" + node.data + "-" + uuid + ".png";
+					fileName = "grid-" + node.data + "-"+UUID.randomUUID().toString()+"-" + uuid + ".png";
 					try {
 						NodeController.savePng(path, fileName, NodeController.toBufferedImage(image));
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -147,7 +146,8 @@ public class MainFrame extends javax.swing.JFrame {
 		}
 	}
 
-	public void savePlotPanel(String path, String name, String uuid) throws Exception {
+	public void savePlots(String path, String name, String uuid) throws Exception {
+		logger.info("savePlots("+path+", "+name+", "+uuid+")");
 		Excel excel = new Excel();
 		for (Plot plot : this.model.getPlotList()) {
 			if (plot != null) {

@@ -15,6 +15,7 @@
  */
 package org.meritoki.prospero.library.model.unit;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,20 +27,32 @@ import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 public class Tile {
 
 	static Logger logger = LogManager.getLogger(Tile.class.getName());
+	@JsonIgnore
 	public List<Point> pointList = new ArrayList<>();
+	@JsonProperty
 	public Coordinate coordinate = new Coordinate();
+	@JsonProperty
 	public double dimension;
+	@JsonProperty
 	public float value;
+	@JsonProperty
 	public boolean flag;
 
 	public Tile(Tile tile) {
 		if (tile != null) {
+			this.pointList = new ArrayList<>(tile.pointList);
 			this.coordinate = new Coordinate(tile.coordinate);
 			this.dimension = tile.dimension;
 			this.value = tile.value;
+			this.flag = tile.flag;
 		}
 	}
 
@@ -61,6 +74,7 @@ public class Tile {
 	/**
 	 * Need to Use Coordiante Equals
 	 */
+	@JsonIgnore
 	public boolean equals(Object o) {
 		if (o instanceof Tile) {
 			Tile t = (Tile) o;
@@ -69,6 +83,7 @@ public class Tile {
 		return false;
 	}
 	
+	@JsonIgnore
 	public Coordinate getCenter() {
 		Coordinate center = new Coordinate();
 		center.latitude = this.coordinate.latitude+(this.dimension/2);
@@ -76,11 +91,13 @@ public class Tile {
 		return center;
 	}
 
+	@JsonIgnore
 	public static TableModel getTableModel(List<Tile> tileList) {
 		Object[] objectArray = getObjectArray(tileList);
 		return new javax.swing.table.DefaultTableModel((Object[][]) objectArray[1], (Object[]) objectArray[0]);
 	}
 
+	@JsonIgnore
 	public static Object[] getObjectArray(List<Tile> tileList) {
 		Object[] objectArray = new Object[2];
 		Object[] columnArray = new Object[0];
@@ -111,22 +128,27 @@ public class Tile {
 		return objectArray;
 	}
 
+	@JsonIgnore
 	public Map<String, Double> getRegressionMap() {
 		return Regression.getRegression(this.pointList);
 	}
 
+	@JsonIgnore
 	public void addPoint(Point point) {
 		this.pointList.add(point);
 	}
 
+	@JsonIgnore
 	public Double getSignificance() {
 		return this.getRegressionMap().get("significance");
 	}
 	
+	@JsonIgnore
 	public Double getCorrelation() {
 		return this.getRegressionMap().get("r");
 	}
 
+	@JsonIgnore
 	public static Index getAverage(Time key, List<Tile> tileList) {
 		StandardDeviation standardDeviation = new StandardDeviation();
 		Mean mean = new Mean();
@@ -145,6 +167,7 @@ public class Tile {
 		return index;
 	}
 
+	@JsonIgnore
 	public static Index getSum(Time key, List<Tile> tileList) {
 		double sum = 0;
 		for (Tile tile : tileList) {
@@ -155,9 +178,21 @@ public class Tile {
 		return index;
 	}
 
+//	public String toString() {
+//		return "latitude=" + this.coordinate.latitude + ", longitude=" + this.coordinate.longitude + ", dimension=" + dimension;
+//		// + ", value=" + value;
+//	}
+	@JsonIgnore
+	@Override
 	public String toString() {
-		return "latitude=" + this.coordinate.latitude + ", longitude=" + this.coordinate.longitude + ", dimension=" + dimension;
-		// + ", value=" + value;
+		String string = "";
+		ObjectWriter ow = new ObjectMapper().writer();//.withDefaultPrettyPrinter();
+		try {
+			string = ow.writeValueAsString(this);
+		} catch (IOException ex) {
+			System.err.println("IOException " + ex.getMessage());
+		}
+		return string;
 	}
 }
 //public double latitude;

@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.unit.Operator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,7 +45,7 @@ public class VariableMenu extends JPopupMenu {
 		JMenuItem newMenuItem = new JMenuItem("New");
 		newMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				model.addCamera(model.getCamera().getNode());
+				model.addCamera(new Camera(model.getCamera().getNode()));
 			}
 		});
 		this.add(newMenuItem);

@@ -310,7 +310,7 @@ public class Cyclone extends Atmosphere {
 	 * 
 	 */
 	public void cluster() {
-		// Tile List Contains All Moments in Time Queried
+		// Time List Contains All Moments in Time Queried
 		// Time Tile Map Retains All Tiles at Moments in Time (Key)
 		// All Tile Lists Have Same Tile Order
 		// Constructing String for File w/ New Lines
@@ -357,9 +357,9 @@ public class Cyclone extends Atmosphere {
 		// Parameter Six: Output CSV File w/ Path
 		String input = path + File.separatorChar + uuid + ".csv";
 		String output = path + File.separatorChar + "output-" + uuid + ".csv";
-		String rCommand = "Rscript comparison.R " + input;
 		Time a = timeList.get(0);
 		Time b = timeList.get(timeList.size() - 1);
+		String rCommand = "Rscript comparison.R " + input;
 		rCommand += " " + a.year + " " + a.month + " " + b.year + " " + b.month;
 		rCommand += " " + output;
 		Exit exit;
@@ -403,7 +403,7 @@ public class Cyclone extends Atmosphere {
 		for (Entry<Integer, List<Tile>> entry : tileListMap.entrySet()) {
 			cluster = new Cluster();
 			cluster.id = entry.getKey();
-			cluster.tileList = entry.getValue();
+			cluster.tileList = new ArrayList<>(entry.getValue());//Defect Was Here, Uses Copy Constructor and Important Variables where Not Transferred in Copy
 			clusterList.add(cluster);
 		}
 		this.clusterList = clusterList;
@@ -411,6 +411,12 @@ public class Cyclone extends Atmosphere {
 
 	}
 
+	/**
+	 * Defect 20221129. 
+	 * Cluster Has Tile List w/ Flag True
+	 * Within this method Cluster must be given all Tiles 
+	 * @param clusterList
+	 */
 	public void getClusterPlots(List<Cluster> clusterList) {
 		logger.info("getClusterPlots(" + clusterList + ")");
 		Map<String, Series> seriesMap = new HashMap<>();
@@ -433,7 +439,7 @@ public class Cyclone extends Atmosphere {
 					series = this.newSeries();
 					series.map.put("cluster", cluster.id);
 				}
-				cluster.setTileList(tileList);
+				cluster.setTileList(tileList);//Problem
 				double average = cluster.getAverageValue();
 				cluster.addTilePoint(average);
 				Index index = time.getIndex();
@@ -1164,31 +1170,30 @@ public class Cyclone extends Atmosphere {
 		return histogram;
 	}
 
-	public List<Cluster> getClusterList(List<Tile> tileList) {
-		List<Cluster> clusterList = new ArrayList<>();
-		List<TileWrapper> clusterInput = new ArrayList<TileWrapper>(tileList.size());
-		for (Tile tile : tileList) {
-			clusterInput.add(new TileWrapper(tile));
-		}
-		KMeansPlusPlusClusterer<TileWrapper> clusterer = new KMeansPlusPlusClusterer<TileWrapper>(10, 10000);
-//		MultiKMeansPlusPlusClusterer mClusterer = new MultiKMeansPlusPlusClusterer(clusterer,10);
-		List<CentroidCluster<TileWrapper>> clusterResults = clusterer.cluster(clusterInput);
-		for (int i = 0; i < clusterResults.size(); i++) {
-			Cluster cluster = new Cluster();
-			for (TileWrapper tileWrapper : clusterResults.get(i).getPoints()) {
-				cluster.tileList.add(tileWrapper.getTile());
-			}
-//		    logger.info("getClusterList("+tileList.size()+") cluster.tileList.size()="+cluster.tileList.size());
-			clusterList.add(cluster);
-		}
-		return clusterList;
-	}
-
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
 	}
 }
+//public List<Cluster> getClusterList(List<Tile> tileList) {
+//List<Cluster> clusterList = new ArrayList<>();
+//List<TileWrapper> clusterInput = new ArrayList<TileWrapper>(tileList.size());
+//for (Tile tile : tileList) {
+//	clusterInput.add(new TileWrapper(tile));
+//}
+//KMeansPlusPlusClusterer<TileWrapper> clusterer = new KMeansPlusPlusClusterer<TileWrapper>(10, 10000);
+////MultiKMeansPlusPlusClusterer mClusterer = new MultiKMeansPlusPlusClusterer(clusterer,10);
+//List<CentroidCluster<TileWrapper>> clusterResults = clusterer.cluster(clusterInput);
+//for (int i = 0; i < clusterResults.size(); i++) {
+//	Cluster cluster = new Cluster();
+//	for (TileWrapper tileWrapper : clusterResults.get(i).getPoints()) {
+//		cluster.tileList.add(tileWrapper.getTile());
+//	}
+////    logger.info("getClusterList("+tileList.size()+") cluster.tileList.size()="+cluster.tileList.size());
+//	clusterList.add(cluster);
+//}
+//return clusterList;
+//}
 //Collections.sort(this.clusterList, new Comparator<Cluster>() {
 //@Override
 //public int compare(Cluster o1, Cluster o2) {

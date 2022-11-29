@@ -3,6 +3,7 @@ package org.meritoki.prospero.library.model.node;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -12,9 +13,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.terra.Terra;
+import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Dimension;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Camera {
 
@@ -23,14 +28,16 @@ public class Camera {
 	public Variable node;
 	@JsonIgnore
 	public Variable buffer;
-	@JsonIgnore
+	@JsonProperty
 	public double azimuth;
-	@JsonIgnore
+	@JsonProperty
 	public double elevation;
-	@JsonIgnore
+	@JsonProperty
 	public double scale;
-	@JsonIgnore
-	protected int xDelta, yDelta;
+	@JsonProperty
+	protected int xDelta;
+	@JsonProperty
+	protected int yDelta;
 	@JsonIgnore
 	public Map<String, Object> configuration = new TreeMap<>();
 	@JsonIgnore
@@ -43,21 +50,33 @@ public class Camera {
 
 	}
 	
+	@JsonIgnore
 	public Image getImage() {
 		return this.image;
 	}
 	
+	@JsonIgnore
 	public Image initImage(JPanel jpanel) throws Exception {
 		Dimension dimension = new Dimension(jpanel.getWidth(), jpanel.getHeight());
 		Image image = jpanel.createImage((int) dimension.width, (int) dimension.height);
 		if(this.buffer != null) {
 			this.buffer.dimension = dimension;
+			Object object = this.configuration.get("cluster");
+			if(object instanceof Cluster) {
+				Cluster cluster = (Cluster)object;
+				object = this.configuration.get("node");
+				if(object instanceof Grid) {
+					Grid grid = (Grid)object;
+					grid.setCluster(cluster);
+				}
+			}
 			image = this.buffer.getImage(image);
 			this.setImage(image);
 		}
 		return image;
 	}
 	
+	@JsonIgnore
 	public Variable getNode() {
 		return this.node;
 	}
@@ -67,6 +86,7 @@ public class Camera {
 		this.image = image;
 	}
 	
+	@JsonIgnore
 	public void setNode(Variable node) {
 		if(this.node instanceof Terra) {
 			logger.info("setNode("+node+") this.node instanceof Terra");
@@ -95,6 +115,7 @@ public class Camera {
 		}
 	}
 
+	@JsonIgnore
 	public void mouseDragged(MouseEvent e) {
 		logger.debug("mouseDragged(e)");
 		int xDelta = e.getX();
@@ -194,6 +215,19 @@ public class Camera {
 			}
 		}
 
+	}
+	
+	@JsonIgnore
+	@Override
+	public String toString() {
+		String string = "";
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		try {
+			string = ow.writeValueAsString(this);
+		} catch (IOException ex) {
+			System.err.println("IOException " + ex.getMessage());
+		}
+		return string;
 	}
 }
 //this.node = node;
