@@ -17,6 +17,8 @@ package org.meritoki.prospero.library.model.unit;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -48,6 +50,8 @@ public class Coordinate implements Comparable<Coordinate> {
 	public Map<String, Object> attribute = new TreeMap<>();
 	@JsonProperty
 	public boolean flag;
+	@JsonIgnore
+	public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public Coordinate() {
 	}
@@ -123,6 +127,11 @@ public class Coordinate implements Comparable<Coordinate> {
 			return (Color) o;
 		}
 		return Color.black;
+	}
+	
+	@JsonIgnore
+	public String getDateTime() {
+		return dateFormat.format(this.calendar.getTime());
 	}
 
 //	@JsonIgnore

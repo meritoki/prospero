@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -150,6 +151,42 @@ public class Event {
 		}
 		timeCoordinateMap = new TreeMap<String, List<Coordinate>>(timeCoordinateMap);
 		return timeCoordinateMap;
+//		return this.getTimeCoordinateMap(this.coordinateList);
+	}
+	
+	@JsonIgnore
+	public Map<String, List<Coordinate>> getTimeCoordinateMap(List<Coordinate> coordinateList) {
+		Map<String, List<Coordinate>> timeCoordinateMap = new HashMap<>();
+//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String date;
+		List<Coordinate> cList;
+		for (Coordinate c : coordinateList) {
+			if (c.flag) {
+				date = c.getDateTime();//dateFormat.format(c.calendar.getTime());
+				cList = timeCoordinateMap.get(date);
+				if (cList == null) {
+					cList = new ArrayList<>();
+					cList.add(c);
+				} else {
+					cList.add(c);
+				}
+				Collections.sort(cList);
+				timeCoordinateMap.put(date, cList);
+			}
+		}
+		timeCoordinateMap = new TreeMap<String, List<Coordinate>>(timeCoordinateMap);
+		return timeCoordinateMap;
+	}
+	
+	public List<String> getTimeList() {
+		List<String> timeList = new ArrayList<>();
+		for(Coordinate c: this.coordinateList) {
+			String dateTime = c.getDateTime();
+			if(!timeList.contains(dateTime)) {
+				timeList.add(dateTime);
+			}
+		}
+		return timeList;
 	}
 	
 	@JsonIgnore

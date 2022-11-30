@@ -61,9 +61,9 @@ public class CycloneEvent extends Event {
 	public Classification classification = Classification.NULL;
 
 	public CycloneEvent() {
-		
+
 	}
-	
+
 	public CycloneEvent(List<Coordinate> coordinateList) {
 		super(coordinateList);
 		this.classify();
@@ -78,9 +78,9 @@ public class CycloneEvent extends Event {
 		super(event.id, new ArrayList<>(event.coordinateList));
 		this.classify();
 	}
-	
+
 	public void classify() {
-		
+
 	}
 
 	@JsonIgnore
@@ -196,8 +196,9 @@ public class CycloneEvent extends Event {
 						dataMatrix[i + 1][1] = dateFormat.format(event.getStartCalendar().getTime());
 						dataMatrix[i + 1][2] = dateFormat.format(event.getEndCalendar().getTime());
 						dataMatrix[i + 1][3] = event.getDuration().days;
-						dataMatrix[i + 1][4] = (event.family != null)?event.family.toString():"NULL";
-						dataMatrix[i + 1][5] = (event.classification != null)?event.classification.toString():"NULL";
+						dataMatrix[i + 1][4] = (event.family != null) ? event.family.toString() : "NULL";
+						dataMatrix[i + 1][5] = (event.classification != null) ? event.classification.toString()
+								: "NULL";
 						dataMatrix[i + 1][6] = event.getDistance();
 						dataMatrix[i + 1][7] = event.getMaxTimeLevelCount();
 						dataMatrix[i + 1][8] = event.getPressureCount();
@@ -217,11 +218,11 @@ public class CycloneEvent extends Event {
 		}
 		return objectArray;
 	}
-	
+
 	public static List<Event> getSelectedEventList(List<Event> eventList) {
 		List<Event> eList = new ArrayList<>();
-		for(Event e: eventList) {
-			if(e.flag) {
+		for (Event e : eventList) {
+			if (e.flag) {
 				eList.add(e);
 			}
 		}
@@ -332,30 +333,6 @@ public class CycloneEvent extends Event {
 	}
 
 	@JsonIgnore
-	public Map<String, List<Coordinate>> getTimeCoordinateMap(List<Coordinate> coordinateList) {
-		Map<String, List<Coordinate>> timeCoordinateMap = new HashMap<>();
-//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String date;
-		List<Coordinate> cList;
-		for (Coordinate c : coordinateList) {
-			if (c.flag) {
-				date = dateFormat.format(c.calendar.getTime());
-				cList = timeCoordinateMap.get(date);
-				if (cList == null) {
-					cList = new ArrayList<>();
-					cList.add(c);
-				} else {
-					cList.add(c);
-				}
-				Collections.sort(cList);
-				timeCoordinateMap.put(date, cList);
-			}
-		}
-		timeCoordinateMap = new TreeMap<String, List<Coordinate>>(timeCoordinateMap);
-		return timeCoordinateMap;
-	}
-	
-	@JsonIgnore
 	public Map<Integer, List<Coordinate>> getPressureCoordinateMap(List<Coordinate> coordinateList) {
 		Map<Integer, List<Coordinate>> pressureCoordinateMap = new HashMap<>();
 //		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -363,7 +340,7 @@ public class CycloneEvent extends Event {
 		List<Coordinate> cList;
 		for (Coordinate c : coordinateList) {
 			if (c.flag) {
-				pressure = (Integer)c.attribute.get("pressure");//dateFormat.format(c.calendar.getTime());
+				pressure = (Integer) c.attribute.get("pressure");// dateFormat.format(c.calendar.getTime());
 				cList = pressureCoordinateMap.get(pressure);
 				if (cList == null) {
 					cList = new ArrayList<>();
@@ -379,8 +356,85 @@ public class CycloneEvent extends Event {
 		return pressureCoordinateMap;
 	}
 
+	@JsonIgnore
+	public Map<Integer, List<Coordinate>> getPressureCoordinateMap() {
+		Map<Integer, List<Coordinate>> pressureCoordinateMap = this.getPressureCoordinateMap(this.coordinateList);
+		Map<Integer, List<Coordinate>> pressureLinkMap = new TreeMap<>();
+		List<String> timeList = this.getTimeList();
+		for (Map.Entry<Integer, List<Coordinate>> entry : pressureCoordinateMap.entrySet()) {
+			Integer key = entry.getKey();
+			List<Coordinate> linkList = pressureLinkMap.get(key);
+			if (linkList == null) {
+				linkList = new ArrayList<>();
+			}
+			List<Coordinate> coordinateList = entry.getValue();
+			for (int i = 0; i < coordinateList.size(); i++) {
+				Coordinate a = coordinateList.get(i);
+				linkList.add(a);
+				if (i + 1 < coordinateList.size()) {
+					Coordinate b = coordinateList.get(i + 1);
+					int aIndex = timeList.indexOf(a.getDateTime());
+					int bIndex = timeList.indexOf(b.getDateTime());
+					if ((aIndex + 1) == bIndex) {
+						Coordinate c = null;
+						Coordinate d = null;
+						if (a.longitude > 0 && b.longitude < 0) {
+							double difference = a.longitude - b.longitude;
+							if (difference >= 180) {
+								b.longitude += 360;
+								double slope = this.getSlope(a, b);
+								double angle = this.getAngle(slope);
+								double xA = 180 - a.longitude;
+								double hypotenuseA = this.getHypotenuse(Math.toRadians(angle), xA);
+								double yA = this.getY(hypotenuseA, xA);
+								double y = Math.abs(a.latitude - b.latitude);
+								double yB = y - yA;
+								if (a.latitude < b.latitude) {
+									c = new Link(a.latitude + yA, 180, Link.STOP);
+									d = new Link(b.latitude - yB, -180, Link.START);
+								} else if (a.latitude > b.latitude) {
+									c = new Link(a.latitude - yA, 180, Link.STOP);
+									d = new Link(b.latitude + yB, -180, Link.START);
+								}
+								b.longitude -= 360;
+							}
+						} else if (b.longitude > 0 && a.longitude < 0) {
+							double difference = b.longitude - a.longitude;
+							if (difference >= 180) {
+								a.longitude += 360;
+								double slope = this.getSlope(b, a);
+								double angle = this.getAngle(slope);
+								double xB = 180 - b.longitude;
+								double hypotenuseB = this.getHypotenuse(Math.toRadians(angle), xB);
+								double yB = this.getY(hypotenuseB, xB);
+								double y = Math.abs(a.latitude - b.latitude);
+								double yA = y - yB;
+								if (a.latitude < b.latitude) {
+									c = new Link(a.latitude + yB, -180, Link.STOP);
+									d = new Link(b.latitude - yA, 180, Link.START);
+								} else if (a.latitude > b.latitude) {
+									c = new Link(a.latitude - yB, -180, Link.STOP);
+									d = new Link(b.latitude + yA, 180, Link.START);
+								}
+								a.longitude -= 360;
+							}
+						}
+						if (c != null && d != null) {
+							linkList.add(c);
+							linkList.add(d);
+						}
+					}
+				}
+			}
+			pressureLinkMap.put(key, linkList);
+		}
+		return pressureLinkMap;
+	}
+
 	/**
-	 * Function Averages All
+	 * Function Returns Coordinate List with Averaged Latitude and Longitude per
+	 * Time
+	 * 
 	 * @return
 	 */
 	@JsonIgnore
@@ -450,76 +504,6 @@ public class CycloneEvent extends Event {
 //			point.calendar = date;
 		}
 		return coordinate;
-	}
-	
-	@JsonIgnore 
-	public Map<Integer,List<Coordinate>> getPressureCoordinateLinkMap() {
-		Map<Integer, List<Coordinate>> pressureCoordinateMap = this.getPressureCoordinateMap(this.coordinateList);
-		Map<Integer, List<Coordinate>> pressureLinkMap = new TreeMap<>();
-		for (Map.Entry<Integer, List<Coordinate>> entry : pressureCoordinateMap.entrySet()) {
-			Integer key = entry.getKey();
-			List<Coordinate> linkList = pressureLinkMap.get(key);
-			if(linkList == null) {
-				linkList = new ArrayList<>();
-			}
-			List<Coordinate> coordinateList = entry.getValue();
-			for (int i = 0; i < coordinateList.size(); i++) {
-				Coordinate a = coordinateList.get(i);
-				linkList.add(a);
-				if (i + 1 < coordinateList.size()) {
-					Coordinate b = coordinateList.get(i + 1);
-					Coordinate c = null;
-					Coordinate d = null;
-					if (a.longitude > 0 && b.longitude < 0) {
-						double difference = a.longitude - b.longitude;
-						if (difference >= 180) {
-							b.longitude += 360;
-							double slope = this.getSlope(a, b);
-							double angle = this.getAngle(slope);
-							double xA = 180 - a.longitude;
-							double hypotenuseA = this.getHypotenuse(Math.toRadians(angle), xA);
-							double yA = this.getY(hypotenuseA, xA);
-							double y = Math.abs(a.latitude - b.latitude);
-							double yB = y - yA;
-							if (a.latitude < b.latitude) {
-								c = new Link(a.latitude + yA, 180, Link.STOP);
-								d = new Link(b.latitude - yB, -180, Link.START);
-							} else if (a.latitude > b.latitude) {
-								c = new Link(a.latitude - yA, 180, Link.STOP);
-								d = new Link(b.latitude + yB, -180, Link.START);
-							}
-							b.longitude -= 360;
-						}
-					} else if (b.longitude > 0 && a.longitude < 0) {
-						double difference = b.longitude - a.longitude;
-						if (difference >= 180) {
-							a.longitude += 360;
-							double slope = this.getSlope(b, a);
-							double angle = this.getAngle(slope);
-							double xB = 180 - b.longitude;
-							double hypotenuseB = this.getHypotenuse(Math.toRadians(angle), xB);
-							double yB = this.getY(hypotenuseB, xB);
-							double y = Math.abs(a.latitude - b.latitude);
-							double yA = y - yB;
-							if (a.latitude < b.latitude) {
-								c = new Link(a.latitude + yB, -180, Link.STOP);
-								d = new Link(b.latitude - yA, 180, Link.START);
-							} else if (a.latitude > b.latitude) {
-								c = new Link(a.latitude - yB, -180, Link.STOP);
-								d = new Link(b.latitude + yA, 180, Link.START);
-							}
-							a.longitude -= 360;
-						}
-					}
-					if (c != null && d != null) {
-						linkList.add(c);
-						linkList.add(d);
-					}
-				}
-			}
-			pressureLinkMap.put(key,linkList);
-		}
-		return pressureLinkMap;
 	}
 
 	@JsonIgnore
@@ -670,22 +654,22 @@ public class CycloneEvent extends Event {
 		mean.longitude = longitude;
 		return mean;
 	}
-	
+
 	@JsonIgnore
 	public double getMeanVorticity() {
 		Map<String, List<Coordinate>> timePointMap = this.getTimeCoordinateMap();
 		double vorticity = 0;
 		double vorticitySum = 0;
-		for(List<Coordinate> cList: timePointMap.values()) {
+		for (List<Coordinate> cList : timePointMap.values()) {
 			vorticity = 0;
-			if(cList.size() > 0) {
-				for(Coordinate c: cList) {
-					vorticity += (float)c.attribute.get("vorticity");
+			if (cList.size() > 0) {
+				for (Coordinate c : cList) {
+					vorticity += (float) c.attribute.get("vorticity");
 				}
-				vorticitySum += (vorticity/cList.size());
+				vorticitySum += (vorticity / cList.size());
 			}
 		}
-		return vorticitySum/(timePointMap.values().size());
+		return vorticitySum / (timePointMap.values().size());
 	}
 
 	@JsonIgnore

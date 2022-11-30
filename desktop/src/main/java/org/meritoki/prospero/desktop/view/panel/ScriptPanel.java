@@ -169,7 +169,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 		
 												break;
 											}
-											node.stop();
+//											node.stop();
 										} catch (Exception qe) {
 											consoleTextArea.append(qe.getMessage() + "\n");
 											node.stop();
@@ -187,7 +187,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 						}
 						iterator.remove();
 					}
-					country.stop();
+//					country.stop();
 				}
 			}
 			

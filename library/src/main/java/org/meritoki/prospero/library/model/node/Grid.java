@@ -117,7 +117,6 @@ public class Grid extends Spheroid {
 	public boolean monthFlag;
 	public boolean yearFlag;
 	public boolean clearFlag;
-//	public boolean level = true;
 
 	public Grid(String name) {
 		super(name);
@@ -473,7 +472,7 @@ public class Grid extends Spheroid {
 		}
 		return this.increment;
 	}
-	
+
 	public void setCluster(Cluster cluster) {
 //		logger.info("setCluster("+cluster+")");
 		this.cluster = cluster;
@@ -646,20 +645,26 @@ public class Grid extends Spheroid {
 
 	public void paintTrajectory(Graphics graphics) {
 		if (this.eventList != null) {
+			Graphics2D g2d = (Graphics2D) graphics;
 			Point aPoint;
 			Point bPoint;
 			Coordinate aCoordinate;
 			Coordinate bCoordinate;
 //			List<Event> eventList = new ArrayList<>(this.eventList);
+			int thickness = 2;
+			Stroke old = g2d.getStroke();
+			g2d.setStroke(new BasicStroke(thickness));
+			
 			for (Event event : this.eventList) {
 				if (event.flag && event instanceof CycloneEvent) {
-					Map<Integer, List<Coordinate>> pressureCoordinateLinkMap = ((CycloneEvent) event)
-							.getPressureCoordinateLinkMap();
-					int size = pressureCoordinateLinkMap.size();
-					int index = (size / 2);
-					for (Map.Entry<Integer, List<Coordinate>> entry : pressureCoordinateLinkMap.entrySet()) {
+					Map<Integer, List<Coordinate>> pressureCoordinateMap = ((CycloneEvent) event)
+							.getPressureCoordinateMap();
+					List<String> timeList = event.getTimeList();
+					int size = pressureCoordinateMap.size();
+					int index = 0;
+					for (Map.Entry<Integer, List<Coordinate>> entry : pressureCoordinateMap.entrySet()) {
 						Integer key = entry.getKey();
-						List<Coordinate> coordinateList = pressureCoordinateLinkMap.get(key);
+						List<Coordinate> coordinateList = pressureCoordinateMap.get(key);
 						((CycloneEvent) event).setPointColor(coordinateList);
 						double vertical = index * this.interval;
 //						if (!this.getProjection().verticalList.contains(vertical)) {
@@ -716,21 +721,26 @@ public class Grid extends Spheroid {
 										}
 									}
 								} else {
-									aPoint = this.getProjection().getPoint(vertical, aCoordinate.latitude,
-											(aCoordinate.longitude));
-									bPoint = this.getProjection().getPoint(vertical, bCoordinate.latitude,
-											(bCoordinate.longitude));
-									graphics.setColor(aCoordinate.getColor());
-									if (aPoint != null && bPoint != null) {
-										graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
-												(int) ((aPoint.y) * this.getProjection().scale),
-												(int) ((bPoint.x) * this.getProjection().scale),
-												(int) ((bPoint.y) * this.getProjection().scale));
+									int aIndex = timeList.indexOf(aCoordinate.getDateTime());
+									int bIndex = timeList.indexOf(bCoordinate.getDateTime());
+									if ((aIndex + 1) == bIndex) {
+										aPoint = this.getProjection().getPoint(vertical, aCoordinate.latitude,
+												(aCoordinate.longitude));
+										bPoint = this.getProjection().getPoint(vertical, bCoordinate.latitude,
+												(bCoordinate.longitude));
+										graphics.setColor(aCoordinate.getColor());
+										if (aPoint != null && bPoint != null) {
+											graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
+													(int) ((aPoint.y) * this.getProjection().scale),
+													(int) ((bPoint.x) * this.getProjection().scale),
+													(int) ((bPoint.y) * this.getProjection().scale));
+										}
 									}
 								}
 							}
 						}
-						graphics.setColor(Color.GRAY);
+						g2d.setStroke(old);
+						graphics.setColor(Color.LIGHT_GRAY);
 						List<Point> pointList = this.getProjection().getGridPointList(vertical, 15, 30);
 						for (Point p : pointList) {
 							graphics.drawLine((int) ((p.x) * this.getProjection().scale),
@@ -738,10 +748,12 @@ public class Grid extends Spheroid {
 									(int) ((p.x) * this.getProjection().scale),
 									(int) ((p.y) * this.getProjection().scale));
 						}
-						index--;
+						g2d.setStroke(new BasicStroke(thickness));
+						index++;
 					}
 				}
 			}
+			g2d.setStroke(old);
 		}
 	}
 
@@ -902,6 +914,7 @@ public class Grid extends Spheroid {
 		super.paint(graphics);
 	}
 }
+//public boolean level = true;
 //Point a;
 //Point b;
 //Point c;
