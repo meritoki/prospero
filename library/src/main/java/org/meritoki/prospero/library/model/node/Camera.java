@@ -89,14 +89,14 @@ public class Camera {
 	@JsonIgnore
 	public void setNode(Variable node) {
 		if(this.node instanceof Terra) {
-			logger.info("setNode("+node+") this.node instanceof Terra");
+			logger.debug("setNode("+node+") this.node instanceof Terra");
 			Spheroid s = ((Spheroid)this.node);
 			s.setSelectable(false);
-			logger.info("setNode("+node+") s.selectable="+s.selectable);
+			logger.debug("setNode("+node+") s.selectable="+s.selectable);
 		}
 		this.node = node;
 		if(this.node instanceof Spheroid) {
-			logger.info("setNode("+node+") this.node instanceof Spheroid");
+			logger.debug("setNode("+node+") this.node instanceof Spheroid");
 			Spheroid spheroid = ((Spheroid)this.node);
 			this.scale = spheroid.defaultScale;
 			this.azimuth = 0;
@@ -104,12 +104,10 @@ public class Camera {
 			spheroid.setScale(this.scale);
 			spheroid.setAzimuth(this.azimuth);
 			spheroid.setElevation(this.elevation);
-//			this.scale = spheroid.getProjection().scale;
-//			this.azimuth = spheroid.getProjection().azimuth;
-//			this.elevation = spheroid.getProjection().elevation;
+
 		}
 		if(this.node instanceof Orbital) {
-			logger.info("setNode("+node+") this.node instanceof Orbital");
+			logger.debug("setNode("+node+") this.node instanceof Orbital");
 			Orbital orbital = ((Orbital)this.node);
 			orbital.setSelectable(false);
 		}
@@ -230,6 +228,9 @@ public class Camera {
 		return string;
 	}
 }
+//this.scale = spheroid.getProjection().scale;
+//this.azimuth = spheroid.getProjection().azimuth;
+//this.elevation = spheroid.getProjection().elevation;
 //this.node = node;
 //if(this.node instanceof Spheroid) {
 //	Spheroid spheroid = ((Spheroid)this.node);

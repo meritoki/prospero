@@ -475,7 +475,7 @@ public class Grid extends Spheroid {
 	}
 	
 	public void setCluster(Cluster cluster) {
-		logger.info("setCluster("+cluster+")");
+//		logger.info("setCluster("+cluster+")");
 		this.cluster = cluster;
 	}
 
@@ -773,7 +773,6 @@ public class Grid extends Spheroid {
 							(int) (d.y * this.getProjection().scale) };
 					int npoints = 4;
 //					logger.info(this+".paintCluster(graphics) tile="+t);
-
 					graphics.setColor(this.getCorrelationColor(t.getCorrelation()));
 //					g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 					g2d.fillPolygon(xpoints, ypoints, npoints);
@@ -802,6 +801,11 @@ public class Grid extends Spheroid {
 		Color color = Color.BLACK;
 		if (correlation != null) {
 			double hue = 0;
+//			if(correlation < 0) {
+//				hue = 0.3;
+//			} else {
+//				hue = 240;
+//			}
 			double saturation = 0;
 			double brightness = Math.abs(correlation) * 100;
 			color = Color.getHSBColor((float) hue, (float) saturation, (float) brightness);

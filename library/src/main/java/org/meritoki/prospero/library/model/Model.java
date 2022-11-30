@@ -116,7 +116,7 @@ public class Model extends Variable {
 		if (camera != null) {
 			this.cameraList.add(camera);//, this.scale, this.azimuth, this.elevation));
 			this.index = this.cameraList.size() - 1;
-			logger.info(this + ".addCamera(" + camera + ") this.index=" + this.index);
+//			logger.info(this + ".addCamera(" + camera + ") this.index=" + this.index);
 		}
 	}
 

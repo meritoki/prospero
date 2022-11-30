@@ -418,7 +418,7 @@ public class Cyclone extends Atmosphere {
 	 * @param clusterList
 	 */
 	public void getClusterPlots(List<Cluster> clusterList) {
-		logger.info("getClusterPlots(" + clusterList + ")");
+//		logger.info("getClusterPlots(" + clusterList + ")");
 		Map<String, Series> seriesMap = new HashMap<>();
 		// Time Tile Map Retains All Tiles at Moments in Time
 		// The Main For Loop Iterates Over a Map w/ Time Key and Tile List Value
