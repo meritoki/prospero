@@ -30,7 +30,7 @@ import org.meritoki.prospero.library.model.unit.Table;
  *
  * @author jorodriguez
  */
-public class TablePanel extends javax.swing.JPanel implements Runnable {
+public class TablePanel extends javax.swing.JPanel { //implements Runnable {
 
 	/**
 	 * 
@@ -46,8 +46,8 @@ public class TablePanel extends javax.swing.JPanel implements Runnable {
 	 * Creates new form TablePanel
 	 */
 	public TablePanel() {
-		Thread thread = new Thread(this);
-		thread.start();
+//		Thread thread = new Thread(this);
+//		thread.start();
 		initComponents();
 	}
 
@@ -177,18 +177,18 @@ public class TablePanel extends javax.swing.JPanel implements Runnable {
 		}
 	}
 
-	@Override
-	public void run() {
-		while (true) {
-			try {
-				this.init();
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+//	@Override
+//	public void run() {
+//		while (true) {
+//			try {
+//				this.init();
+//				Thread.sleep(10000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
 	/**
 	 * This method is called from within the constructor to initialize the form.

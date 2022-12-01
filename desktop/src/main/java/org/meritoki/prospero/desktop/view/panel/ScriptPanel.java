@@ -27,16 +27,21 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.dialog.LoadDialog;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.Camera;
+import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.biosphere.country.Country;
+import org.meritoki.prospero.library.model.unit.Analysis;
+import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Script;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meritoki.library.controller.memory.MemoryController;
 import com.meritoki.library.controller.time.TimeController;
 
 /**
@@ -45,6 +50,7 @@ import com.meritoki.library.controller.time.TimeController;
  */
 public class ScriptPanel extends javax.swing.JPanel {
 
+	private static final long serialVersionUID = 1L;
 	static Logger logger = LogManager.getLogger(ScriptPanel.class.getName());
 	private Model model;
 	private MainFrame mainFrame;
@@ -53,7 +59,6 @@ public class ScriptPanel extends javax.swing.JPanel {
 	public Thread thread;
 	public Runnable runnable;
 	public List<Script> scriptList = new ArrayList<>();
-//	public Script script;
     /**
      * Creates new form ScriptPanel
      */
@@ -75,7 +80,7 @@ public class ScriptPanel extends javax.swing.JPanel {
     
     public void initTextArea() {
     	if(this.model != null) {
-    		Variable node = this.model.node;
+    		Variable node = this.model.getCamera().node;
     		if(node != null) {
     			Script script = node.script;
     			if(script != null) {
@@ -115,8 +120,6 @@ public class ScriptPanel extends javax.swing.JPanel {
 		this.runnable = new Runnable() {
 			public void run() {
 				Thread.currentThread().setName("Script");
-
-				
 				if(model.scriptList.size() > 0) {
 					Terra terra = (Terra)model.getVariable("Terra");
 					terra.setSelectedProjection(new AzimuthalSouth());
@@ -134,34 +137,39 @@ public class ScriptPanel extends javax.swing.JPanel {
 									TimeController.start();
 									String variable = query.getVariable();
 									Variable node = model.getVariable(variable);
-									
 									if (node != null) {
 										logger.info("query() node="+node);
-										model.setNode(terra);
-										model.updateNode();
+										model.getCamera().setNode(terra);
 										node.start();//can be called more than once, no problem
 										try {
 											node.query(query);//discrete finite task that sets a new query, includes process
 											while (!node.isComplete() && !Thread.interrupted()) {
-//												logger.info("query() node="+node+" node.isComplete()="+node.isComplete());
-												mainFrame.init();
-												Thread.sleep(16000);
+												Thread.sleep(4000);
 											}
 											logger.info("query() node.isComplete()="+node.isComplete());
-											// wait for node to be in complete state
+											if(((Grid)node).analysis == Analysis.CLUSTER) {
+												List<Cluster> clusterList = ((Grid)node).clusterList;
+												for(Cluster cluster:clusterList) {
+													Camera camera = new Camera(terra);
+													camera.configuration.put("node", node);
+													camera.configuration.put("cluster",cluster);
+													model.addCamera(camera);
+												}
+											}
 											if (!Thread.currentThread().isInterrupted()) {
 												mainFrame.init();
-		//										Thread.sleep(3000);
 												mainFrame.saveQuery(query);
-		//										MemoryController.log();
+												MemoryController.log();
 												TimeController.stop();
+//												model.removeCameras();
+//												model.addCamera(new Camera(terra));
 												consoleTextArea.append("query finished...\n");
 											} else {
 												consoleTextArea.append("script interrupt handled...\n");
 		
 												break;
 											}
-											node.stop();
+//											node.stop();
 										} catch (Exception qe) {
 											consoleTextArea.append(qe.getMessage() + "\n");
 											node.stop();
@@ -179,7 +187,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 						}
 						iterator.remove();
 					}
-					country.stop();
+//					country.stop();
 				}
 			}
 			

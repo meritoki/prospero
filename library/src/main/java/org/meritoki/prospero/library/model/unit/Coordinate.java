@@ -16,6 +16,9 @@
 package org.meritoki.prospero.library.model.unit;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -25,6 +28,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 /**
  * <ul>
@@ -43,8 +48,10 @@ public class Coordinate implements Comparable<Coordinate> {
 	public double longitude;
 	@JsonInclude(Include.NON_EMPTY)
 	public Map<String, Object> attribute = new TreeMap<>();
-	@JsonIgnore
+	@JsonProperty
 	public boolean flag;
+	@JsonIgnore
+	public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public Coordinate() {
 	}
@@ -121,6 +128,11 @@ public class Coordinate implements Comparable<Coordinate> {
 		}
 		return Color.black;
 	}
+	
+	@JsonIgnore
+	public String getDateTime() {
+		return dateFormat.format(this.calendar.getTime());
+	}
 
 //	@JsonIgnore
 //	@Override
@@ -134,8 +146,20 @@ public class Coordinate implements Comparable<Coordinate> {
 //		}
 //		return string;
 //	}
+//	public String toString() {
+//		return this.flag +";"+this.latitude + ";" + this.longitude + ";" + ((this.calendar != null)?this.calendar.getTime():null) + ";" + this.attribute;
+//	}
+	@JsonIgnore
+	@Override
 	public String toString() {
-		return this.flag +";"+this.latitude + ";" + this.longitude + ";" + ((this.calendar != null)?this.calendar.getTime():null) + ";" + this.attribute;
+		String string = "";
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		try {
+			string = ow.writeValueAsString(this);
+		} catch (IOException ex) {
+			System.err.println("IOException " + ex.getMessage());
+		}
+		return string;
 	}
 }
 //@JsonIgnore

@@ -37,6 +37,7 @@ public class Terra extends Grid {
 		this.addChild(new Hydrosphere());
 		this.addChild(new Atmosphere());
 		this.addChild(new Biosphere());
+		this.defaultScale = 7200000.0;
 	}
 	
 	public Terra(String name) {
@@ -65,6 +66,17 @@ public class Terra extends Grid {
 			}
 		}
 	}
+	
+//	@Override
+//	public void setSelectable(boolean selectable) {
+//		super.setSelectable(selectable);
+//		List<Variable> nodeList = this.getChildren();
+//		for (Variable n : nodeList) {
+//			if (n instanceof Terra) {
+//				((Terra) n).setSelectable(selectable);
+//			}
+//		}
+//	}
 	
 	@Override
 	public void paint(Graphics graphics) throws Exception {	

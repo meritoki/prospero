@@ -88,6 +88,8 @@ public class ModelPanel extends javax.swing.JPanel {
     public void initTree() {
 		this.jTree1.setModel(new DefaultTreeModel(this.model.getTree()));
 		this.jTree1.setSelectionPath(new TreePath(((DefaultMutableTreeNode)this.jTree1.getModel().getRoot()).getPath()));
+		this.jTree1.setToggleClickCount(1);
+		this.jTree1.setRootVisible(false);
 	}
 
 	public void addDataTreeSelectionListener() {
@@ -96,7 +98,7 @@ public class ModelPanel extends javax.swing.JPanel {
 			public void valueChanged(TreeSelectionEvent e) {
 				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
 				if (selectedNode != null && !selectedNode.equals("null")) {
-					model.setNode(model.getVariable(selectedNode.toString()));
+					model.getCamera().setNode(model.getVariable(selectedNode.toString()));
 					mainFrame.init();
 				}
 			}
@@ -106,6 +108,7 @@ public class ModelPanel extends javax.swing.JPanel {
 	public void initDataTreeMouseListener() {
 		MouseListener ml = new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
+				logger.debug("initDataTreeMouseListener() e.getClickCount()="+e.getClickCount());
 				if (e.isPopupTrigger()) {
 					TreePath treePath = jTree1.getPathForLocation(e.getX(), e.getY());
 					if (treePath != null) {
@@ -114,7 +117,7 @@ public class ModelPanel extends javax.swing.JPanel {
 							if (model != null) {
 								Variable node = model.getVariable(lastPathComponent.toString());
 								if (node != null) {
-									model.setNode(node);
+									model.getCamera().setNode(node);
 									nodeMenu = new VariableMenu(model, mainFrame);//can conceivably pass model
 									nodeMenu.show(e.getComponent(), e.getX(), e.getY());
 								}
@@ -129,8 +132,8 @@ public class ModelPanel extends javax.swing.JPanel {
 							if (model != null) {
 								Variable node = model.getVariable(lastPathComponent.toString());
 								if (node != null) {
-									model.setNode(node);
-									model.updateNode();
+									model.getCamera().setNode(node);
+//									model.updateNode(node);
 									mainFrame.init();
 								}
 							}

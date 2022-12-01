@@ -21,14 +21,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Result {
-	protected Logger logger = Logger.getLogger(Result.class.getName());
+	protected Logger logger = LogManager.getLogger(Result.class.getName());
 	public Mode mode;
 	public String message;
 	public Map<String,Object> map = new HashMap<>();

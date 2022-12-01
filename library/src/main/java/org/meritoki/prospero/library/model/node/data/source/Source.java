@@ -101,6 +101,7 @@ public class Source extends Node {//implements SourceInterface
 				query.objectList.add(new Result(Mode.EXCEPTION,e.getMessage()));
 			} catch (Exception e) {
 				logger.warn("Exception "+e.getMessage());
+				e.printStackTrace();
 				query.objectList.add(new Result(Mode.EXCEPTION,e.getMessage()));
 			}
 		}

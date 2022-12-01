@@ -15,6 +15,7 @@
  */
 package org.meritoki.prospero.library.model.unit;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,10 +26,21 @@ import javax.swing.table.TableModel;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Cluster {
 	
+	static Logger logger = LogManager.getLogger(Cluster.class.getName());
+	static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	@JsonProperty
 	public String uuid;
+	@JsonProperty
 	public Integer id;
 	public List<Tile> tileList = new ArrayList<>();//Tile List Could Use Flag to Determine which Tiles Belong to Cluster
 	
@@ -47,11 +59,17 @@ public class Cluster {
 		return flag;
 	}
 
+	/**
+	 * Proper Function Requires that Tile Flag True indicates a Tile belongs to a Cluster
+	 * @return
+	 */
+	@JsonIgnore
 	public double getAverageValue() {
 		StandardDeviation standardDeviation = new StandardDeviation();
 		Mean mean = new Mean();
 		for (Tile tile : this.tileList) {
 			if(tile.flag) {
+//				logger.info("getAverageValue() tile="+tile);
 				standardDeviation.increment(tile.value);
 				mean.increment(tile.value);
 			}
@@ -60,16 +78,18 @@ public class Cluster {
 		return value;
 	}
 
+	@JsonIgnore
 	public static TableModel getTableModel(List<Cluster> clusterList) {
 		Object[] objectArray = getObjectArray(clusterList);
 		return new javax.swing.table.DefaultTableModel((Object[][]) objectArray[1], (Object[]) objectArray[0]);
 	}
 
+	@JsonIgnore
 	public static Object[] getObjectArray(List<Cluster> clusterList) {
 		Object[] objectArray = new Object[2];
 		Object[] columnArray = new Object[0];
 		Object[][] dataMatrix = null;
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		
 		if (clusterList != null) {
 			if (clusterList.size() > 0) {
 				for (int i = 0; i < clusterList.size(); i++) {
@@ -95,10 +115,12 @@ public class Cluster {
 		return objectArray;
 	}
 	
+	@JsonIgnore
 	public int getID() {
 		return (id != null)?id:0;
 	}
 
+	@JsonIgnore
 	public List<Tile> getTileList() {
 		for(Tile t: this.tileList) {
 			t.value = Float.valueOf(this.id);
@@ -106,37 +128,62 @@ public class Cluster {
 		return this.tileList;
 	}
 
-	public boolean setTile(Tile tile) {
-		boolean flag = false;
-		for(Tile t: this.tileList) {
-			if(t.equals(tile)) {
-				t.value = tile.value;
-				flag = true;
-				break;
-			}
-		}
-		return flag;
-	}
-	
 	/**
+	 * Something is Wrong Here
 	 * Tile List Represents One Moment in Time, i.e. One Month Average
 	 * @param tileList
 	 * @return
 	 */
-	public boolean setTileList(List<Tile> tileList) {
-		for(Tile tile: tileList) {
-			if(this.tileList.contains(tile)) {
-				this.setTile(tile);
-			} else {
+	@JsonIgnore
+	public void setTileList(List<Tile> tileList) {
+		for(Tile tile: tileList) {// All Tiles
+			if(!this.tileList.contains(tile)) {
 				this.tileList.add(new Tile(tile));
 			}
 		}
-		return false;
+		for(Tile tile: tileList) {
+			for(Tile t: this.tileList) {
+				if(t.equals(tile)) {
+					t.value = tile.value;
+					break;
+				}
+			}
+		}
 	}
 	
+	/**
+	 * Tile List must be correct already
+	 * @param average
+	 */
+	@JsonIgnore
 	public void addTilePoint(double average) {
+//		logger.info("addTilePoint("+average+")");
 		for(Tile tile: this.tileList) {
 			tile.addPoint(new Point(tile.value,average));
 		}
 	}
+	
+	@JsonIgnore
+	@Override
+	public String toString() {
+		String string = "";
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		try {
+			string = ow.writeValueAsString(this);
+		} catch (IOException ex) {
+			System.err.println("IOException " + ex.getMessage());
+		}
+		return string;
+	}
 }
+//public boolean setTile(Tile tile) {
+//boolean flag = false;
+//for(Tile t: this.tileList) {
+//	if(t.equals(tile)) {
+//		t.value = tile.value;
+//		flag = true;
+//		break;
+//	}
+//}
+//return flag;
+//}

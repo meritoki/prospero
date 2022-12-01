@@ -16,8 +16,9 @@
 package org.meritoki.prospero.desktop.view.panel;
 
 import java.awt.Color;
-import java.awt.Dimension;
+//import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -28,29 +29,23 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.CameraPopupMenu;
 import org.meritoki.prospero.library.model.Model;
-import org.meritoki.prospero.library.model.node.Orbital;
+import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.solar.star.Star;
+import org.meritoki.prospero.library.model.unit.Dimension;
 
 /**
  *
  * @author jorodriguez
  */
-public class CameraPanel extends javax.swing.JPanel
-		implements KeyListener, MouseListener, MouseMotionListener, Runnable {
+public class CameraPanel extends javax.swing.JPanel implements KeyListener, MouseListener, MouseMotionListener {
 
 	private static final long serialVersionUID = 1L;
 	static Logger logger = LogManager.getLogger(CameraPanel.class.getName());
 	protected CameraPopupMenu menu;
 	public Model model;
-	public Variable node;
-	public double factor = 1.5;
-	protected int xDelta, yDelta;
-	protected double azimuth = 0;
-	protected double elevation = 0;
-	protected double scale = 1;
 	public Dimension dimension;
+	public Image image;
 
 	/**
 	 * Creates new form CameraPanel
@@ -60,77 +55,64 @@ public class CameraPanel extends javax.swing.JPanel
 		this.addKeyListener(this);
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
-//		this.setSize(1024, 512);
-//		Thread thread = new Thread(this);
-//		thread.start();
+		this.setBackground(Color.white);
 	}
 
 	public void setModel(Model model) {
 		this.model = model;
-		this.node = this.model.node;
 		this.menu = new CameraPopupMenu(this.model);
 	}
 
-	@Override
-	public void run() {
-		while (true) {
+	public void init() {
+		if (this.model != null) {
 			try {
-				this.repaint();
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				for (int i = 0; i < this.model.cameraList.size(); i++) {
+					Image image = null;
+					Camera camera = this.model.getCamera(i);//
+					if (camera != null) {
+						this.model.setCameraBuffer(camera);
+						image = camera.initImage(this);
+					}
+					if (i == model.index && image != null) {
+						this.image = image;
+					}
+				}
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			this.repaint();
 		}
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (this.node != null) {
-			int xDelta = e.getX();
-			int yDelta = e.getY();
-			this.azimuth -= xDelta - this.xDelta;
-			this.elevation -= yDelta - this.yDelta;
-			if(this.node instanceof Spheroid) {
-				Spheroid s = (Spheroid)this.node;
-				s.setAzimuth(this.azimuth);
-				s.setElevation(this.elevation);
+		logger.debug("mouseDragged(" + e + ")");
+		if (this.model != null && this.model.getCamera() != null) {
+			Camera camera = this.model.getCamera();
+			if (camera != null) {
+				camera.mouseDragged(e);
+				e.consume();
+				this.init();
 			}
-			this.xDelta = xDelta;
-			this.yDelta = yDelta;
-			this.repaint();
-			e.consume();
 		}
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void mouseMoved(MouseEvent e) {}
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
+	public void mouseClicked(MouseEvent e) {
 		this.requestFocus();
-
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void mouseEntered(MouseEvent e) {}
 
 	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void mouseExited(MouseEvent e) {}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		this.xDelta = e.getX();
-		this.yDelta = e.getY();
 		e.consume();
 		if (e.isPopupTrigger())
 			showSavePopupMenu(e);
@@ -138,110 +120,28 @@ public class CameraPanel extends javax.swing.JPanel
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		e.consume();
 		if (e.isPopupTrigger())
 			showSavePopupMenu(e);
-
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-	
-	}
+	public void keyTyped(KeyEvent e) {}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-//		logger.info("keyPressed("+e+")");
-		if (this.model != null && this.node != null) {
-			if(this.node instanceof Spheroid) {
-				Spheroid s = (Spheroid)this.node;
-				double scale = s.getProjection().scale;
-				if (e.isControlDown()) {
-					switch (e.getKeyChar()) {
-					case '+': {
-						s.setScale(scale * 2);
-						this.repaint();
-						break;
-					}
-					case '-': {
-						s.setScale(scale / 2);
-						this.repaint();
-						break;
-					}
-					case '1': {// bottom
-						this.azimuth = 0;
-						this.elevation = 0;
-						s.setAzimuth(this.azimuth);
-						s.setElevation(this.elevation);
-						repaint();
-						break;
-					}
-					case '2': {// top
-						this.azimuth = 180;
-						this.elevation = 0;
-						s.setAzimuth(this.azimuth);
-						s.setElevation(this.elevation);
-						repaint();
-						break;
-					}
-					case '3': {
-						this.azimuth = 0;
-						this.elevation = -90;
-						s.setAzimuth(this.azimuth);
-						s.setElevation(this.elevation);
-						repaint();
-						break;
-					}
-					case '4': {
-						this.azimuth = 180;
-						this.elevation = 90;
-						s.setAzimuth(this.azimuth);
-						s.setElevation(this.elevation);
-						repaint();
-						break;
-					}
-					case '5': {
-						this.azimuth = 90;
-						this.elevation = 0;
-						s.setAzimuth(this.azimuth);
-						s.setElevation(this.elevation);
-						repaint();
-						break;
-					}
-					case '6': {
-						this.azimuth = -90;
-						this.elevation = 0;
-						s.setAzimuth(this.azimuth);
-						s.setElevation(this.elevation);
-						repaint();
-						break;
-					}
-					case '7': {
-						this.azimuth = 0;
-						this.elevation = 55;
-						s.setAzimuth(this.azimuth);
-						s.setElevation(this.elevation);
-						repaint();
-						break;
-					}
-					case '8': {
-						this.azimuth = 23;
-						this.elevation = 35;
-						s.setAzimuth(this.azimuth);
-						s.setElevation(this.elevation);
-						repaint();
-						break;
-					}
-					}
-				}
-			}
+		logger.debug("keyPressed(" + e + ")");
+		if (this.model != null && this.model.getCamera() != null) {
+			this.model.keyPressed(e);
+			Camera camera = this.model.getCamera();
+			camera.keyPressed(e);
+			e.consume();
+			this.init();
 		}
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void keyReleased(KeyEvent e) {}
 
 	private void showSavePopupMenu(MouseEvent e) {
 		this.menu = new CameraPopupMenu(this.model);
@@ -252,54 +152,8 @@ public class CameraPanel extends javax.swing.JPanel
 	@Override
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-//		logger.debug("paint(" + (graphics != null) + ")");
-		this.dimension = this.getSize();
-		graphics.setColor(Color.white);
-		graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
-		graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
-		if (this.model != null && this.model.node != null) {
-			if(this.model.node instanceof Orbital) {//20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
-				logger.debug("paint("+(graphics != null)+") "+this.model.node+" instanceof Orbital");
-				Orbital o = (Orbital)this.model.node;
-				o.updateSpace();
-				this.model.solar.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
-				this.model.solar.setAzimuth(this.azimuth);
-				this.model.solar.setElevation(this.elevation);
-				this.node = this.model.solar;
-			} else if(this.model.node instanceof Spheroid) {
-				logger.debug("paint("+(graphics != null)+") "+this.model.node+" instanceof Spheroid");
-				Spheroid s = (Spheroid)this.model.node;
-				this.azimuth = s.getProjection().azimuth;
-				this.elevation = s.getProjection().elevation;
-				this.scale = s.getProjection().scale;
-				this.model.solar.setAzimuth(this.azimuth);
-				this.model.solar.setElevation(this.elevation);
-				this.model.solar.setScale(this.scale);
-				Object root = s.getRoot();
-				while(root != null) {
-					if(root instanceof Orbital) {
-						Orbital o = (Orbital)root;
-						o.updateSpace();
-						this.model.solar.setCenter(o.space);
-						
-//						this.model.node = this.model.solar;
-//						this.model.node = this.model.solar.sun;
-						break;
-					} else {
-						root = ((Variable)root).getRoot();
-					}
-				}
-				this.node = this.model.node;
-			}
-			
-			if (this.node != null) {
-				try {
-//					this.model.solar.paint(graphics);
-					this.node.paint(graphics);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+		if(this.image != null) {
+			graphics.drawImage(this.image, 0, 0, null);
 		}
 	}
 
@@ -321,11 +175,301 @@ public class CameraPanel extends javax.swing.JPanel
 				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 300, Short.MAX_VALUE));
 	}// </editor-fold>//GEN-END:initComponents
 
-	
-
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	// End of variables declaration//GEN-END:variables
 }
+//Dimension dimension = new Dimension(this.getWidth(), this.getHeight());
+//this.setPreferredSize(new java.awt.Dimension((int) dimension.width,
+//		(int) ((this.model.cameraList.size()) * dimension.height)));
+//if (this.model != null) {
+//try {
+////	logger.info("paint(" + (graphics != null) + ") this.model.cameraList.size()="
+////			+ this.model.cameraList.size());
+//	for (int i = 0; i < this.model.cameraList.size(); i++) {
+//		Image image = null;
+//		Camera camera = this.model.getCamera(i);//
+//		if (camera != null) {
+//			this.model.setCameraBuffer(camera);
+//			image = camera.initImage(this);
+//		}
+//		if (i == model.index && image != null) {
+//			graphics.drawImage(image, 0, 0, null);
+//		}
+//	}
+//} catch (Exception e) {
+//	e.printStackTrace();
+//}
+//}
+//@Override
+//public void run() {
+//	while (true) {
+//		try {
+//			this.repaint();
+//			Thread.sleep(3000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//}
+//if (this.model.cameraList.size() > 0) {
+//}
+//graphics.drawImage(image, 0, (int)(i*dimension.height), null);
+//Dimension dimension = new Dimension(this.getWidth(), this.getHeight());
+//Image image = createImage((int) dimension.width, (int) dimension.height);
+//Variable node = camera.getNode();
+//if (node != null) {
+//	logger.debug("paint(" + (graphics != null) + ") node=" + node);
+//	node.dimension = dimension;
+//	image = node.getImage(image);
+//	node.setImage(image);
+//}
+//this.setSize(1024, 512);
+//Thread thread = new Thread(this);
+//thread.start();
+//public Variable node;
+//public double factor = 1.5;
+//protected int xDelta, yDelta;
+//protected double azimuth = 0;
+//protected double elevation = 0;
+//protected double scale = 1;
+//public List<Variable> nodeList = new ArrayList<>();
+//public int model.index = 0;
+//int xDelta = e.getX();
+//int yDelta = e.getY();
+//this.model.getCamera().azimuth -= xDelta - this.xDelta;
+//this.model.getCamera().elevation -= yDelta - this.yDelta;
+//if (this.model.getCamera().node instanceof Spheroid) {
+//	Spheroid s = (Spheroid) this.model.getCamera().node;
+//	s.setAzimuth(this.model.getCamera().azimuth);
+//	s.setElevation(this.model.getCamera().elevation);
+//}
+//this.xDelta = xDelta;
+//this.yDelta = yDelta;
+//this.setPreferredSize(new java.awt.Dimension((int) dimension.width,
+//(int) ((this.nodeList.size()) * dimension.height)));
+
+//public Variable processNode(Variable node) {
+//	logger.debug("processNode(" + node + ")");
+//	Variable n = null;
+//	if (node instanceof Solar) {
+//		this.model.solar.setCenter(this.model.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
+//		this.model.solar.setScale(this.model.solar.defaultScale);
+//		this.model.solar.setAzimuth(this.model.defaultAzimuth);
+//		this.model.solar.setElevation(this.model.defaultElevation);
+//	} else if (node instanceof Orbital) {// 20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
+////		logger.debug("paint(" + (graphics != null) + ") " + node + " instanceof Orbital");
+//		logger.debug("processNode(" + node + ") instanceof Orbital");
+//		Orbital o = (Orbital) node;
+//		o.updateSpace();
+//		this.model.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
+//		this.model.solar.setScale(o.defaultScale);
+//		// this.model.solar.setAzimuth(this.azimuth);
+////		this.model.solar.setElevation(this.elevation);
+//		n = this.model.solar;
+//	} else if (node instanceof Spheroid) {
+//		logger.debug("processNode(" + node + ") instanceof Spheroid");
+////		logger.debug("paint(" + (graphics != null) + ") " + this.model.node + " instanceof Spheroid");
+//		Spheroid s = (Spheroid) node;
+//		this.azimuth = s.getProjection().azimuth;
+//		this.elevation = s.getProjection().elevation;
+//		this.scale = s.getProjection().scale;
+//		this.model.solar.setAzimuth(this.azimuth);
+//		this.model.solar.setElevation(this.elevation);
+//		this.model.solar.setScale(this.scale);
+//		Object root = s.getRoot();
+//		while (root != null) {
+//			if (root instanceof Orbital) {
+//				Orbital o = (Orbital) root;
+//				o.updateSpace();
+//				this.model.solar.setCenter(o.space);
+//
+////			this.model.node = this.model.solar;
+////			this.model.node = this.model.solar.sun;
+//				break;
+//			} else {
+//				root = ((Variable) root).getRoot();
+//			}
+//		}
+//	}
+//	return n;
+//}
+
+//@Override
+//public void paint(Graphics graphics) {
+//	super.paint(graphics);
+////	logger.debug("paint(" + (graphics != null) + ")");
+//	this.dimension = this.getSize();
+//	graphics.setColor(Color.white);
+//	graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
+//	graphics.translate((int) (this.getWidth() / 2.0), (int) (this.getHeight() / 2.0));
+//	if (this.model != null && this.model.node != null) {
+//		if(this.model.node instanceof Orbital) {//20221105 Why? To Re-Center Orbital in Screen w/ Respect to Time
+//			logger.debug("paint("+(graphics != null)+") "+this.model.node+" instanceof Orbital");
+//			Orbital o = (Orbital)this.model.node;
+//			o.updateSpace();
+//			this.model.solar.setCenter(o.space);//Must Include Sun b/c Solar is Not Orbital
+//			this.model.solar.setAzimuth(this.azimuth);
+//			this.model.solar.setElevation(this.elevation);
+//			this.node = this.model.solar;
+//		} else if(this.model.node instanceof Spheroid) {
+//			logger.debug("paint("+(graphics != null)+") "+this.model.node+" instanceof Spheroid");
+//			Spheroid s = (Spheroid)this.model.node;
+//			this.azimuth = s.getProjection().azimuth;
+//			this.elevation = s.getProjection().elevation;
+//			this.scale = s.getProjection().scale;
+//			this.model.solar.setAzimuth(this.azimuth);
+//			this.model.solar.setElevation(this.elevation);
+//			this.model.solar.setScale(this.scale);
+//			Object root = s.getRoot();
+//			while(root != null) {
+//				if(root instanceof Orbital) {
+//					Orbital o = (Orbital)root;
+//					o.updateSpace();
+//					this.model.solar.setCenter(o.space);
+//					
+////					this.model.node = this.model.solar;
+////					this.model.node = this.model.solar.sun;
+//					break;
+//				} else {
+//					root = ((Variable)root).getRoot();
+//				}
+//			}
+//			this.node = this.model.node;
+//		}
+//		
+//		if (this.node != null) {
+//			try {
+////				this.model.solar.paint(graphics);
+//				this.node.paint(graphics);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
+//}
+//this.processNode(node);
+//if (this.model.getCamera().node instanceof Spheroid) {
+//Spheroid s = (Spheroid) this.model.getCamera().node;
+//double scale = s.getProjection().scale;
+//e.consume();
+//if (e.isControlDown()) {
+//	switch (e.getKeyCode()) {
+//	case KeyEvent.VK_UP: {
+//		if (model.index > 0) {
+//			model.index -= 1;
+//			this.repaint();
+//		}
+//		logger.info("keyPressed(e) UP model.index=" + model.index);
+//		break;
+//	}
+//	case KeyEvent.VK_LEFT: {
+//		if (model.index > 0) {
+//			model.index -= 1;
+//			this.repaint();
+//		}
+//		logger.info("keyPressed(e) LEFT model.index=" + model.index);
+//		break;
+//	}
+//	case KeyEvent.VK_DOWN: {
+//		if (model.index < this.model.cameraList.size() - 1) {
+//			model.index += 1;
+//			this.repaint();
+//		}
+//		logger.info("keyPressed(e) DOWN model.index=" + model.index);
+//		break;
+//	}
+//	case KeyEvent.VK_RIGHT: {
+//		if (model.index < this.model.cameraList.size() - 1) {
+//			model.index += 1;
+//			this.repaint();
+//		}
+//		logger.info("keyPressed(e) RIGHT model.index=" + model.index);
+//		break;
+//	}
+//	}
+//	switch (e.getKeyChar()) {
+//	case '+': {
+//		s.setScale(scale * 2);
+//		this.repaint();
+//		break;
+//	}
+//	case '-': {
+//		s.setScale(scale / 2);
+//		this.repaint();
+//		break;
+//	}
+//	case 'r': {
+//		model.index = (model.index > 0)?model.index-1:model.index;
+//		this.repaint();
+//		break;
+//	}
+//	case '1': {// bottom
+//		this.azimuth = 0;
+//		this.elevation = 0;
+//		s.setAzimuth(this.azimuth);
+//		s.setElevation(this.elevation);
+//		repaint();
+//		break;
+//	}
+//	case '2': {// top
+//		this.azimuth = 180;
+//		this.elevation = 0;
+//		s.setAzimuth(this.azimuth);
+//		s.setElevation(this.elevation);
+//		repaint();
+//		break;
+//	}
+//	case '3': {
+//		this.azimuth = 0;
+//		this.elevation = -90;
+//		s.setAzimuth(this.azimuth);
+//		s.setElevation(this.elevation);
+//		repaint();
+//		break;
+//	}
+//	case '4': {
+//		this.azimuth = 180;
+//		this.elevation = 90;
+//		s.setAzimuth(this.azimuth);
+//		s.setElevation(this.elevation);
+//		repaint();
+//		break;
+//	}
+//	case '5': {
+//		this.azimuth = 90;
+//		this.elevation = 0;
+//		s.setAzimuth(this.azimuth);
+//		s.setElevation(this.elevation);
+//		repaint();
+//		break;
+//	}
+//	case '6': {
+//		this.azimuth = -90;
+//		this.elevation = 0;
+//		s.setAzimuth(this.azimuth);
+//		s.setElevation(this.elevation);
+//		repaint();
+//		break;
+//	}
+//	case '7': {
+//		this.azimuth = 0;
+//		this.elevation = 55;
+//		s.setAzimuth(this.azimuth);
+//		s.setElevation(this.elevation);
+//		repaint();
+//		break;
+//	}
+//	case '8': {
+//		this.azimuth = 23;
+//		this.elevation = 35;
+//		s.setAzimuth(this.azimuth);
+//		s.setElevation(this.elevation);
+//		repaint();
+//		break;
+//	}
+//	}
+//}
 //Variable node = this.model.node;
 //Object root = o.getRoot();
 //while(root != null) {

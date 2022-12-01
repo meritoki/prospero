@@ -37,7 +37,7 @@ import org.meritoki.prospero.library.model.plot.Plot;
  *
  * @author jorodriguez
  */
-public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseListener {
+public class PlotPanel extends javax.swing.JPanel implements MouseListener {
 
 	/**
 	 * 
@@ -48,21 +48,46 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 	public Model model;
 	public Plot plot;
 	public List<Plot> plotList;
+	public List<Image> imageList;
 
 	/**
 	 * Creates new form TrackPanel
 	 */
 	public PlotPanel() {
-		this.addMouseListener(this);	
+		this.addMouseListener(this);
 		this.setFocusable(true);
 		this.setBackground(Color.white);
-		Thread thread = new Thread(this);
-		thread.start();
 	}
 
 	public void setModel(Model model) {
 		this.model = model;
 		this.plotPopupMenu = new PlotPopupMenu(this.model);
+	}
+
+	public void init() {
+		if (this.model != null) {
+			try {
+				this.plotList = this.model.getPlotList();
+				int width = this.getWidth();
+				int height = 256;
+				for (int i = 0; i < this.plotList.size(); i++) {
+					Plot plot = this.plotList.get(i);
+					if (plot != null) {
+//						graphics.setColor(Color.white);
+						plot.setPanelWidth(width);
+						plot.setPanelHeight(height);
+						Image image = createImage(width, height);
+						image = plot.getImage(image);
+						plot.setImage(image);
+//						graphics.drawImage(image, 0, i * height, null);
+					}
+				}
+				this.setPreferredSize(new Dimension(width, (this.plotList.size()) * height));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			this.repaint();
+		}
 	}
 
 	public void setPlot(Plot plot) {
@@ -73,48 +98,49 @@ public class PlotPanel extends javax.swing.JPanel implements Runnable, MouseList
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
 		if (this.model != null) {
-			try {
-				this.plotList = this.model.getPlotList();
-				int width = this.getWidth();
-				int height = 256;
-				for (int i = 0; i < this.plotList.size();i++) {
-					Plot plot = this.plotList.get(i);
-					if(plot != null) {
-						graphics.setColor(Color.white);
-						plot.setPanelWidth(width);
-						plot.setPanelHeight(height);
-						Image image = createImage(width, height);
-						image = plot.getImage(image);
-						plot.setImage(image);
-						graphics.drawImage(image, 0, i * height, null);
-					}
-				} 
-				this.setPreferredSize(new Dimension(width,(this.plotList.size())*height));
-			} catch (Exception e) {
-				e.printStackTrace();
+			for (int i = 0; i < this.plotList.size(); i++) {
+				Plot plot = this.plotList.get(i);
+				if (plot != null) {
+					graphics.setColor(Color.white);
+					Image image = plot.getImage();
+					graphics.drawImage(image, 0, i * 256, null);
+				}
 			}
 		}
 	}
-	
-	
+
+//	@Override
+//	public void paint(Graphics graphics) {
+//		super.paint(graphics);
+//		if (this.model != null) {
+//			try {
+//				this.plotList = this.model.getPlotList();
+//				int width = this.getWidth();
+//				int height = 256;
+//				for (int i = 0; i < this.plotList.size();i++) {
+//					Plot plot = this.plotList.get(i);
+//					if(plot != null) {
+//						graphics.setColor(Color.white);
+//						plot.setPanelWidth(width);
+//						plot.setPanelHeight(height);
+//						Image image = createImage(width, height);
+//						image = plot.getImage(image);
+//						plot.setImage(image);
+//						graphics.drawImage(image, 0, i * height, null);
+//					}
+//				} 
+//				this.setPreferredSize(new Dimension(width,(this.plotList.size())*height));
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
 	private void showPlotPopupMenu(MouseEvent e) {
 		System.out.println("showSavepopupMenu(" + e + ")");
-		if (plotPopupMenu != null)
+		if (plotPopupMenu != null) {
 			System.out.println("showSavepopupMenu(" + e + ") savePopupMenu != null");
-		plotPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-	}
-
-	@Override
-	public void run() {
-		while (true) {
-			try {
-				this.repaint();
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			plotPopupMenu.show(e.getComponent(), e.getX(), e.getY());
 		}
 	}
 

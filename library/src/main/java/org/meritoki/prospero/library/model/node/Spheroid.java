@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
+import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
@@ -38,7 +39,8 @@ public class Spheroid extends Energy {
 
 	static Logger logger = LogManager.getLogger(Spheroid.class.getName());
 	public Projection projection = new Projection();
-	public Projection selected = null;
+	public Projection selected = null;//If Null, Projection is a Spheroid
+	public boolean selectable = true;
 	public double defaultScale = 1;
 	public double radius = 1;
 	public double a = this.radius;
@@ -70,6 +72,17 @@ public class Spheroid extends Energy {
 //		logger.info(this.name+".setSelectedProjection("+selected+")");
 		this.selected = selected;
 	}
+	
+	public void setSelectable(boolean selectable) {
+//		logger.info(this.name+".setSelectable("+selectable+")");
+		this.selectable = selectable;
+		List<Variable> nodeList = this.getChildren();
+		for (Variable n : nodeList) {
+			if (n instanceof Spheroid) {
+				((Spheroid) n).setSelectable(selectable);
+			}
+		}
+	}
 
 	public void setScale(double scale) {
 //		logger.info(this.name+".setScale("+scale+")");
@@ -83,6 +96,7 @@ public class Spheroid extends Energy {
 	}
 
 	public void setAzimuth(double azimuth) {
+//		logger.info(this.name+".setAzimuth("+azimuth+")");
 		this.getProjection().setAzimuth(azimuth);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
@@ -92,12 +106,13 @@ public class Spheroid extends Energy {
 		}
 	}
 
-	public void setElevation(double azimuth) {
-		this.getProjection().setElevation(azimuth);
+	public void setElevation(double elevation) {
+//		logger.info(this.name+".setElevation("+elevation+")");
+		this.getProjection().setElevation(elevation);
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			if (n instanceof Spheroid) {
-				((Spheroid) n).setElevation(azimuth);
+				((Spheroid) n).setElevation(elevation);
 			}
 		}
 	}
@@ -224,13 +239,18 @@ public class Spheroid extends Energy {
 	}
 
 	public Projection getProjection() {
-		Projection projection = this.projection;//this.selected;
-		if (this.selected != null) {
+		Projection projection = this.projection;
+		if (this.selectable && this.selected != null) {
 			projection = this.selected;
 		}
-//		logger.info(this.name+".getProjection() projection="+projection);
 		return projection;
 	}
+	
+//	public Projection getSelectedProjection() {
+////		logger.info(this.name+".getProjection() projection="+projection);
+//		return this.selected;
+//	}
+	
 
 	/**
 	 * Return the quotient of Gravity Force Sum and the Charge Force between all

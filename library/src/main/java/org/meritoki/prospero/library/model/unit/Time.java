@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class Time {
 
 	static Logger logger = LogManager.getLogger(Time.class.getName());
-	public static String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
+	static String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	@JsonProperty
 	public int year = -1;
 	@JsonProperty

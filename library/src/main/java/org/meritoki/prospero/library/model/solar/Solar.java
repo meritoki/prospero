@@ -43,7 +43,6 @@ import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.star.sun.Sun;
-import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Space;
@@ -87,6 +86,7 @@ public class Solar extends Grid {
 		this.getProjection().setRadius(39.5);// Astronomical Unit
 		this.getProjection().setUnit(1);
 		this.setProjection(this.projection);
+//		this.visible = true;
 		
 	}
 	
