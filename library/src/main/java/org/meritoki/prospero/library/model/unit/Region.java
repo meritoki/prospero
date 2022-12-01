@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.unit;
 
 import java.util.HashMap;
@@ -12,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Region {
 	static Logger logger = LogManager.getLogger(Region.class.getName());
+	//20221109 Future Use Coordinate
 	public double latitudeA;
 	public double longitudeA;
 	public double latitudeB;
@@ -77,7 +93,7 @@ public class Region {
 	
 	public boolean contains(Tile tile) {
 		boolean flag = false;
-		flag = (latitudeA <= tile.latitude && (tile.latitude+tile.dimension) <= latitudeB && longitudeA <= tile.longitude && (tile.longitude+tile.dimension) <= longitudeB);
+		flag = (latitudeA <= tile.coordinate.latitude && (tile.coordinate.latitude+tile.dimension) <= latitudeB && longitudeA <= tile.coordinate.longitude && (tile.coordinate.longitude+tile.dimension) <= longitudeB);
 		return flag;
 	}
 	

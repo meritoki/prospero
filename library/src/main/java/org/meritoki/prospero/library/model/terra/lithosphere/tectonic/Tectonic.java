@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /**
  * https://github.com/fraxen/tectonicplates
  */
@@ -10,11 +25,11 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiLineString;
-import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Result;
 
-public class Tectonic extends Variable {
+public class Tectonic extends Lithosphere {
 
 	static Logger logger = LogManager.getLogger(Tectonic.class.getName());
 	public Color color = Color.GRAY;
@@ -38,13 +53,14 @@ public class Tectonic extends Variable {
 
 	@Override
 	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
 		if(this.load) { 
 			if (this.multiLineStringList != null) {
 				graphics.setColor(this.color);
-				List<Coordinate> coordinateList = projection.getMultiLineStringList(0, multiLineStringList);
-				for (Coordinate c : coordinateList) {
-					graphics.fillOval((int) ((c.point.x) * this.projection.scale),
-							(int) ((c.point.y) * this.projection.scale), (int) 2, (int) 2);
+				List<Point> coordinateList = this.getProjection().getMultiLineStringList(0, multiLineStringList);
+				for (Point c : coordinateList) {
+					graphics.fillOval((int) ((c.x) * this.getProjection().scale),
+							(int) ((c.y) * this.getProjection().scale), (int) 2, (int) 2);
 				}
 			}
 		}

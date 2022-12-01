@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.unit;
 
 import java.awt.Color;
@@ -7,8 +22,17 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+/**
+ * <ul>
+ * <li>20221115: Add Equals Method</li>
+ * </ul>
+ * @author jorodriguez
+ *
+ */
 public class Coordinate implements Comparable<Coordinate> {
 
 	@JsonProperty
@@ -17,10 +41,8 @@ public class Coordinate implements Comparable<Coordinate> {
 	public double latitude;
 	@JsonProperty
 	public double longitude;
-	@JsonProperty
+	@JsonInclude(Include.NON_EMPTY)
 	public Map<String, Object> attribute = new TreeMap<>();
-	@JsonIgnore
-	public Point point = new Point();
 	@JsonIgnore
 	public boolean flag;
 
@@ -38,6 +60,9 @@ public class Coordinate implements Comparable<Coordinate> {
 		this.attribute = new TreeMap<>(coordinate.attribute);
 	}
 
+	/**
+	 * Need to Generalize, maybe not use Pressure as Default
+	 */
 	@JsonIgnore
 	@Override
 	public int compareTo(Coordinate p) {
@@ -113,3 +138,5 @@ public class Coordinate implements Comparable<Coordinate> {
 		return this.flag +";"+this.latitude + ";" + this.longitude + ";" + ((this.calendar != null)?this.calendar.getTime():null) + ";" + this.attribute;
 	}
 }
+//@JsonIgnore
+//public Point point = new Point();

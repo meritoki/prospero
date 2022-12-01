@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.unit;
 
 import java.io.IOException;
@@ -11,7 +26,7 @@ import java.util.TreeMap;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -105,32 +120,8 @@ public class Series {
 					Point point = index.getPoint(startCalendar);
 					pointList.add(point);
 				}
-				double[][] data = new double[pointList.size()][2];
-				for (int i = 0; i < pointList.size(); i++) {
-					Point p = pointList.get(i);
-					data[i][0] = p.x;
-					data[i][1] = p.y;
-				}
-				SimpleRegression simpleRegression = new SimpleRegression(true);
-				simpleRegression.addData(data);
 				Regression r = new Regression();
-				Map<String, Double> map = new HashMap<>();
-				map.put("intercept", simpleRegression.getIntercept());
-				map.put("interceptStdErr", simpleRegression.getInterceptStdErr());
-				map.put("meanSquareError", simpleRegression.getMeanSquareError());
-//					map.put("n", simpleRegression.getN());
-				map.put("r", simpleRegression.getR());
-				map.put("regressionSumSquares", simpleRegression.getRegressionSumSquares());
-				map.put("rSquare", simpleRegression.getRSquare());
-				map.put("significance", simpleRegression.getSignificance());
-				map.put("slope", simpleRegression.getSlope());
-				map.put("slopeConfidenceInterval", simpleRegression.getSlopeConfidenceInterval());
-				map.put("slopeStdErr", simpleRegression.getSlopeStdErr());
-				map.put("sumOfCrossProducts", simpleRegression.getSumOfCrossProducts());
-				map.put("sumSquaredErrors", simpleRegression.getSumSquaredErrors());
-				map.put("totalSumSquares", simpleRegression.getTotalSumSquares());
-				map.put("xSumSqaures", simpleRegression.getXSumSquares());
-				r.map = map;
+				r.map = Regression.getRegression(pointList);
 				r.startCalendar = startCalendar;
 				r.endCalendar = endCalendar;
 				regressionList.add(r);
@@ -258,6 +249,31 @@ public class Series {
 		return string;
 	}
 }
+//double[][] data = new double[pointList.size()][2];
+//for (int i = 0; i < pointList.size(); i++) {
+//	Point p = pointList.get(i);
+//	data[i][0] = p.x;
+//	data[i][1] = p.y;
+//}
+//SimpleRegression simpleRegression = new SimpleRegression(true);
+//simpleRegression.addData(data);
+//Regression r = new Regression();
+//Map<String, Double> map = new HashMap<>();
+//map.put("intercept", simpleRegression.getIntercept());
+//map.put("interceptStdErr", simpleRegression.getInterceptStdErr());
+//map.put("meanSquareError", simpleRegression.getMeanSquareError());
+////	map.put("n", simpleRegression.getN());
+//map.put("r", simpleRegression.getR());
+//map.put("regressionSumSquares", simpleRegression.getRegressionSumSquares());
+//map.put("rSquare", simpleRegression.getRSquare());
+//map.put("significance", simpleRegression.getSignificance());
+//map.put("slope", simpleRegression.getSlope());
+//map.put("slopeConfidenceInterval", simpleRegression.getSlopeConfidenceInterval());
+//map.put("slopeStdErr", simpleRegression.getSlopeStdErr());
+//map.put("sumOfCrossProducts", simpleRegression.getSumOfCrossProducts());
+//map.put("sumSquaredErrors", simpleRegression.getSumSquaredErrors());
+//map.put("totalSumSquares", simpleRegression.getTotalSumSquares());
+//map.put("xSumSqaures", simpleRegression.getXSumSquares());
 ///**
 //* Function addIndex Index index
 //* 

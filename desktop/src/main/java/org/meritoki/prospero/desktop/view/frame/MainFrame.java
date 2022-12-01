@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@ import org.meritoki.prospero.desktop.view.dialog.AboutDialog;
 import org.meritoki.prospero.desktop.view.dialog.MainDialog;
 import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
 import org.meritoki.prospero.desktop.view.dialog.OpenDialog;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.query.Query;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Script;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
 
 /**
@@ -69,10 +69,11 @@ public class MainFrame extends javax.swing.JFrame {
 		this.model = model;
 		this.mainDialog.setModel(this.model);
 		this.mainDialog.setVisible(true);
-		this.gridPanel.setModel(this.model);
-		this.solarPanel.setModel(this.model);
+//		this.gridPanel.setModel(this.model);
+//		this.solarPanel.setModel(this.model);
 		this.plotPanel.setModel(this.model);
 		this.tablePanel.setModel(this.model);
+                this.cameraPanel1.setModel(this.model);
 		this.init();
 	}
 
@@ -80,10 +81,11 @@ public class MainFrame extends javax.swing.JFrame {
 //		logger.info("init()");
 		this.mainDialog.init();
 		this.plotPanel.repaint();
-		this.solarPanel.repaint();
-		this.gridPanel.repaint();
+//		this.solarPanel.repaint();
+//		this.gridPanel.repaint();
 		this.plotPanel.repaint();
 		this.tablePanel.repaint();
+                this.cameraPanel1.repaint();
 	}
 	
 	public void save() {
@@ -96,7 +98,7 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 	
 	public JPanel getGridPanel() {
-		return this.gridPanel;
+		return this.cameraPanel1;
 	}
 	
 	public JPanel getPlotPanel() {
@@ -124,7 +126,7 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 	
 	public void saveGridPanel(String path, String name) {
-		NodeController.savePanel(this.gridPanel, path,"grid-"+((name !=null)?name:""));
+		NodeController.savePanel(this.cameraPanel1, path,"grid-"+((name !=null)?name:""));
 	}
 	
 	public void savePlotPanel(String path, String name, String uuid) throws Exception {
@@ -168,9 +170,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jScrollPane3 = new javax.swing.JScrollPane();
-        solarPanel = new org.meritoki.prospero.desktop.view.panel.SolarPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        gridPanel = new org.meritoki.prospero.desktop.view.panel.GridPanel();
+        cameraPanel1 = new org.meritoki.prospero.desktop.view.panel.CameraPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         plotPanel = new org.meritoki.prospero.desktop.view.panel.PlotPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -193,35 +193,20 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        javax.swing.GroupLayout solarPanelLayout = new javax.swing.GroupLayout(solarPanel);
-        solarPanel.setLayout(solarPanelLayout);
-        solarPanelLayout.setHorizontalGroup(
-            solarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 948, Short.MAX_VALUE)
+        javax.swing.GroupLayout cameraPanel1Layout = new javax.swing.GroupLayout(cameraPanel1);
+        cameraPanel1.setLayout(cameraPanel1Layout);
+        cameraPanel1Layout.setHorizontalGroup(
+            cameraPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 950, Short.MAX_VALUE)
         );
-        solarPanelLayout.setVerticalGroup(
-            solarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 458, Short.MAX_VALUE)
-        );
-
-        jScrollPane3.setViewportView(solarPanel);
-
-        jTabbedPane1.addTab("Solar", jScrollPane3);
-
-        javax.swing.GroupLayout gridPanelLayout = new javax.swing.GroupLayout(gridPanel);
-        gridPanel.setLayout(gridPanelLayout);
-        gridPanelLayout.setHorizontalGroup(
-            gridPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 948, Short.MAX_VALUE)
-        );
-        gridPanelLayout.setVerticalGroup(
-            gridPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 458, Short.MAX_VALUE)
+        cameraPanel1Layout.setVerticalGroup(
+            cameraPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 417, Short.MAX_VALUE)
         );
 
-        jScrollPane5.setViewportView(gridPanel);
+        jScrollPane3.setViewportView(cameraPanel1);
 
-        jTabbedPane1.addTab("Grid", jScrollPane5);
+        jTabbedPane1.addTab("Camera", jScrollPane3);
 
         plotPanel.setLayout(new javax.swing.BoxLayout(plotPanel, javax.swing.BoxLayout.LINE_AXIS));
         jScrollPane6.setViewportView(plotPanel);
@@ -315,7 +300,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
         );
 
-        this.setSize(1024, 720);
+      this.setSize(1280, 512+128);
     }// </editor-fold>//GEN-END:initComponents
 
     private void mainDialogMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mainDialogMenuItemActionPerformed
@@ -383,16 +368,15 @@ public class MainFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private org.meritoki.prospero.desktop.view.panel.CameraPanel cameraPanel1;
     private javax.swing.JMenu dialogMenu;
     private javax.swing.JMenu exportMenu;
-    private org.meritoki.prospero.desktop.view.panel.GridPanel gridPanel;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JMenuItem mainDialogMenuItem;
@@ -402,7 +386,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu recentMenu;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
-    private org.meritoki.prospero.desktop.view.panel.SolarPanel solarPanel;
     private org.meritoki.prospero.desktop.view.panel.TablePanel tablePanel;
     private javax.swing.JMenu windowMenu;
     // End of variables declaration//GEN-END:variables

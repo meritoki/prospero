@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.terra.biosphere.country;
 
 import java.awt.Color;
@@ -7,12 +22,12 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
+import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Polygon;
 import org.meritoki.prospero.library.model.unit.Result;
 
-public class Country extends Variable {
+public class Country extends Biosphere {
 
 	static Logger logger = LogManager.getLogger(Country.class.getName());
 	public Color color = Color.BLACK;
@@ -36,18 +51,36 @@ public class Country extends Variable {
 
 	@Override
 	public void paint(Graphics graphics) throws Exception {
+		super.paint(graphics);
 		if (this.load) {
 			if (this.multiPolygonList != null) {
 				graphics.setColor(this.color);
-				List<Polygon> polygonList = this.projection.getPolygonList(0, this.multiPolygonList);
-				for (Polygon p : polygonList) {
-					if (p.coordinateList.size() > 0) {
-						for (int i = 0; i < p.coordinateList.size(); i++) {
-							Coordinate c = p.coordinateList.get(i);
-							graphics.drawLine((int) ((c.point.x) * this.projection.scale),
-									(int) ((c.point.y) * this.projection.scale),
-									(int) ((c.point.x) * this.projection.scale),
-									(int) ((c.point.y) * this.projection.scale));
+				if (this.getProjection().verticalList.size() > 0) {
+					for (Double vertical : this.getProjection().verticalList) {
+						List<Polygon> polygonList = this.getProjection().getPolygonList(vertical, this.multiPolygonList);
+						for (Polygon p : polygonList) {
+							if (p.pointList.size() > 0) {
+								for (int i = 0; i < p.pointList.size(); i++) {
+									Point c = p.pointList.get(i);
+									graphics.drawLine((int) ((c.x) * this.getProjection().scale),
+											(int) ((c.y) * this.getProjection().scale),
+											(int) ((c.x) * this.getProjection().scale),
+											(int) ((c.y) * this.getProjection().scale));
+								}
+							}
+						}
+					}
+				} else {
+					List<Polygon> polygonList = this.getProjection().getPolygonList(0, this.multiPolygonList);
+					for (Polygon p : polygonList) {
+						if (p.pointList.size() > 0) {
+							for (int i = 0; i < p.pointList.size(); i++) {
+								Point c = p.pointList.get(i);
+								graphics.drawLine((int) ((c.x) * this.getProjection().scale),
+										(int) ((c.y) * this.getProjection().scale),
+										(int) ((c.x) * this.getProjection().scale),
+										(int) ((c.y) * this.getProjection().scale));
+							}
 						}
 					}
 				}

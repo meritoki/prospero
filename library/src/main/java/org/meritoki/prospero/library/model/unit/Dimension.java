@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-
+/**
+ * <ul>
+ * <li>20221115: Convert All Double Dimensions to Dimension Object</li>
+ * </ul>
+ *
+ */
 public class Dimension {
 
 	@JsonIgnore
@@ -35,8 +40,10 @@ public class Dimension {
 	@JsonProperty
 	public double height;
 	
-	public Dimension() {
-		
+	public Dimension() {}
+	
+	public Dimension(double value) {
+		this.width = this.height = value;
 	}
 	
 	public Dimension(Dimension dimension) {

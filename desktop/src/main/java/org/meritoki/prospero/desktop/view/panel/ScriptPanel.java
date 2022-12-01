@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,10 @@ import org.meritoki.prospero.desktop.view.dialog.LoadDialog;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
+import org.meritoki.prospero.library.model.node.query.Query;
+import org.meritoki.prospero.library.model.terra.Terra;
+import org.meritoki.prospero.library.model.terra.biosphere.country.Country;
 import org.meritoki.prospero.library.model.unit.Script;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -112,7 +115,15 @@ public class ScriptPanel extends javax.swing.JPanel {
 		this.runnable = new Runnable() {
 			public void run() {
 				Thread.currentThread().setName("Script");
+
+				
 				if(model.scriptList.size() > 0) {
+					Terra terra = (Terra)model.getVariable("Terra");
+					terra.setSelectedProjection(new AzimuthalSouth());
+					Country country = (Country)terra.getVariable("Country");
+					country.start();
+					country.query.map.put("source","Natural Earth");
+					country.query(country.query);
 					Iterator<Script> iterator = scriptList.iterator();
 					while (iterator.hasNext()) {
 						Script script = iterator.next();
@@ -123,9 +134,11 @@ public class ScriptPanel extends javax.swing.JPanel {
 									TimeController.start();
 									String variable = query.getVariable();
 									Variable node = model.getVariable(variable);
+									
 									if (node != null) {
 										logger.info("query() node="+node);
-										model.node = node;
+										model.setNode(terra);
+										model.updateNode();
 										node.start();//can be called more than once, no problem
 										try {
 											node.query(query);//discrete finite task that sets a new query, includes process
@@ -166,6 +179,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 						}
 						iterator.remove();
 					}
+					country.stop();
 				}
 			}
 			

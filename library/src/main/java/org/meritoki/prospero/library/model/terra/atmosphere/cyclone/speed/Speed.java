@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed;
 
 import java.util.ArrayList;
@@ -112,7 +127,7 @@ public class Speed extends Cyclone {
 			timeList = new ArrayList<>();
 			for (Event e : eventList) {
 				if (e.flag) {
-					Coordinate c = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
+					Coordinate c = ((CycloneEvent) e).getHalfTimeLowerMostCoordinate(null);
 					if (c != null) {
 						coordinateMatrix[(int) ((c.latitude + this.latitude)
 								* this.resolution)][(int) ((c.longitude + this.longitude / 2) * this.resolution)][c

@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Bar;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.Table;
 
 public class Histogram extends Plot {
 

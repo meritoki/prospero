@@ -30,15 +30,15 @@ import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.node.color.Chroma;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Label;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Regression;
 import org.meritoki.prospero.library.model.unit.Series;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Window;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -62,7 +62,7 @@ public class TimePlot extends Plot {
 		this.colorIndexMatrix = new ArrayList<>();
 		this.blackIndexMatrix.add(series.indexList);
 		for(Entry<String,List<Regression>> entry:series.regressionMap.entrySet()) {
-			this.colorIndexMatrix.addAll(this.getMatrix(entry.getValue()));
+			this.colorIndexMatrix.addAll(this.getIndexMatrix(entry.getValue()));
 		}
 		Calendar[] window = (series.map.get("window") != null)?(Calendar[])series.map.get("window"):null;
 		if(window != null && window.length == 2) {
@@ -107,7 +107,7 @@ public class TimePlot extends Plot {
 		this.scale = DEFAULT_SCALE;
 	}
 	
-	public List<List<Index>> getMatrix(List<Regression> regressionList) {
+	public List<List<Index>> getIndexMatrix(List<Regression> regressionList) {
 		List<List<Index>> matrix = new ArrayList<>();
 		if (regressionList != null) {
 			for (Regression r : regressionList) {

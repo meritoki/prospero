@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,15 +31,18 @@ import org.meritoki.prospero.desktop.view.window.SplashWindow;
 public class Desktop {
 
 	static Logger logger = LogManager.getLogger(Desktop.class.getName());
-	public static String versionNumber = "0.7.202203";
+	public static String versionNumber = "0.14.202211";
 	public static String vendor = "Meritoki";
-	public static String about = "Version " + versionNumber + " Copyright " + vendor + " 2020-2022";
+	public static String about = "Version " + versionNumber + " Copyright " + vendor + " 2016-2022";
 	public static Option versionOption = new Option("v", "version", false, "Print version information");
 	public static Option helpOption = new Option("h", "help", false, "Print usage information");
 	public static Option cacheOption = new Option("c", "cache", false, "Cache data between queries, requires memory");
 	public static Option scriptPathOption = Option.builder("s").longOpt("script").desc("Option to input script file or folder path")
 			.hasArg().build();
+	public static Option dataPathOption = Option.builder("d").longOpt("data").desc("Option to input data folder path")
+			.hasArg().build();
 	public static String scriptPath = null;
+	public static String dataPath = null;
 	public static boolean mainFlag = false;
 	public static boolean cacheFlag = false;
 
@@ -49,6 +52,7 @@ public class Desktop {
 		options.addOption(cacheOption);
 		options.addOption(helpOption);
 		options.addOption(scriptPathOption);
+		options.addOption(dataPathOption);
 		options.addOption(versionOption);
 		CommandLineParser parser = new DefaultParser();
 		try {
@@ -67,6 +71,10 @@ public class Desktop {
 				if (commandLine.hasOption("cache")) {
 					cacheFlag = true;
 				}
+				if(commandLine.hasOption("data")) {
+					dataPath = commandLine.getOptionValue("data");
+					logger.info("main(args) data=" + dataPath);
+				}
 				mainFlag = true;
 			}
 		} catch (org.apache.commons.cli.ParseException ex) {
@@ -78,6 +86,7 @@ public class Desktop {
 			final SplashWindow splashWindow = new SplashWindow("/Splash.png", mainFrame, 2000);
 			final Model model = new Model();
 			model.setCache(cacheFlag);
+			model.setBasePath(dataPath);
 			try {
 				model.setScriptPath(scriptPath);
 				mainFrame.setModel(model);

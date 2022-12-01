@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.desktop.view.menu.VariableMenu;
 import org.meritoki.prospero.library.model.Model;
@@ -41,6 +43,7 @@ public class ModelPanel extends javax.swing.JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -6776181167285776504L;
+	static Logger logger = LogManager.getLogger(ModelPanel.class.getName());
 	private Model model;
 	private MainFrame mainFrame;
 	private VariableMenu nodeMenu;
@@ -93,7 +96,7 @@ public class ModelPanel extends javax.swing.JPanel {
 			public void valueChanged(TreeSelectionEvent e) {
 				DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
 				if (selectedNode != null && !selectedNode.equals("null")) {
-					model.node = model.getVariable(selectedNode.toString());
+					model.setNode(model.getVariable(selectedNode.toString()));
 					mainFrame.init();
 				}
 			}
@@ -111,7 +114,7 @@ public class ModelPanel extends javax.swing.JPanel {
 							if (model != null) {
 								Variable node = model.getVariable(lastPathComponent.toString());
 								if (node != null) {
-									model.node = node;
+									model.setNode(node);
 									nodeMenu = new VariableMenu(model, mainFrame);//can conceivably pass model
 									nodeMenu.show(e.getComponent(), e.getX(), e.getY());
 								}
@@ -126,7 +129,9 @@ public class ModelPanel extends javax.swing.JPanel {
 							if (model != null) {
 								Variable node = model.getVariable(lastPathComponent.toString());
 								if (node != null) {
-									model.node = node;
+									model.setNode(node);
+									model.updateNode();
+									mainFrame.init();
 								}
 							}
 						}

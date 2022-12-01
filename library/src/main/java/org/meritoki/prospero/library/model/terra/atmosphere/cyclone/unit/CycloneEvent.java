@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit;
 
 import java.io.IOException;
@@ -17,12 +32,11 @@ import javax.swing.table.TableModel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Duration;
 import org.meritoki.prospero.library.model.unit.Event;
-import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Link;
+import org.meritoki.prospero.library.model.unit.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -318,15 +332,15 @@ public class CycloneEvent extends Event {
 	}
 
 	@JsonIgnore
-	public Map<String, List<Coordinate>> getTimePointMap(List<Coordinate> coordinateList) {
-		Map<String, List<Coordinate>> timePointMap = new HashMap<>();
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public Map<String, List<Coordinate>> getTimeCoordinateMap(List<Coordinate> coordinateList) {
+		Map<String, List<Coordinate>> timeCoordinateMap = new HashMap<>();
+//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String date;
 		List<Coordinate> cList;
 		for (Coordinate c : coordinateList) {
 			if (c.flag) {
 				date = dateFormat.format(c.calendar.getTime());
-				cList = timePointMap.get(date);
+				cList = timeCoordinateMap.get(date);
 				if (cList == null) {
 					cList = new ArrayList<>();
 					cList.add(c);
@@ -334,141 +348,243 @@ public class CycloneEvent extends Event {
 					cList.add(c);
 				}
 				Collections.sort(cList);
-				timePointMap.put(date, cList);
+				timeCoordinateMap.put(date, cList);
 			}
 		}
-		timePointMap = new TreeMap<String, List<Coordinate>>(timePointMap);
-		return timePointMap;
+		timeCoordinateMap = new TreeMap<String, List<Coordinate>>(timeCoordinateMap);
+		return timeCoordinateMap;
+	}
+	
+	@JsonIgnore
+	public Map<Integer, List<Coordinate>> getPressureCoordinateMap(List<Coordinate> coordinateList) {
+		Map<Integer, List<Coordinate>> pressureCoordinateMap = new HashMap<>();
+//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Integer pressure;
+		List<Coordinate> cList;
+		for (Coordinate c : coordinateList) {
+			if (c.flag) {
+				pressure = (Integer)c.attribute.get("pressure");//dateFormat.format(c.calendar.getTime());
+				cList = pressureCoordinateMap.get(pressure);
+				if (cList == null) {
+					cList = new ArrayList<>();
+					cList.add(c);
+				} else {
+					cList.add(c);
+				}
+//				Collections.sort(cList);
+				pressureCoordinateMap.put(pressure, cList);
+			}
+		}
+		pressureCoordinateMap = new TreeMap<Integer, List<Coordinate>>(pressureCoordinateMap);
+		return pressureCoordinateMap;
 	}
 
+	/**
+	 * Function Averages All
+	 * @return
+	 */
 	@JsonIgnore
-	public List<Coordinate> getTimePointList() {
-		Map<String, List<Coordinate>> timePointMap = this.getTimeCoordinateMap();
-		List<Coordinate> pointList = new ArrayList<Coordinate>();
-		Coordinate point;
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public List<Coordinate> getTimeCoordinateList() {
+		Map<String, List<Coordinate>> timeCoordinateMap = this.getTimeCoordinateMap();
+		List<Coordinate> coordinateList = new ArrayList<Coordinate>();
+		Coordinate coordinate;
+//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date;
-		for (Map.Entry<String, List<Coordinate>> entry : timePointMap.entrySet()) {
+		Calendar calendar;
+		for (Map.Entry<String, List<Coordinate>> entry : timeCoordinateMap.entrySet()) {
 			try {
-				date = dateFormat.parse(entry.getKey());
-				point = this.getAveragePoint(entry.getValue(), date);
-				if (point != null) {
-					pointList.add(point);
+				date = this.dateFormat.parse(entry.getKey());
+				calendar = Calendar.getInstance();
+				calendar.setTime(date);
+				coordinate = this.getAverageCoordinate(entry.getValue(), calendar);
+				if (coordinate != null) {
+					coordinateList.add(coordinate);
 				}
 			} catch (ParseException e) {
 				logger.error("ParseException " + e.getMessage());
 			}
 		}
-		return pointList;
+		return coordinateList;
 	}
 
 	@JsonIgnore
-	public Coordinate getAveragePoint(List<Coordinate> pList, Date date) {
-		Coordinate point = null;
-		List<Coordinate> pointList = new ArrayList<>();
-		for (Coordinate p : pList) {
-			pointList.add(new Coordinate(p));
+	public Coordinate getAverageCoordinate(List<Coordinate> cList, Calendar calendar) {
+		Coordinate coordinate = null;
+		List<Coordinate> coordinateList = new ArrayList<>();
+		for (Coordinate c : cList) {
+			coordinateList.add(new Coordinate(c));
 		}
-		if (pointList.size() > 0) {
+		if (coordinateList.size() > 0) {
 			double latitudeSum = 0;
 			double longitudeSum = 0;
 			double latitude;
 			double longitude;
-			for (int i = 0; i < pointList.size(); i++) {
-				if (i + 1 < pointList.size()) {
-					Coordinate pointA = pointList.get(i);
-					Coordinate pointB = pointList.get(i + 1);
-					double difference = Math.abs(pointA.longitude - pointB.longitude);
+			for (int i = 0; i < coordinateList.size(); i++) {
+				if (i + 1 < coordinateList.size()) {
+					Coordinate a = coordinateList.get(i);
+					Coordinate b = coordinateList.get(i + 1);
+					double difference = Math.abs(a.longitude - b.longitude);
 					if (difference >= 180) {
-						if (pointA.longitude < 0) {
-							pointA.longitude += 360;
+						if (a.longitude < 0) {
+							a.longitude += 360;
 						}
-						if (pointB.longitude < 0) {
-							pointB.longitude += 360;
+						if (b.longitude < 0) {
+							b.longitude += 360;
 						}
 					}
 				}
 			}
-			for (Coordinate p : pointList) {
-				latitudeSum += p.latitude;
-				longitudeSum += p.longitude;
+			for (Coordinate c : coordinateList) {
+				latitudeSum += c.latitude;
+				longitudeSum += c.longitude;
 			}
-			latitude = latitudeSum / pointList.size();
-			longitude = longitudeSum / pointList.size();
+			latitude = latitudeSum / coordinateList.size();
+			longitude = longitudeSum / coordinateList.size();
 			if (longitude > 180) {
 				longitude -= 360;
 			}
-			point = new Coordinate();
-			point.latitude = latitude;
-			point.longitude = longitude;
+			coordinate = new Coordinate();
+			coordinate.latitude = latitude;
+			coordinate.longitude = longitude;
+			coordinate.calendar = calendar;
 //			point.calendar = date;
 		}
-		return point;
+		return coordinate;
+	}
+	
+	@JsonIgnore 
+	public Map<Integer,List<Coordinate>> getPressureCoordinateLinkMap() {
+		Map<Integer, List<Coordinate>> pressureCoordinateMap = this.getPressureCoordinateMap(this.coordinateList);
+		Map<Integer, List<Coordinate>> pressureLinkMap = new TreeMap<>();
+		for (Map.Entry<Integer, List<Coordinate>> entry : pressureCoordinateMap.entrySet()) {
+			Integer key = entry.getKey();
+			List<Coordinate> linkList = pressureLinkMap.get(key);
+			if(linkList == null) {
+				linkList = new ArrayList<>();
+			}
+			List<Coordinate> coordinateList = entry.getValue();
+			for (int i = 0; i < coordinateList.size(); i++) {
+				Coordinate a = coordinateList.get(i);
+				linkList.add(a);
+				if (i + 1 < coordinateList.size()) {
+					Coordinate b = coordinateList.get(i + 1);
+					Coordinate c = null;
+					Coordinate d = null;
+					if (a.longitude > 0 && b.longitude < 0) {
+						double difference = a.longitude - b.longitude;
+						if (difference >= 180) {
+							b.longitude += 360;
+							double slope = this.getSlope(a, b);
+							double angle = this.getAngle(slope);
+							double xA = 180 - a.longitude;
+							double hypotenuseA = this.getHypotenuse(Math.toRadians(angle), xA);
+							double yA = this.getY(hypotenuseA, xA);
+							double y = Math.abs(a.latitude - b.latitude);
+							double yB = y - yA;
+							if (a.latitude < b.latitude) {
+								c = new Link(a.latitude + yA, 180, Link.STOP);
+								d = new Link(b.latitude - yB, -180, Link.START);
+							} else if (a.latitude > b.latitude) {
+								c = new Link(a.latitude - yA, 180, Link.STOP);
+								d = new Link(b.latitude + yB, -180, Link.START);
+							}
+							b.longitude -= 360;
+						}
+					} else if (b.longitude > 0 && a.longitude < 0) {
+						double difference = b.longitude - a.longitude;
+						if (difference >= 180) {
+							a.longitude += 360;
+							double slope = this.getSlope(b, a);
+							double angle = this.getAngle(slope);
+							double xB = 180 - b.longitude;
+							double hypotenuseB = this.getHypotenuse(Math.toRadians(angle), xB);
+							double yB = this.getY(hypotenuseB, xB);
+							double y = Math.abs(a.latitude - b.latitude);
+							double yA = y - yB;
+							if (a.latitude < b.latitude) {
+								c = new Link(a.latitude + yB, -180, Link.STOP);
+								d = new Link(b.latitude - yA, 180, Link.START);
+							} else if (a.latitude > b.latitude) {
+								c = new Link(a.latitude - yB, -180, Link.STOP);
+								d = new Link(b.latitude + yA, 180, Link.START);
+							}
+							a.longitude -= 360;
+						}
+					}
+					if (c != null && d != null) {
+						linkList.add(c);
+						linkList.add(d);
+					}
+				}
+			}
+			pressureLinkMap.put(key,linkList);
+		}
+		return pressureLinkMap;
 	}
 
 	@JsonIgnore
-	public List<Coordinate> getCorrectedTimePointList() {
-		List<Coordinate> timePointList = this.getTimePointList();
-		List<Coordinate> pointList = new ArrayList<>();
-		Coordinate pointA;
-		Coordinate pointB;
-		Coordinate pointC;
-		Coordinate pointD;
-		for (int i = 0; i < timePointList.size(); i++) {
-			pointA = timePointList.get(i);
-			pointList.add(pointA);
-			if (i + 1 < timePointList.size()) {
-				pointB = timePointList.get(i + 1);
-				pointC = null;
-				pointD = null;
-				if (pointA.longitude > 0 && pointB.longitude < 0) {
-					double difference = pointA.longitude - pointB.longitude;
+	public List<Coordinate> getCorrectedTimeCoordinateList() {
+		List<Coordinate> timeCoordinateList = this.getTimeCoordinateList();
+		List<Coordinate> coordinateList = new ArrayList<>();
+		Coordinate a;
+		Coordinate b;
+		Coordinate c;
+		Coordinate d;
+		for (int i = 0; i < timeCoordinateList.size(); i++) {
+			a = timeCoordinateList.get(i);
+			coordinateList.add(a);
+			if (i + 1 < timeCoordinateList.size()) {
+				b = timeCoordinateList.get(i + 1);
+				c = null;
+				d = null;
+				if (a.longitude > 0 && b.longitude < 0) {
+					double difference = a.longitude - b.longitude;
 					if (difference >= 180) {
-						pointB.longitude += 360;
-						double slope = this.getSlope(pointA, pointB);
+						b.longitude += 360;
+						double slope = this.getSlope(a, b);
 						double angle = this.getAngle(slope);
-						double xA = 180 - pointA.longitude;
+						double xA = 180 - a.longitude;
 						double hypotenuseA = this.getHypotenuse(Math.toRadians(angle), xA);
 						double yA = this.getY(hypotenuseA, xA);
-						double y = Math.abs(pointA.latitude - pointB.latitude);
+						double y = Math.abs(a.latitude - b.latitude);
 						double yB = y - yA;
-						if (pointA.latitude < pointB.latitude) {
-							pointC = new Link(pointA.latitude + yA, 180, Link.STOP);
-							pointD = new Link(pointB.latitude - yB, -180, Link.START);
-						} else if (pointA.latitude > pointB.latitude) {
-							pointC = new Link(pointA.latitude - yA, 180, Link.STOP);
-							pointD = new Link(pointB.latitude + yB, -180, Link.START);
+						if (a.latitude < b.latitude) {
+							c = new Link(a.latitude + yA, 180, Link.STOP);
+							d = new Link(b.latitude - yB, -180, Link.START);
+						} else if (a.latitude > b.latitude) {
+							c = new Link(a.latitude - yA, 180, Link.STOP);
+							d = new Link(b.latitude + yB, -180, Link.START);
 						}
-						pointB.longitude -= 360;
+						b.longitude -= 360;
 					}
-				} else if (pointB.longitude > 0 && pointA.longitude < 0) {
-					double difference = pointB.longitude - pointA.longitude;
+				} else if (b.longitude > 0 && a.longitude < 0) {
+					double difference = b.longitude - a.longitude;
 					if (difference >= 180) {
-						pointA.longitude += 360;
-						double slope = this.getSlope(pointB, pointA);
+						a.longitude += 360;
+						double slope = this.getSlope(b, a);
 						double angle = this.getAngle(slope);
-						double xB = 180 - pointB.longitude;
+						double xB = 180 - b.longitude;
 						double hypotenuseB = this.getHypotenuse(Math.toRadians(angle), xB);
 						double yB = this.getY(hypotenuseB, xB);
-						double y = Math.abs(pointA.latitude - pointB.latitude);
+						double y = Math.abs(a.latitude - b.latitude);
 						double yA = y - yB;
-						if (pointA.latitude < pointB.latitude) {
-							pointC = new Link(pointA.latitude + yB, -180, Link.STOP);
-							pointD = new Link(pointB.latitude - yA, 180, Link.START);
-						} else if (pointA.latitude > pointB.latitude) {
-							pointC = new Link(pointA.latitude - yB, -180, Link.STOP);
-							pointD = new Link(pointB.latitude + yA, 180, Link.START);
+						if (a.latitude < b.latitude) {
+							c = new Link(a.latitude + yB, -180, Link.STOP);
+							d = new Link(b.latitude - yA, 180, Link.START);
+						} else if (a.latitude > b.latitude) {
+							c = new Link(a.latitude - yB, -180, Link.STOP);
+							d = new Link(b.latitude + yA, 180, Link.START);
 						}
-						pointA.longitude -= 360;
+						a.longitude -= 360;
 					}
 				}
-				if (pointC != null && pointD != null) {
-					pointList.add(pointC);
-					pointList.add(pointD);
+				if (c != null && d != null) {
+					coordinateList.add(c);
+					coordinateList.add(d);
 				}
 			}
 		}
-		return pointList;
+		return coordinateList;
 	}
 
 	@JsonIgnore
@@ -492,43 +608,48 @@ public class CycloneEvent extends Event {
 	}
 
 	@JsonIgnore
-	public List<Coordinate> getHalfTimePointList() {
-		Map<String, List<Coordinate>> timePointMap = this.getTimePointMap(this.coordinateList);
-		int size = timePointMap.size();
+	public List<Coordinate> getHalfTimeCoordinateList() {
+		Map<String, List<Coordinate>> timeCoordinateMap = this.getTimeCoordinateMap(this.coordinateList);
+		int size = timeCoordinateMap.size();
 		int half = size / 2;
-		List<Coordinate> pointList = new ArrayList<>();
+		List<Coordinate> coordinateList = new ArrayList<>();
 //		if(half > 0) {
-		List<String> keys = new ArrayList<>(timePointMap.keySet());
+		List<String> keys = new ArrayList<>(timeCoordinateMap.keySet());
 		if (keys.size() > 0) {
 			String key = keys.get(half);
-			pointList = timePointMap.get(key);
+			coordinateList = timeCoordinateMap.get(key);
 		}
 //		}
-		return pointList;
+		return coordinateList;
 	}
 
+	/**
+	 * 
+	 * @param pressure - can be null or a positive Integer
+	 * @return
+	 */
 	@JsonIgnore
-	public Coordinate getHalfTimeLowerMostPoint(Integer gph) {
-		List<Coordinate> pointList = this.getHalfTimePointList();
+	public Coordinate getHalfTimeLowerMostCoordinate(Integer pressure) {
+		List<Coordinate> pointList = this.getHalfTimeCoordinateList();
 		int size = pointList.size();
-		Coordinate point = null;
+		Coordinate coordinate = null;
 		if (size > 0) {
-			if (gph != null) {
-				for (Coordinate p : pointList) {
-					if (p.attribute.get("pressure").equals(gph)) {
-						point = p;
+			if (pressure != null) {
+				for (Coordinate c : pointList) {
+					if (c.attribute.get("pressure").equals(pressure)) {
+						coordinate = c;
 						break;
 					}
 				}
 			} else {
-				point = pointList.get(size - 1);
+				coordinate = pointList.get(size - 1);
 			}
 		}
-		return point;
+		return coordinate;
 	}
 
 	@JsonIgnore
-	public Coordinate getMeanPoint(Coordinate x, Coordinate y) {
+	public Coordinate getMeanCoordinate(Coordinate x, Coordinate y) {
 		Coordinate a = new Coordinate(x);
 		Coordinate b = new Coordinate(y);
 		double difference = a.longitude - b.longitude;
@@ -632,17 +753,17 @@ public class CycloneEvent extends Event {
 	}
 
 	@JsonIgnore
-	public void setPointColor(List<Coordinate> pointList) {
+	public void setPointColor(List<Coordinate> coordianteList) {
 		int size = 0;
 		int count = 0;
-		for (Coordinate p : pointList) {
-			if (!(p instanceof Link)) {
+		for (Coordinate c : coordianteList) {
+			if (!(c instanceof Link)) {
 				size += 1;
 			}
 		}
-		for (Coordinate p : pointList) {
-			p.setColor(count, size);
-			if (!(p instanceof Link)) {
+		for (Coordinate c : coordianteList) {
+			c.setColor(count, size);
+			if (!(c instanceof Link)) {
 				count++;
 			}
 		}
@@ -796,7 +917,7 @@ public class CycloneEvent extends Event {
 
 	@JsonIgnore
 	public List<Coordinate> getSpeedPointList() {
-		Map<String, List<Coordinate>> timePointMap = this.getTimePointMap(this.coordinateList);
+		Map<String, List<Coordinate>> timePointMap = this.getTimeCoordinateMap(this.coordinateList);
 		int size = timePointMap.size();
 		List<Coordinate> pointList = new ArrayList<>();
 		String keyA;
@@ -837,9 +958,12 @@ public class CycloneEvent extends Event {
 				try {
 					dateA = dateFormat.parse(keyA);
 					Date dateB = dateFormat.parse(keyB);
-					Coordinate pointA = this.getAveragePoint(pointListA, dateA);
-					Coordinate pointB = this.getAveragePoint(pointListB, dateB);
-					Coordinate point = this.getMeanPoint(pointA, pointB);
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(dateA);
+					Coordinate pointA = this.getAverageCoordinate(pointListA, calendar);
+					calendar.setTime(dateB);
+					Coordinate pointB = this.getAverageCoordinate(pointListB, calendar);
+					Coordinate point = this.getMeanCoordinate(pointA, pointB);
 					point.calendar = Calendar.getInstance();
 					point.calendar.setTime(dateA);
 					point.attribute.put("speed", speedMean);

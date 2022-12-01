@@ -24,7 +24,7 @@ import java.awt.geom.AffineTransform;
 import java.text.DecimalFormat;
 import java.util.List;
 
-import org.meritoki.prospero.library.model.color.Chroma;
+import org.meritoki.prospero.library.model.node.color.Chroma;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.unit.Point;
 
