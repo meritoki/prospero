@@ -257,7 +257,7 @@ public class Cyclone extends Atmosphere {
 								this.seriesMap.put(region.toString(), series);
 							}
 							this.initPlotList(this.seriesMap, null);
-							// this.initTableList(null, null,null);
+//							this.initTableList(eventList, null, null, null);
 							this.eventMap.remove(time);
 						}
 					} catch (Exception e) {
@@ -403,7 +403,8 @@ public class Cyclone extends Atmosphere {
 		for (Entry<Integer, List<Tile>> entry : tileListMap.entrySet()) {
 			cluster = new Cluster();
 			cluster.id = entry.getKey();
-			cluster.tileList = new ArrayList<>(entry.getValue());//Defect Was Here, Uses Copy Constructor and Important Variables where Not Transferred in Copy
+			cluster.tileList = new ArrayList<>(entry.getValue());// Defect Was Here, Uses Copy Constructor and Important
+																	// Variables where Not Transferred in Copy
 			clusterList.add(cluster);
 		}
 		this.clusterList = clusterList;
@@ -412,9 +413,9 @@ public class Cyclone extends Atmosphere {
 	}
 
 	/**
-	 * Defect 20221129. 
-	 * Cluster Has Tile List w/ Flag True
-	 * Within this method Cluster must be given all Tiles 
+	 * Defect 20221129. Cluster Has Tile List w/ Flag True Within this method
+	 * Cluster must be given all Tiles
+	 * 
 	 * @param clusterList
 	 */
 	public void getClusterPlots(List<Cluster> clusterList) {
@@ -439,7 +440,7 @@ public class Cyclone extends Atmosphere {
 					series = this.newSeries();
 					series.map.put("cluster", cluster.id);
 				}
-				cluster.setTileList(tileList);//Problem
+				cluster.setTileList(tileList);// Problem
 				double average = cluster.getAverageValue();
 				cluster.addTilePoint(average);
 				Index index = time.getIndex();
@@ -623,6 +624,8 @@ public class Cyclone extends Atmosphere {
 
 	public List<Time> setCoordinateMatrix(int[][][] coordinateMatrix, List<Event> eventList) {
 		List<Time> timeList = null;
+		Time startTime = new Time("month", this.startCalendar);
+		Time endTime = new Time("month", this.endCalendar);
 		if (eventList != null) {
 			timeList = new ArrayList<>();
 			if (this.stackFlag) {
@@ -634,13 +637,16 @@ public class Cyclone extends Atmosphere {
 					for (Event e : eventList) {
 						for (Coordinate p : e.coordinateList) {
 							if (p.flag && ((Integer) p.attribute.get("pressure")).equals(pressure)) {
-								int x = (int) ((p.latitude + this.latitude) * this.resolution);
-								int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = p.getMonth() - 1;
-								coordinateMatrix[x][y][z]++;
 								Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
-								if (!timeList.contains(time)) {
-									timeList.add(time);
+								if (startTime.lessThan(time) && time.lessThan(endTime)) {
+									int x = (int) ((p.latitude + this.latitude) * this.resolution);
+									int y = (int) ((p.longitude + this.longitude / 2) * this.resolution)
+											% this.longitude;
+									int z = p.getMonth() - 1;
+									coordinateMatrix[x][y][z]++;
+									if (!timeList.contains(time)) {
+										timeList.add(time);
+									}
 								}
 							}
 						}
@@ -652,13 +658,16 @@ public class Cyclone extends Atmosphere {
 					if (e.flag) {
 						for (Coordinate c : e.coordinateList) {
 							if (c.flag) {
-								int x = (int) ((c.latitude + this.latitude) * this.resolution);
-								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = c.getMonth() - 1;
-								coordinateMatrix[x][y][z]++;
 								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
-								if (!timeList.contains(time)) {
-									timeList.add(time);
+								if (startTime.lessThan(time) && time.lessThan(endTime)) {
+									int x = (int) ((c.latitude + this.latitude) * this.resolution);
+									int y = (int) ((c.longitude + this.longitude / 2) * this.resolution)
+											% this.longitude;
+									int z = c.getMonth() - 1;
+									coordinateMatrix[x][y][z]++;
+									if (!timeList.contains(time)) {
+										timeList.add(time);
+									}
 								}
 							}
 						}
@@ -877,12 +886,9 @@ public class Cyclone extends Atmosphere {
 			int distance;
 			for (Event e : eventList) {
 				if (e.flag) {
-					distance = (int) (((CycloneEvent) e).getDistance());
-//					System.out.println("Distance: "+distance);
-					int range = distance / 1000000;
-//					System.out.println("Range: "+range);
-//					int key = range*1000000+1000000;
-//					System.out.println("Key: "+key);
+					distance = (int) (((CycloneEvent) e).getDistance());//Meters
+					int range = distance / 1000;//Kilometers
+					range /= 1000;
 					count = countMap.get(range);
 					if (count == null) {
 						count = 0;

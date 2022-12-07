@@ -73,6 +73,54 @@ public class Time {
 		this.hashCode = Objects.hash(this.year,this.month,this.day,this.hour,this.minute,this.second);
 	}
 	
+	public Time(String value, Calendar calendar) {
+		if (value != null) {
+			switch (value) {
+			case "hour": {
+				hour = calendar.get(Calendar.HOUR_OF_DAY);
+				day = calendar.get(Calendar.DAY_OF_MONTH);
+				month = calendar.get(Calendar.MONTH) + 1;
+				year = calendar.get(Calendar.YEAR);
+				break;
+			}
+			case "day": {
+				day = calendar.get(Calendar.DAY_OF_MONTH);
+				month = calendar.get(Calendar.MONTH) + 1;
+				year = calendar.get(Calendar.YEAR);
+				break;
+			}
+			case "month": {
+				month = calendar.get(Calendar.MONTH) + 1;
+				year = calendar.get(Calendar.YEAR);
+				break;
+			}
+			case "year": {
+				year = calendar.get(Calendar.YEAR);
+				break;
+			}
+			}
+		}
+		
+	}
+	
+	public boolean lessThan(Time time) {
+//		logger.info(this+".lessThan("+time+")");
+		boolean flag = true;
+		if(this.hour != -1 && time.hour != -1) {
+			flag = this.hour <= time.hour;
+		}
+		if(flag && this.day != -1 && time.day != -1) {
+			flag = this.day <= time.day;
+		}
+		if(flag && this.month != -1 && time.month != -1) {
+			flag = this.month <= time.month;
+		}
+		if(flag && this.year != -1 && time.year != -1) {
+			flag = this.year <= time.year;
+		}
+		return flag;
+	}
+	
 	@Override
     public boolean equals(Object o) {
         if (this == o)

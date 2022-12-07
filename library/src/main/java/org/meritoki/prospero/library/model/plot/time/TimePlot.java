@@ -84,7 +84,12 @@ public class TimePlot extends Plot {
 		this.chroma.initRainbow();
 		this.scale = DEFAULT_SCALE;
 		this.setTitle(series.getTitle());
-		this.setData(series.getData());
+		try {
+			this.setData(series.getData());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.setXLabel("Time");
 		this.tableList.add(new Table("("+((String)series.map.get("region")).replace(",", "_").replace(":", ")-(")+")", Index.getTableModel(series.indexList)));
 	}

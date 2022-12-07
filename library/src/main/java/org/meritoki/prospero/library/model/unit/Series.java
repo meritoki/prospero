@@ -59,7 +59,7 @@ public class Series {
 		return title;
 	}
 	
-	public String getData() {
+	public String getData() throws Exception {
 		Query query = (Query)this.map.get("query");
 		String data = query.getName();
 		Integer cluster = (Integer)this.map.get("cluster");

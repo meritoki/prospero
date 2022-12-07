@@ -177,19 +177,19 @@ public class CycloneEvent extends Event {
 							dataMatrix[i][0] = "id";
 							dataMatrix[i][1] = "startCalendar";
 							dataMatrix[i][2] = "endCalendar";
-							dataMatrix[i][3] = "duration";
+							dataMatrix[i][3] = "duration (days)";
 							dataMatrix[i][4] = "family";
 							dataMatrix[i][5] = "classification";
-							dataMatrix[i][6] = "distance";
+							dataMatrix[i][6] = "distance (meters)";
 							dataMatrix[i][7] = "maxTimeLevelCount";
-							dataMatrix[i][8] = "totalLevelCount";
+							dataMatrix[i][8] = "totalPressureCount";
 							dataMatrix[i][9] = "lowermostLevel";
 							dataMatrix[i][10] = "uppermostLevel";
 							dataMatrix[i][11] = "genesisLowermostLevel";
 							dataMatrix[i][12] = "genesisUppermostLevel";
 							dataMatrix[i][13] = "lysisLowermostLevel";
 							dataMatrix[i][14] = "lysisUppermostLevel";
-							dataMatrix[i][15] = "instantaneousVelocity";
+							dataMatrix[i][15] = "speed (meters/second)";
 							dataMatrix[i][16] = "meanVorticity";
 						}
 						dataMatrix[i + 1][0] = event.id;
@@ -614,19 +614,19 @@ public class CycloneEvent extends Event {
 	 */
 	@JsonIgnore
 	public Coordinate getHalfTimeLowerMostCoordinate(Integer pressure) {
-		List<Coordinate> pointList = this.getHalfTimeCoordinateList();
-		int size = pointList.size();
+		List<Coordinate> coordinateList = this.getHalfTimeCoordinateList();
+		int size = coordinateList.size();
 		Coordinate coordinate = null;
 		if (size > 0) {
 			if (pressure != null) {
-				for (Coordinate c : pointList) {
+				for (Coordinate c : coordinateList) {
 					if (c.attribute.get("pressure").equals(pressure)) {
 						coordinate = c;
 						break;
 					}
 				}
 			} else {
-				coordinate = pointList.get(size - 1);
+				coordinate = coordinateList.get(size - 1);
 			}
 		}
 		return coordinate;
@@ -655,6 +655,10 @@ public class CycloneEvent extends Event {
 		return mean;
 	}
 
+	/**
+	 * Review
+	 * @return
+	 */
 	@JsonIgnore
 	public double getMeanVorticity() {
 		Map<String, List<Coordinate>> timePointMap = this.getTimeCoordinateMap();
@@ -682,10 +686,10 @@ public class CycloneEvent extends Event {
 		List<Integer> levelList = this.getPressureList();
 		List<Coordinate> pointListA;
 		List<Coordinate> pointListB;
-		List<Double> speedMeanList = new ArrayList<>();
+		List<Double> meanList = new ArrayList<>();
 		int count;
-		double speedSum;
-		double speedMean;
+		double dataSum;
+		double mean;
 		for (int i = 0; i < size; i++) {
 			if (i + 1 < size) {
 				keyA = keys.get(i);
@@ -693,7 +697,7 @@ public class CycloneEvent extends Event {
 				pointListA = timePointMap.get(keyA);
 				pointListB = timePointMap.get(keyB);
 				count = 0;
-				speedSum = 0;
+				dataSum = 0;
 				for (Integer level : levelList) {// iterate through all possible levels
 					for (Coordinate pointA : pointListA) {
 						for (Coordinate pointB : pointListB) {
@@ -704,21 +708,22 @@ public class CycloneEvent extends Event {
 								double distance = this.getDistance(pointA, pointB);
 								Duration duration = this.getDuration(pointA, pointB);
 								double speed = distance / duration.seconds;
-								speedSum += speed;
+//								logger.info("getMeanSpeed() speed="+speed);
+								dataSum += speed;
 							}
 						}
 					}
 				}
-				speedMean = (count > 0) ? speedSum / count : 0;
-				speedMeanList.add(speedMean);
+				mean = (count > 0) ? dataSum / count : 0;
+				meanList.add(mean);
 			}
 		}
 		double speedMeanSum = 0;
-		for (Double mean : speedMeanList) {
-			speedMeanSum += mean;
+		for (Double m : meanList) {
+			speedMeanSum += m;
 		}
 
-		return (speedMeanList.size() > 0) ? speedMeanSum / speedMeanList.size() : 0;
+		return (meanList.size() > 0) ? speedMeanSum / meanList.size() : 0;
 	}
 
 	@JsonIgnore
@@ -900,16 +905,16 @@ public class CycloneEvent extends Event {
 	}
 
 	@JsonIgnore
-	public List<Coordinate> getSpeedPointList() {
+	public List<Coordinate> getSpeedCoordinateList() {
 		Map<String, List<Coordinate>> timePointMap = this.getTimeCoordinateMap(this.coordinateList);
 		int size = timePointMap.size();
-		List<Coordinate> pointList = new ArrayList<>();
+		List<Coordinate> coordinateList = new ArrayList<>();
 		String keyA;
 		String keyB;
 		List<String> keys = new ArrayList<>(timePointMap.keySet());
 		List<Integer> levelList = this.getPressureList();
-		List<Coordinate> pointListA;
-		List<Coordinate> pointListB;
+		List<Coordinate> coordinateListA;
+		List<Coordinate> coordinateListB;
 		int count;
 		double speedSum;
 		double speedMean;
@@ -918,13 +923,13 @@ public class CycloneEvent extends Event {
 			if (i + 1 < size) {
 				keyA = keys.get(i);
 				keyB = keys.get(i + 1);
-				pointListA = timePointMap.get(keyA);
-				pointListB = timePointMap.get(keyB);
+				coordinateListA = timePointMap.get(keyA);
+				coordinateListB = timePointMap.get(keyB);
 				count = 0;
 				speedSum = 0;
 				for (Integer level : levelList) {// iterate through all possible levels
-					for (Coordinate pointA : pointListA) {
-						for (Coordinate pointB : pointListB) {
+					for (Coordinate pointA : coordinateListA) {
+						for (Coordinate pointB : coordinateListB) {
 							int levelA = (int) pointA.attribute.get("pressure");
 							int levelB = (int) pointB.attribute.get("pressure");
 							if (pointA.flag && pointB.flag && level == levelA && level == levelB) {
@@ -944,14 +949,14 @@ public class CycloneEvent extends Event {
 					Date dateB = dateFormat.parse(keyB);
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(dateA);
-					Coordinate pointA = this.getAverageCoordinate(pointListA, calendar);
+					Coordinate coordinateA = this.getAverageCoordinate(coordinateListA, calendar);
 					calendar.setTime(dateB);
-					Coordinate pointB = this.getAverageCoordinate(pointListB, calendar);
-					Coordinate point = this.getMeanCoordinate(pointA, pointB);
-					point.calendar = Calendar.getInstance();
-					point.calendar.setTime(dateA);
-					point.attribute.put("speed", speedMean);
-					pointList.add(point);
+					Coordinate coordinateB = this.getAverageCoordinate(coordinateListB, calendar);
+					Coordinate coordinate = this.getMeanCoordinate(coordinateA, coordinateB);
+					coordinate.calendar = Calendar.getInstance();
+					coordinate.calendar.setTime(dateA);
+					coordinate.attribute.put("speed", speedMean);
+					coordinateList.add(coordinate);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -959,7 +964,7 @@ public class CycloneEvent extends Event {
 
 			}
 		}
-		return pointList;
+		return coordinateList;
 	}
 
 	@JsonIgnore

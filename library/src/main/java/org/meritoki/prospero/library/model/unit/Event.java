@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -42,6 +44,9 @@ property = "type")
 @Type(value = CycloneEvent.class)
 })
 public class Event {
+	
+	@JsonIgnore
+	static Logger logger = LogManager.getLogger(Event.class.getName());
 	@JsonProperty
 	public String id;
 	@JsonProperty
@@ -126,7 +131,9 @@ public class Event {
 
 	@JsonIgnore
 	public Duration getDuration(Coordinate a, Coordinate b) {
-		return new Duration(a.calendar.getTime(), b.calendar.getTime());
+		Duration duration = new Duration(a.calendar.getTime(), b.calendar.getTime());
+//		logger.info("getDuration(...) duration="+duration);
+		return duration;
 	}
 
 	@JsonIgnore
@@ -145,7 +152,7 @@ public class Event {
 				} else {
 					coordinateList.add(coordinate);
 				}
-//				Collections.sort(coordinateList);
+				Collections.sort(coordinateList);
 				timeCoordinateMap.put(date, coordinateList);
 			}
 		}
@@ -217,7 +224,8 @@ public class Event {
 				* Math.cos(Math.toRadians(y.latitude)) * Math.sin(dLon / 2) * Math.sin(dLon / 2));
 		double c = (double) (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 		double d = R * c; // Distance in km
-		double m = d * 1000; // Distance in m
-		return m;
+		double meters = d * 1000; // Distance in m
+//		logger.info("getDistance("+x+","+y+") m="+meters);
+		return meters;
 	}
 }

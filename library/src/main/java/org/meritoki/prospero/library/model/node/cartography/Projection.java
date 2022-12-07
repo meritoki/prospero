@@ -305,7 +305,6 @@ public class Projection implements ProjectionInterface {
 	 * @return
 	 */
 	public Point getPoint(Point point) {
-
 		Point p = null;
 		double theta = Math.toRadians(this.azimuth);// Math.PI * this.azimuth/ 180.0;
 		double phi = Math.toRadians(this.elevation);// Math.PI * this.elevation/ 180.0;

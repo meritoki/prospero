@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
  */
 public class Coordinate implements Comparable<Coordinate> {
 
-	@JsonProperty
+	@JsonIgnore
 	public Calendar calendar;
 	@JsonProperty
 	public double latitude;

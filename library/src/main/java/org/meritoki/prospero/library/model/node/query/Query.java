@@ -119,7 +119,7 @@ public class Query {
 	}
 	
 	@JsonIgnore
-	public String getName() {
+	public String getName() throws Exception {
 		String name = this.map.get("name");
 		if(name == null) {
 			name = this.generateName();
@@ -128,7 +128,7 @@ public class Query {
 	}
 	
 	@JsonIgnore
-	public String generateName() {
+	public String generateName() throws Exception{
 		StringBuilder name = new StringBuilder();
 		if(this.getVariable() != null) {
 			name.append("var");
@@ -145,7 +145,7 @@ public class Query {
 		if(this.getTime() != null) {
 			name.append("time");
 			name.append("-");
-			name.append(this.getTime().replace(",", "_"));
+			name.append(this.getTime().replace(",", "_").replace("/","_"));
 			name.append("-");
 		}
 		
@@ -155,7 +155,17 @@ public class Query {
 			name.append(this.getGroup().replace(",", "_"));
 			name.append("-");
 		}
-		
+		//Dimension
+		name.append("dimension");
+		name.append("-");
+		name.append(String.valueOf(this.getDimension()));
+		name.append("-");
+		if(this.getRegion() != null) {
+			name.append("region");
+			name.append("-");
+			name.append("("+this.getRegion().replace(",", "_").replace(":", ")-(").replace(";", ")-(")+")");
+			name.append("-");
+		}
 		if(this.getFamily() != null) {
 			name.append("family");
 			name.append("-");
@@ -174,12 +184,8 @@ public class Query {
 			name.append(this.getPressure().replace(",", "_"));
 			name.append("-");
 		}
-		if(this.getRegion() != null) {
-			name.append("region");
-			name.append("-");
-			name.append("("+this.getRegion().replace(",", "_").replace(":", ")-(").replace(";", ")-(")+")");
-		}
-		return name.toString();
+		name.deleteCharAt(name.length()-1);  
+		return name.toString().toLowerCase();
 	}
 	
 	@JsonIgnore

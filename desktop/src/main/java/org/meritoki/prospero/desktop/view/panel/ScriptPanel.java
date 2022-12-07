@@ -161,15 +161,15 @@ public class ScriptPanel extends javax.swing.JPanel {
 												mainFrame.saveQuery(query);
 												MemoryController.log();
 												TimeController.stop();
-//												model.removeCameras();
-//												model.addCamera(new Camera(terra));
+												model.removeCameras();
+												model.addCamera(new Camera(terra));
 												consoleTextArea.append("query finished...\n");
 											} else {
 												consoleTextArea.append("script interrupt handled...\n");
 		
 												break;
 											}
-//											node.stop();
+											node.stop();
 										} catch (Exception qe) {
 											consoleTextArea.append(qe.getMessage() + "\n");
 											node.stop();

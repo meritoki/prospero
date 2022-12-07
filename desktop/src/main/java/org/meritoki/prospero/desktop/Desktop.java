@@ -31,7 +31,7 @@ import org.meritoki.prospero.desktop.view.window.SplashWindow;
 public class Desktop {
 
 	static Logger logger = LogManager.getLogger(Desktop.class.getName());
-	public static String versionNumber = "0.14.202211";
+	public static String versionNumber = "0.15.202211";
 	public static String vendor = "Meritoki";
 	public static String about = "Version " + versionNumber + " Copyright " + vendor + " 2016-2022";
 	public static Option versionOption = new Option("v", "version", false, "Print version information");
@@ -85,6 +85,7 @@ public class Desktop {
 			final MainFrame mainFrame = new MainFrame();
 			final SplashWindow splashWindow = new SplashWindow("/Splash.png", mainFrame, 2000);
 			final Model model = new Model(mainFrame);
+			model.version = versionNumber;
 			model.setCache(cacheFlag);
 			model.setBasePath(dataPath);
 			model.start();

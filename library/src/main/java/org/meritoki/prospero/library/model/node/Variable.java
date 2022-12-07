@@ -189,7 +189,7 @@ public class Variable extends Node {
 	}
 
 	public void complete() {
-		logger.info("complete()");
+		logger.info(this+".complete()");
 	}
 
 	public boolean isComplete() {

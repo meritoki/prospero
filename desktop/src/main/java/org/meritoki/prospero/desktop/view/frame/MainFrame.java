@@ -33,9 +33,9 @@ import org.meritoki.prospero.desktop.view.dialog.MainDialog;
 import org.meritoki.prospero.desktop.view.dialog.OpenDialog;
 import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
 import org.meritoki.prospero.library.model.node.Camera;
-import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
+import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Script;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
@@ -68,6 +68,9 @@ public class MainFrame extends javax.swing.JFrame {
 
 	public void setModel(Model model) {
 		this.model = model;
+		if (this.model.version != null) {
+			this.setTitle("Prospero Desktop Application v" + this.model.version);
+		}
 		this.mainDialog.setModel(this.model);
 		this.mainDialog.setVisible(true);
 		this.plotPanel.setModel(this.model);
@@ -102,11 +105,11 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 
 	public void saveQuery(Query query) throws Exception {
-//		logger.info("savePanels("+query+")");
+		logger.info("saveQuery(" + query + ")");
 		Date dateTime = Calendar.getInstance().getTime();
 		String date = new SimpleDateFormat("yyyyMMdd").format(dateTime);
-//    	String time = new SimpleDateFormat("HHmm").format(dateTime);
-		String name = query.getName();
+		String time = new SimpleDateFormat("HHmm").format(dateTime);
+		String name = date + "-" + time + "-" + query.getName();
 		String uuid = UUID.randomUUID().toString();
 		String path = "output" + File.separatorChar + date + File.separatorChar + name;
 		File directory = new File(path);
@@ -117,25 +120,30 @@ public class MainFrame extends javax.swing.JFrame {
 		script.queryList.add(query);
 		name += "-" + uuid;
 		NodeController.saveJson(path, name + ".json", script);
-		this.saveCameras(path, name, uuid);
-		this.savePlots(path, name, uuid);
+		this.saveCameras(path, date + "-" + time, query.getName());
+		this.savePlots(path, date + "-" + time, uuid);
+		this.saveTables(path, name, uuid);
 	}
 
 	/**
 	 * Panel Paint Has Already Been Called
 	 * 
 	 * @param path
-	 * @param name
+	 * @param dateTime
 	 */
-	public void saveCameras(String path, String name, String uuid) {
-		logger.info("saveCameras("+path+", "+name+", "+uuid+")");
+	public void saveCameras(String path, String dateTime, String name) {//, String uuid) {
+		logger.info("saveCameras(" + path + ", " + dateTime + ", " + ", " + name + ")");
 		for (Camera camera : this.model.cameraList) {
 			if (camera != null) {
-				Variable node = camera.getNode();
+				Object object = camera.configuration.get("cluster");
+				String c = "";
+				if (object instanceof Cluster) {
+					Cluster cluster = (Cluster) object;
+					c += "-cluster-" + cluster.id;
+				}
 				Image image = camera.getImage();
 				if (image != null) {
-					String fileName;
-					fileName = "grid-" + node.data + "-"+UUID.randomUUID().toString()+"-" + uuid + ".png";
+					String fileName = dateTime + "-grid" + c + "-"+ name + ".png";
 					try {
 						NodeController.savePng(path, fileName, NodeController.toBufferedImage(image));
 					} catch (Exception e) {
@@ -147,24 +155,38 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 
 	public void savePlots(String path, String name, String uuid) throws Exception {
-		logger.info("savePlots("+path+", "+name+", "+uuid+")");
-		Excel excel = new Excel();
+		logger.info("savePlots(" + path + ", " + name + ", " + uuid + ")");
+//		Excel excel = new Excel();
 		for (Plot plot : this.model.getPlotList()) {
 			if (plot != null) {
-				for (Table table : plot.tableList) {
-					// puts everything in one excel
-					excel.sheetMap.put(table.name, Table.getTableData(table.tableModel));
-				}
+//				for (Table table : plot.tableList) {
+//					// puts everything in one excel
+//					excel.sheetMap.put(table.name, Table.getTableData(table.tableModel));
+//				}
 				Image image = plot.getImage();
 				if (image != null) {
 					String fileName;
-					fileName = "plot-" + plot.data + "-" + uuid + ".png";
+					fileName = name + "-plot-" + plot.data + "-" + uuid + ".png";
 					try {
 						NodeController.savePng(path, fileName, NodeController.toBufferedImage(image));
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				}
+			}
+		}
+
+	}
+
+	public void saveTables(String path, String name, String uuid) throws Exception {
+		logger.info("saveTables(" + path + ", " + name + ", " + uuid + ")");
+		Excel excel = new Excel();
+		for (Plot plot : this.model.getPlotList()) {
+			if (plot != null) {
+				for (Table table : plot.tableList) {
+					// puts everything in one excel
+					excel.sheetMap.put(table.name, Table.getTableData(table.tableModel));
 				}
 			}
 		}

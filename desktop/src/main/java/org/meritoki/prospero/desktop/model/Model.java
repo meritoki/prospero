@@ -32,6 +32,7 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 	public System system = new System();
 	public Resource resource = new Resource();
 	public MainFrame mainFrame;
+	public String version;
 //	public Properties properties = NodeController.openPropertiesXML(new File("prospero.xml"));
 	
 	public Model(MainFrame mainFrame) {

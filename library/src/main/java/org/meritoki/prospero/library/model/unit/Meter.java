@@ -23,9 +23,9 @@ import java.text.NumberFormat;
 
 import org.meritoki.prospero.library.model.node.color.Chroma;
 
-
 /**
  * Assume Meter Implementation Works, For Now...
+ * 
  * @author jorodriguez
  *
  */
@@ -73,7 +73,7 @@ public class Meter {
 		this.unit = unit;
 		this.increment = increment;
 	}
-	
+
 	public void setChroma(Chroma chroma) {
 		this.chroma = chroma;
 	}
@@ -114,125 +114,123 @@ public class Meter {
 	}
 
 	public void paint(Graphics graphics) {
-			graphics.setFont(new Font(this.fontName, this.fontStyle, this.fontSize));
-			int meterWidth = this.width;
-			int meterHeight = this.height;
-			double difference = Math.abs(this.max - this.min);//(this.max > this.min)?(this.max - this.min):(this.min-this.max);
-			int divisor = (this.increment > 0) ? (int) ((difference) / this.increment) : 0;
-			int interval = (divisor > 0) ? meterHeight / divisor : meterHeight / 10;
-			int startX = this.startX + (int) (64 * this.scale);
-			int startY = -(int) ((meterHeight / 2) * this.scale);
-			int maxPower = this.getPower(this.max);
-			int minPower = this.getPower(this.min);
-			double multiplier = 1;
-			double max = 0;
-			double min = 0;
-			NumberFormat formatter = new DecimalFormat("#0.000");
-			int count = meterHeight / interval;
-			double value = 0;
-	//		if (this.max > 0 || 0 > this.max) {
-	//			System.out.println("this.max="+max);
-				if (maxPower < 0) {//
-					multiplier = Math.pow(10, Math.abs(maxPower));
-					max = this.max * multiplier;
-	//				min = this.min * multiplier;
-				} else {
-					max = this.max;
-	//				min = this.min;
-				}
-				
-				if (minPower < 0) {//
-					String powerString = "e" + minPower;
-					int powerWidth = graphics.getFontMetrics().stringWidth(powerString);
-					graphics.setColor(Color.black);
-					graphics.drawString(powerString, startX + (meterWidth / 2) - (powerWidth / 2), startY - 16);
-					multiplier = Math.pow(10, Math.abs(minPower));
-	//				max = this.max * multiplier;
-					min = this.min * multiplier;
-				} else {
-	//				max = this.max;
-					min = this.min;
-				}
-	
-	
-				for (int i = meterHeight; i >= 0; i--) {
-					graphics.setColor(this.chroma.getColor(i * (difference / meterHeight), 0, difference));//0, max
-					graphics.drawLine(startX, startY + (int) ((meterHeight - i)), startX + (int) (meterWidth),
-							startY + (int) (meterHeight - i));
-					if (i % interval == 0) {
-						graphics.setColor(Color.black);
-						graphics.drawLine(startX + meterWidth, startY + (int) (meterHeight - i), startX + meterWidth + 4,
-								startY + (int) (meterHeight - i));
-						value = (divisor > 0) ? ((max - min) / divisor) * count : ((max - min) / 10) * count;
-						value = (value == 0) ? Math.abs(value) : value;
-						value += min;// trying to apply min
-						graphics.drawString(formatter.format(value), startX + meterWidth + 12,
-								startY + (int) (meterHeight - i) + 4);
-						count--;
-					}
-				}
-	//		} else {
-	//			if (this.min > 0 || 0 > this.min) {
-	////				System.out.println("this.min="+min);
-	//				if (minPower < 0) {
-	//					multiplier = Math.pow(10, Math.abs(minPower));
-	//					min = this.min * multiplier;
-	//				} else {
-	//					min = this.min;
-	//				}
-	//				if (minPower < 0) {
-	//					String powerString = "e" + minPower;
-	//					int powerWidth = graphics.getFontMetrics().stringWidth(powerString);
-	//					graphics.drawString(powerString, startX + (meterWidth / 2) - (powerWidth / 2), startY - 16);
-	//				}
-	//			}
-	//			graphics.drawLine(startX + meterWidth, startY + meterHeight, startX + meterWidth + 4, startY + meterHeight);
-	//			graphics.drawString(formatter.format(min), startX + meterWidth + 5, startY + meterHeight + 4);
-	//		}
-			graphics.setColor(Color.black);
-			graphics.drawRect(startX, startY, (int) (meterWidth * this.scale), (int) (meterHeight * this.scale));
-			if (this.max != 0 && maxPower < 0) {
-				String powerString = "e" + maxPower;
-				int powerWidth = graphics.getFontMetrics().stringWidth(powerString);
-				graphics.drawString(powerString, startX + (meterWidth / 2) - (powerWidth / 2), startY - 16);
-			}
-	
-			if (this.unit != null) {
-				int unitWidth = graphics.getFontMetrics().stringWidth(this.unit);
-				graphics.drawString(this.unit, startX + (meterWidth / 2) - (unitWidth / 2), startY + meterHeight + 16);
+		graphics.setFont(new Font(this.fontName, this.fontStyle, this.fontSize));
+		int meterWidth = this.width;
+		int meterHeight = this.height;
+		double difference = Math.abs(this.max - this.min);
+		int divisor = (this.increment > 0) ? (int) ((difference) / this.increment) : 0;
+		int interval = (divisor > 0) ? meterHeight / divisor : meterHeight / 10;
+		int startX = this.startX + (int) (64 * this.scale);
+		int startY = -(int) ((meterHeight / 2) * this.scale);
+		double max = this.max;
+		double min = this.min;
+		DecimalFormat formatter = new DecimalFormat("##.##E0");
+		int count = meterHeight / interval;
+		double value = 0;
+		for (int i = meterHeight; i >= 0; i--) {
+			graphics.setColor(this.chroma.getColor(i * (difference / meterHeight), 0, difference));// 0, max
+			graphics.drawLine(startX, startY + (int) ((meterHeight - i)), startX + (int) (meterWidth),
+					startY + (int) (meterHeight - i));
+			if (i % interval == 0) {
+				graphics.setColor(Color.black);
+				graphics.drawLine(startX + meterWidth, startY + (int) (meterHeight - i), startX + meterWidth + 4,
+						startY + (int) (meterHeight - i));
+				value = (divisor > 0) ? ((max - min) / divisor) * count : ((max - min) / 10) * count;
+				value = (value == 0) ? Math.abs(value) : value;// Fix Negative Zeros
+				value += min;// trying to apply min
+				String s = formatter.format(value);
+				s = s.replace("E0", "");
+				graphics.drawString(s, startX + meterWidth + 12, startY + (int) (meterHeight - i) + 4);
+				count--;
 			}
 		}
-	
-//	public Color getColor(double factor, double value, double size) {
-//		factor = 1;
-//		double power;
-//		if (inverted) {
-//			power = (size - value) * factor / size;
-//		} else {
-//			power = value * factor / size; // 0.9
-//		}
-//		double H = 0.2;// * 0.4; // Hue (note 0.4 = Green, see huge chart below)
-//		double S = power; // Saturation
-//		double B = 1-power; // Brightness
-//		Color color = Color.getHSBColor((float) H, (float) S, (float) B);
-//		return color;
-//	}
+		graphics.setColor(Color.black);
+		graphics.drawRect(startX, startY, (int) (meterWidth * this.scale), (int) (meterHeight * this.scale));
+		if (this.unit != null) {
+			int unitWidth = graphics.getFontMetrics().stringWidth(this.unit);
+			graphics.drawString(this.unit, startX + (meterWidth / 2) - (unitWidth / 2), startY + meterHeight + 16);
+		}
+	}
 
-//	public Color getColor(double factor, double value, double size) {
-//		double power;
-//		if (inverted) {
-//			power = (size - value) * factor / size;
-//		} else {
-//			power = value * factor / size; // 0.9
-//		}
-//		double H = power;// * 0.4; // Hue (note 0.4 = Green, see huge chart below)
-//		double S = 0.9; // Saturation
-//		double B = 0.9; // Brightness
-//		Color color = Color.getHSBColor((float) H, (float) S, (float) B);
-//		return color;
-//	}
 }
+//int maxPower = this.getPower(this.max);
+//int minPower = this.getPower(this.min);
+//double multiplier = 1;
+//if (maxPower < 0) {//
+//multiplier = Math.pow(10, Math.abs(maxPower));
+//max = this.max * multiplier;
+//// min = this.min * multiplier;
+//} else {
+//max = this.max;
+//// min = this.min;
+//}
+//if (minPower < 0) {//
+////		String powerString = "e" + minPower;
+////		int powerWidth = graphics.getFontMetrics().stringWidth(powerString);
+////		graphics.setColor(Color.black);
+////		graphics.drawString(powerString, startX + (meterWidth / 2) - (powerWidth / 2), startY - 16);
+//multiplier = Math.pow(10, Math.abs(minPower));
+//// max = this.max * multiplier;
+//min = this.min * multiplier;
+//} else {
+//// max = this.max;
+//min = this.min;
+//}
+//(this.max > this.min)?(this.max -
+// this.min):(this.min-this.max);
+//		} else {
+//			if (this.min > 0 || 0 > this.min) {
+////				System.out.println("this.min="+min);
+//				if (minPower < 0) {
+//					multiplier = Math.pow(10, Math.abs(minPower));
+//					min = this.min * multiplier;
+//				} else {
+//					min = this.min;
+//				}
+//				if (minPower < 0) {
+//					String powerString = "e" + minPower;
+//					int powerWidth = graphics.getFontMetrics().stringWidth(powerString);
+//					graphics.drawString(powerString, startX + (meterWidth / 2) - (powerWidth / 2), startY - 16);
+//				}
+//			}
+//			graphics.drawLine(startX + meterWidth, startY + meterHeight, startX + meterWidth + 4, startY + meterHeight);
+//			graphics.drawString(formatter.format(min), startX + meterWidth + 5, startY + meterHeight + 4);
+//		}
+//if (this.max != 0 && maxPower < 0) {
+//String powerString = "e" + maxPower;
+//int powerWidth = graphics.getFontMetrics().stringWidth(powerString);
+//graphics.drawString(powerString, startX + (meterWidth / 2) - (powerWidth / 2), startY - 16);
+//}
+//		if (this.max > 0 || 0 > this.max) {
+//			System.out.println("this.max="+max);
+//public Color getColor(double factor, double value, double size) {
+//factor = 1;
+//double power;
+//if (inverted) {
+//	power = (size - value) * factor / size;
+//} else {
+//	power = value * factor / size; // 0.9
+//}
+//double H = 0.2;// * 0.4; // Hue (note 0.4 = Green, see huge chart below)
+//double S = power; // Saturation
+//double B = 1-power; // Brightness
+//Color color = Color.getHSBColor((float) H, (float) S, (float) B);
+//return color;
+//}
 
+//public Color getColor(double factor, double value, double size) {
+//double power;
+//if (inverted) {
+//	power = (size - value) * factor / size;
+//} else {
+//	power = value * factor / size; // 0.9
+//}
+//double H = power;// * 0.4; // Hue (note 0.4 = Green, see huge chart below)
+//double S = 0.9; // Saturation
+//double B = 0.9; // Brightness
+//Color color = Color.getHSBColor((float) H, (float) S, (float) B);
+//return color;
+//}
 //if (maxPower < 0) {
 //multiplier = Math.pow(10, Math.abs(maxPower));
 //max = this.max * multiplier;

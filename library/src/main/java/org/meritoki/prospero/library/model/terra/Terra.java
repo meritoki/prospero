@@ -67,22 +67,21 @@ public class Terra extends Grid {
 		}
 	}
 	
-//	@Override
-//	public void setSelectable(boolean selectable) {
-//		super.setSelectable(selectable);
-//		List<Variable> nodeList = this.getChildren();
-//		for (Variable n : nodeList) {
-//			if (n instanceof Terra) {
-//				((Terra) n).setSelectable(selectable);
-//			}
-//		}
-//	}
-	
 	@Override
 	public void paint(Graphics graphics) throws Exception {	
 		super.paint(graphics);
 	}
 }
+//@Override
+//public void setSelectable(boolean selectable) {
+//	super.setSelectable(selectable);
+//	List<Variable> nodeList = this.getChildren();
+//	for (Variable n : nodeList) {
+//		if (n instanceof Terra) {
+//			((Terra) n).setSelectable(selectable);
+//		}
+//	}
+//}
 //@Override
 //public Projection getProjection() {
 //	Projection projection = super.projection;

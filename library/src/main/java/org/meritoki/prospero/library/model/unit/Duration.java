@@ -15,21 +15,39 @@
  */
 package org.meritoki.prospero.library.model.unit;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 public class Duration {
+	@JsonProperty
 	public long hours;
+	@JsonProperty
 	public long minutes;
+	@JsonProperty
 	public long seconds;
+	@JsonProperty
 	public double days;
+	@JsonIgnore
 	public long startDays = -1;
+	@JsonIgnore
 	public long startHours = -1;
+	@JsonIgnore
 	public long startMinutes = -1;
+	@JsonIgnore
 	public long startSeconds = -1;
+	@JsonIgnore
 	public long endDays = -1;
+	@JsonIgnore
 	public long endHours = -1;
+	@JsonIgnore
 	public long endMinutes = -1;
+	@JsonIgnore
 	public long endSeconds = -1;
 
 	public Duration() {
@@ -47,6 +65,7 @@ public class Duration {
 		this.days = ((diff) / (1000.0 * 60.0 * 60.0 * 24.0));
 	}
 
+	@JsonIgnore
 	public boolean contains(Duration duration) {
 		boolean flag = false;
 		if(this.startDays > -1 && this.endDays > -1 && this.startDays < duration.days && duration.days < this.endDays) {
@@ -57,7 +76,20 @@ public class Duration {
 		return flag;
 	}
 	
+//	public String toString() {
+//		return this.days+"";
+//	}
+	
+	@JsonIgnore
+	@Override
 	public String toString() {
-		return this.days+"";
+		String string = "";
+		ObjectWriter ow = new ObjectMapper().writer();//.withDefaultPrettyPrinter();
+		try {
+			string = ow.writeValueAsString(this);
+		} catch (IOException ex) {
+			System.err.println("IOException " + ex.getMessage());
+		}
+		return string;
 	}
 }
