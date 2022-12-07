@@ -493,6 +493,7 @@ public class Grid extends Spheroid {
 			for (int j = 0; j < coordinateMatrix[i].length; j += this.dimension) {
 				meanSum = 0;// Reset Mean Sum to Zero
 				// We Iterate Over All 12 Months for a Tile
+				//Each Month Dimension Contains 1 or More Years of Data
 				for (int m = 0; m < 12; m++) {
 					// Reset Count and Duration of Zero
 					count = 0;
