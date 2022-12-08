@@ -76,7 +76,6 @@ public class Lifetime extends Cyclone {
 								int z = c.getMonth() - 1;
 								coordinateMatrix[x][y][z]++;
 								durationMatrix[x][y][z] += e.getDuration().days;
-
 								if (!timeList.contains(time)) {
 									timeList.add(time);
 								}

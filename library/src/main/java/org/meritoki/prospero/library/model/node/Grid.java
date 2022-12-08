@@ -272,6 +272,13 @@ public class Grid extends Spheroid {
 			this.scheme = this.query.getScheme();
 			this.seriesMap = new TreeMap<>();
 			this.timeList = new ArrayList<>();
+//			if("month".equals(group)) {
+//				
+//			} else if("year".equals(group)) {
+//				this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][1];
+//				this.dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][1];
+//			}
+			
 		} catch (Exception e) {
 			logger.error("init() exception=" + e.getMessage());
 			e.printStackTrace();
@@ -404,7 +411,6 @@ public class Grid extends Spheroid {
 	 */
 	public List<Tile> getTileList(int[][][] coordinateMatrix) {
 		List<Tile> tileList = new ArrayList<>();
-		int yearCount = this.getYearCount();
 		int monthCount = this.getMonthCount();
 		Tile tile;
 		int count;
@@ -435,18 +441,20 @@ public class Grid extends Spheroid {
 							}
 						}
 					}
-					weight = this.getArea(i - this.latitude, j - this.longitude / 2, dimension); // this.getArea(dimension);
+					weight = this.getArea(i - this.latitude, j - this.longitude / 2, dimension);
 					weightedData = (weight > 0) ? data / weight : data;
 					count = this.monthArray[m];
 					quotient = (count > 0) ? weightedData / count : weightedData;
 					quotientSum += quotient;
 				}
 				value = quotientSum;
-				if (this.monthFlag) {
-					value /= (monthCount > 0) ? monthCount : 1;
-				} else if (this.yearFlag) {
-					value /= yearCount;
-				}
+				//Correct Solution Applied 2022/12/07
+				value /= (monthCount > 0) ? monthCount : 1;
+//				if (this.monthFlag) {
+//					value /= (monthCount > 0) ? monthCount : 1;
+//				} else if (this.yearFlag) {
+//					value /= yearCount;
+//				}
 				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
 						dimension, value);
 
@@ -477,7 +485,6 @@ public class Grid extends Spheroid {
 	 */
 	public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] dataMatrix) {
 		List<Tile> tileList = new ArrayList<>();
-		int yearCount = this.getYearCount();
 		int monthCount = this.getMonthCount();
 		Tile tile;
 		int count;
@@ -519,14 +526,14 @@ public class Grid extends Spheroid {
 					// a Specific Month
 					// No Matter How Many Unique Years and Months are queried, i.e. 1979/01-2019/12
 					// Mean officially represents the Average for that Month
-					dataMean = (count > 0) ? data / count : 0;
+					dataMean = (count > 0) ? data / count : data;
 					mean = dataMean;
 					// Sum every Mean, One for Each Month
 					// Mean Sum can contain up to 12 Unique Month Means
 					// In Long Queries with Many Unique Years and Data for All 12 Months,
-					// The Mean is already the Average for All Possible Query Months, i.e. DJF or
-					// January
+					// The Mean is already the Average for All Possible Years for the Query Months, i.e. DJF or January
 					meanSum += mean;
+					
 				}
 				// Mean Sum is typically the Sum of All 12 Monthly Means for a Given Tile
 				// In Some cases the Mean Sum will be the Sum of Less Unique Months, i.e. a
@@ -535,16 +542,14 @@ public class Grid extends Spheroid {
 				// for One Unique Year
 				// If we have more than One Unique Year, i.e. 2001,2002,2003
 				value = meanSum;// Value is Assigned the Mean Sum
-				if (this.monthFlag) {// If We Want a Monthly Average, We Divide by Unique Months
-					value /= (monthCount > 0) ? monthCount : 1;
-					// value /= monthCount;// Define 0 < monthCount <= 12, commonly has a Value of 3
-					// or 1 as well, season
-					// and unique month
-				} else if (this.yearFlag) {// If We Want a Yearly Average, we Divide by Unique Years
+				//Correct Solution Applied 2022/12/07
+				value /= (monthCount > 0) ? monthCount : 1;
+//				if (this.monthFlag) {// If We Want a Monthly Average, We Divide by Unique Months
+//					// value /= monthCount;// Define 0 < monthCount <= 12, commonly has a Value of 3
+//				} else if (this.yearFlag) {// If We Want a Yearly Average, we Divide by Unique Years
 					// We do this because even though we have the Sum of Averages for Each Month
-					value /= yearCount;// Define 0 < yearCount <= N, where N is a Positive
-					// Integer
-					// value /= monthCount;
+					// Deprecated 2022/12/07
+//					value /= yearCount;// Define 0 < yearCount <= N, where N is a Positive
 					// Deprecated
 //					value /= ((double)monthTotal/(double)yearCount);
 					// Defect Corrected 2022/10/14
@@ -552,8 +557,7 @@ public class Grid extends Spheroid {
 					// This produced incorrect Mean Values for the YEARLY Mean of Tiles
 					// The fix applied coincides with the addition of Band Support
 					// Detected because Yearly Averages for Lifetime seemed too small/low
-				}
-				// With the Value Corrected to Provide
+//				}
 				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
 						this.dimension, value);
 				if (this.regionList != null) {

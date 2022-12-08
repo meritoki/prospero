@@ -144,14 +144,14 @@ public class Vorticity extends Cyclone {
 						vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude
 							* resolution)][12];
 					for (Event e : eventList) {
-						for (Coordinate p : e.coordinateList) {
-							if (p.flag && ((Integer) p.attribute.get("pressure")).equals(level)) {
-								int x = (int) ((p.latitude + this.latitude) * this.resolution);
-								int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = p.getMonth() - 1;
+						for (Coordinate c : e.coordinateList) {
+							if (c.flag && ((Integer) c.attribute.get("pressure")).equals(level)) {
+								int x = (int) ((c.latitude + this.latitude) * this.resolution);
+								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int z = c.getMonth() - 1;
 								coordinateMatrix[x][y][z]++;
-								vorticityMatrix[x][y][z] += (float) p.attribute.get("vorticity");
-								Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
+								vorticityMatrix[x][y][z] += (float) c.attribute.get("vorticity");
+								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 								if (!timeList.contains(time)) {
 									timeList.add(time);
 								}
@@ -164,14 +164,14 @@ public class Vorticity extends Cyclone {
 			} else {
 				for (Event e : eventList) {
 					if (e.flag) {
-						for (Coordinate p : e.coordinateList) {
-							if (p.flag) {
-								int x = (int) ((p.latitude + this.latitude) * this.resolution);
-								int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = p.getMonth() - 1;
+						for (Coordinate c : e.coordinateList) {
+							if (c.flag) {
+								int x = (int) ((c.latitude + this.latitude) * this.resolution);
+								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int z = c.getMonth() - 1;
 								coordinateMatrix[x][y][z]++;
-								vorticityMatrix[x][y][z] += (float) p.attribute.get("vorticity");
-								Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
+								vorticityMatrix[x][y][z] += (float) c.attribute.get("vorticity");
+								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 								if (!timeList.contains(time)) {
 									timeList.add(time);
 								}
