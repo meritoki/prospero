@@ -278,7 +278,7 @@ public class Grid extends Spheroid {
 //				this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][1];
 //				this.dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][1];
 //			}
-			
+
 		} catch (Exception e) {
 			logger.error("init() exception=" + e.getMessage());
 			e.printStackTrace();
@@ -346,10 +346,35 @@ public class Grid extends Spheroid {
 	}
 
 	public void initTileMinMax() {
-		double min = Double.POSITIVE_INFINITY;
-		double max = Double.NEGATIVE_INFINITY;
-		if (this.tileList != null) {
-			java.util.Iterator<Tile> iterator = this.tileList.iterator();
+		this.initTileMinMax(this.tileList, true);
+//		double min = Double.POSITIVE_INFINITY;
+//		double max = Double.NEGATIVE_INFINITY;
+//		if (this.tileList != null) {
+//			java.util.Iterator<Tile> iterator = this.tileList.iterator();
+//			while (iterator.hasNext()) {
+//				Tile t = new Tile(iterator.next());
+//				if (t.value > max) {
+//					max = t.value;
+//				}
+//				if (t.value < min) {
+//					min = t.value;
+//				}
+//			}
+//		}
+//		this.max = max;
+//		this.min = min;
+//		logger.debug("initTileMinMax() this.min=" + this.min + " this.max=" + this.max);
+	}
+
+	public void initTileMinMax(List<Tile> tileList, boolean reset) {
+		double min = this.min;
+		double max = this.max;
+		if (reset) {
+			min = Double.POSITIVE_INFINITY;
+			max = Double.NEGATIVE_INFINITY;
+		}
+		if (tileList != null) {
+			java.util.Iterator<Tile> iterator = tileList.iterator();
 			while (iterator.hasNext()) {
 				Tile t = new Tile(iterator.next());
 				if (t.value > max) {
@@ -366,10 +391,18 @@ public class Grid extends Spheroid {
 	}
 
 	public void initBandMinMax() {
-		double min = Double.POSITIVE_INFINITY;
-		double max = Double.NEGATIVE_INFINITY;
-		if (this.bandList != null & this.bandList.size() > 0) {
-			java.util.Iterator<Band> iterator = this.bandList.iterator();
+		this.initBandMinMax(this.bandList,true);
+	}
+	
+	public void initBandMinMax(List<Band> bandList, boolean reset) {
+		double min = this.min;
+		double max = this.max;
+		if(reset) {
+			min = Double.POSITIVE_INFINITY;
+			max = Double.NEGATIVE_INFINITY;
+		}
+		if (bandList != null & bandList.size() > 0) {
+			java.util.Iterator<Band> iterator = bandList.iterator();
 			while (iterator.hasNext()) {
 				Band t = iterator.next();
 				if (t.value > max) {
@@ -448,7 +481,7 @@ public class Grid extends Spheroid {
 					quotientSum += quotient;
 				}
 				value = quotientSum;
-				//Correct Solution Applied 2022/12/07
+				// Correct Solution Applied 2022/12/07
 				value /= (monthCount > 0) ? monthCount : 1;
 //				if (this.monthFlag) {
 //					value /= (monthCount > 0) ? monthCount : 1;
@@ -500,7 +533,7 @@ public class Grid extends Spheroid {
 			for (int j = 0; j < coordinateMatrix[i].length; j += this.dimension) {
 				meanSum = 0;// Reset Mean Sum to Zero
 				// We Iterate Over All 12 Months for a Tile
-				//Each Month Dimension Contains 1 or More Years of Data
+				// Each Month Dimension Contains 1 or More Years of Data
 				for (int m = 0; m < 12; m++) {
 					// Reset Count and Duration of Zero
 					count = 0;
@@ -531,9 +564,10 @@ public class Grid extends Spheroid {
 					// Sum every Mean, One for Each Month
 					// Mean Sum can contain up to 12 Unique Month Means
 					// In Long Queries with Many Unique Years and Data for All 12 Months,
-					// The Mean is already the Average for All Possible Years for the Query Months, i.e. DJF or January
+					// The Mean is already the Average for All Possible Years for the Query Months,
+					// i.e. DJF or January
 					meanSum += mean;
-					
+
 				}
 				// Mean Sum is typically the Sum of All 12 Monthly Means for a Given Tile
 				// In Some cases the Mean Sum will be the Sum of Less Unique Months, i.e. a
@@ -542,21 +576,21 @@ public class Grid extends Spheroid {
 				// for One Unique Year
 				// If we have more than One Unique Year, i.e. 2001,2002,2003
 				value = meanSum;// Value is Assigned the Mean Sum
-				//Correct Solution Applied 2022/12/07
+				// Correct Solution Applied 2022/12/07
 				value /= (monthCount > 0) ? monthCount : 1;
 //				if (this.monthFlag) {// If We Want a Monthly Average, We Divide by Unique Months
 //					// value /= monthCount;// Define 0 < monthCount <= 12, commonly has a Value of 3
 //				} else if (this.yearFlag) {// If We Want a Yearly Average, we Divide by Unique Years
-					// We do this because even though we have the Sum of Averages for Each Month
-					// Deprecated 2022/12/07
+				// We do this because even though we have the Sum of Averages for Each Month
+				// Deprecated 2022/12/07
 //					value /= yearCount;// Define 0 < yearCount <= N, where N is a Positive
-					// Deprecated
+				// Deprecated
 //					value /= ((double)monthTotal/(double)yearCount);
-					// Defect Corrected 2022/10/14
-					// I thought I had to divide the Mean Sum by Unique Months & then Unique Years
-					// This produced incorrect Mean Values for the YEARLY Mean of Tiles
-					// The fix applied coincides with the addition of Band Support
-					// Detected because Yearly Averages for Lifetime seemed too small/low
+				// Defect Corrected 2022/10/14
+				// I thought I had to divide the Mean Sum by Unique Months & then Unique Years
+				// This produced incorrect Mean Values for the YEARLY Mean of Tiles
+				// The fix applied coincides with the addition of Band Support
+				// Detected because Yearly Averages for Lifetime seemed too small/low
 //				}
 				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
 						this.dimension, value);
@@ -618,8 +652,7 @@ public class Grid extends Spheroid {
 				monthCount++;
 			}
 		}
-		// if (print && detail)
-		// logger.info("getMonthCount() monthCount=" + monthCount);
+
 		return monthCount;
 	}
 
@@ -757,9 +790,15 @@ public class Grid extends Spheroid {
 //			}
 
 			for (Entry<Integer, List<Tile>> entry : this.tileListMap.entrySet()) {
+				List<Tile> tileList = entry.getValue();
+				this.initTileMinMax(tileList, false);
+			}
+			
+			for (Entry<Integer, List<Tile>> entry : this.tileListMap.entrySet()) {
 				((Graphics2D) graphics).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 //				int level = entry.getKey();
 				List<Tile> tileList = entry.getValue();
+//				this.initTileMinMax(tileList, false);
 				double vertical = index * this.interval;
 				if (!this.getProjection().verticalList.contains(vertical)) {
 					this.getProjection().verticalList.add(vertical);
@@ -816,7 +855,7 @@ public class Grid extends Spheroid {
 
 			if (this.getProjection().scale >= this.defaultScale) {
 				Meter meter = new Meter(0.9, (int) (this.getProjection().xMax * this.getProjection().scale),
-						this.getMax(), this.getMin(), this.unit, this.getIncrement());
+						this.getMax(), this.getMin(), this.unit, this.getIncrement(), this.format);
 				meter.setChroma(this.chroma);
 				meter.paint(graphics);
 			}
@@ -829,6 +868,9 @@ public class Grid extends Spheroid {
 		Point b;
 		Point c;
 		Point d;
+		
+		this.initBandMinMax(this.bandList,false);
+		
 		for (Band band : this.bandList) {
 			for (Tile t : band.tileList) {
 				a = this.getProjection().getPoint(0, t.coordinate.latitude, t.coordinate.longitude);
@@ -849,10 +891,10 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
-		this.initBandMinMax();
+//		this.initBandMinMax();
 		if (projection.scale >= this.defaultScale) {
 			Meter meter = new Meter(0.9, (int) (projection.xMax * this.getProjection().scale), this.getMax(),
-					this.getMin(), this.unit, this.getIncrement());
+					this.getMin(), this.unit, this.getIncrement(), this.format);
 			meter.setChroma(this.chroma);
 			meter.paint(graphics);
 		}
@@ -1054,6 +1096,7 @@ public class Grid extends Spheroid {
 		Point c;
 		Point d;
 		java.util.Iterator<Tile> iterator = this.tileList.iterator();
+		this.initTileMinMax(this.tileList,true);
 		while (iterator.hasNext()) {
 			Tile t = new Tile(iterator.next());
 			if (t != null) {
@@ -1089,10 +1132,10 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
-		this.initTileMinMax();
+//		this.initTileMinMax();
 		if (this.getProjection().scale >= this.defaultScale) {
 			Meter meter = new Meter(0.9, (int) (this.getProjection().xMax * this.getProjection().scale), this.getMax(),
-					this.getMin(), this.unit, this.getIncrement());
+					this.getMin(), this.unit, this.getIncrement(), this.format);
 			meter.setChroma(this.chroma);
 			meter.paint(graphics);
 		}
@@ -1118,6 +1161,8 @@ public class Grid extends Spheroid {
 		super.paint(graphics);
 	}
 }
+// if (print && detail)
+// logger.info("getMonthCount() monthCount=" + monthCount);
 //this.increment = 1 / this.clusterList.size();
 //this.scheme = null;
 //this.unit = "id";

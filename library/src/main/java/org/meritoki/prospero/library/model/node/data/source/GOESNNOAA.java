@@ -29,8 +29,6 @@ import org.meritoki.prospero.library.model.unit.Time;
 
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.ArrayInt;
-import ucar.ma2.ArrayShort;
-import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;

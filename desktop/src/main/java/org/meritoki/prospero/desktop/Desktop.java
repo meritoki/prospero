@@ -31,7 +31,7 @@ import org.meritoki.prospero.desktop.view.window.SplashWindow;
 public class Desktop {
 
 	static Logger logger = LogManager.getLogger(Desktop.class.getName());
-	public static String versionNumber = "0.15.202211";
+	public static String versionNumber = "0.16.202212";
 	public static String vendor = "Meritoki";
 	public static String about = "Version " + versionNumber + " Copyright " + vendor + " 2016-2022";
 	public static Option versionOption = new Option("v", "version", false, "Print version information");

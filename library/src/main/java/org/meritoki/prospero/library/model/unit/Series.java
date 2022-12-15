@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
@@ -50,13 +49,20 @@ public class Series {
 		String title = "";
 		title += (this.map.get("name")!=null)?this.map.get("name")+" ":"";
 		title += (this.map.get("cluster")!=null)?"Cluster "+this.map.get("cluster")+" ":"";
-		title += (this.map.get("group")!=null)?((String)this.map.get("group"))+" ":"";
+		title += (this.map.get("group")!=null)?this.capitalize((String)this.map.get("group"))+" ":"";
 		title += (this.map.get("sum")!=null && (boolean)this.map.get("sum"))?"Sum ":"";
 		title += (this.map.get("average")!=null && (boolean)this.map.get("average"))?"Average ":"";
-		title += (this.map.get("family")!=null)?"Family "+((String)this.map.get("family"))+" ":"";
-		title += (this.map.get("class")!=null)?"Class "+((String)this.map.get("class"))+" ":"";
+		title += (this.map.get("family")!=null)?"Family "+this.capitalize((String)this.map.get("family"))+" ":"";
+		title += (this.map.get("class")!=null)?"Class "+this.capitalize((String)this.map.get("class"))+" ":"";
 		title += (this.map.get("region")!=null)?"Region "+"("+((String)this.map.get("region")).replace(",", "_").replace(":", ")-(")+")":"";
 		return title;
+	}
+	
+	public String capitalize(String string) {
+		if(string == null || string.length() == 0) {
+			return string;
+		}
+		return string.substring(0,1).toUpperCase() + string.substring(1).toLowerCase();
 	}
 	
 	public String getData() throws Exception {

@@ -91,6 +91,8 @@ public class Variable extends Node {
 	@JsonIgnore
 	public String unit;
 	@JsonIgnore
+	public String format ="#.###E0";
+	@JsonIgnore
 	public boolean load;
 	@JsonIgnore
 	public boolean correlation;

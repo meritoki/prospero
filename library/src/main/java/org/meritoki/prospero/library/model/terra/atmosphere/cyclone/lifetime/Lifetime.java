@@ -18,15 +18,12 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.lifetime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
@@ -37,6 +34,7 @@ public class Lifetime extends Cyclone {
 	public Lifetime() {
 		super("Lifetime");
 		this.unit = "days";
+		this.format = "##.##E0";
 	}
 
 	public void init() {

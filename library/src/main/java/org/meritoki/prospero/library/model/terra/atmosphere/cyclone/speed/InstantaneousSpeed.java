@@ -18,8 +18,6 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
@@ -27,7 +25,6 @@ import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Cyclone
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
@@ -38,6 +35,7 @@ public class InstantaneousSpeed extends Cyclone {
 	public InstantaneousSpeed() {
 		super("InstantaneousSpeed");
 		this.unit = "m/s";
+		this.format = "##.##E0";
 	}
 
 	@Override

@@ -46,6 +46,7 @@ public class Meter {
 	public int fontSize = 14;
 	public double increment;
 	public Chroma chroma;
+	public String format = "#.###E0";
 
 	public Meter(double factor, int startX, double max, double min) {
 		this.scale = DEFAULT_SCALE;
@@ -72,6 +73,17 @@ public class Meter {
 		this.startX = startX;
 		this.unit = unit;
 		this.increment = increment;
+	}
+	
+	public Meter(double factor, int startX, double max, double min, String unit, double increment, String format) {
+		this.scale = DEFAULT_SCALE;
+		this.factor = factor;
+		this.max = max;
+		this.min = min;
+		this.startX = startX;
+		this.unit = unit;
+		this.increment = increment;
+		this.format = format;
 	}
 
 	public void setChroma(Chroma chroma) {
@@ -124,7 +136,7 @@ public class Meter {
 		int startY = -(int) ((meterHeight / 2) * this.scale);
 		double max = this.max;
 		double min = this.min;
-		DecimalFormat formatter = new DecimalFormat("##.##E0");
+		DecimalFormat formatter = new DecimalFormat(format);
 		int count = meterHeight / interval;
 		double value = 0;
 		for (int i = meterHeight; i >= 0; i--) {
