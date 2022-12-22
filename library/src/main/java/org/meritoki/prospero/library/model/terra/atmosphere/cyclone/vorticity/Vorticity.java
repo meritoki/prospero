@@ -21,11 +21,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
-import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
@@ -43,65 +41,6 @@ public class Vorticity extends Cyclone {
 		super.init();
 	}
 
-//	public List<Tile> getTileList() {
-//		List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.dataMatrix);
-//		logger.debug("getTileList() tileList.size()=" + tileList.size());
-//		return tileList;
-//	}
-//
-//	public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] vorticityMatrix) {
-//		List<Tile> tileList = new ArrayList<>();
-//		int yearCount = this.getYearCount();
-//		int monthCount = this.getMonthCount();
-//		Tile tile;
-//		int point;
-//		float vorticity;
-//		float vorticityMean;
-//		float vorticityMeanSum;
-//		float value;
-//		for (int i = 0; i < coordinateMatrix.length; i += dimension) {
-//			for (int j = 0; j < coordinateMatrix[i].length; j += dimension) {
-//				vorticityMeanSum = 0;
-//				for (int m = 0; m < 12; m++) {
-//					point = 0;
-//					vorticity = 0;
-//					for (int a = i; a < (i + dimension); a++) {
-//						for (int b = j; b < (j + dimension); b++) {
-//							if (a < this.latitude && b < this.longitude) {
-//								point += coordinateMatrix[a][b][m];
-//								vorticity += vorticityMatrix[a][b][m];
-//							}
-//						}
-//					}
-//					vorticityMean = (point > 0) ? vorticity / point : 0;
-//					vorticityMeanSum += vorticityMean;
-//				}
-//				value = vorticityMeanSum;
-//				if (this.monthFlag) {
-//					value /= monthCount;
-//				} else if (this.yearFlag) {
-//					value /= yearCount;
-//				}
-//				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
-//						this.dimension, value);
-//				if (this.region != null) {
-//					if (this.region.contains(tile)) {
-//						tileList.add(tile);
-//					}
-//				} else if (this.regionList != null) {
-//					for (Region region : this.regionList) {
-//						if (region.contains(tile)) {
-//							tileList.add(tile);
-//							break;
-//						}
-//					}
-//				} else {
-//					tileList.add(tile);
-//				}
-//			}
-//		}
-//		return tileList;
-//	}
 
 	@Override
 	public void setMatrix(List<Event> eventList) {
@@ -203,6 +142,65 @@ public class Vorticity extends Cyclone {
 		return index;
 	}
 }
+//public List<Tile> getTileList() {
+//List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.dataMatrix);
+//logger.debug("getTileList() tileList.size()=" + tileList.size());
+//return tileList;
+//}
+//
+//public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] vorticityMatrix) {
+//List<Tile> tileList = new ArrayList<>();
+//int yearCount = this.getYearCount();
+//int monthCount = this.getMonthCount();
+//Tile tile;
+//int point;
+//float vorticity;
+//float vorticityMean;
+//float vorticityMeanSum;
+//float value;
+//for (int i = 0; i < coordinateMatrix.length; i += dimension) {
+//	for (int j = 0; j < coordinateMatrix[i].length; j += dimension) {
+//		vorticityMeanSum = 0;
+//		for (int m = 0; m < 12; m++) {
+//			point = 0;
+//			vorticity = 0;
+//			for (int a = i; a < (i + dimension); a++) {
+//				for (int b = j; b < (j + dimension); b++) {
+//					if (a < this.latitude && b < this.longitude) {
+//						point += coordinateMatrix[a][b][m];
+//						vorticity += vorticityMatrix[a][b][m];
+//					}
+//				}
+//			}
+//			vorticityMean = (point > 0) ? vorticity / point : 0;
+//			vorticityMeanSum += vorticityMean;
+//		}
+//		value = vorticityMeanSum;
+//		if (this.monthFlag) {
+//			value /= monthCount;
+//		} else if (this.yearFlag) {
+//			value /= yearCount;
+//		}
+//		tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
+//				this.dimension, value);
+//		if (this.region != null) {
+//			if (this.region.contains(tile)) {
+//				tileList.add(tile);
+//			}
+//		} else if (this.regionList != null) {
+//			for (Region region : this.regionList) {
+//				if (region.contains(tile)) {
+//					tileList.add(tile);
+//					break;
+//				}
+//			}
+//		} else {
+//			tileList.add(tile);
+//		}
+//	}
+//}
+//return tileList;
+//}
 //else if(this.bandFlag) {
 //List<Double> tileLatitudeList = this.getTileLatitudeList(this.tileList);
 //for (Double latitude : tileLatitudeList) {

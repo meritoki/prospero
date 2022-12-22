@@ -148,6 +148,8 @@ public class CycloneEvent extends Event {
 				map.put(Family.INTERMEDIATE, cList);
 				break;
 			}
+			default:
+				break;
 			}
 		}
 		logger.info("getFamilyClassMap(...) map=" + map);
@@ -263,9 +265,6 @@ public class CycloneEvent extends Event {
 			double quotient = (count / total);
 			if (quotient >= threshold) {
 				flag = true;
-//			System.out.println("count="+count);
-//			System.out.println("total="+total);
-//			System.out.println(this+".isSimilar("+event+", "+threshold+") flag=true");
 			}
 		}
 		return flag;
@@ -980,6 +979,9 @@ public class CycloneEvent extends Event {
 		return string;
 	}
 }
+//System.out.println("count="+count);
+//System.out.println("total="+total);
+//System.out.println(this+".isSimilar("+event+", "+threshold+") flag=true"); 
 //logger.info("getSpeed() speed=" + speed);
 //public String toString() {
 //return this.id;

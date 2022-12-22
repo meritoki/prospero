@@ -347,23 +347,6 @@ public class Grid extends Spheroid {
 
 	public void initTileMinMax() {
 		this.initTileMinMax(this.tileList, true);
-//		double min = Double.POSITIVE_INFINITY;
-//		double max = Double.NEGATIVE_INFINITY;
-//		if (this.tileList != null) {
-//			java.util.Iterator<Tile> iterator = this.tileList.iterator();
-//			while (iterator.hasNext()) {
-//				Tile t = new Tile(iterator.next());
-//				if (t.value > max) {
-//					max = t.value;
-//				}
-//				if (t.value < min) {
-//					min = t.value;
-//				}
-//			}
-//		}
-//		this.max = max;
-//		this.min = min;
-//		logger.debug("initTileMinMax() this.min=" + this.min + " this.max=" + this.max);
 	}
 
 	public void initTileMinMax(List<Tile> tileList, boolean reset) {
@@ -781,13 +764,6 @@ public class Grid extends Spheroid {
 //			double interval = this.interval;
 			int index = (size / 2);
 			this.tileListMap = new TreeMap<Integer, List<Tile>>(this.tileListMap).descendingMap();
-//			Set<Integer> levelSet = this.tileListMap.keySet();
-//			int minLevel = Collections.min(levelSet);
-//			int maxLevel = Collections.max(levelSet);
-//			if (this.level) {
-//				this.min = this.getMeters(maxLevel);
-//				this.max = this.getMeters(minLevel);
-//			}
 
 			for (Entry<Integer, List<Tile>> entry : this.tileListMap.entrySet()) {
 				List<Tile> tileList = entry.getValue();
@@ -1132,7 +1108,6 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
-//		this.initTileMinMax();
 		if (this.getProjection().scale >= this.defaultScale) {
 			Meter meter = new Meter(0.9, (int) (this.getProjection().xMax * this.getProjection().scale), this.getMax(),
 					this.getMin(), this.unit, this.getIncrement(), this.format);
@@ -1161,6 +1136,31 @@ public class Grid extends Spheroid {
 		super.paint(graphics);
 	}
 }
+//Set<Integer> levelSet = this.tileListMap.keySet();
+//int minLevel = Collections.min(levelSet);
+//int maxLevel = Collections.max(levelSet);
+//if (this.level) {
+//	this.min = this.getMeters(maxLevel);
+//	this.max = this.getMeters(minLevel);
+//}
+//this.initTileMinMax();
+//double min = Double.POSITIVE_INFINITY;
+//double max = Double.NEGATIVE_INFINITY;
+//if (this.tileList != null) {
+//	java.util.Iterator<Tile> iterator = this.tileList.iterator();
+//	while (iterator.hasNext()) {
+//		Tile t = new Tile(iterator.next());
+//		if (t.value > max) {
+//			max = t.value;
+//		}
+//		if (t.value < min) {
+//			min = t.value;
+//		}
+//	}
+//}
+//this.max = max;
+//this.min = min;
+//logger.debug("initTileMinMax() this.min=" + this.min + " this.max=" + this.max);
 // if (print && detail)
 // logger.info("getMonthCount() monthCount=" + monthCount);
 //this.increment = 1 / this.clusterList.size();
