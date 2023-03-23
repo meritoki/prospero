@@ -16,7 +16,9 @@
 package org.meritoki.prospero.desktop.view.frame;
 
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.File;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -76,7 +78,15 @@ public class MainFrame extends javax.swing.JFrame {
 		this.plotPanel.setModel(this.model);
 		this.tablePanel.setModel(this.model);
 		this.cameraPanel1.setModel(this.model);
+		this.initIconImage();
 		this.init();
+	}
+	
+	public void initIconImage() {
+		URL url = getClass().getResource("/Icon.png");
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Image image = toolkit.createImage(url);
+		this.setIconImage(image);
 	}
 
 	public void init() {

@@ -5,14 +5,23 @@
 			<PatternLayout
 				pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
 		</Console>
-		<File name="file" fileName="logs/prospero.log">
+		<RollingFile name="rollingFile"
+			fileName="logs${sys:file.separator}prospero.log"
+			filePattern="logs${sys:file.separator}prospero.%d{dd-MMM}.log.gz"
+			ignoreExceptions="false">
 			<PatternLayout
 				pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
-		</File>
+			<Policies>
+				<OnStartupTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+				<TimeBasedTriggeringPolicy />
+			</Policies>
+			<DefaultRolloverStrategy max="5" />
+		</RollingFile>
 	</Appenders>
 	<Loggers>
-		<Root level="INFO" additivity="true">
-			<AppenderRef ref="file" />
+		<Root level="DEBUG" additivity="false">
+			<AppenderRef ref="rollingFile" />
 			<AppenderRef ref="console" />
 		</Root>
 	</Loggers>
