@@ -7,7 +7,7 @@
 	<groupId>org.meritoki</groupId>
 	<artifactId>prospero</artifactId>
 	<packaging>pom</packaging>
-	<version>0.16.202212</version>
+	<version>0.17.202303-alpha</version>
 
 	<!-- sub modules -->
 	<modules>
