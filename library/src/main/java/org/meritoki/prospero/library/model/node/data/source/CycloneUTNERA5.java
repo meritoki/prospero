@@ -57,8 +57,10 @@ public class CycloneUTNERA5 extends CycloneSource {
 	public CycloneUTNERA5() {
 		super();
 		this.single = true;
-		this.setRelativePath(
-				"UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator + "202103");
+		this.setBasePath("/home/jorodriguez/Drive/UTN-202112/");
+		this.setRelativePath("south");
+//		this.setRelativePath(
+//				"UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator + "202103");
 	}
 
 	@Override
@@ -95,8 +97,10 @@ public class CycloneUTNERA5 extends CycloneSource {
 
 	public List<Event> read(int year, int month) throws Exception {
 		logger.debug("read(" + year + "," + month + ")");
+		this.setBasePath("/home/jorodriguez/Drive/UTN-202112/");
+		this.setRelativePath("south");
 		String yearMonth = year + "" + String.format("%02d", month) + "01";
-		prefix = merged;
+		prefix = topBottomPrefix;
 //		switch (this.order) {
 //		case "tb": {
 //			prefix = topBottomPrefix;
