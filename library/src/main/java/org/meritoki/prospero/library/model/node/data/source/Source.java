@@ -16,6 +16,16 @@
 package org.meritoki.prospero.library.model.node.data.source;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,12 +44,12 @@ import org.meritoki.prospero.library.model.unit.Result;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.module.library.model.Node;
 
-public class Source extends Node {//implements SourceInterface
+public class Source extends Node {// implements SourceInterface
 
 	static Logger logger = LogManager.getLogger(Source.class.getName());
 	@JsonIgnore
 	public static char seperator = File.separatorChar;
-	public String basePath = "."+seperator;
+	public String basePath = "." + seperator;
 	public String relativePath = null;
 	public String fileName = null;
 	public String timeZone = "GMT-3";
@@ -59,37 +69,55 @@ public class Source extends Node {//implements SourceInterface
 		super(name);
 		this.filter = false;
 	}
-	
+
 	@JsonIgnore
 	public void setBasePath(String basePath) {
-		logger.debug("setBasePath("+basePath+")");
+		logger.debug("setBasePath(" + basePath + ")");
 		this.basePath = basePath;
 	}
-	
+
 	@JsonIgnore
 	public void setRelativePath(String relativePath) {
-		logger.debug("setRelativePath("+relativePath+")");
+		logger.debug("setRelativePath(" + relativePath + ")");
 		this.relativePath = relativePath;
 	}
-	
+
 	@JsonIgnore
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
-	
+
 	@JsonIgnore
 	public String getPath() {
 		return this.basePath + seperator + this.relativePath + seperator;
 	}
-	
+
 	@JsonIgnore
 	public String getFilePath() {
 		return this.getPath() + this.fileName;
 	}
-	
+
 	@JsonIgnore
 	public String getFilePath(String fileName) {
-		return this.getPath()+fileName;
+		return this.getPath() + fileName;
+	}
+
+	public List<String> getWildCardFileList(Path path, String pattern) throws IOException {
+		List<String> matchList = new ArrayList<String>();
+		FileVisitor<Path> fileVisitor = new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path path, BasicFileAttributes attributes) throws IOException {
+				FileSystem fileSystem = FileSystems.getDefault();
+				PathMatcher pathMatcher = fileSystem.getPathMatcher(pattern);
+				Path pathFileName = path.getFileName();
+				if (pathMatcher.matches(pathFileName)) {
+					matchList.add(pathFileName.toString());
+				}
+				return FileVisitResult.CONTINUE;
+			}
+		};
+		Files.walkFileTree(path, fileVisitor);
+		return matchList;
 	}
 
 	@Override
@@ -100,15 +128,15 @@ public class Source extends Node {//implements SourceInterface
 				this.query(query);
 			} catch (InterruptedException e) {
 				logger.warn("InterruptedException " + e.getMessage());
-				query.objectList.add(new Result(Mode.EXCEPTION,e.getMessage()));
+				query.objectList.add(new Result(Mode.EXCEPTION, e.getMessage()));
 			} catch (Exception e) {
-				logger.warn("Exception "+e.getMessage());
+				logger.warn("Exception " + e.getMessage());
 				e.printStackTrace();
-				query.objectList.add(new Result(Mode.EXCEPTION,e.getMessage()));
+				query.objectList.add(new Result(Mode.EXCEPTION, e.getMessage()));
 			}
 		}
 	}
-	
+
 	public void interrupt() {
 		logger.info("interrupt()");
 		this.thread.interrupt();
@@ -124,8 +152,6 @@ public class Source extends Node {//implements SourceInterface
 	public int getEndYear() {
 		return this.endYear;
 	}
-
-
 
 	public List<String> getDateList(String startDate, String endDate) {
 		List<String> dateList = new ArrayList<>();
@@ -146,7 +172,7 @@ public class Source extends Node {//implements SourceInterface
 		}
 		return dateList;
 	}
-	
+
 	public int getYearMonthDays(int year, int month) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, year);
@@ -154,7 +180,7 @@ public class Source extends Node {//implements SourceInterface
 		int days = calendar.getActualMaximum(Calendar.DATE);
 		return days;
 	}
-	
+
 	public void unsupportedException(String field, String value) throws Exception {
 		if (value != null && !value.isEmpty())
 			throw new Exception("source does not support " + field);

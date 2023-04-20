@@ -43,9 +43,9 @@ public class Spheroid extends Energy {
 	public boolean selectable = true;
 	public double defaultScale = 1;
 	public double radius = 1;
-	public double a = this.radius;
-	public double b = this.radius;
-	public double c = this.radius;
+	public double a = this.radius;//Equator
+	public double b = this.radius;//Equator
+	public double c = this.radius;//Polar
 
 	public Spheroid(String name) {
 		super(name);

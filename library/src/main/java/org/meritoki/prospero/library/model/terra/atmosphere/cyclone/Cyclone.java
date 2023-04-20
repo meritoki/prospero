@@ -79,6 +79,7 @@ public class Cyclone extends Atmosphere {
 	public List<Duration> durationList;
 	public List<Family> familyList;
 	public List<Classification> classificationList;
+	public int count;
 
 	public Cyclone() {
 		super("Cyclone");
@@ -112,6 +113,7 @@ public class Cyclone extends Atmosphere {
 			this.classificationList = query.getClassificationList();
 			this.durationList = query.getDurationList();
 			this.pressureList = query.getPressureList();
+			this.count = query.getCount();
 		} catch (Exception e) {
 			logger.error("init() exception=" + e.getMessage());
 			e.printStackTrace();
@@ -180,6 +182,13 @@ public class Cyclone extends Atmosphere {
 						classFlag = true;
 					}
 					e.flag = durationFlag && familyFlag && classFlag;
+					if(e instanceof CycloneEvent) {
+						if(((CycloneEvent)e).getPressureCount() > this.count) {
+							e.flag = (e.flag)?true:false;
+						} else {
+							e.flag = false;
+						}
+					}
 				}
 			}
 		} else {
@@ -592,6 +601,7 @@ public class Cyclone extends Atmosphere {
 		}
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
+		this.tileFlag = !this.name.equals("Cyclone");
 		this.tileList = this.getTileList();
 		this.bandList = this.getBandList(this.tileList);
 		if (this.stackFlag) {

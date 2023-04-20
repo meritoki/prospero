@@ -21,6 +21,10 @@ public class Count {
 	
 	public Count() {}
 	
+	public Count(String string) {
+		this((char)string.charAt(0),Integer.parseInt(string.charAt(1)+""));
+	}
+	
 	public Count(char operator, int value) {
 		this.operator = operator;
 		this.value = value;

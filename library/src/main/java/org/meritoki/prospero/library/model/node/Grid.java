@@ -61,6 +61,7 @@ import org.meritoki.prospero.library.model.unit.Time;
 public class Grid extends Spheroid {
 
 	static Logger logger = LogManager.getLogger(Grid.class.getName());
+//	public int latitude = 180;//20230417
 	public int latitude = 90;// Eventually need to implement with 180
 	public int longitude = 360;
 	public int resolution = 1;// Need to Clean Dimension Resolution Implementation
@@ -69,7 +70,7 @@ public class Grid extends Spheroid {
 	public double max;
 	public double min;
 	public Double significance;
-	public Scheme scheme = Scheme.VIRIDIS;
+	public Scheme scheme = Scheme.MAGMA;
 	public Chroma chroma = new Chroma(scheme);
 	public int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	public float[][][] dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
@@ -114,6 +115,7 @@ public class Grid extends Spheroid {
 	public boolean trajectoryFlag;
 	public boolean bandFlag;
 	public boolean cubeFlag;
+	public boolean tileFlag;
 	public boolean monthFlag;
 	public boolean yearFlag;
 	public boolean clearFlag;
@@ -269,7 +271,7 @@ public class Grid extends Spheroid {
 				this.endCalendar = this.window[1];
 			}
 			this.range = this.query.getRange();
-			this.scheme = this.query.getScheme();
+			this.scheme = (this.query.getScheme()!=null)?this.query.getScheme():this.scheme;
 			this.seriesMap = new TreeMap<>();
 			this.timeList = new ArrayList<>();
 //			if("month".equals(group)) {
@@ -741,6 +743,16 @@ public class Grid extends Spheroid {
 			}
 		}
 	}
+	
+	public List<Coordinate> getCoordinateList(Event event) {
+		List<Coordinate> coordinateList = new ArrayList<>();
+		for(Coordinate c: event.coordinateList) {
+			if(c.flag) {
+				coordinateList.add(c);
+			}
+		}
+		return coordinateList;
+	}
 
 	public void setCluster(Cluster cluster) {
 //		logger.info("setCluster("+cluster+")");
@@ -877,7 +889,7 @@ public class Grid extends Spheroid {
 	}
 
 	public void paintEvent(Graphics graphics) {
-		logger.debug(this + ".paintEvent(...) eventList.size() = " + this.eventList.size());
+//		logger.info(this + ".paintEvent(...) eventList.size() = " + this.eventList.size());
 		this.chroma = new Chroma();
 		if (this.trajectoryFlag) {
 			this.paintTrajectory(graphics);
@@ -885,18 +897,28 @@ public class Grid extends Spheroid {
 			for (int i = 0; i < this.eventList.size(); i++) {
 				Event event = (Event) this.eventList.get(i);
 				if (event.flag) {
-					logger.debug(this + ".paintEvent(...) event=" + event.id);
-					List<Point> coordinateList = this.getProjection().getCoordinateList(0, event.coordinateList);
-					if (coordinateList != null) {
-						for (int j = 0; j < coordinateList.size(); j++) {// Coordinate c : coordinateList) {
-							Point c = coordinateList.get(j);
-							if (c.flag) {
-								logger.debug(this + ".paint(...) coordinate=" + c);
-								graphics.setColor(this.chroma.getColor(j, 0, coordinateList.size()));
-								graphics.drawLine((int) ((c.x) * this.getProjection().scale),
-										(int) ((c.y) * this.getProjection().scale),
-										(int) ((c.x) * this.getProjection().scale),
-										(int) ((c.y) * this.getProjection().scale));
+//					logger.info(this + ".paintEvent(...) event=" + event.id);
+					event.setCalendarCoordinateList(this.calendar);
+//					this.setCalendarCoordinateList(this.calendar,event.coordinateList);
+					List<Point> pointList = this.getProjection().getCoordinateList(0, event.getAverageCoordinateList(this.calendar));
+					if (pointList != null) {
+						for (int j = 0; j < pointList.size(); j++) {// Coordinate c : coordinateList) {
+							Point s = pointList.get(j);
+							if (s.flag) {
+//								logger.info(this + ".paintEvent(...) event=" + event.id);
+								graphics.setColor(Color.RED);//this.chroma.getColor(j, 0, pointList.size()));
+//								Original
+//								graphics.drawLine((int) ((c.x) * this.getProjection().scale),
+//										(int) ((c.y) * this.getProjection().scale),
+//										(int) ((c.x) * this.getProjection().scale),
+//										(int) ((c.y) * this.getProjection().scale));
+//								New
+								double radius = 6;
+								double x = (s.x * this.getProjection().scale) - (radius / 2);
+								double y = (s.y * this.getProjection().scale) - (radius / 2);
+								graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
+								int unitWidth = graphics.getFontMetrics().stringWidth(event.id);
+//								graphics.drawString(event.id, (int)(x - (unitWidth / 2)), (int)(y + 8));
 							}
 						}
 					}
@@ -1065,7 +1087,7 @@ public class Grid extends Spheroid {
 	}
 
 	public void paintTile(Graphics graphics) {
-		logger.debug(this + ".paintTile(...) tileList.size() = " + this.tileList.size());
+//		logger.info(this + ".paintTile(...) tileList.size() = " + this.tileList.size());
 		this.chroma = new Chroma(this.scheme);
 		Point a;
 		Point b;
@@ -1089,8 +1111,20 @@ public class Grid extends Spheroid {
 							(int) (b.y * this.getProjection().scale), (int) (c.y * this.getProjection().scale),
 							(int) (d.y * this.getProjection().scale) };
 					int npoints = 4;
-					graphics.setColor(this.chroma.getColor(t.value, this.getMin(), this.getMax()));
-					graphics.fillPolygon(xpoints, ypoints, npoints);
+					if (this.clearFlag) {
+						if (t.value != 0) {
+							Color color = null;
+							color = this.chroma.getColor(t.value, this.getMin(), this.getMax());
+							if (color != null) {
+								graphics.setColor(color);
+								graphics.fillPolygon(xpoints, ypoints, npoints);
+							}
+						}
+					} else {
+						Color color = this.chroma.getColor(t.value, this.getMin(), this.getMax());
+						graphics.setColor(color);
+						graphics.fillPolygon(xpoints, ypoints, npoints);
+					}
 				}
 				Double significance = t.getSignificance();
 				if (significance != null) {
@@ -1126,7 +1160,7 @@ public class Grid extends Spheroid {
 			} else {
 				if (this.cluster != null) {// && !this.cluster.isEmpty()) {
 					this.paintCluster(graphics);
-				} else if (this.tileList != null && this.tileList.size() > 0) {
+				} else if (this.tileFlag && this.tileList != null && this.tileList.size() > 0) {
 					this.paintTile(graphics);
 				} else if (this.eventList != null && this.eventList.size() > 0) {
 					this.paintEvent(graphics);
@@ -1136,6 +1170,8 @@ public class Grid extends Spheroid {
 		super.paint(graphics);
 	}
 }
+//graphics.setColor(this.chroma.getColor(t.value, this.getMin(), this.getMax()));
+//graphics.fillPolygon(xpoints, ypoints, npoints);
 //Set<Integer> levelSet = this.tileListMap.keySet();
 //int minLevel = Collections.min(levelSet);
 //int maxLevel = Collections.max(levelSet);

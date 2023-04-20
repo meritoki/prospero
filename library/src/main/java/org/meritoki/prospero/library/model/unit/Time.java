@@ -73,9 +73,30 @@ public class Time {
 		this.hashCode = Objects.hash(this.year,this.month,this.day,this.hour,this.minute,this.second);
 	}
 	
+	/**
+	 * Initialize Time Object with representation limit: year, month, day, hour, minute, second
+	 * Depending on limit, Time retains more specific information.
+	 * @param value
+	 * @param calendar
+	 */
 	public Time(String value, Calendar calendar) {
 		if (value != null) {
 			switch (value) {
+			case "second":{
+				second = calendar.get(Calendar.SECOND);
+				minute = calendar.get(Calendar.MINUTE);
+				hour = calendar.get(Calendar.HOUR_OF_DAY);
+				day = calendar.get(Calendar.DAY_OF_MONTH);
+				month = calendar.get(Calendar.MONTH) + 1;
+				year = calendar.get(Calendar.YEAR);
+			}
+			case "minute":{
+				minute = calendar.get(Calendar.MINUTE);
+				hour = calendar.get(Calendar.HOUR_OF_DAY);
+				day = calendar.get(Calendar.DAY_OF_MONTH);
+				month = calendar.get(Calendar.MONTH) + 1;
+				year = calendar.get(Calendar.YEAR);
+			}
 			case "hour": {
 				hour = calendar.get(Calendar.HOUR_OF_DAY);
 				day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -141,6 +162,12 @@ public class Time {
         return this.hashCode;
     }
     
+    /**
+     * 20230417 The smallest index grouped by day
+     * thinking about adding grouping by hour and minute for some goes data
+     * 
+     * @return
+     */
     @JsonIgnore
     public Index getIndex() {
     	Index index = new Index();
@@ -210,7 +237,7 @@ public class Time {
 			if (valid) {
 				intervalList = new ArrayList<>();
 				for (Object o : list) {
-					if (o instanceof String) {
+					if (o instanceof String) {//Time
 						String s = (String) o;
 						s = s.toLowerCase();
 						if (Time.isAlias(s)) {
@@ -230,7 +257,7 @@ public class Time {
 								intervalList.add(interval);
 							}
 						}
-					} else if (o instanceof String[]) {
+					} else if (o instanceof String[]) {//Time Range
 						String[] range = (String[]) o;
 						String a = range[0];
 						String b = range[1];
@@ -262,10 +289,12 @@ public class Time {
 							interval.startMonth = intervalA.startMonth;
 							interval.startDay = intervalA.startDay;
 							interval.startHour = intervalA.startHour;
+							interval.startMinute = intervalA.startMinute;
 							interval.endYear = intervalB.endYear;
 							interval.endMonth = intervalB.endMonth;
 							interval.endDay = intervalB.endDay;
 							interval.endHour = intervalB.endHour;
+							interval.endMinute = intervalA.endMinute;
 							intervalList.add(interval);
 						}
 					}
@@ -278,14 +307,27 @@ public class Time {
 		return intervalList;
 	}
 
+	/**
+	 * Here is the Core Problem. An Interval with Start and End. Previously used to load files seperated by month
+	 * now with the intent to load with files separated by minutes, where a file may or may not exist.
+	 * And the frequency depends on the source.
+	 * @param i
+	 * @return
+	 * @throws Exception
+	 */
 	public static List<Time> getTimeList(Interval i) throws Exception {
 //		logger.info("load(query, " + i + ")");
 		List<Time> timeList = new ArrayList<>();
 		int startYear = i.startYear;
 		int startMonth = (i.startMonth == -1) ? 1 : i.startMonth;
+		Integer startDay = (i.startDay == -1) ? null : i.startDay;
 		int endYear = i.endYear;
 		int endMonth = (i.endMonth == -1) ? 12 : i.endMonth;
-		if (i.allFlag) {
+		Integer endDay = (i.endDay == -1) ? null : i.endDay;
+		Time t = i.getTime();
+		if(t != null) {
+			timeList.add(t);
+		} else if (i.allFlag) {
 //			logger.info("load(...) allFlag=" + i.allFlag);
 			for (int y = startYear; y <= endYear; y++) {
 				for (int m = startMonth; m <= endMonth; m++) {
@@ -506,6 +548,8 @@ public class Time {
 		int month = cal.get(Calendar.MONTH) + 1;
 		int day = cal.get(Calendar.DAY_OF_MONTH);
 		int hour = cal.get(Calendar.HOUR_OF_DAY) - 3;
+		int minute = cal.get(Calendar.MINUTE);
+		int second = cal.get(Calendar.SECOND);
 		switch (type) {
 		case "DATE_TIME": {
 			interval = new Interval();
@@ -513,11 +557,15 @@ public class Time {
 			interval.startMonth = month;
 			interval.startDay = day;
 			interval.startHour = hour;
+			interval.startMinute = minute;
+			interval.startSecond = second;
 			interval.endYear = year;
 			interval.endMonth = month;
 			interval.endDay = day;
 			interval.endHour = hour;
-			interval.dateFlag = true;
+			interval.endMinute = minute;
+			interval.endSecond = second;
+			interval.dayFlag = true;
 			interval.timeFlag = true;
 			break;
 		}
@@ -529,13 +577,17 @@ public class Time {
 			interval.endYear = year;
 			interval.endMonth = month;
 			interval.endDay = day;
-			interval.dateFlag = true;
+			interval.dayFlag = true;
 			break;
 		}
 		case "TIME": {
 			interval = new Interval();
 			interval.startHour = hour;
+			interval.startMinute = minute;
+			interval.startSecond = second;
 			interval.endHour = hour;
+			interval.endMinute = minute;
+			interval.endSecond = second;
 			interval.timeFlag = true;
 			break;
 		}
@@ -678,6 +730,7 @@ public class Time {
 		date = (date == null) ? Time.getDate(value, "HH:mm:ss") : date;
 		date = (date == null) ? Time.getDate(value, "yyyy/MM") : date;
 		date = (date == null) ? Time.getDate(value, "yyyy") : date;
+		date = (date == null) ? new Date(): date;
 		return date;
 	}
 
@@ -701,6 +754,21 @@ public class Time {
 	public static String getCalendarString(String format, Calendar calendar) {
 		return getDateString(format, calendar.getTime());
 	}
+	
+	public static int getDayOfYear(int year, int month, int day) {
+//		logger.info("getDayOfYear("+year+","+month+","+day+")");
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month - 1);
+		if(day != -1) {
+			calendar.set(Calendar.DAY_OF_MONTH, day);
+		} else {
+			calendar.set(Calendar.DAY_OF_MONTH, 1);
+		}
+		int d = calendar.get(Calendar.DAY_OF_YEAR);
+		logger.info("getDayOfYear("+year+","+month+","+day+") d="+d);
+		return d;
+	}
 
 	public static int getYearMonthDays(int year, int month) {
 		System.out.println("getYearMonthDays(" + year + "," + month + ")");
@@ -712,11 +780,21 @@ public class Time {
 		return days;
 	}
 
-	public static Date getNineteenHundredJanuaryFirstDate(int time) {
+	public static Date getNineteenHundredJanuaryFirstDate(int hours) {
 		GregorianCalendar g = new GregorianCalendar(1900, 0, 1, -1, 0, 0);
-		g.add(Calendar.HOUR, time); // adds one hour
+		g.add(Calendar.HOUR, hours); // adds one hour
 		g.set(Calendar.MINUTE, 0);
 		g.set(Calendar.SECOND, 0);
+		g.set(Calendar.MILLISECOND, 0);
+		return g.getTime();
+	}
+	
+	public static Date getTwoThousandJanuaryFirstDate(int seconds) {
+		logger.info("getTwoThousandJanuaryFirstDate("+seconds+")");
+		GregorianCalendar g = new GregorianCalendar(2000, 0, 1, -1, 0, 0);
+		g.add(Calendar.HOUR, 0); // adds one hour
+		g.set(Calendar.MINUTE, 0);
+		g.set(Calendar.SECOND, seconds);
 		g.set(Calendar.MILLISECOND, 0);
 		return g.getTime();
 	}
@@ -740,6 +818,37 @@ public class Time {
 //				+ ((hour != -1) ? String.format("%02d", hour) : "");
 //	}
 }
+//else if(i.dayFlag) {
+//	if (startMonth <= endMonth) {
+//		for (int y = startYear; y <= endYear; y++) {
+//			for (int m = startMonth; m <= endMonth; m++) {
+//				// y && m
+//				if(startDay != null && endDay != null) {
+//					int A = 1;
+//					int B = getYearMonthDays(y,m);
+//					if(m == startMonth) { 
+//						A = startDay;
+//					}
+//					if(m == endMonth) {
+//						B = endDay;
+//					}
+//					for(int d = A;d<=B;d++) {
+//						Time time = new Time();
+//						time.year = y;
+//						time.month = m;
+//						time.day = d;
+//						timeList.add(time);
+//					}
+//				} else {
+//					Time time = new Time();
+//					time.year = y;
+//					time.month = m;
+//					timeList.add(time);
+//				}
+//			}
+//		}
+//	}
+//} 
 //if(s.equals("all")) {
 //interval = Time.getAliasInterval(s,startYear,endYear);
 //if (interval != null) {

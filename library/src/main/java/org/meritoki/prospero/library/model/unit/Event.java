@@ -136,6 +136,11 @@ public class Event {
 		return duration;
 	}
 
+	/**
+	 * Return Map containing Time as String Mapped to Coordinate List
+	 * 
+	 * @return
+	 */
 	@JsonIgnore
 	public Map<String, List<Coordinate>> getTimeCoordinateMap() {
 		Map<String, List<Coordinate>> timeCoordinateMap = new HashMap<>();
@@ -199,13 +204,90 @@ public class Event {
 	@JsonIgnore
 	public boolean hasCoordinate() {
 		boolean flag = false;
-		for (Coordinate p : this.coordinateList) {
-			if (p.flag) {
+		for (Coordinate c : this.coordinateList) {
+			if (c.flag) {
 				flag = true;
 				break;
 			}
 		}
 		return flag;
+	}
+	
+	public void setCalendarCoordinateList(Calendar calendar) {
+		for (Coordinate c : this.coordinateList) {
+			if (c.containsCalendar(calendar)) {
+				c.flag = true;
+			} else {
+				c.flag = false;
+			}
+		}
+	}
+	
+	public List<Coordinate> getCoordinateList() {
+		List<Coordinate> coordinateList = new ArrayList<>();
+		for(Coordinate c: this.coordinateList) {
+			if(c.flag) {
+				coordinateList.add(new Coordinate(c));
+			}
+		}
+		return coordinateList;
+	}
+	
+	public List<Coordinate> getAverageCoordinateList(Calendar calendar) {
+		return getAverageCoordinateList(this.getCoordinateList(),calendar);
+	}
+	
+	public List<Coordinate> getAverageCoordinateList(List<Coordinate> cList, Calendar calendar) {
+		List<Coordinate> coordinateList = new ArrayList<>();
+		Coordinate coordinate = this.getAverageCoordinate(cList,calendar);
+		if(coordinate != null)
+			coordinateList.add(coordinate);
+		return coordinateList; 
+	}
+	
+	@JsonIgnore
+	public Coordinate getAverageCoordinate(List<Coordinate> cList, Calendar calendar) {
+		Coordinate coordinate = null;
+		List<Coordinate> coordinateList = new ArrayList<>();
+		for (Coordinate c : cList) {
+			coordinateList.add(new Coordinate(c));
+		}
+		if (coordinateList.size() > 0) {
+			double latitudeSum = 0;
+			double longitudeSum = 0;
+			double latitude;
+			double longitude;
+			for (int i = 0; i < coordinateList.size(); i++) {
+				if (i + 1 < coordinateList.size()) {
+					Coordinate a = coordinateList.get(i);
+					Coordinate b = coordinateList.get(i + 1);
+					double difference = Math.abs(a.longitude - b.longitude);
+					if (difference >= 180) {
+						if (a.longitude < 0) {
+							a.longitude += 360;
+						}
+						if (b.longitude < 0) {
+							b.longitude += 360;
+						}
+					}
+				}
+			}
+			for (Coordinate c : coordinateList) {
+				latitudeSum += c.latitude;
+				longitudeSum += c.longitude;
+			}
+			latitude = latitudeSum / coordinateList.size();
+			longitude = longitudeSum / coordinateList.size();
+			if (longitude > 180) {
+				longitude -= 360;
+			}
+			coordinate = new Coordinate();
+			coordinate.latitude = latitude;
+			coordinate.longitude = longitude;
+			coordinate.calendar = calendar;
+			coordinate.flag = true;
+		}
+		return coordinate;
 	}
 	
 	/**

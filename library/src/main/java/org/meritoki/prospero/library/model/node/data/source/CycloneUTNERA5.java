@@ -96,7 +96,7 @@ public class CycloneUTNERA5 extends CycloneSource {
 //	}
 
 	public List<Event> read(int year, int month) throws Exception {
-		logger.debug("read(" + year + "," + month + ")");
+		logger.info("read(" + year + "," + month + ")");
 		this.setBasePath("/home/jorodriguez/Drive/UTN-202112/");
 		this.setRelativePath("south");
 		String yearMonth = year + "" + String.format("%02d", month) + "01";

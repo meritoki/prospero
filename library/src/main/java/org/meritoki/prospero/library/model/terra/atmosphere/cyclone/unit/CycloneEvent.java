@@ -441,7 +441,6 @@ public class CycloneEvent extends Event {
 		Map<String, List<Coordinate>> timeCoordinateMap = this.getTimeCoordinateMap();
 		List<Coordinate> coordinateList = new ArrayList<Coordinate>();
 		Coordinate coordinate;
-//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date;
 		Calendar calendar;
 		for (Map.Entry<String, List<Coordinate>> entry : timeCoordinateMap.entrySet()) {
@@ -460,50 +459,50 @@ public class CycloneEvent extends Event {
 		return coordinateList;
 	}
 
-	@JsonIgnore
-	public Coordinate getAverageCoordinate(List<Coordinate> cList, Calendar calendar) {
-		Coordinate coordinate = null;
-		List<Coordinate> coordinateList = new ArrayList<>();
-		for (Coordinate c : cList) {
-			coordinateList.add(new Coordinate(c));
-		}
-		if (coordinateList.size() > 0) {
-			double latitudeSum = 0;
-			double longitudeSum = 0;
-			double latitude;
-			double longitude;
-			for (int i = 0; i < coordinateList.size(); i++) {
-				if (i + 1 < coordinateList.size()) {
-					Coordinate a = coordinateList.get(i);
-					Coordinate b = coordinateList.get(i + 1);
-					double difference = Math.abs(a.longitude - b.longitude);
-					if (difference >= 180) {
-						if (a.longitude < 0) {
-							a.longitude += 360;
-						}
-						if (b.longitude < 0) {
-							b.longitude += 360;
-						}
-					}
-				}
-			}
-			for (Coordinate c : coordinateList) {
-				latitudeSum += c.latitude;
-				longitudeSum += c.longitude;
-			}
-			latitude = latitudeSum / coordinateList.size();
-			longitude = longitudeSum / coordinateList.size();
-			if (longitude > 180) {
-				longitude -= 360;
-			}
-			coordinate = new Coordinate();
-			coordinate.latitude = latitude;
-			coordinate.longitude = longitude;
-			coordinate.calendar = calendar;
-//			point.calendar = date;
-		}
-		return coordinate;
-	}
+//	@JsonIgnore
+//	public Coordinate getAverageCoordinate(List<Coordinate> cList, Calendar calendar) {
+//		Coordinate coordinate = null;
+//		List<Coordinate> coordinateList = new ArrayList<>();
+//		for (Coordinate c : cList) {
+//			coordinateList.add(new Coordinate(c));
+//		}
+//		if (coordinateList.size() > 0) {
+//			double latitudeSum = 0;
+//			double longitudeSum = 0;
+//			double latitude;
+//			double longitude;
+//			for (int i = 0; i < coordinateList.size(); i++) {
+//				if (i + 1 < coordinateList.size()) {
+//					Coordinate a = coordinateList.get(i);
+//					Coordinate b = coordinateList.get(i + 1);
+//					double difference = Math.abs(a.longitude - b.longitude);
+//					if (difference >= 180) {
+//						if (a.longitude < 0) {
+//							a.longitude += 360;
+//						}
+//						if (b.longitude < 0) {
+//							b.longitude += 360;
+//						}
+//					}
+//				}
+//			}
+//			for (Coordinate c : coordinateList) {
+//				latitudeSum += c.latitude;
+//				longitudeSum += c.longitude;
+//			}
+//			latitude = latitudeSum / coordinateList.size();
+//			longitude = longitudeSum / coordinateList.size();
+//			if (longitude > 180) {
+//				longitude -= 360;
+//			}
+//			coordinate = new Coordinate();
+//			coordinate.latitude = latitude;
+//			coordinate.longitude = longitude;
+//			coordinate.calendar = calendar;
+////			point.calendar = date;
+//		}
+//		return coordinate;
+//	}
 
 	@JsonIgnore
 	public List<Coordinate> getCorrectedTimeCoordinateList() {

@@ -43,7 +43,6 @@ public class CycloneSource extends Source {
 	public LinkedList<String> eventQueue = new LinkedList<>();
 	public List<Index> indexList = new ArrayList<>();
 	public Map<String, Time> idTimeMap = new TreeMap<>();
-//	public List<Event> eventList;
 	public String order = "tb";
 	public Count count = new Count('>', 1);
 	public int[] levelArray;
@@ -115,463 +114,19 @@ public class CycloneSource extends Source {
 	}
 
 	public List<Event> load(Time time) throws Exception {
-
 		List<Event> loadList = new ArrayList<>();
-		;
-//		for (Time time : timeList) {
 		if (!Thread.interrupted()) {
 			loadList = this.eventMapGet(time.year, time.month);
-//				this.setIDTimeMap(loadList,time.year,time.month);
-//				List<String> idList = query.getIDList();
-//				if (idList.size() > 0) {
-//					List<Event> eventList = new ArrayList<>();
-//					for (String id : idList) {
-//						for (Event e : loadList) {
-//							if (e.id.equals(id)) {
-//								eventList.add(e);
-//							}
-//						}
-//					}
-//					if (eventList.size() > 0) {
-//						Result result = new Result();
-//						result.map.put("eventList", eventList);
-//						query.objectList.add(result);
-////						if(idList.size() == 1) {
-////							query.objectListAdd(new Result(Mode.COMPLETE));
-////							throw new Exception("Event ID "+idList.get(0) + " Found");
-////						}
-//					}
-//
-//				} else {
-
-//				}
 		} else {
 			throw new InterruptedException();
 		}
 		return loadList;
-//		}
 	}
 
 	public int[] getLevelArray() {
 		return this.levelArray;
 	}
-//	/**
-//	 * Original function works with or without startYear and endYear, set to -1.
-//	 * This is the problem for Month and Alias queries there is nothing that says
-//	 * what year to start and stop. When the data does not provide these delimeters
-//	 * the query is technically not correct. Therefore the solution is to require
-//	 * the startYear and endYear and fix the logic to also support month and alias
-//	 * queries.
-//	 * 
-//	 * @param i
-//	 * @return
-//	 * @throws Exception
-//	 */
-//	public void load(Query query, Interval i) throws Exception {
-//		logger.info("load(query, " + i + ")");
-//		List<Event> eventList = new ArrayList<>();
-//		int startYear = (i.startYear == -1) ? this.getStartYear() : i.startYear;
-//		int startMonth = (i.startMonth == -1) ? 1 : i.startMonth;
-//		int endYear = (i.endYear == -1) ? this.getEndYear() : i.endYear;
-//		int endMonth = (i.endMonth == -1) ? 12 : i.endMonth;
-//		List<Event> bufferList = null;
-//		List<Event> loadList;
-//		if (i.allFlag) {
-//			logger.info("load(...) allFlag=" + i.allFlag);
-//			List<Event> eList = new ArrayList<>();
-//			for (int y = startYear; y <= endYear; y++) {
-//				if (!Thread.interrupted()) {
-//					for (int m = startMonth; m <= endMonth; m++) {
-//						if (!Thread.interrupted()) {
-//							if (this.single) {
-//								loadList = this.eventMapGet(y, m);
-//								if (!test) {
-//									loadList = (bufferList != null) ? this.getSingleCountList(bufferList, loadList)
-//											: this.getSingleCountList(eventList, loadList);
-//									bufferList = loadList;
-//								}
-//								eList.addAll(loadList);
-//							} else {
-//								loadList = this.eventMapGet(y, m);
-//								eList.addAll(loadList);
-//							}
-//						} else {
-//							throw new InterruptedException();
-//						}
-//					}
-//				} else {
-//					throw new InterruptedException();
-//				}
-//			}
-//			Result result = new Result();
-//			result.map.put("eventList", eList);
-//			query.objectListAdd(result);
-//		} else if (i.startYear != -1 && i.endYear != -1) {
-//			if (this.getStartYear() <= i.startYear && i.endYear <= this.getEndYear()) {
-//				int yearDifference = endYear - startYear - 1;
-//				if (yearDifference == -1) { // easiest case same year just iterate over months and done
-//					// same year
-//					for (int y = startYear; y <= endYear; y++) {
-//						if (!Thread.interrupted()) {
-//							for (int m = startMonth; m <= endMonth; m++) {
-//								if (!Thread.interrupted()) {
-//									if (this.single) {
-//										loadList = this.eventMapGet(y, m);
-//										loadList = (bufferList != null) ? this.getSingleCountList(bufferList, loadList)
-//												: this.getSingleCountList(eventList, loadList);
-//										// eventList.addAll(loadList);
-//										Result result = new Result();
-//										result.map.put("eventList", new ArrayList<Event>((loadList)));
-//										query.outputList.add(result);
-//										bufferList = loadList;
-//									} else {
-//										loadList = this.eventMapGet(y, m);
-//										Result result = new Result();
-//										result.map.put("eventList", new ArrayList<Event>((loadList)));
-//										query.outputList.add(result);
-//										// eventList.addAll();
-//									}
-//								} else {
-//									throw new InterruptedException();
-//								}
-//							}
-//						} else {
-//							throw new InterruptedException();
-//						}
-//					}
-//				} else {
-//					// different years
-//					// all range, season, month queries end up here
-//					// in order for the single count method to work for DJF,
-//					// we have to read DJF in order.
-//					if (i.seasonFlag || i.monthFlag) {
-//						if (startMonth <= endMonth) {
-//							for (int y = startYear; y <= endYear; y++) {
-//								if (!Thread.interrupted()) {
-//									for (int m = startMonth; m <= endMonth; m++) {
-//										if (!Thread.interrupted()) {
-//											if (this.single) {
-//												loadList = this.eventMapGet(y, m);
-//												loadList = (bufferList != null)
-//														? this.getSingleCountList(bufferList, loadList)
-//														: this.getSingleCountList(eventList, loadList);
-//												// eventList.addAll(loadList);
-//												Result result = new Result();
-//												result.map.put("eventList", new ArrayList<Event>((loadList)));
-//												query.outputList.add(result);
-//												bufferList = loadList;
-//											} else {
-//												// eventList.addAll(this.eventMapGet(y, m));
-//												loadList = this.eventMapGet(y, m);
-//												Result result = new Result();
-//												result.map.put("eventList", new ArrayList<Event>((loadList)));
-//												query.outputList.add(result);
-//											}
-//										} else {
-//											throw new InterruptedException();
-//										}
-//
-//									}
-//								} else {
-//									throw new InterruptedException();
-//								}
-//							}
-//						} else {
-//							for (int y = startYear; y <= endYear; y++) {
-//								if (!Thread.interrupted()) {
-//									for (int m = 1; m <= endMonth; m++) {
-//										if (!Thread.interrupted()) {
-//											if (this.single) {
-//												loadList = this.eventMapGet(y, m);
-//												loadList = (bufferList != null)
-//														? this.getSingleCountList(bufferList, loadList)
-//														: this.getSingleCountList(eventList, loadList);
-//												// eventList.addAll(loadList);
-//												Result result = new Result();
-//												result.map.put("eventList", new ArrayList<Event>((loadList)));
-//												query.outputList.add(result);
-//												bufferList = loadList;
-//											} else {
-//												// eventList.addAll(this.eventMapGet(y, m));
-//												loadList = this.eventMapGet(y, m);
-//												Result result = new Result();
-//												result.map.put("eventList", new ArrayList<Event>((loadList)));
-//												query.outputList.add(result);
-//											}
-//										} else {
-//											throw new InterruptedException();
-//										}
-//									}
-//									for (int m = startMonth; m <= 12; m++) {
-//										if (!Thread.interrupted()) {
-//											if (this.single) {
-//												loadList = this.eventMapGet(y, m);
-//												loadList = (bufferList != null)
-//														? this.getSingleCountList(bufferList, loadList)
-//														: this.getSingleCountList(eventList, loadList);
-//												// eventList.addAll(loadList);
-//												Result result = new Result();
-//												result.map.put("eventList", new ArrayList<Event>((loadList)));
-//												query.outputList.add(result);
-//												bufferList = loadList;
-//											} else {
-//												// eventList.addAll(this.eventMapGet(y, m));
-//												loadList = this.eventMapGet(y, m);
-//												Result result = new Result();
-//												result.map.put("eventList", new ArrayList<Event>((loadList)));
-//												query.outputList.add(result);
-//											}
-//										} else {
-//											throw new InterruptedException();
-//										}
-//									}
-//								} else {
-//									throw new InterruptedException();
-//								}
-//							}
-//						}
-//					} else {
-//						// this code does not work, it may have never worked
-//						// update looks like this code works and Interval contains point is failing
-//						for (int m = startMonth; m <= 12; m++) {
-//							if (!Thread.interrupted()) {
-//								if (this.single) {
-//									loadList = this.eventMapGet(startYear, m);
-//									loadList = (bufferList != null) ? this.getSingleCountList(bufferList, loadList)
-//											: this.getSingleCountList(eventList, loadList);
-//									// eventList.addAll(loadList);
-//									Result result = new Result();
-//									result.map.put("eventList", new ArrayList<Event>((loadList)));
-//									query.outputList.add(result);
-//									bufferList = loadList;
-//								} else {
-//									// eventList.addAll(this.eventMapGet(startYear, m));
-//									loadList = this.eventMapGet(startYear, m);
-//									Result result = new Result();
-//									result.map.put("eventList", new ArrayList<Event>((loadList)));
-//									query.outputList.add(result);
-//								}
-//							} else {
-//								throw new InterruptedException();
-//							}
-//						}
-//						for (int y = startYear + 1; y <= endYear - 1; y++) {// skipped is years are consecutive
-//							if (!Thread.interrupted()) {
-//								for (int m = 1; m <= 12; m++) {
-//									if (!Thread.interrupted()) {
-//										if (this.single) {
-//											loadList = this.eventMapGet(y, m);
-//											loadList = (bufferList != null)
-//													? this.getSingleCountList(bufferList, loadList)
-//													: this.getSingleCountList(eventList, loadList);
-//											// eventList.addAll(loadList);
-//											Result result = new Result();
-//											result.map.put("eventList", new ArrayList<Event>((loadList)));
-//											query.outputList.add(result);
-//											bufferList = loadList;
-//										} else {
-//											// eventList.addAll(this.eventMapGet(y, m));
-//											loadList = this.eventMapGet(y, m);
-//											Result result = new Result();
-//											result.map.put("eventList", new ArrayList<Event>((loadList)));
-//											query.outputList.add(result);
-//										}
-//									} else {
-//										throw new InterruptedException();
-//									}
-//								}
-//							} else {
-//								throw new InterruptedException();
-//							}
-//						}
-//						for (int m = 1; m <= endMonth; m++) {
-//							if (!Thread.interrupted()) {
-//								if (this.single) {
-//									loadList = this.eventMapGet(endYear, m);
-//									loadList = (bufferList != null) ? this.getSingleCountList(bufferList, loadList)
-//											: this.getSingleCountList(eventList, loadList);
-//									// eventList.addAll(loadList);
-//									Result result = new Result();
-//									result.map.put("eventList", new ArrayList<Event>((loadList)));
-//									query.outputList.add(result);
-//									bufferList = loadList;
-//								} else {
-//									// eventList.addAll(this.eventMapGet(endYear, m));
-//									loadList = this.eventMapGet(endYear, m);
-//									Result result = new Result();
-//									result.map.put("eventList", new ArrayList<Event>((loadList)));
-//									query.outputList.add(result);
-//								}
-//							} else {
-//								throw new InterruptedException();
-//							}
-//						}
-//					}
-//				}
-//			} else {
-//				throw new Exception(
-//						"invalid interval, valid time between " + this.getStartYear() + " and " + this.getEndYear());
-//			}
-//		} else {
-//			throw new Exception("invalid interval, start and end year initialized");
-//		}
-//		// return eventList;
-//	}
 
-//	public List<Event> filter(Query query, List<Event> eventList) throws Exception {// List<Event> eventList) {
-////		logger.info("filter(" + query + ", " + eventList.size() + ") Thread.interrupted()="+Thread.interrupted());
-////		logger.info("filter(..., " + eventList.size() + ") Thread.interrupted()="+Thread.interrupted());
-////		logger.info("filter(..., " + eventList.size() + ") this.thread.isInterrupted()="+this.thread.isInterrupted());
-//		if (!Thread.interrupted()) {
-////			this.resetFlags(eventList);
-////			this.durationList = query.getDurationList();
-////			this.dimension = query.getDimension();
-////			this.count = this.getCount(query.map.get("count"));
-////			this.familyList = this.getFamilyList(query.map.get("family"));
-////			this.classificationList = this.getClassificationList(query.map.get("classification"));
-////			this.levelList = this.getLevelList(query.getPressure(), this.getLevelArray());
-//			boolean intervalFlag = false;
-//			if (eventList != null) {
-//				for (Event e : eventList) {
-//					for (Coordinate c : e.coordinateList) {
-//						intervalFlag = false;
-//						if (this.intervalList != null && this.intervalList.size() > 0) {
-//							for (Interval i : this.intervalList) {
-//								if (i.contains(c)) {
-//									intervalFlag = true;
-//									e.flag = true;
-//									break;
-//								}
-//							}
-//						} else {
-//							intervalFlag = true;
-//						}
-//						c.flag = intervalFlag;
-//					}
-//				}
-//				Iterator<Event> it = eventList.iterator();
-//				while (it.hasNext()) {
-//					Event e = it.next();
-//					if (!e.flag || !e.hasCoordinate())
-//						it.remove();
-//				}
-//			}
-//			if (eventList.size() == 0) {
-//				logger.warn("filter("+query + ", " + eventList.size() +") zero");
-//			}
-//		} else {
-//			throw new InterruptedException();
-//		}
-//		return eventList;
-//	}
-
-//	public List<Event> filter(Query query, List<Event> eventList) throws Exception {// List<Event> eventList) {
-////		logger.info("filter(" + query + ", " + eventList.size() + ") Thread.interrupted()="+Thread.interrupted());
-////		logger.info("filter(..., " + eventList.size() + ") Thread.interrupted()="+Thread.interrupted());
-////		logger.info("filter(..., " + eventList.size() + ") this.thread.isInterrupted()="+this.thread.isInterrupted());
-//		if (!Thread.interrupted()) {
-//			this.resetFlags(eventList);
-//			this.regionList = query.getRegionList();
-//			this.durationList = query.getDurationList();
-//			this.dimension = query.getDimension();
-//			this.count = this.getCount(query.map.get("count"));
-//			this.familyList = this.getFamilyList(query.map.get("family"));
-//			this.classificationList = this.getClassificationList(query.map.get("classification"));
-//			this.levelList = this.getLevelList(query.getPressure(), this.getLevelArray());
-//			boolean intervalFlag = false;
-//			boolean levelFlag = false;
-//			boolean regionFlag = false;
-//			boolean durationFlag = false;
-//			boolean familyFlag = false;
-//			boolean classFlag = false;
-//			if (eventList != null) {
-//				for (Event e : eventList) {
-//					durationFlag = false;
-//					familyFlag = false;
-//					classFlag = false;
-//					for (Coordinate c : e.coordinateList) {
-//						intervalFlag = false;
-//						levelFlag = false;
-//						regionFlag = false;
-//						if (this.intervalList != null && this.intervalList.size() > 0) {
-//							for (Interval i : this.intervalList) {
-//								if (i.contains(c)) {
-//									intervalFlag = true;
-//									break;
-//								}
-//							}
-//						} else {
-//							intervalFlag = true;
-//						}
-//						if (this.levelList != null && this.levelList.size() > 0) {
-//							for (Integer l : this.levelList) {
-//								int level = (int) c.attribute.get("pressure");
-//								if (l == level) {
-//									levelFlag = true;
-//								}
-//							}
-//						} else {
-//							levelFlag = true;
-//						}
-//						if (this.regionList != null && this.regionList.size() > 0) {
-//							for (Region r : this.regionList) {
-//								if (r.contains(c)) {
-//									regionFlag = true;
-//								}
-//							}
-//						} else {
-//							regionFlag = true;
-//						}
-//						c.flag = intervalFlag && levelFlag && regionFlag;
-//					}
-//					if (this.durationList != null && this.durationList.size() > 0) {
-//						for (Duration d : this.durationList) {
-//							if (d.contains(e.getDuration())) {
-//								durationFlag = true;
-//								break;
-//							}
-//						}
-//					} else {
-//						durationFlag = true;
-//					}
-//					if (this.familyList != null && this.familyList.size() > 0) {
-//						for (Family depth : this.familyList) {
-//							if (((CycloneEvent) e).family != null && depth == ((CycloneEvent) e).family) {
-//								familyFlag = true;
-//								break;
-//							}
-//						}
-//					} else {
-//						familyFlag = true;
-//					}
-//
-//					if (this.classificationList != null && this.classificationList.size() > 0) {
-//						for (Classification type : classificationList) {
-//							if (type == ((CycloneEvent) e).classification) {
-//								classFlag = true;
-//								break;
-//							}
-//						}
-//					} else {
-//						classFlag = true;
-//					}
-//					e.flag = durationFlag && familyFlag && classFlag;
-//				}
-//				Iterator<Event> it = eventList.iterator();
-//				while (it.hasNext()) {
-//					Event e = it.next();
-//					if (!e.flag || !e.hasCoordinate())
-//						it.remove();
-//				}
-//			}
-//			if (eventList.size() == 0) {
-//				logger.warn("filter("+query + ", " + eventList.size() +") zero");
-//			}
-//		} else {
-//			throw new InterruptedException();
-//		}
-//		return eventList;
-//	}
 
 	public List<Event> eventMapGet(int y, int m) throws Exception {
 //		logger.info("eventMapGet(" + y + ", " + m + ")");
@@ -590,7 +145,6 @@ public class CycloneSource extends Source {
 			}
 		}
 		eList = new ArrayList<>(eList);
-//		this.indexList.add(this.getIndex(y, m, eList));
 		return eList;
 	}
 
@@ -615,30 +169,6 @@ public class CycloneSource extends Source {
 		}
 		return eList;
 	}
-
-//	public void resetFlags(List<Event> eventList) {
-//		for (Event e : eventList) {
-//			e.flag = false;
-//			for (Coordinate p : e.coordinateList) {
-//				p.flag = false;
-//			}
-//		}
-//	}
-
-//	public List<Family> getFamilyList(String family) {
-//		List<Family> familyList = new ArrayList<>();
-//		if (family != null) {
-//			String[] array = family.split(",");
-//			for (String s : array) {
-//				if (!s.isEmpty()) {
-//					s = s.toUpperCase();
-//					Family f = Family.valueOf(s);
-//					familyList.add(f);
-//				}
-//			}
-//		}
-//		return familyList;
-//	}
 
 	public List<Classification> getClassificationList(String classification) {
 		List<Classification> classificationList = new ArrayList<>();
@@ -757,25 +287,7 @@ public class CycloneSource extends Source {
 		return levelList;
 	}
 
-	// @Override
-//	public double getDimension(String dimension) throws Exception {
-//		int d = 1;
-//		if (dimension != null && !dimension.isEmpty()) {
-//			boolean valid = true;
-//			try {
-//				d = Integer.parseInt(dimension);
-//			} catch (NumberFormatException e) {
-//				valid = false;
-//			}
-//			if (d <= 0) {
-//				valid = false;
-//			}
-//			if (!valid) {
-//				throw new Exception("invalid dimension format: " + dimension);
-//			}
-//		}
-//		return d;
-//	}
+
 
 	public List<Event> getSingleCountList(List<Event> referenceList, List<Event> newList) throws Exception {
 		logger.debug("getSingleCountList(" + referenceList.size() + "," + newList.size() + ")");
@@ -822,7 +334,7 @@ public class CycloneSource extends Source {
 				}
 			}
 		}
-//	logger.info("getSingleCountList("+listA+","+listB+") listB="+listB);
+
 		return eventList;
 	}
 
@@ -857,6 +369,491 @@ public class CycloneSource extends Source {
 	}
 
 }
+//logger.info("getSingleCountList("+listA+","+listB+") listB="+listB);
+//this.indexList.add(this.getIndex(y, m, eList));
+///**
+//* Original function works with or without startYear and endYear, set to -1.
+//* This is the problem for Month and Alias queries there is nothing that says
+//* what year to start and stop. When the data does not provide these delimeters
+//* the query is technically not correct. Therefore the solution is to require
+//* the startYear and endYear and fix the logic to also support month and alias
+//* queries.
+//* 
+//* @param i
+//* @return
+//* @throws Exception
+//*/
+//public void load(Query query, Interval i) throws Exception {
+//	logger.info("load(query, " + i + ")");
+//	List<Event> eventList = new ArrayList<>();
+//	int startYear = (i.startYear == -1) ? this.getStartYear() : i.startYear;
+//	int startMonth = (i.startMonth == -1) ? 1 : i.startMonth;
+//	int endYear = (i.endYear == -1) ? this.getEndYear() : i.endYear;
+//	int endMonth = (i.endMonth == -1) ? 12 : i.endMonth;
+//	List<Event> bufferList = null;
+//	List<Event> loadList;
+//	if (i.allFlag) {
+//		logger.info("load(...) allFlag=" + i.allFlag);
+//		List<Event> eList = new ArrayList<>();
+//		for (int y = startYear; y <= endYear; y++) {
+//			if (!Thread.interrupted()) {
+//				for (int m = startMonth; m <= endMonth; m++) {
+//					if (!Thread.interrupted()) {
+//						if (this.single) {
+//							loadList = this.eventMapGet(y, m);
+//							if (!test) {
+//								loadList = (bufferList != null) ? this.getSingleCountList(bufferList, loadList)
+//										: this.getSingleCountList(eventList, loadList);
+//								bufferList = loadList;
+//							}
+//							eList.addAll(loadList);
+//						} else {
+//							loadList = this.eventMapGet(y, m);
+//							eList.addAll(loadList);
+//						}
+//					} else {
+//						throw new InterruptedException();
+//					}
+//				}
+//			} else {
+//				throw new InterruptedException();
+//			}
+//		}
+//		Result result = new Result();
+//		result.map.put("eventList", eList);
+//		query.objectListAdd(result);
+//	} else if (i.startYear != -1 && i.endYear != -1) {
+//		if (this.getStartYear() <= i.startYear && i.endYear <= this.getEndYear()) {
+//			int yearDifference = endYear - startYear - 1;
+//			if (yearDifference == -1) { // easiest case same year just iterate over months and done
+//				// same year
+//				for (int y = startYear; y <= endYear; y++) {
+//					if (!Thread.interrupted()) {
+//						for (int m = startMonth; m <= endMonth; m++) {
+//							if (!Thread.interrupted()) {
+//								if (this.single) {
+//									loadList = this.eventMapGet(y, m);
+//									loadList = (bufferList != null) ? this.getSingleCountList(bufferList, loadList)
+//											: this.getSingleCountList(eventList, loadList);
+//									// eventList.addAll(loadList);
+//									Result result = new Result();
+//									result.map.put("eventList", new ArrayList<Event>((loadList)));
+//									query.outputList.add(result);
+//									bufferList = loadList;
+//								} else {
+//									loadList = this.eventMapGet(y, m);
+//									Result result = new Result();
+//									result.map.put("eventList", new ArrayList<Event>((loadList)));
+//									query.outputList.add(result);
+//									// eventList.addAll();
+//								}
+//							} else {
+//								throw new InterruptedException();
+//							}
+//						}
+//					} else {
+//						throw new InterruptedException();
+//					}
+//				}
+//			} else {
+//				// different years
+//				// all range, season, month queries end up here
+//				// in order for the single count method to work for DJF,
+//				// we have to read DJF in order.
+//				if (i.seasonFlag || i.monthFlag) {
+//					if (startMonth <= endMonth) {
+//						for (int y = startYear; y <= endYear; y++) {
+//							if (!Thread.interrupted()) {
+//								for (int m = startMonth; m <= endMonth; m++) {
+//									if (!Thread.interrupted()) {
+//										if (this.single) {
+//											loadList = this.eventMapGet(y, m);
+//											loadList = (bufferList != null)
+//													? this.getSingleCountList(bufferList, loadList)
+//													: this.getSingleCountList(eventList, loadList);
+//											// eventList.addAll(loadList);
+//											Result result = new Result();
+//											result.map.put("eventList", new ArrayList<Event>((loadList)));
+//											query.outputList.add(result);
+//											bufferList = loadList;
+//										} else {
+//											// eventList.addAll(this.eventMapGet(y, m));
+//											loadList = this.eventMapGet(y, m);
+//											Result result = new Result();
+//											result.map.put("eventList", new ArrayList<Event>((loadList)));
+//											query.outputList.add(result);
+//										}
+//									} else {
+//										throw new InterruptedException();
+//									}
+//
+//								}
+//							} else {
+//								throw new InterruptedException();
+//							}
+//						}
+//					} else {
+//						for (int y = startYear; y <= endYear; y++) {
+//							if (!Thread.interrupted()) {
+//								for (int m = 1; m <= endMonth; m++) {
+//									if (!Thread.interrupted()) {
+//										if (this.single) {
+//											loadList = this.eventMapGet(y, m);
+//											loadList = (bufferList != null)
+//													? this.getSingleCountList(bufferList, loadList)
+//													: this.getSingleCountList(eventList, loadList);
+//											// eventList.addAll(loadList);
+//											Result result = new Result();
+//											result.map.put("eventList", new ArrayList<Event>((loadList)));
+//											query.outputList.add(result);
+//											bufferList = loadList;
+//										} else {
+//											// eventList.addAll(this.eventMapGet(y, m));
+//											loadList = this.eventMapGet(y, m);
+//											Result result = new Result();
+//											result.map.put("eventList", new ArrayList<Event>((loadList)));
+//											query.outputList.add(result);
+//										}
+//									} else {
+//										throw new InterruptedException();
+//									}
+//								}
+//								for (int m = startMonth; m <= 12; m++) {
+//									if (!Thread.interrupted()) {
+//										if (this.single) {
+//											loadList = this.eventMapGet(y, m);
+//											loadList = (bufferList != null)
+//													? this.getSingleCountList(bufferList, loadList)
+//													: this.getSingleCountList(eventList, loadList);
+//											// eventList.addAll(loadList);
+//											Result result = new Result();
+//											result.map.put("eventList", new ArrayList<Event>((loadList)));
+//											query.outputList.add(result);
+//											bufferList = loadList;
+//										} else {
+//											// eventList.addAll(this.eventMapGet(y, m));
+//											loadList = this.eventMapGet(y, m);
+//											Result result = new Result();
+//											result.map.put("eventList", new ArrayList<Event>((loadList)));
+//											query.outputList.add(result);
+//										}
+//									} else {
+//										throw new InterruptedException();
+//									}
+//								}
+//							} else {
+//								throw new InterruptedException();
+//							}
+//						}
+//					}
+//				} else {
+//					// this code does not work, it may have never worked
+//					// update looks like this code works and Interval contains point is failing
+//					for (int m = startMonth; m <= 12; m++) {
+//						if (!Thread.interrupted()) {
+//							if (this.single) {
+//								loadList = this.eventMapGet(startYear, m);
+//								loadList = (bufferList != null) ? this.getSingleCountList(bufferList, loadList)
+//										: this.getSingleCountList(eventList, loadList);
+//								// eventList.addAll(loadList);
+//								Result result = new Result();
+//								result.map.put("eventList", new ArrayList<Event>((loadList)));
+//								query.outputList.add(result);
+//								bufferList = loadList;
+//							} else {
+//								// eventList.addAll(this.eventMapGet(startYear, m));
+//								loadList = this.eventMapGet(startYear, m);
+//								Result result = new Result();
+//								result.map.put("eventList", new ArrayList<Event>((loadList)));
+//								query.outputList.add(result);
+//							}
+//						} else {
+//							throw new InterruptedException();
+//						}
+//					}
+//					for (int y = startYear + 1; y <= endYear - 1; y++) {// skipped is years are consecutive
+//						if (!Thread.interrupted()) {
+//							for (int m = 1; m <= 12; m++) {
+//								if (!Thread.interrupted()) {
+//									if (this.single) {
+//										loadList = this.eventMapGet(y, m);
+//										loadList = (bufferList != null)
+//												? this.getSingleCountList(bufferList, loadList)
+//												: this.getSingleCountList(eventList, loadList);
+//										// eventList.addAll(loadList);
+//										Result result = new Result();
+//										result.map.put("eventList", new ArrayList<Event>((loadList)));
+//										query.outputList.add(result);
+//										bufferList = loadList;
+//									} else {
+//										// eventList.addAll(this.eventMapGet(y, m));
+//										loadList = this.eventMapGet(y, m);
+//										Result result = new Result();
+//										result.map.put("eventList", new ArrayList<Event>((loadList)));
+//										query.outputList.add(result);
+//									}
+//								} else {
+//									throw new InterruptedException();
+//								}
+//							}
+//						} else {
+//							throw new InterruptedException();
+//						}
+//					}
+//					for (int m = 1; m <= endMonth; m++) {
+//						if (!Thread.interrupted()) {
+//							if (this.single) {
+//								loadList = this.eventMapGet(endYear, m);
+//								loadList = (bufferList != null) ? this.getSingleCountList(bufferList, loadList)
+//										: this.getSingleCountList(eventList, loadList);
+//								// eventList.addAll(loadList);
+//								Result result = new Result();
+//								result.map.put("eventList", new ArrayList<Event>((loadList)));
+//								query.outputList.add(result);
+//								bufferList = loadList;
+//							} else {
+//								// eventList.addAll(this.eventMapGet(endYear, m));
+//								loadList = this.eventMapGet(endYear, m);
+//								Result result = new Result();
+//								result.map.put("eventList", new ArrayList<Event>((loadList)));
+//								query.outputList.add(result);
+//							}
+//						} else {
+//							throw new InterruptedException();
+//						}
+//					}
+//				}
+//			}
+//		} else {
+//			throw new Exception(
+//					"invalid interval, valid time between " + this.getStartYear() + " and " + this.getEndYear());
+//		}
+//	} else {
+//		throw new Exception("invalid interval, start and end year initialized");
+//	}
+//	// return eventList;
+//}
+
+//public List<Event> filter(Query query, List<Event> eventList) throws Exception {// List<Event> eventList) {
+////	logger.info("filter(" + query + ", " + eventList.size() + ") Thread.interrupted()="+Thread.interrupted());
+////	logger.info("filter(..., " + eventList.size() + ") Thread.interrupted()="+Thread.interrupted());
+////	logger.info("filter(..., " + eventList.size() + ") this.thread.isInterrupted()="+this.thread.isInterrupted());
+//	if (!Thread.interrupted()) {
+////		this.resetFlags(eventList);
+////		this.durationList = query.getDurationList();
+////		this.dimension = query.getDimension();
+////		this.count = this.getCount(query.map.get("count"));
+////		this.familyList = this.getFamilyList(query.map.get("family"));
+////		this.classificationList = this.getClassificationList(query.map.get("classification"));
+////		this.levelList = this.getLevelList(query.getPressure(), this.getLevelArray());
+//		boolean intervalFlag = false;
+//		if (eventList != null) {
+//			for (Event e : eventList) {
+//				for (Coordinate c : e.coordinateList) {
+//					intervalFlag = false;
+//					if (this.intervalList != null && this.intervalList.size() > 0) {
+//						for (Interval i : this.intervalList) {
+//							if (i.contains(c)) {
+//								intervalFlag = true;
+//								e.flag = true;
+//								break;
+//							}
+//						}
+//					} else {
+//						intervalFlag = true;
+//					}
+//					c.flag = intervalFlag;
+//				}
+//			}
+//			Iterator<Event> it = eventList.iterator();
+//			while (it.hasNext()) {
+//				Event e = it.next();
+//				if (!e.flag || !e.hasCoordinate())
+//					it.remove();
+//			}
+//		}
+//		if (eventList.size() == 0) {
+//			logger.warn("filter("+query + ", " + eventList.size() +") zero");
+//		}
+//	} else {
+//		throw new InterruptedException();
+//	}
+//	return eventList;
+//}
+
+//public List<Event> filter(Query query, List<Event> eventList) throws Exception {// List<Event> eventList) {
+////	logger.info("filter(" + query + ", " + eventList.size() + ") Thread.interrupted()="+Thread.interrupted());
+////	logger.info("filter(..., " + eventList.size() + ") Thread.interrupted()="+Thread.interrupted());
+////	logger.info("filter(..., " + eventList.size() + ") this.thread.isInterrupted()="+this.thread.isInterrupted());
+//	if (!Thread.interrupted()) {
+//		this.resetFlags(eventList);
+//		this.regionList = query.getRegionList();
+//		this.durationList = query.getDurationList();
+//		this.dimension = query.getDimension();
+//		this.count = this.getCount(query.map.get("count"));
+//		this.familyList = this.getFamilyList(query.map.get("family"));
+//		this.classificationList = this.getClassificationList(query.map.get("classification"));
+//		this.levelList = this.getLevelList(query.getPressure(), this.getLevelArray());
+//		boolean intervalFlag = false;
+//		boolean levelFlag = false;
+//		boolean regionFlag = false;
+//		boolean durationFlag = false;
+//		boolean familyFlag = false;
+//		boolean classFlag = false;
+//		if (eventList != null) {
+//			for (Event e : eventList) {
+//				durationFlag = false;
+//				familyFlag = false;
+//				classFlag = false;
+//				for (Coordinate c : e.coordinateList) {
+//					intervalFlag = false;
+//					levelFlag = false;
+//					regionFlag = false;
+//					if (this.intervalList != null && this.intervalList.size() > 0) {
+//						for (Interval i : this.intervalList) {
+//							if (i.contains(c)) {
+//								intervalFlag = true;
+//								break;
+//							}
+//						}
+//					} else {
+//						intervalFlag = true;
+//					}
+//					if (this.levelList != null && this.levelList.size() > 0) {
+//						for (Integer l : this.levelList) {
+//							int level = (int) c.attribute.get("pressure");
+//							if (l == level) {
+//								levelFlag = true;
+//							}
+//						}
+//					} else {
+//						levelFlag = true;
+//					}
+//					if (this.regionList != null && this.regionList.size() > 0) {
+//						for (Region r : this.regionList) {
+//							if (r.contains(c)) {
+//								regionFlag = true;
+//							}
+//						}
+//					} else {
+//						regionFlag = true;
+//					}
+//					c.flag = intervalFlag && levelFlag && regionFlag;
+//				}
+//				if (this.durationList != null && this.durationList.size() > 0) {
+//					for (Duration d : this.durationList) {
+//						if (d.contains(e.getDuration())) {
+//							durationFlag = true;
+//							break;
+//						}
+//					}
+//				} else {
+//					durationFlag = true;
+//				}
+//				if (this.familyList != null && this.familyList.size() > 0) {
+//					for (Family depth : this.familyList) {
+//						if (((CycloneEvent) e).family != null && depth == ((CycloneEvent) e).family) {
+//							familyFlag = true;
+//							break;
+//						}
+//					}
+//				} else {
+//					familyFlag = true;
+//				}
+//
+//				if (this.classificationList != null && this.classificationList.size() > 0) {
+//					for (Classification type : classificationList) {
+//						if (type == ((CycloneEvent) e).classification) {
+//							classFlag = true;
+//							break;
+//						}
+//					}
+//				} else {
+//					classFlag = true;
+//				}
+//				e.flag = durationFlag && familyFlag && classFlag;
+//			}
+//			Iterator<Event> it = eventList.iterator();
+//			while (it.hasNext()) {
+//				Event e = it.next();
+//				if (!e.flag || !e.hasCoordinate())
+//					it.remove();
+//			}
+//		}
+//		if (eventList.size() == 0) {
+//			logger.warn("filter("+query + ", " + eventList.size() +") zero");
+//		}
+//	} else {
+//		throw new InterruptedException();
+//	}
+//	return eventList;
+//}
+//public void resetFlags(List<Event> eventList) {
+//for (Event e : eventList) {
+//	e.flag = false;
+//	for (Coordinate p : e.coordinateList) {
+//		p.flag = false;
+//	}
+//}
+//}
+
+//public List<Family> getFamilyList(String family) {
+//List<Family> familyList = new ArrayList<>();
+//if (family != null) {
+//	String[] array = family.split(",");
+//	for (String s : array) {
+//		if (!s.isEmpty()) {
+//			s = s.toUpperCase();
+//			Family f = Family.valueOf(s);
+//			familyList.add(f);
+//		}
+//	}
+//}
+//return familyList;
+//}
+// @Override
+//public double getDimension(String dimension) throws Exception {
+//	int d = 1;
+//	if (dimension != null && !dimension.isEmpty()) {
+//		boolean valid = true;
+//		try {
+//			d = Integer.parseInt(dimension);
+//		} catch (NumberFormatException e) {
+//			valid = false;
+//		}
+//		if (d <= 0) {
+//			valid = false;
+//		}
+//		if (!valid) {
+//			throw new Exception("invalid dimension format: " + dimension);
+//		}
+//	}
+//	return d;
+//}
+//this.setIDTimeMap(loadList,time.year,time.month);
+//List<String> idList = query.getIDList();
+//if (idList.size() > 0) {
+//	List<Event> eventList = new ArrayList<>();
+//	for (String id : idList) {
+//		for (Event e : loadList) {
+//			if (e.id.equals(id)) {
+//				eventList.add(e);
+//			}
+//		}
+//	}
+//	if (eventList.size() > 0) {
+//		Result result = new Result();
+//		result.map.put("eventList", eventList);
+//		query.objectList.add(result);
+////		if(idList.size() == 1) {
+////			query.objectListAdd(new Result(Mode.COMPLETE));
+////			throw new Exception("Event ID "+idList.get(0) + " Found");
+////		}
+//	}
+//
+//} else {
+
+//}
 //else if (object != null) {
 //if(object instanceof Object[]) {
 //	Object[] objectArray = (Object[])object;

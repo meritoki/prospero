@@ -23,6 +23,7 @@ import java.util.TimeZone;
 
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.unit.Time;
 
 /**
  *
@@ -125,9 +126,9 @@ public class TimePanel extends javax.swing.JPanel implements Runnable {
 				} else if (this.backward) {
 					calendar.add(this.calendarUnit, -this.calendarIncrement);
 				}
-//				this.model.data.setCalendar(calendar);// data uses calendar differently from terra.
+
 				this.model.setCalendar(calendar);
-				this.currentTimeTextField.setText(simpleDateFormat.format(this.model.calendar.getTime()));
+				this.currentTimeTextField.setText(this.simpleDateFormat.format(this.model.calendar.getTime()));
 				this.mainFrame.init();
 				Thread.sleep(this.delay);
 			} catch (Exception e) {
@@ -257,14 +258,14 @@ public class TimePanel extends javax.swing.JPanel implements Runnable {
 
     private void setButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setButtonActionPerformed
 		String time = this.currentTimeTextField.getText();
-		String interval = this.incrementTimeTextField.getText();
+		String increment = this.incrementTimeTextField.getText();
 		String sleep = this.delayTimeTextField.getText();
 		String rangeATime = this.rangeATimeTextField.getText();
 		String rangeBTime = this.rangeBTimeTextField.getText();
 		boolean currentTimeBC = this.currentTimeBCCheckBox.isSelected();
 		boolean rangeATimeBC = this.rangeATimeBCCheckBox.isSelected();
 		boolean rangeBTimeBC = this.rangeBTimeBCCheckBox.isSelected();
-		this.calendarIncrement = (!interval.isEmpty()) ? Integer.parseInt(interval) : 1;
+		this.calendarIncrement = (!increment.isEmpty()) ? Integer.parseInt(increment) : 1;
 		this.delay = (!sleep.isEmpty()) ? Integer.parseInt(sleep) : 1000;
 		if (!time.isEmpty()) {
 			GregorianCalendar calendar = new GregorianCalendar();
@@ -273,22 +274,18 @@ public class TimePanel extends javax.swing.JPanel implements Runnable {
 			calendar.setTimeZone(TimeZone.getTimeZone(this.model.timeZone));
 			startCalendar.setTimeZone(TimeZone.getTimeZone(this.model.timeZone));
 			endCalendar.setTimeZone(TimeZone.getTimeZone(this.model.timeZone));
-			try {
-				calendar.setTime(this.simpleDateFormat.parse(time));
+			
+				calendar.setTime(Time.getDate(time));
 				if(currentTimeBC) calendar.set(Calendar.ERA, GregorianCalendar.BC);
-				startCalendar.setTime(this.simpleDateFormat.parse(rangeATime));
+				startCalendar.setTime(Time.getDate(rangeATime));
 				if(rangeATimeBC) startCalendar.set(Calendar.ERA, GregorianCalendar.BC);
-				endCalendar.setTime(this.simpleDateFormat.parse(rangeBTime));
+				endCalendar.setTime(Time.getDate(rangeBTime));
 				if(rangeBTimeBC) endCalendar.set(Calendar.ERA, GregorianCalendar.BC);
 				this.model.setCalendar(calendar);
 				this.model.setStartCalendar(startCalendar);
 				this.model.setEndCalendar(endCalendar);
-//				this.model.query();
 				this.mainFrame.init();
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
 		}
     }//GEN-LAST:event_setButtonActionPerformed
 
@@ -329,3 +326,5 @@ public class TimePanel extends javax.swing.JPanel implements Runnable {
     private javax.swing.JButton stopButton;
     // End of variables declaration//GEN-END:variables
 }
+//this.model.query();
+//this.model.data.setCalendar(calendar);// data uses calendar differently from terra.

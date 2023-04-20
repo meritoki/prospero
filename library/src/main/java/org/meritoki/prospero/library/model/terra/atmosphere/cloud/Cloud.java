@@ -41,10 +41,12 @@ public class Cloud extends Atmosphere {
 	public Cloud() {
 		super("Cloud");
 		this.addChild(new N());
+		
 	}
 
 	public Cloud(String name) {
 		super(name);
+		this.tileFlag = true;
 	}
 
 	@Override
@@ -103,7 +105,7 @@ public class Cloud extends Atmosphere {
 			List<NetCDF> netCDFList) {
 		List<Time> timeList = new ArrayList<>();
 		for (NetCDF netCDF : netCDFList) {
-			if (netCDF.type == this.dataType) {
+			if (netCDF.type == DataType.BAND_4) {
 				ArrayFloat.D2 latMatrix = netCDF.latMatrix;
 				ArrayFloat.D2 lonMatrix = netCDF.lonMatrix;
 				ArrayFloat.D3 dataArray = netCDF.variableArray;
@@ -125,6 +127,41 @@ public class Cloud extends Atmosphere {
 								coordinateMatrix[x][y][z]++;
 								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, -1,
 										-1, -1, -1);
+								if (!timeList.contains(time)) {
+									timeList.add(time);
+								}
+							}
+						}
+					}
+				}
+			} else if (netCDF.type == DataType.CMI) {
+				logger.info("setCoordinateMatrix(...) CMI");
+				ArrayFloat.D2 latArray = netCDF.latMatrix;
+				ArrayFloat.D2 lonArray = netCDF.lonMatrix;
+				ArrayFloat.D2 dataArray = netCDF.variableMatrix;
+				int timeSize = (int)netCDF.timeDoubleArray.getSize();
+				int latSize = (int)Math.sqrt(latArray.getSize());
+				int lonSize = (int)Math.sqrt(lonArray.getSize());
+				logger.info("setCoordinateMatrix(...) latSize="+latSize);
+				logger.info("setCoordinateMatrix(...) lonSize="+lonSize);
+				for (int t = 0; t < timeSize; t++) {
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(Time.getTwoThousandJanuaryFirstDate((int)netCDF.timeDoubleArray.get(t)));
+					for (int i = 0; i < latSize; i++) {
+//						logger.info("setCoordinateMatrix(...) latitude="+latitude);
+						for (int j = 0; j < lonSize; j++) {
+							float latitude = latArray.get(i,j);
+							float longitude = lonArray.get(i,j);
+//							logger.info("setCoordinateMatrix(...) latitude="+latitude);
+//							logger.info("setCoordinateMatrix(...) longitude="+longitude);
+							if (latitude < 0) {
+								int x = (int) ((latitude + this.latitude) * this.resolution);
+								int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int z = calendar.get(Calendar.MONTH);
+								dataMatrix[x][y][z] += dataArray.get(i, j);
+								coordinateMatrix[x][y][z]++;
+								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DATE),
+										calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
 								if (!timeList.contains(time)) {
 									timeList.add(time);
 								}

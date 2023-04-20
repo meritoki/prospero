@@ -54,9 +54,9 @@ public class Variable extends Node {
 	@JsonIgnore
 	public Calendar calendar;
 	@JsonIgnore
-	public Calendar startCalendar = new GregorianCalendar(2001, 0, 1, 0, 0, 0);
+	public Calendar startCalendar;
 	@JsonIgnore
-	public Calendar endCalendar = new GregorianCalendar(2001, 11, 31, 0, 0, 0);// Calendar.getInstance();
+	public Calendar endCalendar;
 	@JsonIgnore
 	public List<Script> scriptList = new ArrayList<>();
 	@JsonIgnore
@@ -83,7 +83,6 @@ public class Variable extends Node {
 	public Document document;
 	@JsonIgnore
 	public Dimension dimension = new Dimension();
-
 	@JsonIgnore
 	public String source;
 	@JsonIgnore
@@ -238,9 +237,6 @@ public class Variable extends Node {
 						e.printStackTrace();
 					}
 				} 
-//				else if(this.mode == Mode.EXCEPTION) {
-//					this.reset();
-//				}
 			}
 		}
 	}
@@ -258,14 +254,8 @@ public class Variable extends Node {
 		this.queryStack = new LinkedList<>();
 	}
 
-	public void initVariableMap() {
+	public void initVariableMap() {}
 
-	}
-
-//	@JsonIgnore
-//	public Dimension getDimension() {
-//		return this.dimension;
-//	}
 	@JsonIgnore
 	public Variable getVariable(String name) {
 //		logger.debug(this.name+".getVariable("+name+")");
@@ -312,7 +302,14 @@ public class Variable extends Node {
 		}
 	}
 	
-
+//	@JsonIgnore
+//	public void setTimeZone(String timeZone) {
+//		this.timeZone = timeZone;
+//		List<Variable> nodeList = this.getChildren();
+//		for (Variable n : nodeList) {
+//			n.setCalendar(calendar);
+//		}
+//	}
 
 	@JsonIgnore
 	public void setCalendar(Calendar calendar) {
@@ -416,28 +413,6 @@ public class Variable extends Node {
 			v.getList(v, nodeList);
 		}
 	}
-	
-//	public List<Variable> getVisibleList() {
-//		List<Variable> nodeList = this.getList();
-//		List<Variable> nList = new ArrayList<>();
-//		for (Variable n : nodeList) {
-//			if(n.visible) {
-//				nList.add(n);
-//			}
-//		}
-//		return nList;
-//	}
-
-//	public void getVisibleList(Variable node, List<Variable> nodeList) {
-//		List<Variable> nList = this.getChildren();
-//		for (Variable n : nList) {
-//			Variable v = n;
-//			if(v.visible) {
-//				nodeList.add(v);
-//			}
-//			v.getList(v, nodeList);
-//		}
-//	}
 
 	/**
 	 * N parameter is the hook that provides access to the whole structure, without
@@ -497,6 +472,32 @@ public class Variable extends Node {
 		}
 	}
 }
+//else if(this.mode == Mode.EXCEPTION) {
+//this.reset();
+//}
+//= new GregorianCalendar(2001, 0, 1, 0, 0, 0);
+//public List<Variable> getVisibleList() {
+//List<Variable> nodeList = this.getList();
+//List<Variable> nList = new ArrayList<>();
+//for (Variable n : nodeList) {
+//	if(n.visible) {
+//		nList.add(n);
+//	}
+//}
+//return nList;
+//}
+
+//public void getVisibleList(Variable node, List<Variable> nodeList) {
+//List<Variable> nList = this.getChildren();
+//for (Variable n : nList) {
+//	Variable v = n;
+//	if(v.visible) {
+//		nodeList.add(v);
+//	}
+//	v.getList(v, nodeList);
+//}
+//}
+//= new GregorianCalendar(2001, 11, 31, 0, 0, 0);// Calendar.getInstance();
 //@JsonIgnore
 //public void plot(Graphics graphics) throws Exception {
 //	List<Variable> nodeList = this.getChildren();

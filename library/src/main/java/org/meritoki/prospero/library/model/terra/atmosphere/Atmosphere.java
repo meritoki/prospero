@@ -36,12 +36,13 @@ public class Atmosphere extends Terra {
 	
 	public Atmosphere() {
 		super("Atmosphere");
+		this.addChild(new Cloud());
 		this.addChild(new Wind());
 		this.addChild(new Cyclone());
 		this.addChild(new Tornado());
 		this.addChild(new SeaLevelPressure());
 		this.addChild(new Gravitation());
-		this.addChild(new Cloud());
+		
 	}
 	
 	public Atmosphere(String name) {

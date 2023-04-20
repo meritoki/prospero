@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -56,10 +57,15 @@ public class Model extends Variable {
 		this.addChild(this.solar);
 		this.addCamera(new Camera(this.solar));
 		this.setData(this.data);
-		this.calendar = Calendar.getInstance();
-		this.calendar.setTime(new Date());
+		this.calendar = new GregorianCalendar(2019, 5, 17, 0, 0, 0);
+		this.startCalendar = new GregorianCalendar(2019, 0, 1, 0, 0, 0);
+		this.endCalendar = new GregorianCalendar(2019, 11, 31, 0, 0, 0);
+//		this.calendar = Calendar.getInstance();
+//		this.calendar.setTime(new Date());
 		this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
 		this.setCalendar(this.calendar);
+		this.setStartCalendar(this.startCalendar);
+		this.setEndCalendar(this.endCalendar);
 	}
 	
 	@Override

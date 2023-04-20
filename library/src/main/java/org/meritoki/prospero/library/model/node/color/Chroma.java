@@ -43,29 +43,49 @@ public class Chroma {
 		this.factor = 0.8;
 		this.hue = 0.8;
 		this.hueFlag = true;
-		this.saturationFlag = false;
-		this.brightnessFlag = false;
+	}
+	
+	public void initGrayscale() {
+		logger.info("initGrayscale()");
+		this.factor = 1;
+		this.hue = 1;
+		this.saturation = 0.0;
+		this.hueFlag = true;
+		this.saturationFlag = true;
+		this.brightnessFlag = true;
 	}
 
 	public Chroma(Scheme scheme) {
 		this.scheme = scheme;
 		if (this.scheme != null) {
-			colorMap = ColorMap.getInstance();
+			
 			switch (this.scheme) {
 			case VIRIDIS: {
+				colorMap = ColorMap.getInstance();
 				colorMap.setColorMap("viridis");
 				break;
 			}
 			case INFERNO: {
+				colorMap = ColorMap.getInstance();
 				colorMap.setColorMap("inferno");
 				break;
 			}
 			case MAGMA: {
+				colorMap = ColorMap.getInstance();
 				colorMap.setColorMap("magma");
 				break;
 			}
 			case PLASMA: {
+				colorMap = ColorMap.getInstance();
 				colorMap.setColorMap("plasma");
+				break;
+			}
+			case RAINBOW: {
+				this.initRainbow();
+				break;
+			}
+			case GRAYSCALE: {
+				this.initGrayscale();
 				break;
 			}
 			default: {
@@ -110,11 +130,11 @@ public class Chroma {
 			}
 			if (colorMap != null) {
 				try {
-					if(inverted) {
-						color = colorMap.getMappedColor((float) min, (float) max, (float) value);
-					} else {
+//					if(inverted) {
+//						color = colorMap.getMappedColor((float) min, (float) max, (float) value);
+//					} else {
 						color = colorMap.getMappedColor((float) max, (float) min, (float) value);
-					}
+//					}
 				} catch (Exception e) {
 					System.err.println("getColor("+value+", "+min+", "+max);
 					e.printStackTrace();
@@ -122,11 +142,11 @@ public class Chroma {
 			} else {
 				double difference = (min > max) ? min - max : max - min;
 				double power;
-				if (inverted) {
-					power = ((difference - value) * factor) / (difference);
-				} else {
+//				if (inverted) {
+//					power = ((difference - value) * factor) / (difference);
+//				} else {
 					power = (value * factor) / (difference);
-				}
+//				}
 				double hue = (hueFlag) ? power : this.hue;
 				double saturation = (saturationFlag) ? power : this.saturation;
 				double brightness = (brightnessFlag) ? 1 - power : this.brightness;

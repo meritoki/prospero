@@ -66,6 +66,10 @@ public class Coordinate implements Comparable<Coordinate> {
 		this.calendar = coordinate.calendar;
 		this.attribute = new TreeMap<>(coordinate.attribute);
 	}
+	
+	public boolean is() {
+		return !((Double)latitude).isNaN()&!((Double)longitude).isNaN();
+	}
 
 	/**
 	 * Need to Generalize, maybe not use Pressure as Default

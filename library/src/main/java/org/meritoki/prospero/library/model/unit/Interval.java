@@ -64,7 +64,7 @@ public class Interval {
 	public boolean yearFlag;
 	public boolean seasonFlag;
 	public boolean monthFlag;
-	public boolean dateFlag;
+	public boolean dayFlag;
 	public boolean timeFlag;
 	
 	
@@ -77,16 +77,14 @@ public class Interval {
 		Calendar endCalendar = new GregorianCalendar(this.endYear,this.endMonth-1,this.endDay,(this.endHour != -1)?this.endHour:0,(this.endMinute != -1)?this.endMinute:0,(this.endSecond != -1)?this.endSecond:0);
 		Date startDate = startCalendar.getTime();
 		Date endDate = endCalendar.getTime();
-		flag = !(date.before(startDate) || date.after(endDate)) ;//(startDate.equals(date) && date.equals(endDate)) || 
-//		if(flag) {
-//			logger.debug(this+".contains("+coordinate+") date="+date);
-//		}
+		flag = !(date.before(startDate) || date.after(endDate)) ;
+
 		return flag;
 	}
 	
-	public boolean contains(Event coordinate) {
+	public boolean contains(Event event) {
 		boolean flag = false;
-		Date date = coordinate.getStartCalendar().getTime();
+		Date date = event.getStartCalendar().getTime();
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 		cal.setTime(date);
 		Calendar startCalendar = new GregorianCalendar(this.startYear,this.startMonth-1,this.startDay,(this.startHour != -1)?this.startHour:0,(this.startMinute != -1)?this.startMinute:0,(this.startSecond != -1)?this.startSecond:0);
@@ -94,94 +92,9 @@ public class Interval {
 		Date startDate = startCalendar.getTime();
 		Date endDate = endCalendar.getTime();
 		flag = !(date.before(startDate) || date.after(endDate)) ;//(startDate.equals(date) && date.equals(endDate)) || 
-//		if(flag) {
-//			logger.debug(this+".contains("+coordinate+") date="+date);
-//		}
 		return flag;
 	}
-//	/**
-//	 * This function has a history of problems which I have not documented well
-//	 * commenting out this line: 1 <=month && month <= endMonth appeared to fix a
-//	 * particular defect which I cannot remember now, must check github
-//	 * but somehow I have to add the commented out line back.
-//	 * @param coordinate
-//	 * @return
-//	 */
-//	public boolean contains(Coordinate coordinate) {
-//		boolean flag = false;
-//		Date date = coordinate.calendar.getTime();
-////		logger.info(this+".contains("+coordinate+") date="+date);
-//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-//		cal.setTime(date);
-//		int year = cal.get(Calendar.YEAR);
-////		int month = cal.get(Calendar.MONTH) + 1;
-////		int day = cal.get(Calendar.DAY_OF_MONTH);
-////		int hour = cal.get(Calendar.HOUR_OF_DAY) - 3;
-//		if(this.seasonFlag) {
-//			if(startMonth < endMonth) {
-//				for(int y=this.startYear; y <= this.endYear; y++) {
-//					Calendar startCalendar = new GregorianCalendar(y,this.startMonth-1,this.startDay);
-//					Calendar endCalendar = new GregorianCalendar(y,this.endMonth-1,this.endDay);
-//					Date startDate = startCalendar.getTime();
-//					Date endDate = endCalendar.getTime();
-//					flag = !(date.before(startDate) || date.after(endDate));
-//					if(flag) {
-//						break;
-//					}
-//				}
-//			} else {
-//				//this is where djf is handled, b/c startMonth 12 > endMonth 2
-//				//
-//				if(year == this.startYear) {
-//					Calendar startCalendar = new GregorianCalendar(this.startYear,0,1);
-//					Calendar endCalendar = new GregorianCalendar(this.startYear,this.endMonth-1,this.endDay);
-//					Date startDate = startCalendar.getTime();
-//					Date endDate = endCalendar.getTime();
-//					flag = !(date.before(startDate) || date.after(endDate));
-//				} else if(year == this.endYear) {
-//					Calendar startCalendar = new GregorianCalendar(this.endYear,this.startMonth-1,this.startDay);
-//					Calendar endCalendar = new GregorianCalendar(this.endYear,11,this.endDay);
-//					Date startDate = startCalendar.getTime();
-//					Date endDate = endCalendar.getTime();
-//					flag = !(date.before(startDate) || date.after(endDate));
-//				}
-//				if(!flag) {
-//					for(int y=this.startYear; y <= this.endYear; y++) {
-//						if(y+1<=this.endYear) {
-//							Calendar startCalendar = new GregorianCalendar(y,this.startMonth-1,this.startDay);
-//							Calendar endCalendar = new GregorianCalendar(y+1,this.endMonth-1,this.endDay);
-//							Date startDate = startCalendar.getTime();
-//							Date endDate = endCalendar.getTime();
-//							flag = !(date.before(startDate) || date.after(endDate));
-//							if(flag) {
-//								break;
-//							}
-//						}
-//					}
-//				}
-//			}
-//		} else if (monthFlag) {
-//			for(int y=this.startYear; y <= this.endYear; y++) {
-//				Calendar startCalendar = new GregorianCalendar(y,this.startMonth-1,this.startDay);
-//				Calendar endCalendar = new GregorianCalendar(y,this.endMonth-1,this.endDay);
-//				Date startDate = startCalendar.getTime();
-//				Date endDate = endCalendar.getTime();
-//				
-//				flag = !(date.before(startDate) || date.after(endDate));
-//				if(flag) {
-//					break;
-//				}
-//			}
-//		} else {
-//			Calendar startCalendar = new GregorianCalendar(this.startYear,this.startMonth-1,this.startDay,(this.startHour != -1)?this.startHour:0,(this.startMinute != -1)?this.startMinute:0,(this.startSecond != -1)?this.startSecond:0);
-//			Calendar endCalendar = new GregorianCalendar(this.endYear,this.endMonth-1,this.endDay,(this.endHour != -1)?this.endHour:0,(this.endMinute != -1)?this.endMinute:0,(this.endSecond != -1)?this.endSecond:0);
-//			Date startDate = startCalendar.getTime();
-//			Date endDate = endCalendar.getTime();
-//			logger.info(startDate+"|"+date+"|"+endDate);
-//			flag = (startDate.equals(date) && date.equals(endDate));//!(date.before(startDate) || date.after(endDate)) || ;
-//		}
-//		return flag;
-//	}
+
 	
 	public boolean contains(Frame frame) {
 //		System.out.println("contains("+frame+") startYear="+startYear+" endYear="+endYear);
@@ -216,7 +129,17 @@ public class Interval {
 		return flag;
 	}
 	
-	public Calendar getStart() {
+	public Time getTime() {
+		Time time = null;
+		Time startTime = new Time("minute",this.getStartCalendar());
+		Time endTime = new Time("minute",this.getEndCalendar());
+		if(startTime.equals(endTime)) {
+			time = startTime;
+		}
+		return time;
+	}
+	
+	public Calendar getStartCalendar() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR,this.startYear);
 		calendar.set(Calendar.MONTH,this.startMonth-1);
@@ -227,7 +150,7 @@ public class Interval {
 		return calendar;
 	}
 	
-	public Calendar getEnd() {
+	public Calendar getEndCalendar() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR,this.endYear);
 		calendar.set(Calendar.MONTH,this.endMonth-1);
@@ -250,11 +173,100 @@ public class Interval {
 		}
 		return string;
 	}
-	
-//	public String toString() {
-//		return "startYear="+startYear+",startMonth="+startMonth+",startDay="+startDay+",startHour="+startHour+",endYear="+endYear+",endMonth="+endMonth+",endDay="+endDay+",endHour="+endHour;
-//	}
 }
+//if(flag) {
+//logger.debug(this+".contains("+coordinate+") date="+date);
+//}
+//public String toString() {
+//return "startYear="+startYear+",startMonth="+startMonth+",startDay="+startDay+",startHour="+startHour+",endYear="+endYear+",endMonth="+endMonth+",endDay="+endDay+",endHour="+endHour;
+//}
+//(startDate.equals(date) && date.equals(endDate)) || 
+//if(flag) {
+//	logger.debug(this+".contains("+coordinate+") date="+date);
+//}
+///**
+//* This function has a history of problems which I have not documented well
+//* commenting out this line: 1 <=month && month <= endMonth appeared to fix a
+//* particular defect which I cannot remember now, must check github
+//* but somehow I have to add the commented out line back.
+//* @param coordinate
+//* @return
+//*/
+//public boolean contains(Coordinate coordinate) {
+//	boolean flag = false;
+//	Date date = coordinate.calendar.getTime();
+////	logger.info(this+".contains("+coordinate+") date="+date);
+//	Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+//	cal.setTime(date);
+//	int year = cal.get(Calendar.YEAR);
+////	int month = cal.get(Calendar.MONTH) + 1;
+////	int day = cal.get(Calendar.DAY_OF_MONTH);
+////	int hour = cal.get(Calendar.HOUR_OF_DAY) - 3;
+//	if(this.seasonFlag) {
+//		if(startMonth < endMonth) {
+//			for(int y=this.startYear; y <= this.endYear; y++) {
+//				Calendar startCalendar = new GregorianCalendar(y,this.startMonth-1,this.startDay);
+//				Calendar endCalendar = new GregorianCalendar(y,this.endMonth-1,this.endDay);
+//				Date startDate = startCalendar.getTime();
+//				Date endDate = endCalendar.getTime();
+//				flag = !(date.before(startDate) || date.after(endDate));
+//				if(flag) {
+//					break;
+//				}
+//			}
+//		} else {
+//			//this is where djf is handled, b/c startMonth 12 > endMonth 2
+//			//
+//			if(year == this.startYear) {
+//				Calendar startCalendar = new GregorianCalendar(this.startYear,0,1);
+//				Calendar endCalendar = new GregorianCalendar(this.startYear,this.endMonth-1,this.endDay);
+//				Date startDate = startCalendar.getTime();
+//				Date endDate = endCalendar.getTime();
+//				flag = !(date.before(startDate) || date.after(endDate));
+//			} else if(year == this.endYear) {
+//				Calendar startCalendar = new GregorianCalendar(this.endYear,this.startMonth-1,this.startDay);
+//				Calendar endCalendar = new GregorianCalendar(this.endYear,11,this.endDay);
+//				Date startDate = startCalendar.getTime();
+//				Date endDate = endCalendar.getTime();
+//				flag = !(date.before(startDate) || date.after(endDate));
+//			}
+//			if(!flag) {
+//				for(int y=this.startYear; y <= this.endYear; y++) {
+//					if(y+1<=this.endYear) {
+//						Calendar startCalendar = new GregorianCalendar(y,this.startMonth-1,this.startDay);
+//						Calendar endCalendar = new GregorianCalendar(y+1,this.endMonth-1,this.endDay);
+//						Date startDate = startCalendar.getTime();
+//						Date endDate = endCalendar.getTime();
+//						flag = !(date.before(startDate) || date.after(endDate));
+//						if(flag) {
+//							break;
+//						}
+//					}
+//				}
+//			}
+//		}
+//	} else if (monthFlag) {
+//		for(int y=this.startYear; y <= this.endYear; y++) {
+//			Calendar startCalendar = new GregorianCalendar(y,this.startMonth-1,this.startDay);
+//			Calendar endCalendar = new GregorianCalendar(y,this.endMonth-1,this.endDay);
+//			Date startDate = startCalendar.getTime();
+//			Date endDate = endCalendar.getTime();
+//			
+//			flag = !(date.before(startDate) || date.after(endDate));
+//			if(flag) {
+//				break;
+//			}
+//		}
+//	} else {
+//		Calendar startCalendar = new GregorianCalendar(this.startYear,this.startMonth-1,this.startDay,(this.startHour != -1)?this.startHour:0,(this.startMinute != -1)?this.startMinute:0,(this.startSecond != -1)?this.startSecond:0);
+//		Calendar endCalendar = new GregorianCalendar(this.endYear,this.endMonth-1,this.endDay,(this.endHour != -1)?this.endHour:0,(this.endMinute != -1)?this.endMinute:0,(this.endSecond != -1)?this.endSecond:0);
+//		Date startDate = startCalendar.getTime();
+//		Date endDate = endCalendar.getTime();
+//		logger.info(startDate+"|"+date+"|"+endDate);
+//		flag = (startDate.equals(date) && date.equals(endDate));//!(date.before(startDate) || date.after(endDate)) || ;
+//	}
+//	return flag;
+//}
 //System.out.println("contains("+point+") year="+year);
 //System.out.println("contains("+point+") month="+month);
 //System.out.println("contains("+point+") day="+day);

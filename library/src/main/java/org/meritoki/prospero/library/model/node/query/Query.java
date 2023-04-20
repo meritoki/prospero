@@ -205,8 +205,6 @@ public class Query {
 		if(s != null) {
 			s.toUpperCase();
 			scheme = Scheme.valueOf(s);
-		} else {
-			scheme = Scheme.VIRIDIS;
 		}
 		return scheme;
 	}
@@ -528,6 +526,31 @@ public class Query {
 	}
 	
 	@JsonIgnore
+	public int getCount() throws Exception {
+		return this.getCount(map.get("count"));
+	}
+	
+	@JsonIgnore
+	public int getCount(String count) throws Exception {
+		int c = 0;
+		if (count != null && !count.isEmpty()) {
+			boolean valid = true;
+			try {
+				c = Integer.parseInt(count);
+			} catch (NumberFormatException e) {
+				valid = false;
+			}
+			if (c < 0) {
+				valid = false;
+			}
+			if (!valid) {
+				throw new Exception("getCount("+count+") invalid");
+			}
+		}
+		return c;
+	}
+	
+	@JsonIgnore
 	public List<Integer> getPressureList() {
 		return this.getPressureList(this.getPressure());
 	}
@@ -596,7 +619,7 @@ public class Query {
 				valid = false;
 			}
 			if (!valid) {
-				throw new Exception("invalid dimension format: " + dimension);
+				throw new Exception("getDimension("+dimension+") invalid");
 			}
 		}
 		return d;

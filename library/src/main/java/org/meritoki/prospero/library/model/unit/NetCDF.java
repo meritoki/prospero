@@ -15,6 +15,7 @@
  */
 package org.meritoki.prospero.library.model.unit;
 
+import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.ArrayInt;
 import ucar.nc2.Dimension;
@@ -29,6 +30,8 @@ public class NetCDF {
 	public ArrayFloat.D1 lonArray;
 	public ArrayFloat.D2 lonMatrix;
 	public ArrayInt.D1 timeArray;
+	public ArrayDouble.D1 timeDoubleArray;
 	public ArrayFloat.D3 variableArray;
+	public ArrayFloat.D2 variableMatrix;
 	public Object variable;
 }

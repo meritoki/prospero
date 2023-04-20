@@ -140,6 +140,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 									if (node != null) {
 										logger.info("query() node="+node);
 										model.getCamera().setNode(terra);
+										node.stop();
 										node.start();//can be called more than once, no problem
 										try {
 											node.query(query);//discrete finite task that sets a new query, includes process
@@ -169,7 +170,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 		
 												break;
 											}
-											node.stop();
+											
 										} catch (Exception qe) {
 											consoleTextArea.append(qe.getMessage() + "\n");
 											node.stop();
