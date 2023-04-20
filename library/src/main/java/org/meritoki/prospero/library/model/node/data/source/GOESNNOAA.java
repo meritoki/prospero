@@ -18,7 +18,9 @@ package org.meritoki.prospero.library.model.node.data.source;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +29,7 @@ import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.satellite.Satellite;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.DataType;
+import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.NetCDF;
@@ -48,6 +51,7 @@ public class GOESNNOAA extends Source {
 	static Logger logger = LogManager.getLogger(GOESNNOAA.class.getName());
 //	public static String prefix = "OR_ABI-L2-CMIPF-M3C01_G16_";
 	public static String prefix = "OR_ABI-L2-MCMIPF-M6_G16_";
+	protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 	public ArrayFloat.D2 latitudeArray;
 	public ArrayFloat.D2 longitudeArray;
 	public ArrayFloat.D2 dataMatrix;
@@ -102,7 +106,7 @@ public class GOESNNOAA extends Source {
 	}
 
 	public List<NetCDF> read(Time time) throws Exception {
-		logger.info("read(" + time + ")");
+//		logger.info("read(" + time + ")");
 		List<NetCDF> netCDFList = new ArrayList<>();
 		String days = (time.day != -1) ? String.format("%03d", Time.getDayOfYear(time.year, time.month, time.day))
 				: "001";
@@ -121,9 +125,15 @@ public class GOESNNOAA extends Source {
 		}
 		String pattern = "glob:{" + fileName + "}*.{nc}";
 		logger.info("read(" + time + ") pattern=" + pattern);
-		List<String> matchList = this.getWildCardFileList(Paths.get(this.getPath()), pattern);
-		for (String m : matchList) {
-			netCDFList.addAll(this.read(this.getPath() + m));
+		List<NetCDF> list = this.netCDFMap.get(pattern);
+		if(list != null) {
+			netCDFList.addAll(list);
+		} else {
+			List<String> matchList = this.getWildCardFileList(Paths.get(this.getPath()), pattern);
+			for (String m : matchList) {
+				netCDFList.addAll(this.read(this.getPath() + m));
+			}
+			this.netCDFMap.put(pattern,netCDFList);
 		}
 		return netCDFList;
 	}
@@ -173,14 +183,14 @@ public class GOESNNOAA extends Source {
 			float nominalSatelliteHeight = nominalSatelliteHeightVariable.readScalarFloat();
 			int xSize = (int) xVariable.getSize();
 			int ySize = (int) yVariable.getSize();
-			logger.info("read(...) xSize=" + xSize);
-			logger.info("read(...) ySize=" + ySize);
-			logger.info("read(...) xAddOffset=" + xAddOffset);
-			logger.info("read(...) xScaleFactor=" + xScaleFactor);
-			logger.info("read(...) yAddOffset=" + yAddOffset);
-			logger.info("read(...) yScaleFactor=" + yScaleFactor);
-			logger.info("read(...) nominalSatelliteSubpointLon=" + nominalSatelliteSubpointLon);
-			logger.info("read(...) nominalSatelliteHeight=" + nominalSatelliteHeight);
+			logger.info("read16(...) xSize=" + xSize);
+			logger.info("read16(...) ySize=" + ySize);
+			logger.info("read16(...) xAddOffset=" + xAddOffset);
+			logger.info("read16(...) xScaleFactor=" + xScaleFactor);
+			logger.info("read16(...) yAddOffset=" + yAddOffset);
+			logger.info("read16(...) yScaleFactor=" + yScaleFactor);
+			logger.info("read16(...) nominalSatelliteSubpointLon=" + nominalSatelliteSubpointLon);
+			logger.info("read16(...) nominalSatelliteHeight=" + nominalSatelliteHeight);
 			this.latitudeArray = new ArrayFloat.D2(xSize,ySize);
 			this.longitudeArray = new ArrayFloat.D2(xSize,ySize);
 			this.dataMatrix = new ArrayFloat.D2(xSize, ySize);
@@ -188,7 +198,7 @@ public class GOESNNOAA extends Source {
 			this.timeArray.set(0, t);
 			this.height = (double) (nominalSatelliteHeight * 1000) + (earth.radius * 1000);
 			this.longitude = (double) nominalSatelliteSubpointLon;
-			logger.info("read(...) height=" + height);
+			logger.info("read16(...) height=" + height);
 			NetCDF netCDF = new NetCDF();
 			netCDF.type = DataType.CMI;
 			for (int x = 0; x < xSize; x++) {

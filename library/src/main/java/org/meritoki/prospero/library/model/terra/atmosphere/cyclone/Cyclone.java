@@ -35,6 +35,7 @@ import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.histogram.Histogram;
@@ -68,6 +69,7 @@ import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.TileWrapper;
 import org.meritoki.prospero.library.model.unit.Time;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.controller.node.Exit;
 import com.meritoki.library.controller.node.NodeController;
 
@@ -99,6 +101,17 @@ public class Cyclone extends Atmosphere {
 		this.sourceMap.put("UTN ERA INTERIM", "2d611935-9786-4c28-9dcf-f18cf3e99a3a");
 		this.sourceMap.put("UTN ERA 5", "281cbf52-7014-4229-bffd-35c8ba41bcb5");
 	}
+	
+//	@JsonIgnore
+//	@Override
+//	public void setCalendar(Calendar calendar) {
+//		this.calendar = calendar;
+//		this.query();
+//		List<Variable> nodeList = this.getChildren();
+//		for (Variable n : nodeList) {
+//			n.setCalendar(calendar);
+//		}
+//	}
 
 	@Override
 	public void reset() {

@@ -16,6 +16,7 @@
 package org.meritoki.prospero.library.model.terra;
 
 import java.awt.Graphics;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,8 @@ import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
 import org.meritoki.prospero.library.model.terra.hydrosphere.Hydrosphere;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Terra extends Grid {
 	static Logger logger = LogManager.getLogger(Terra.class.getName());
@@ -44,6 +47,8 @@ public class Terra extends Grid {
 		super(name);
 		this.defaultScale = 7200000.0;
 	}
+	
+
 	
 	@Override
 	public void setProjection(Projection projection) {

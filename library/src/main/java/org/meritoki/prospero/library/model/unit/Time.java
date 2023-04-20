@@ -766,7 +766,7 @@ public class Time {
 			calendar.set(Calendar.DAY_OF_MONTH, 1);
 		}
 		int d = calendar.get(Calendar.DAY_OF_YEAR);
-		logger.info("getDayOfYear("+year+","+month+","+day+") d="+d);
+//		logger.info("getDayOfYear("+year+","+month+","+day+") d="+d);
 		return d;
 	}
 

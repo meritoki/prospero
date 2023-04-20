@@ -215,7 +215,7 @@ public class Variable extends Node {
 		this.query = query;
 		if (query.getSource() != null) {// should only move forward if we have a source
 			query.put("sourceUUID", this.sourceMap.get(query.getSource()));
-			query.calendar = this.calendar;
+			query.setCalendar(this.calendar);
 			logger.info("query(" + query + ")");
 			if (!query.equals(this.queryStack.peek())) {
 				query.objectList = this.objectList;

@@ -119,6 +119,13 @@ public class Query {
 	}
 	
 	@JsonIgnore
+	public void setCalendar(Calendar calendar) {
+		this.calendar = calendar;
+		String time = this.simpleDateFormat.format(this.calendar.getTime());//"yyyy/MM/dd HH:mm:ss"
+		this.map.put("time",time);
+	}
+	
+	@JsonIgnore
 	public String getName() throws Exception {
 		String name = this.map.get("name");
 		if(name == null) {
