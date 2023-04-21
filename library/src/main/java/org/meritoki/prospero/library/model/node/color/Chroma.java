@@ -48,12 +48,12 @@ public class Chroma {
 	public void initGrayscale() {
 		logger.info("initGrayscale()");
 		this.factor = 0.5;
-		this.hue = 0.0;
+		this.hue = 1.0;
 		this.brightness = 1.0;
 		this.saturation = 0.0;
-		this.hueFlag = false;
-		this.saturationFlag = true;
-		this.brightnessFlag = false;
+		this.hueFlag = true;
+		this.saturationFlag = false;
+		this.brightnessFlag = true;
 	}
 
 	public Chroma(Scheme scheme) {
@@ -136,7 +136,7 @@ public class Chroma {
 			} else {
 				double difference = (min > max) ? min - max : max - min;
 				double power;
-				power = (value * factor) / (difference);
+				power = ((value-min) * factor) / (difference);
 				double hue = (hueFlag) ? power : this.hue;
 				double saturation = (saturationFlag) ? power : this.saturation;
 				double brightness = (brightnessFlag) ? 1 - power : this.brightness;

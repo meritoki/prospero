@@ -274,13 +274,6 @@ public class Grid extends Spheroid {
 			this.scheme = (this.query.getScheme()!=null)?this.query.getScheme():this.scheme;
 			this.seriesMap = new TreeMap<>();
 			this.timeList = new ArrayList<>();
-//			if("month".equals(group)) {
-//				
-//			} else if("year".equals(group)) {
-//				this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][1];
-//				this.dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][1];
-//			}
-
 		} catch (Exception e) {
 			logger.error("init() exception=" + e.getMessage());
 			e.printStackTrace();
@@ -1170,6 +1163,12 @@ public class Grid extends Spheroid {
 		super.paint(graphics);
 	}
 }
+//if("month".equals(group)) {
+//
+//} else if("year".equals(group)) {
+//this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][1];
+//this.dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][1];
+//}
 //graphics.setColor(this.chroma.getColor(t.value, this.getMin(), this.getMax()));
 //graphics.fillPolygon(xpoints, ypoints, npoints);
 //Set<Integer> levelSet = this.tileListMap.keySet();

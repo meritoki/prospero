@@ -127,13 +127,15 @@ public class GOESNNOAA extends Source {
 		logger.info("read(" + time + ") pattern=" + pattern);
 		List<NetCDF> list = this.netCDFMap.get(pattern);
 		if(list != null) {
-			netCDFList.addAll(list);
+			netCDFList = list;
 		} else {
 			List<String> matchList = this.getWildCardFileList(Paths.get(this.getPath()), pattern);
 			for (String m : matchList) {
 				netCDFList.addAll(this.read(this.getPath() + m));
 			}
-			this.netCDFMap.put(pattern,netCDFList);
+			if(netCDFList.size() > 0) {
+				this.netCDFMap.put(pattern,netCDFList);
+			}
 		}
 		return netCDFList;
 	}

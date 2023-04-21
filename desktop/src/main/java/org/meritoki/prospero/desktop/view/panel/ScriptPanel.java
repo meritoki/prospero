@@ -126,7 +126,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 					Terra terra = (Terra)model.getVariable("Terra");
 //					terra.setAzimuth(azimuth);
 //					terra.setElevation(elevation);
-//					terra.setSelectedProjection(new AzimuthalSouth());
+					terra.setSelectedProjection(new AzimuthalSouth());
 					Country country = (Country)terra.getVariable("Country");
 					country.start();
 					country.query.map.put("source","Natural Earth");
