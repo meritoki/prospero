@@ -30,7 +30,7 @@ public class N extends Cloud {
 		super("N");
 		this.sourceMap.put("GOES","aefbd8d1-d423-458d-90c0-7c8429f2a653");
 		this.unit = "K";
-		this.scheme = Scheme.VIRIDIS;
+		this.scheme = Scheme.GRAYSCALE;
 	}
 	
 	@JsonIgnore

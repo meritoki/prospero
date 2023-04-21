@@ -59,6 +59,8 @@ public class ScriptPanel extends javax.swing.JPanel {
 	public Thread thread;
 	public Runnable runnable;
 	public List<Script> scriptList = new ArrayList<>();
+	public double azimuth = -900;
+	public double elevation = -200;
     /**
      * Creates new form ScriptPanel
      */
@@ -122,7 +124,9 @@ public class ScriptPanel extends javax.swing.JPanel {
 				Thread.currentThread().setName("Script");
 				if(model.scriptList.size() > 0) {
 					Terra terra = (Terra)model.getVariable("Terra");
-					terra.setSelectedProjection(new AzimuthalSouth());
+//					terra.setAzimuth(azimuth);
+//					terra.setElevation(elevation);
+//					terra.setSelectedProjection(new AzimuthalSouth());
 					Country country = (Country)terra.getVariable("Country");
 					country.start();
 					country.query.map.put("source","Natural Earth");
@@ -163,6 +167,9 @@ public class ScriptPanel extends javax.swing.JPanel {
 												MemoryController.log();
 												TimeController.stop();
 												model.removeCameras();
+//												terra.setAzimuth(azimuth);
+//												terra.setElevation(elevation);
+//												Camera camera = new Camera(terra);
 												model.addCamera(new Camera(terra));
 												consoleTextArea.append("query finished...\n");
 											} else {

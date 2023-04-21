@@ -47,15 +47,17 @@ public class Chroma {
 	
 	public void initGrayscale() {
 		logger.info("initGrayscale()");
-		this.factor = 1;
-		this.hue = 1;
+		this.factor = 0.5;
+		this.hue = 0.0;
+		this.brightness = 1.0;
 		this.saturation = 0.0;
-		this.hueFlag = true;
+		this.hueFlag = false;
 		this.saturationFlag = true;
-		this.brightnessFlag = true;
+		this.brightnessFlag = false;
 	}
 
 	public Chroma(Scheme scheme) {
+//		logger.info("Chroma("+scheme+")");
 		this.scheme = scheme;
 		if (this.scheme != null) {
 			
@@ -81,10 +83,12 @@ public class Chroma {
 				break;
 			}
 			case RAINBOW: {
+				colorMap = null;
 				this.initRainbow();
 				break;
 			}
 			case GRAYSCALE: {
+				colorMap = null;
 				this.initGrayscale();
 				break;
 			}
@@ -114,27 +118,17 @@ public class Chroma {
 	 * @return
 	 */
 	public Color getColor(double value, double min, double max) {
-//		if(print)System.out.println("getColor("+value+", "+min+", "+max);
-//		logger.info("getColor")
+//		logger.info("getColor("+value+", "+min+", "+max+")");
 		Color color = Color.white;
-//		max = Math.abs(max);
-//		min = Math.abs(min);
-//		value = Math.abs(value);
 		if(value < min) {
-			//B
 			color = Color.white;
 		} else {
-			//A and C
 			if (value > max) {
 				value = max;
 			}
 			if (colorMap != null) {
 				try {
-//					if(inverted) {
-//						color = colorMap.getMappedColor((float) min, (float) max, (float) value);
-//					} else {
-						color = colorMap.getMappedColor((float) max, (float) min, (float) value);
-//					}
+					color = colorMap.getMappedColor((float) max, (float) min, (float) value);
 				} catch (Exception e) {
 					System.err.println("getColor("+value+", "+min+", "+max);
 					e.printStackTrace();
@@ -142,11 +136,7 @@ public class Chroma {
 			} else {
 				double difference = (min > max) ? min - max : max - min;
 				double power;
-//				if (inverted) {
-//					power = ((difference - value) * factor) / (difference);
-//				} else {
-					power = (value * factor) / (difference);
-//				}
+				power = (value * factor) / (difference);
 				double hue = (hueFlag) ? power : this.hue;
 				double saturation = (saturationFlag) ? power : this.saturation;
 				double brightness = (brightnessFlag) ? 1 - power : this.brightness;
@@ -156,6 +146,10 @@ public class Chroma {
 		return color;
 	}
 }
+//logger.info("getColor")
+//max = Math.abs(max);
+//min = Math.abs(min);
+//value = Math.abs(value);
 //public Color getColor(double value, double min, double max) {
 ////System.out.println("getColor("+value+", "+min+", "+max);
 ////logger.info("getColor")
