@@ -213,13 +213,13 @@ public class Variable extends Node {
 	@JsonIgnore
 	public void query(Query query) {
 		this.query = query;
-		if (query.getSource() != null) {// should only move forward if we have a source
+		if (query.isReady()) {// should only move forward if we have a time & source
 			query.put("sourceUUID", this.sourceMap.get(query.getSource()));
-			query.setCalendar(this.calendar);
+//			query.calendar = this.calendar;
 			logger.info("query(" + query + ")");
-			if (!query.equals(this.queryStack.peek())) {
+			if (!query.equals(this.queryStack.peek())) {//Used to Detect Same Time Query More than Once In Time Order
 				query.objectList = this.objectList;
-				this.reset();
+				this.reset();//Reset b/c Found a New Query, Older No Longer Matter
 				this.init();
 				try {
 					this.data.add(query);
@@ -406,7 +406,7 @@ public class Variable extends Node {
 	}
 
 	public void getList(Variable node, List<Variable> nodeList) {
-		List<Variable> nList = this.getChildren();
+		List<Variable> nList = node.getChildren();
 		for (Variable n : nList) {
 			Variable v = n;
 			nodeList.add(v);

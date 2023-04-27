@@ -29,6 +29,14 @@ public class Script {
 	@JsonProperty
 	public List<Query> queryList = new ArrayList<>();
 	
+	public Script() {
+		
+	}
+	
+	public Script(Script s) {
+		this.queryList = new ArrayList<>(s.queryList);
+	}
+	
 	@JsonIgnore
 	public String getJson() {
 		return JsonController.getJson(this);

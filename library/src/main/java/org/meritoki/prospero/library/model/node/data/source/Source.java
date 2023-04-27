@@ -40,6 +40,7 @@ import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.meritoki.prospero.library.model.unit.Time;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.module.library.model.Node;
@@ -60,6 +61,8 @@ public class Source extends Node {// implements SourceInterface
 	public List<Region> regionList;
 	private final int startYear = -1;
 	private final int endYear = -1;
+	private final Time startTime = new Time();
+	private final Time endTime = new Time();
 
 	public Source() {
 		this.filter = false;
@@ -151,6 +154,14 @@ public class Source extends Node {// implements SourceInterface
 
 	public int getEndYear() {
 		return this.endYear;
+	}
+	
+	public Time getStartTime() {
+		return this.startTime;
+	}
+
+	public Time getEndTime() {
+		return this.endTime;
 	}
 
 	public List<String> getDateList(String startDate, String endDate) {

@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.N;
+import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.R;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Region;
@@ -41,7 +42,7 @@ public class Cloud extends Atmosphere {
 	public Cloud() {
 		super("Cloud");
 		this.addChild(new N());
-		
+		this.addChild(new R());
 	}
 
 	public Cloud(String name) {
@@ -90,7 +91,7 @@ public class Cloud extends Atmosphere {
 	}
 
 	public void setMatrix(List<NetCDF> netCDFList) {
-		logger.info("setMatrix(" + netCDFList.size() + ")");
+//		logger.info("setMatrix(" + netCDFList.size() + ")");
 		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, netCDFList);
 		for (Time t : timeList) {
 			if (!this.timeList.contains(t)) {
@@ -135,15 +136,15 @@ public class Cloud extends Atmosphere {
 					}
 				}
 			} else if (netCDF.type == DataType.CMI) {
-				logger.info("setCoordinateMatrix(...) CMI");
+//				logger.info("setCoordinateMatrix(...) CMI");
 				ArrayFloat.D2 latArray = netCDF.latMatrix;
 				ArrayFloat.D2 lonArray = netCDF.lonMatrix;
 				ArrayFloat.D2 dataArray = netCDF.variableMatrix;
 				int timeSize = (int)netCDF.timeDoubleArray.getSize();
 				int latSize = (int)Math.sqrt(latArray.getSize());
 				int lonSize = (int)Math.sqrt(lonArray.getSize());
-				logger.info("setCoordinateMatrix(...) latSize="+latSize);
-				logger.info("setCoordinateMatrix(...) lonSize="+lonSize);
+//				logger.info("setCoordinateMatrix(...) latSize="+latSize);
+//				logger.info("setCoordinateMatrix(...) lonSize="+lonSize);
 				for (int t = 0; t < timeSize; t++) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(Time.getTwoThousandJanuaryFirstDate((int)netCDF.timeDoubleArray.get(t)));

@@ -24,12 +24,12 @@ import org.meritoki.prospero.library.model.terra.atmosphere.cloud.Cloud;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class N extends Cloud {
+public class R extends Cloud {
 	
-	public N() {
-		super("N");
-		this.sourceMap.put("GOES-13","aefbd8d1-d423-458d-90c0-7c8429f2a653");
-		this.unit = "K";
+	public R() {
+		super("R");
+		this.sourceMap.put("GOES-16","aefbd8d1-d423-458d-90c0-7c8429f2a653");
+		this.unit = "R";
 		this.scheme = Scheme.GRAYSCALE;
 	}
 	

@@ -57,7 +57,7 @@ public class CycloneSource extends Source {
 
 	@Override
 	public void query(Query query) throws Exception {
-		this.intervalList = query.getIntervalList(this.getStartYear(), this.getEndYear());
+		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
 		if (this.intervalList != null) {
 			List<String> idList = query.getIDList();
 			if (idList.size() > 0) {
@@ -74,7 +74,7 @@ public class CycloneSource extends Source {
 					} else {
 						loop:
 						for (Interval i : this.intervalList) {
-							List<Time> timeList = Time.getTimeList(i);
+							List<Time> timeList = Time.getTimeList(1,i);
 							for (Time time : timeList) {
 								List<Event> loadList = this.load(time);
 								this.setIDTimeMap(loadList, time);
@@ -96,7 +96,7 @@ public class CycloneSource extends Source {
 				query.objectListAdd(new Result(Mode.COMPLETE));
 			} else {
 				for (Interval i : this.intervalList) {
-					List<Time> timeList = Time.getTimeList(i);
+					List<Time> timeList = Time.getTimeList(1,i);
 					for (Time time : timeList) {
 						List<Event> loadList = this.load(time);
 						this.setIDTimeMap(loadList, time);

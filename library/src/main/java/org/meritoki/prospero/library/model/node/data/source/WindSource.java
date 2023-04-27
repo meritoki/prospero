@@ -37,7 +37,7 @@ public class WindSource extends Source {
 	
 	@Override
 	public void query(Query query) throws Exception {
-		this.intervalList = query.getIntervalList(this.getStartYear(), this.getEndYear());
+		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
 		if (this.intervalList != null) {
 			for (Interval i : this.intervalList) {
 				this.load(query, i);
@@ -47,7 +47,7 @@ public class WindSource extends Source {
 	}
 	
 	public void load(Query query, Interval interval) throws Exception {
-		List<Time> timeList = Time.getTimeList(interval);
+		List<Time> timeList = Time.getTimeList(1,interval);
 		List<Frame> loadList;
 		for(Time time: timeList) {
 			if (!Thread.interrupted()) {

@@ -51,6 +51,7 @@ public class Model extends Variable {
 	public Solar solar = new Solar();
 	public List<Camera> cameraList = new ArrayList<>();
 	public int index;
+	public boolean execute;
 
 	public Model() {
 		super("Model");
@@ -179,7 +180,7 @@ public class Model extends Variable {
 
 	@JsonIgnore
 	public Camera getCamera(int index) {
-		return this.cameraList.get(index);
+		return (this.cameraList.size()>0)?this.cameraList.get(index):null;
 	}
 
 	@SuppressWarnings("resource")

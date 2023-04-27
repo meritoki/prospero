@@ -78,11 +78,13 @@ public class ScriptPanel extends javax.swing.JPanel {
     public void init() {
     	this.initTextArea();
     	this.scriptList = this.model.scriptList;
+
     }
     
     public void initTextArea() {
     	if(this.model != null) {
-    		Variable node = this.model.getCamera().node;
+    		Camera camera = (this.model != null) ? this.model.getCamera():null;
+    		Variable node = (camera != null) ? camera.node: null;
     		if(node != null) {
     			Script script = node.script;
     			if(script != null) {
@@ -122,6 +124,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 		this.runnable = new Runnable() {
 			public void run() {
 				Thread.currentThread().setName("Script");
+//				if(model.scriptList.size() > 0) {
 				if(model.scriptList.size() > 0) {
 					Terra terra = (Terra)model.getVariable("Terra");
 //					terra.setAzimuth(azimuth);
@@ -144,7 +147,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 									if (node != null) {
 										logger.info("query() node="+node);
 										model.getCamera().setNode(terra);
-										node.stop();
+//										node.stop();
 										node.start();//can be called more than once, no problem
 										try {
 											node.query(query);//discrete finite task that sets a new query, includes process
@@ -167,9 +170,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 												MemoryController.log();
 												TimeController.stop();
 												model.removeCameras();
-//												terra.setAzimuth(azimuth);
-//												terra.setElevation(elevation);
-//												Camera camera = new Camera(terra);
+
 												model.addCamera(new Camera(terra));
 												consoleTextArea.append("query finished...\n");
 											} else {
@@ -195,7 +196,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 						}
 						iterator.remove();
 					}
-//					country.stop();
+
 				}
 			}
 			
@@ -309,3 +310,12 @@ public class ScriptPanel extends javax.swing.JPanel {
     private javax.swing.JTextArea scriptTextArea;
     // End of variables declaration//GEN-END:variables
 }
+////this.query();
+//for(Script s:this.model.scriptList) {
+//this.scriptList.add(new Script(s));
+////this.scriptList = new ArrayList<>(this.model.scriptList);
+//}
+//terra.setAzimuth(azimuth);
+//terra.setElevation(elevation);
+//Camera camera = new Camera(terra);
+//country.stop();

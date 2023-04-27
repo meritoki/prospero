@@ -41,9 +41,8 @@ import org.utn.library.stacker.model.Track;
 import com.meritoki.library.controller.memory.MemoryController;
 import com.meritoki.library.controller.node.NodeController;
 
-public class CycloneUTNERA5 extends CycloneSource {
-	static Logger logger = LogManager.getLogger(CycloneUTNERA5.class.getName());
-	public static String order = "tb";
+public class AntiCycloneUTNERA5 extends CycloneSource {
+	static Logger logger = LogManager.getLogger(AntiCycloneUTNERA5.class.getName());
 	public static String prefix = "125-175-225-300-400-500-600-700-775-825-875-925-975-";
 	public static String merged = "F339A7D11BBFA9F1EF71B466A94895F6-";
 	public static String topBottomPrefix = "100-125-150-175-200-225-250-300-400-500-600-700-775-825-850-875-925-975-";// "125-175-225-300-400-500-600-700-775-825-875-925-975-";
@@ -57,13 +56,10 @@ public class CycloneUTNERA5 extends CycloneSource {
 	public static String extension = "json";
 	public String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
-	public CycloneUTNERA5() {
+	public AntiCycloneUTNERA5() {
 		super();
 		this.single = true;
-		this.setBasePath("/home/jorodriguez/Drive/UTN-202112/");
-		this.setRelativePath("south");
-//		this.setRelativePath(
-//				"UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator + "202103");
+		this.setRelativePath("UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator + "202103");
 	}
 
 	@Override
@@ -91,28 +87,38 @@ public class CycloneUTNERA5 extends CycloneSource {
 		return this.levelArray;
 	}
 
-
+//	public List<CycloneEvent> read(int year, int month) {
+//		logger.info("read(" + year + "," + month + ")");
+//		String yearMonth = year + "" + String.format("%02d", month) + "01";
+//		switch (this.order) {
+//		case "tb": {
+//			prefix = topBottomPrefix;
+//			break;
+//		}
+//		case "bt": {
+//			prefix = bottomTopPrefix;
+//		}
+//		}
+//		String fileName = path + seperator + yearMonth + seperator + "stack" + seperator + "collection" + seperator
+//				+ prefix + yearMonth + "." + extension;
+//		return this.read(new File(fileName));
+//	}
 
 	public List<Event> read(int year, int month) throws Exception {
 		logger.info("read(" + year + "," + month + ")");
 		this.setBasePath("/home/jorodriguez/Drive/UTN-202112/");
 		this.setRelativePath("south");
 		String yearMonth = year + "" + String.format("%02d", month) + "01";
-//		prefix = topBottomPrefix;
-		switch (order) {
-		case "tb": {
-			prefix = topBottomPrefix;
-			break;
-		}
-		case "bt": {
-			prefix = bottomTopPrefix;
-			break;
-		}
-		case "m": {
-			prefix = merged;
-			break;
-		}
-		}
+		prefix = topBottomPrefix;
+//		switch (this.order) {
+//		case "tb": {
+//			prefix = topBottomPrefix;
+//			break;
+//		}
+//		case "bt": {
+//			prefix = bottomTopPrefix;
+//		}
+//		}
 //		String fileName = path + seperator + yearMonth + seperator + "stack" + seperator + "collection" + seperator
 //				+ prefix + yearMonth + "." + extension;
 //		return this.read(new File(fileName));
@@ -221,39 +227,22 @@ public class CycloneUTNERA5 extends CycloneSource {
 		return calendar;
 	}
 
-
-}
-//public List<Event> eventMapGet(int y, int m) {
-//if(this.eventMap == null) {
-//	this.eventMap = new HashMap<>();
-//}
-//List<Event> eList = this.eventMap.get(y + "" + m);
-//if (eList == null) {
-//	eList = (List<Event>)this.read(y, m);
-//	if (eList != null) {
-//		this.eventMap.put(y + "" + m, eList);
-//	} else {
-//		eList = new ArrayList<>();
+//	public List<Event> eventMapGet(int y, int m) {
+//		if(this.eventMap == null) {
+//			this.eventMap = new HashMap<>();
+//		}
+//		List<Event> eList = this.eventMap.get(y + "" + m);
+//		if (eList == null) {
+//			eList = (List<Event>)this.read(y, m);
+//			if (eList != null) {
+//				this.eventMap.put(y + "" + m, eList);
+//			} else {
+//				eList = new ArrayList<>();
+//			}
+//		}
+//		return eList;
 //	}
-//}
-//return eList;
-//}
-//public List<CycloneEvent> read(int year, int month) {
-//logger.info("read(" + year + "," + month + ")");
-//String yearMonth = year + "" + String.format("%02d", month) + "01";
-//switch (this.order) {
-//case "tb": {
-//	prefix = topBottomPrefix;
-//	break;
-//}
-//case "bt": {
-//	prefix = bottomTopPrefix;
-//}
-//}
-//String fileName = path + seperator + yearMonth + seperator + "stack" + seperator + "collection" + seperator
-//		+ prefix + yearMonth + "." + extension;
-//return this.read(new File(fileName));
-//}
+}
 //public static char seperator = File.separatorChar;
 //public static String path = basePath + "prospero-data" + seperator + "UTN" + seperator + "File" + seperator + "Data"
 //		+ seperator + "Cyclone" + seperator + "202103";

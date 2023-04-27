@@ -79,7 +79,9 @@ public class VariableMenu extends JPopupMenu {
 					} else {
 						logger.info("VariableMenu(" + model.getCamera().node + ") !menuItem.isSelected()");
 						model.getCamera().node.stop();
-						model.getCamera().node.query.map.put("source",null);
+						model.getCamera().node.query.map.remove("source");
+						model.getCamera().node.query.map.remove("sourceUUID");
+						mainFrame.init();
 					}
 				}
 			});

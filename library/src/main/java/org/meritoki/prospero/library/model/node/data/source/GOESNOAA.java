@@ -45,11 +45,9 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-public class GOESNNOAA extends Source {
+public class GOESNOAA extends Source {
 
-//	public static String path = basePath+"prospero-data" + seperator + "NOAA" + seperator +"GOES"+seperator+"13";
-	static Logger logger = LogManager.getLogger(GOESNNOAA.class.getName());
-//	public static String prefix = "OR_ABI-L2-CMIPF-M3C01_G16_";
+	static Logger logger = LogManager.getLogger(GOESNOAA.class.getName());
 	public static String prefix = "OR_ABI-L2-MCMIPF-M6_G16_";
 	protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 	public ArrayFloat.D2 latitudeArray;
@@ -60,11 +58,13 @@ public class GOESNNOAA extends Source {
 	public double longitude = -75.2;
 	public double height = 35786023.0 + (earth.radius * 1000);
 	public DataType dataType = DataType.CMI;
-	public String variable = "CMI_C08";
+	public String variable = "CMI_C11";
 	private final int startYear = 1979;
 	private final int endYear = 2019;
+	private final Time startTime = new Time(2019,6,1,0,-1,-1);
+	private final Time endTime = new Time(2019,9,30,0,-1,-1);
 
-	public GOESNNOAA() {
+	public GOESNOAA() {
 		super();
 	}
 	
@@ -77,10 +77,21 @@ public class GOESNNOAA extends Source {
 	public int getEndYear() {
 		return this.endYear;
 	}
+	
+	@Override
+	public Time getStartTime() {
+		return this.startTime;
+	}
+
+	@Override
+	public Time getEndTime() {
+		return this.endTime;
+	}
 
 	@Override
 	public void query(Query query) throws Exception {
-		this.intervalList = query.getIntervalList(this.getStartYear(), this.getEndYear());
+		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
+//		this.variable = query.getChannel();
 		if (this.intervalList != null) {
 			for (Interval i : this.intervalList) {
 				this.load(query, i);
@@ -90,7 +101,7 @@ public class GOESNNOAA extends Source {
 	}
 
 	public void load(Query query, Interval interval) throws Exception {
-		List<Time> timeList = Time.getTimeList(interval);
+		List<Time> timeList = Time.getTimeList(2,interval);
 		List<NetCDF> loadList;
 		for (Time time : timeList) {
 			if (!Thread.interrupted()) {
@@ -110,18 +121,18 @@ public class GOESNNOAA extends Source {
 		List<NetCDF> netCDFList = new ArrayList<>();
 		String days = (time.day != -1) ? String.format("%03d", Time.getDayOfYear(time.year, time.month, time.day))
 				: "001";
-		String hours = (time.hour != -1) ? String.format("%02d", time.hour) : "00";
-		String minutes = (time.minute != -1) ? String.format("%02d", time.minute) : "00";
+		String hours = (time.hour != -1) ? String.format("%02d", time.hour) : null;
+		String minutes = (time.minute != -1) ? String.format("%02d", time.minute) : null;
 		String seconds = (time.second != -1) ? String.format("%02d", time.second) : null;
 		String fileName = "";
 		if (dataType == DataType.CMI) {
 			this.setRelativePath("NOAA" + seperator + "GOES" + seperator + "16");
 			fileName = prefix + "s" + time.year + days + ((hours != null) ? hours : "00")
-					+ ((minutes != null) ? minutes : "00") + ((seconds != null) ? seconds : "");
+					+ ((minutes != null) ? minutes : "") + ((seconds != null && !seconds.equals("00")) ? seconds : "");
 		} else if (dataType == DataType.BAND_4) {
 			this.setRelativePath("NOAA" + seperator + "GOES" + seperator + "13");
 			fileName = "goes13." + time.year + "." + days + "." + ((hours != null) ? hours : "00")
-					+ ((minutes != null) ? minutes : "00") + ((seconds != null) ? seconds : "");
+					+ ((minutes != null) ? minutes : "") + ((seconds != null && !seconds.equals("00")) ? seconds : "");
 		}
 		String pattern = "glob:{" + fileName + "}*.{nc}";
 		logger.info("read(" + time + ") pattern=" + pattern);
@@ -143,7 +154,6 @@ public class GOESNNOAA extends Source {
 	public List<NetCDF> read(String fileName) {
 		logger.info("read(" + fileName + ")");
 		List<NetCDF> netCDFList = new ArrayList<>();
-//		fileName = this.getPath()+"OR_ABI-L2-CMIPF-M3C01_G16_s20190011600366_e20190011611133_c20190011611205.nc";
 		if (this.dataType == DataType.BAND_4) {
 			netCDFList = this.read13(fileName);
 		} else if (this.dataType == DataType.CMI) {
@@ -162,7 +172,7 @@ public class GOESNNOAA extends Source {
 			Variable yVariable = dataFile.findVariable("y");
 			Variable dataVar = dataFile.findVariable(variable);
 			Variable timeVar = dataFile.findVariable("t");
-			Variable goesImagerProjection = dataFile.findVariable("goes_imager_projection");
+//			Variable goesImagerProjection = dataFile.findVariable("goes_imager_projection");
 			Variable nominalSatelliteSubpointLonVariable = dataFile.findVariable("nominal_satellite_subpoint_lon");
 			Variable nominalSatelliteHeightVariable = dataFile.findVariable("nominal_satellite_height");
 			Attribute xAddOffsetAttribute = xVariable.findAttribute("add_offset");
@@ -185,14 +195,14 @@ public class GOESNNOAA extends Source {
 			float nominalSatelliteHeight = nominalSatelliteHeightVariable.readScalarFloat();
 			int xSize = (int) xVariable.getSize();
 			int ySize = (int) yVariable.getSize();
-			logger.info("read16(...) xSize=" + xSize);
-			logger.info("read16(...) ySize=" + ySize);
-			logger.info("read16(...) xAddOffset=" + xAddOffset);
-			logger.info("read16(...) xScaleFactor=" + xScaleFactor);
-			logger.info("read16(...) yAddOffset=" + yAddOffset);
-			logger.info("read16(...) yScaleFactor=" + yScaleFactor);
-			logger.info("read16(...) nominalSatelliteSubpointLon=" + nominalSatelliteSubpointLon);
-			logger.info("read16(...) nominalSatelliteHeight=" + nominalSatelliteHeight);
+//			logger.info("read16(...) xSize=" + xSize);
+//			logger.info("read16(...) ySize=" + ySize);
+//			logger.info("read16(...) xAddOffset=" + xAddOffset);
+//			logger.info("read16(...) xScaleFactor=" + xScaleFactor);
+//			logger.info("read16(...) yAddOffset=" + yAddOffset);
+//			logger.info("read16(...) yScaleFactor=" + yScaleFactor);
+//			logger.info("read16(...) nominalSatelliteSubpointLon=" + nominalSatelliteSubpointLon);
+//			logger.info("read16(...) nominalSatelliteHeight=" + nominalSatelliteHeight);
 			this.latitudeArray = new ArrayFloat.D2(xSize,ySize);
 			this.longitudeArray = new ArrayFloat.D2(xSize,ySize);
 			this.dataMatrix = new ArrayFloat.D2(xSize, ySize);
@@ -200,7 +210,7 @@ public class GOESNNOAA extends Source {
 			this.timeArray.set(0, t);
 			this.height = (double) (nominalSatelliteHeight * 1000) + (earth.radius * 1000);
 			this.longitude = (double) nominalSatelliteSubpointLon;
-			logger.info("read16(...) height=" + height);
+//			logger.info("read16(...) height=" + height);
 			NetCDF netCDF = new NetCDF();
 			netCDF.type = DataType.CMI;
 			for (int x = 0; x < xSize; x++) {
@@ -292,6 +302,7 @@ public class GOESNNOAA extends Source {
 		return netCDFList;
 	}
 }
+//fileName = this.getPath()+"OR_ABI-L2-CMIPF-M3C01_G16_s20190011600366_e20190011611133_c20190011611205.nc";
 //Object[] objectArray = this.getDataArray(latArray,lonArray,dataArray,timeDimension.getLength(),xcDimension.getLength(),ycDimension.getLength());
 //public Object[] getDataArray(ArrayFloat.D2 latitudeArray, ArrayFloat.D2 longitudeArray, ArrayFloat.D3 dataArray, int timeCount, int xCount, int yCount) {
 //logger.info("getDataArray(...,...,...,"+timeCount+","+xCount+","+yCount+")");

@@ -101,17 +101,6 @@ public class Cyclone extends Atmosphere {
 		this.sourceMap.put("UTN ERA INTERIM", "2d611935-9786-4c28-9dcf-f18cf3e99a3a");
 		this.sourceMap.put("UTN ERA 5", "281cbf52-7014-4229-bffd-35c8ba41bcb5");
 	}
-	
-//	@JsonIgnore
-//	@Override
-//	public void setCalendar(Calendar calendar) {
-//		this.calendar = calendar;
-//		this.query();
-//		List<Variable> nodeList = this.getChildren();
-//		for (Variable n : nodeList) {
-//			n.setCalendar(calendar);
-//		}
-//	}
 
 	@Override
 	public void reset() {
@@ -1204,6 +1193,16 @@ public class Cyclone extends Atmosphere {
 		super.paint(graphics);
 	}
 }
+//@JsonIgnore
+//@Override
+//public void setCalendar(Calendar calendar) {
+//	this.calendar = calendar;
+//	this.query();
+//	List<Variable> nodeList = this.getChildren();
+//	for (Variable n : nodeList) {
+//		n.setCalendar(calendar);
+//	}
+//}
 //public List<Cluster> getClusterList(List<Tile> tileList) {
 //List<Cluster> clusterList = new ArrayList<>();
 //List<TileWrapper> clusterInput = new ArrayList<TileWrapper>(tileList.size());

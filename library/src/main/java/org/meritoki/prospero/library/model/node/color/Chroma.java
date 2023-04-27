@@ -46,7 +46,6 @@ public class Chroma {
 	}
 	
 	public void initGrayscale() {
-		logger.info("initGrayscale()");
 		this.factor = 0.5;
 		this.hue = 1.0;
 		this.brightness = 1.0;
@@ -93,7 +92,7 @@ public class Chroma {
 				break;
 			}
 			default: {
-				System.err.println("Invalid scheme");
+				System.err.println("Chroma("+scheme+") invalid");
 				colorMap = null;
 				break;
 			}

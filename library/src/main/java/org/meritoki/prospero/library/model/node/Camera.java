@@ -120,8 +120,8 @@ public class Camera {
 		int yDelta = e.getY();
 		this.azimuth -= xDelta - this.xDelta;
 		this.elevation -= yDelta - this.yDelta;
-		logger.info("mouseDragged(e) azimuth="+azimuth);
-		logger.info("mouseDragged(e) elevation="+elevation);
+//		logger.info("mouseDragged(e) azimuth="+azimuth);
+//		logger.info("mouseDragged(e) elevation="+elevation);
 		if (this.node instanceof Spheroid) {
 			Spheroid s = (Spheroid) this.node;
 			s.setAzimuth(this.azimuth);

@@ -891,6 +891,7 @@ public class Grid extends Spheroid {
 				Event event = (Event) this.eventList.get(i);
 				if (event.flag) {
 //					logger.info(this + ".paintEvent(...) event=" + event.id);
+//					Calendar calendar = Time.getCalendar("YYYY/MM/dd HH:mm:ss",this.query.getTime());
 					event.setCalendarCoordinateList(this.calendar);
 //					this.setCalendarCoordinateList(this.calendar,event.coordinateList);
 					List<Point> pointList = this.getProjection().getCoordinateList(0, event.getAverageCoordinateList(this.calendar));

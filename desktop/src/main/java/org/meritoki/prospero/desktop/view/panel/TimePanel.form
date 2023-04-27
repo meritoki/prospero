@@ -28,8 +28,8 @@
                       <Component id="forwardButton" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="setButton" alignment="0" max="32767" attributes="0"/>
-                  <Component id="rangeBTimeTextField" alignment="0" max="32767" attributes="0"/>
-                  <Component id="rangeATimeTextField" alignment="0" max="32767" attributes="0"/>
+                  <Component id="endTimeTextField" alignment="0" max="32767" attributes="0"/>
+                  <Component id="startTimeTextField" alignment="0" max="32767" attributes="0"/>
                   <Component id="incrementTimeTextField" alignment="0" max="32767" attributes="0"/>
                   <Component id="incrementUnitTimeComboBox" alignment="0" max="32767" attributes="0"/>
                   <Component id="delayTimeTextField" alignment="1" max="32767" attributes="0"/>
@@ -38,8 +38,8 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="currentTimeBCCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="rangeATimeBCCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="rangeBTimeBCCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="startTimeBCCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="endTimeBCCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -55,13 +55,13 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="rangeATimeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="rangeATimeBCCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="startTimeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="startTimeBCCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="rangeBTimeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="rangeBTimeBCCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="endTimeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="endTimeBCCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="incrementTimeTextField" min="-2" max="-2" attributes="0"/>
@@ -72,7 +72,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="setButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="stopButton" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="forwardButton" alignment="1" min="-2" max="-2" attributes="0"/>
                   <Component id="backwardButton" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -111,7 +111,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="forwardButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JTextField" name="rangeBTimeTextField">
+    <Component class="javax.swing.JTextField" name="endTimeTextField">
     </Component>
     <Component class="javax.swing.JCheckBox" name="currentTimeBCCheckBox">
       <Properties>
@@ -128,7 +128,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="backwardButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JCheckBox" name="rangeATimeBCCheckBox">
+    <Component class="javax.swing.JCheckBox" name="startTimeBCCheckBox">
       <Properties>
         <Property name="text" type="java.lang.String" value="BC"/>
       </Properties>
@@ -148,12 +148,12 @@
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JCheckBox" name="rangeBTimeBCCheckBox">
+    <Component class="javax.swing.JCheckBox" name="endTimeBCCheckBox">
       <Properties>
         <Property name="text" type="java.lang.String" value="BC"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="rangeATimeTextField">
+    <Component class="javax.swing.JTextField" name="startTimeTextField">
     </Component>
     <Component class="javax.swing.JTextField" name="currentTimeTextField">
     </Component>
