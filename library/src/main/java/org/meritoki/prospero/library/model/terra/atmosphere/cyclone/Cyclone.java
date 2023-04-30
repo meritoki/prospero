@@ -25,17 +25,15 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import org.apache.commons.math3.ml.clustering.CentroidCluster;
-import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.histogram.Histogram;
@@ -56,6 +54,7 @@ import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Bar;
 import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Count;
 import org.meritoki.prospero.library.model.unit.Duration;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
@@ -66,10 +65,8 @@ import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Tile;
-import org.meritoki.prospero.library.model.unit.TileWrapper;
 import org.meritoki.prospero.library.model.unit.Time;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.controller.node.Exit;
 import com.meritoki.library.controller.node.NodeController;
 
@@ -81,7 +78,7 @@ public class Cyclone extends Atmosphere {
 	public List<Duration> durationList;
 	public List<Family> familyList;
 	public List<Classification> classificationList;
-	public int count;
+	public Count count;
 
 	public Cyclone() {
 		super("Cyclone");
@@ -184,17 +181,56 @@ public class Cyclone extends Atmosphere {
 						classFlag = true;
 					}
 					e.flag = durationFlag && familyFlag && classFlag;
-					if(e instanceof CycloneEvent) {
-						if(((CycloneEvent)e).getPressureCount() > this.count) {
-							e.flag = (e.flag)?true:false;
-						} else {
-							e.flag = false;
-						}
-					}
+//					20230430 Retired for Generalized Function w/ Count Object
+//					if (e instanceof CycloneEvent) {
+//						if (((CycloneEvent) e).getPressureCount() > this.count) {
+//							e.flag = (e.flag) ? true : false;
+//						} else {
+//							e.flag = false;
+//						}
+//					}
 				}
+				this.setCountEventList(eventList, this.count);
 			}
 		} else {
 			throw new InterruptedException();
+		}
+	}
+
+	/**
+	 * Function Sets Cyclone Event Flag to False Where Count Condition is Not Satisfied.
+	 * @param eventList
+	 * @param count
+	 */
+	public void setCountEventList(List<Event> eventList, Count count) {
+		if (count != null) {
+			Iterator<Event> eventIterator = eventList.iterator();
+			while (eventIterator.hasNext()) {
+				Event e = eventIterator.next();
+				if (e instanceof CycloneEvent) {
+					CycloneEvent event = (CycloneEvent) e;
+					switch (count.operator) {
+					case '>': {
+						if (event.getPressureCount() <= count.value) {
+							event.flag = false;
+						}
+						break;
+					}
+					case '<': {
+						if (event.getPressureCount() >= count.value) {
+							event.flag = false;
+						}
+						break;
+					}
+					case '=': {
+						if (event.getPressureCount() < count.value || event.getPressureCount() > count.value) {
+							event.flag = false;
+						}
+						break;
+					}
+					}
+				}
+			}
 		}
 	}
 
@@ -570,10 +606,10 @@ public class Cyclone extends Atmosphere {
 			List<Cluster> clusterList) {
 		List<Table> tableList = new ArrayList<>();
 		if (eventList != null && eventList.size() > 0) {
-			tableList.add(new Table("Cyclone Event(s)", CycloneEvent.getTableModel(eventList)));
+			tableList.add(new Table("Cyclone Event(s)", CycloneEvent.getTableModel(eventList,this.calendar)));
 		}
 		if (eventList != null && eventList.size() > 0) {
-			tableList.add(new Table("Cyclone Event Time", CycloneEvent.getTableModel(eventList,this.calendar)));
+			tableList.add(new Table("Cyclone Event Time", CycloneEvent.getTimeTableModel(eventList, this.calendar)));
 		}
 		if (tileList != null && tileList.size() > 0) {
 			tableList.add(new Table("Tiles(s)", Tile.getTableModel(tileList)));
@@ -777,7 +813,7 @@ public class Cyclone extends Atmosphere {
 		List<Integer> levelList = new ArrayList<>();
 		for (Event e : eventList) {
 			if (e.flag) {
-				List<Integer> lList = ((CycloneEvent) e).getSelectedLevelList();
+				List<Integer> lList = ((CycloneEvent) e).getSelectedPressureList();
 				for (Integer i : lList) {
 					if (!levelList.contains(i)) {
 						levelList.add(i);
@@ -901,8 +937,8 @@ public class Cyclone extends Atmosphere {
 			int distance;
 			for (Event e : eventList) {
 				if (e.flag) {
-					distance = (int) (((CycloneEvent) e).getDistance());//Meters
-					int range = distance / 1000;//Kilometers
+					distance = (int) (((CycloneEvent) e).getDistance());// Meters
+					int range = distance / 1000;// Kilometers
 					range /= 1000;
 					count = countMap.get(range);
 					if (count == null) {

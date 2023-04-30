@@ -53,13 +53,8 @@ public class Coordinate implements Comparable<Coordinate> {
 	@JsonIgnore
 	public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	public Coordinate() {
-	}
+	public Coordinate() {}
 	
-	public void reset() {
-		this.flag = false;
-	}
-
 	public Coordinate(Coordinate coordinate) {
 		this.calendar = coordinate.calendar;
 		this.latitude = coordinate.latitude;
@@ -67,7 +62,11 @@ public class Coordinate implements Comparable<Coordinate> {
 		this.attribute = new TreeMap<>(coordinate.attribute);
 		this.flag = coordinate.flag;
 	}
-	
+
+	public void reset() {
+		this.flag = false;
+	}
+
 	public boolean is() {
 		return !((Double)latitude).isNaN()&!((Double)longitude).isNaN();
 	}
@@ -78,9 +77,9 @@ public class Coordinate implements Comparable<Coordinate> {
 	@JsonIgnore
 	@Override
 	public int compareTo(Coordinate p) {
-		Integer levelA = (int) this.attribute.get("pressure");
-		Integer levelB = (int) p.attribute.get("pressure");
-		return levelA.compareTo(levelB);
+		Integer pressureA = (int) this.attribute.get("pressure");
+		Integer pressureB = (int) p.attribute.get("pressure");
+		return pressureA.compareTo(pressureB);
 	}
 
 	public boolean containsCalendar(Calendar calendar) {
@@ -151,21 +150,7 @@ public class Coordinate implements Comparable<Coordinate> {
 		return (vorticity != null)?(float)vorticity:null;
 	}
 
-//	@JsonIgnore
-//	@Override
-//	public String toString() {
-//		String string = "";
-//		ObjectWriter ow = new ObjectMapper().writer();
-//		try {
-//			string = ow.writeValueAsString(this);
-//		} catch (IOException ex) {
-//			System.err.println("IOException " + ex.getMessage());
-//		}
-//		return string;
-//	}
-//	public String toString() {
-//		return this.flag +";"+this.latitude + ";" + this.longitude + ";" + ((this.calendar != null)?this.calendar.getTime():null) + ";" + this.attribute;
-//	}
+
 	@JsonIgnore
 	@Override
 	public String toString() {
@@ -179,5 +164,20 @@ public class Coordinate implements Comparable<Coordinate> {
 		return string;
 	}
 }
+//@JsonIgnore
+//@Override
+//public String toString() {
+//	String string = "";
+//	ObjectWriter ow = new ObjectMapper().writer();
+//	try {
+//		string = ow.writeValueAsString(this);
+//	} catch (IOException ex) {
+//		System.err.println("IOException " + ex.getMessage());
+//	}
+//	return string;
+//}
+//public String toString() {
+//	return this.flag +";"+this.latitude + ";" + this.longitude + ";" + ((this.calendar != null)?this.calendar.getTime():null) + ";" + this.attribute;
+//}
 //@JsonIgnore
 //public Point point = new Point();

@@ -54,7 +54,7 @@ public class Time {
 	}
 
 	static Logger logger = LogManager.getLogger(Time.class.getName());
-	static String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
+	public static String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	@JsonProperty
 	public int year = -1;
 	@JsonProperty
@@ -146,21 +146,28 @@ public class Time {
 
 	}
 
+	/**
+	 * 20230430 Problem w/ Hour Conditional
+	 * Deprecate, Convert to Calendar and Use Before, After, and Equals
+	 * @param time
+	 * @return
+	 */
 	public boolean lessThan(Time time) {
-//		logger.info(this+".lessThan("+time+")");
+		
 		boolean flag = true;
-		if (this.hour != -1 && time.hour != -1) {
-			flag = this.hour <= time.hour;
-		}
-		if (flag && this.day != -1 && time.day != -1) {
-			flag = this.day <= time.day;
+		if (flag && this.year != -1 && time.year != -1) {
+			flag = this.year <= time.year;
 		}
 		if (flag && this.month != -1 && time.month != -1) {
 			flag = this.month <= time.month;
 		}
-		if (flag && this.year != -1 && time.year != -1) {
-			flag = this.year <= time.year;
+		if (flag && this.day != -1 && time.day != -1) {
+			flag = this.day <= time.day;
 		}
+		if (flag && this.hour != -1 && time.hour != -1) {
+			flag = this.hour <= time.hour;
+		}
+//		logger.info(this+".lessThan("+time+") flag="+flag);
 		return flag;
 	}
 
@@ -171,6 +178,7 @@ public class Time {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		Time that = (Time) o;
+//		logger.info(this+".equals("+that+")");
 		return this.year == that.year && this.month == that.month && this.day == that.day && this.hour == that.hour
 				&& this.minute == that.minute && this.second == that.second;
 	}
@@ -918,7 +926,7 @@ public class Time {
 	@Override
 	public String toString() {
 		String string = "";
-		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		ObjectWriter ow = new ObjectMapper().writer();//.withDefaultPrettyPrinter();
 		try {
 			string = ow.writeValueAsString(this);
 		} catch (IOException ex) {

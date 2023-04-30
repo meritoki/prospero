@@ -16,6 +16,7 @@
 package org.meritoki.prospero.library.model.unit;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,14 +38,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 
-@JsonTypeInfo(use = Id.CLASS,
-include = JsonTypeInfo.As.PROPERTY,
-property = "type")
-@JsonSubTypes({
-@Type(value = CycloneEvent.class)
-})
+@JsonTypeInfo(use = Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @Type(value = CycloneEvent.class) })
 public class Event {
-	
+
 	@JsonIgnore
 	static Logger logger = LogManager.getLogger(Event.class.getName());
 	@JsonProperty
@@ -52,7 +49,7 @@ public class Event {
 	@JsonProperty
 	public List<Coordinate> coordinateList = new ArrayList<Coordinate>();
 	@JsonProperty
-	public Map<String,Object> attribute = new TreeMap<>();
+	public Map<String, Object> attribute = new TreeMap<>();
 	@JsonProperty
 	public Duration duration;
 	@JsonIgnore
@@ -61,11 +58,9 @@ public class Event {
 	public boolean flag = false;
 	@JsonIgnore
 	public boolean print = false;
-	
-	public Event() {
-		
-	}
-	
+
+	public Event() {}
+
 	public Event(Event event) {
 		this.id = event.id;
 		this.coordinateList = new ArrayList<>(event.coordinateList);
@@ -73,32 +68,42 @@ public class Event {
 		this.duration = event.duration;
 		this.flag = event.flag;
 	}
-	
+
 	public Event(List<Coordinate> coordinateList) {
 		this.coordinateList = coordinateList;
 	}
-	
+
 	public Event(String id, List<Coordinate> coordinateList) {
 		this.id = id;
 		this.coordinateList = coordinateList;
 	}
-	
+
 	public void reset() {
 		this.flag = false;
-		for(Coordinate c: this.coordinateList) {
+		for (Coordinate c : this.coordinateList) {
 			c.reset();
 		}
 	}
 
 	public boolean containsCalendar(Calendar calendar) {
 		Date date = calendar.getTime();
-		Date startDate = (this.getStartCoordinate() != null && this.getStartCoordinate().calendar != null)?this.getStartCoordinate().calendar.getTime():null;
-		Date endDate = (this.getEndCoordinate() != null && this.getEndCoordinate().calendar != null)?this.getEndCoordinate().calendar.getTime():null;
-		if(print)System.out.println("date="+date);
-		if(print)System.out.println("startDate="+startDate);
-		if(print)System.out.println("endDate="+endDate);
-		boolean flag = (startDate != null && endDate != null)?startDate.before(date) && date.before(endDate) || startDate.equals(date) || endDate.equals(date):false;
-		if(print)System.out.println("flag="+flag);
+		Date startDate = (this.getStartCoordinate() != null && this.getStartCoordinate().calendar != null)
+				? this.getStartCoordinate().calendar.getTime()
+				: null;
+		Date endDate = (this.getEndCoordinate() != null && this.getEndCoordinate().calendar != null)
+				? this.getEndCoordinate().calendar.getTime()
+				: null;
+		if (print)
+			System.out.println("date=" + date);
+		if (print)
+			System.out.println("startDate=" + startDate);
+		if (print)
+			System.out.println("endDate=" + endDate);
+		boolean flag = (startDate != null && endDate != null)
+				? startDate.before(date) && date.before(endDate) || startDate.equals(date) || endDate.equals(date)
+				: false;
+		if (print)
+			System.out.println("flag=" + flag);
 		return flag;
 	}
 
@@ -113,12 +118,12 @@ public class Event {
 		Coordinate coordinate = this.coordinateList.get(this.coordinateList.size() - 1);
 		return coordinate;
 	}
-	
+
 	@JsonIgnore
 	public Calendar getStartCalendar() {
 		return this.getStartCoordinate().calendar;
 	}
-	
+
 	@JsonIgnore
 	public Calendar getEndCalendar() {
 		return this.getEndCoordinate().calendar;
@@ -134,6 +139,26 @@ public class Event {
 		Duration duration = new Duration(a.calendar.getTime(), b.calendar.getTime());
 //		logger.info("getDuration(...) duration="+duration);
 		return duration;
+	}
+	
+	public static List<Event> getSelectedEventList(List<Event> eventList) {
+		List<Event> eList = new ArrayList<>();
+		for (Event e : eventList) {
+			if (e.flag) {
+				eList.add(e);
+			}
+		}
+		return eList;
+	}
+	
+	public static List<Event> getSelectedEventList(List<Event> eventList, Calendar calendar) {
+		List<Event> eList = new ArrayList<>();
+		for (Event e : eventList) {
+			if (e.flag && e.containsCalendar(calendar)) {
+				eList.add(e);
+			}
+		}
+		return eList;
 	}
 
 	/**
@@ -162,10 +187,16 @@ public class Event {
 			}
 		}
 		timeCoordinateMap = new TreeMap<String, List<Coordinate>>(timeCoordinateMap);
+//		logger.info("getTimeCoordinateMap() timeCoordinateMap="+timeCoordinateMap);
 		return timeCoordinateMap;
 //		return this.getTimeCoordinateMap(this.coordinateList);
 	}
-	
+
+	/**
+	 * Difference is Coordinate Flag Check
+	 * @param coordinateList
+	 * @return
+	 */
 	@JsonIgnore
 	public Map<String, List<Coordinate>> getTimeCoordinateMap(List<Coordinate> coordinateList) {
 		Map<String, List<Coordinate>> timeCoordinateMap = new HashMap<>();
@@ -174,7 +205,7 @@ public class Event {
 		List<Coordinate> cList;
 		for (Coordinate c : coordinateList) {
 			if (c.flag) {
-				date = c.getDateTime();//dateFormat.format(c.calendar.getTime());
+				date = c.getDateTime();// dateFormat.format(c.calendar.getTime());
 				cList = timeCoordinateMap.get(date);
 				if (cList == null) {
 					cList = new ArrayList<>();
@@ -190,17 +221,46 @@ public class Event {
 		return timeCoordinateMap;
 	}
 	
+	/**
+	 * Function Returns Coordinate List with Averaged Latitude and Longitude per
+	 * Time
+	 * 
+	 * @return
+	 */
+	@JsonIgnore
+	public List<Coordinate> getTimeCoordinateList() {
+		Map<String, List<Coordinate>> timeCoordinateMap = this.getTimeCoordinateMap();
+		List<Coordinate> coordinateList = new ArrayList<Coordinate>();
+		Coordinate coordinate;
+		Date date;
+		Calendar calendar;
+		for (Map.Entry<String, List<Coordinate>> entry : timeCoordinateMap.entrySet()) {
+			try {
+				date = this.dateFormat.parse(entry.getKey());
+				calendar = Calendar.getInstance();
+				calendar.setTime(date);
+				coordinate = this.getAverageCoordinate(entry.getValue(), calendar);
+				if (coordinate != null) {
+					coordinateList.add(coordinate);
+				}
+			} catch (ParseException e) {
+				logger.error("ParseException " + e.getMessage());
+			}
+		}
+		return coordinateList;
+	}
+
 	public List<String> getTimeList() {
 		List<String> timeList = new ArrayList<>();
-		for(Coordinate c: this.coordinateList) {
+		for (Coordinate c : this.coordinateList) {
 			String dateTime = c.getDateTime();
-			if(!timeList.contains(dateTime)) {
+			if (!timeList.contains(dateTime)) {
 				timeList.add(dateTime);
 			}
 		}
 		return timeList;
 	}
-	
+
 	@JsonIgnore
 	public boolean hasCoordinate() {
 		boolean flag = false;
@@ -212,11 +272,12 @@ public class Event {
 		}
 		return flag;
 	}
-	
+
 	/**
-	 * 202304281758 Code Review
-	 * Function Set Calendar Coordinate List Uses Calendar Parameter
-	 * Set Coordinate Flags to True or False Given Contains Calendar Condition
+	 * 202304281758 Code Review Function Set Calendar Coordinate List Uses Calendar
+	 * Parameter Set Coordinate Flags to True or False Given Contains Calendar
+	 * Condition
+	 * 
 	 * @param calendar
 	 */
 	public void setCalendarCoordinateList(Calendar calendar) {
@@ -228,22 +289,23 @@ public class Event {
 			}
 		}
 	}
-	
+
 	/**
-	 * 202304281749 Get Coordinate List Code Review
-	 * Return a Copied List of Coordinates Where Coordinate Flag is True
+	 * 202304281749 Get Coordinate List Code Review Return a Copied List of
+	 * Coordinates Where Coordinate Flag is True
+	 * 
 	 * @return
 	 */
 	public List<Coordinate> getCoordinateList() {
 		List<Coordinate> coordinateList = new ArrayList<>();
-		for(Coordinate c: this.coordinateList) {
-			if(c.flag) {
+		for (Coordinate c : this.coordinateList) {
+			if (c.flag) {
 				coordinateList.add(new Coordinate(c));
 			}
 		}
 		return coordinateList;
 	}
-	
+
 //	/**
 //	 * 202304281749 Get Average Coordinate List Code Review
 //	 * 
@@ -253,9 +315,10 @@ public class Event {
 //	public List<Coordinate> getAverageCoordinateList(Calendar calendar) {
 //		return getAverageCoordinateList(this.getCoordinateList(),calendar);
 //	}
-	
+
 	/**
 	 * 202304281750 Get Average Coordinate List Code Review
+	 * 
 	 * @param cList
 	 * @param calendar
 	 * @return
@@ -267,9 +330,10 @@ public class Event {
 //			coordinateList.add(coordinate);
 //		return coordinateList; 
 //	}
-	
+
 	/**
 	 * 202304281751 Get Average Coordinate Code Review
+	 * 
 	 * @param cList
 	 * @param calendar
 	 * @return
@@ -323,7 +387,7 @@ public class Event {
 		}
 		return coordinate;
 	}
-	
+
 	/**
 	 * Haversine formula
 	 * 

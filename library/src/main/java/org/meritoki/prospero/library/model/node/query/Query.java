@@ -21,6 +21,7 @@ import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classif
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Family;
 import org.meritoki.prospero.library.model.unit.Analysis;
+import org.meritoki.prospero.library.model.unit.Count;
 import org.meritoki.prospero.library.model.unit.Duration;
 import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Operator;
@@ -123,14 +124,14 @@ public class Query {
 		this.alias.add(dimensionAlias);
 		this.alias.add(sourceAlias);
 	}
-	
+
 	public void addVariable(String variable) {
 		String v = this.map.get("variable");
-		if(v != null && v.length() > 0) {
-			v += ","+variable;
-			this.map.put("variable",v);
+		if (v != null && v.length() > 0) {
+			v += "," + variable;
+			this.map.put("variable", v);
 		} else {
-			this.map.put("variable",variable);
+			this.map.put("variable", variable);
 		}
 	}
 
@@ -172,7 +173,7 @@ public class Query {
 		if (this.getTime() != null) {
 			name.append("time");
 			name.append("-");
-			name.append(this.getTime().replace(",", "_").replace("/", "_"));
+			name.append(this.getTime().replace(",", "_").replace("/", "").replace(" ", "-").replace(":", ""));
 			name.append("-");
 		}
 
@@ -183,10 +184,12 @@ public class Query {
 			name.append("-");
 		}
 		// Dimension
-		name.append("dimension");
-		name.append("-");
-		name.append(String.valueOf(this.getDimension()));
-		name.append("-");
+		if (this.getDimension() != null) {
+			name.append("dimension");
+			name.append("-");
+			name.append(String.valueOf(this.getDimension()));
+			name.append("-");
+		}
 		if (this.getRegion() != null) {
 			name.append("region");
 			name.append("-");
@@ -573,24 +576,52 @@ public class Query {
 	}
 
 	@JsonIgnore
-	public int getCount() throws Exception {
+	public Count getCount() throws Exception {
 		return this.getCount(map.get("count"));
 	}
 
+//	@JsonIgnore
+//	public int getCount(String count) throws Exception {
+//		int c = 0;
+//		if (count != null && !count.isEmpty()) {
+//			boolean valid = true;
+//			try {
+//				c = Integer.parseInt(count);
+//			} catch (NumberFormatException e) {
+//				valid = false;
+//			}
+//			if (c < 0) {
+//				valid = false;
+//			}
+//			if (!valid) {
+//				throw new Exception("getCount(" + count + ") invalid");
+//			}
+//		}
+//		return c;
+//	}
+
+	/**
+	 * Example input: >2, <2, or =2
+	 * 
+	 * @param count
+	 * @return
+	 * @throws Exception
+	 */
 	@JsonIgnore
-	public int getCount(String count) throws Exception {
-		int c = 0;
+	public Count getCount(String count) throws Exception {
+		Count c = null;
 		if (count != null && !count.isEmpty()) {
-			boolean valid = true;
-			try {
-				c = Integer.parseInt(count);
-			} catch (NumberFormatException e) {
-				valid = false;
-			}
-			if (c < 0) {
-				valid = false;
-			}
-			if (!valid) {
+			c = new Count();
+			if (count.indexOf(">") == 0) {
+				c.operator = '>';
+				c.value = Integer.parseInt(count.substring(1).trim());
+			} else if (count.indexOf("<") == 0) {
+				c.operator = '<';
+				c.value = Integer.parseInt(count.substring(1).trim());
+			} else if (count.indexOf("=") == 0) {
+				c.operator = '=';
+				c.value = Integer.parseInt(count.substring(1).trim());
+			} else {
 				throw new Exception("getCount(" + count + ") invalid");
 			}
 		}
@@ -647,17 +678,17 @@ public class Query {
 	}
 
 	@JsonIgnore
-	public double getDimension() throws Exception {
+	public Double getDimension() throws Exception {
 		return this.getDimension(map.get("dimension"));
 	}
 
 	@JsonIgnore
-	public double getDimension(String dimension) throws Exception {
-		int d = 1;
+	public Double getDimension(String dimension) throws Exception {
+		Double d = null;
 		if (dimension != null && !dimension.isEmpty()) {
 			boolean valid = true;
 			try {
-				d = Integer.parseInt(dimension);
+				d = Double.parseDouble(dimension);
 			} catch (NumberFormatException e) {
 				valid = false;
 			}

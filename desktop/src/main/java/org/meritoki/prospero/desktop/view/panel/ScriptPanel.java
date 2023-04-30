@@ -133,6 +133,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 					Country country = (Country)terra.getVariable("Country");
 					country.start();
 					country.query.map.put("source","Natural Earth");
+					country.query.map.put("time","all");
 					country.query(country.query);
 					Iterator<Script> iterator = scriptList.iterator();
 					while (iterator.hasNext()) {

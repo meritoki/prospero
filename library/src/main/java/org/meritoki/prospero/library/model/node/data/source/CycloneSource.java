@@ -44,7 +44,7 @@ public class CycloneSource extends Source {
 	public List<Index> indexList = new ArrayList<>();
 	public Map<String, Time> idTimeMap = new TreeMap<>();
 	public String order = "tb";
-	public Count count = new Count('>', 1);
+//	public Count count = new Count('>', 1);
 	public int[] levelArray;
 	public boolean single = false;
 	public int cacheSize = 8;
@@ -185,33 +185,33 @@ public class CycloneSource extends Source {
 		return classificationList;
 	}
 
-	public List<CycloneEvent> getCountEventList(List<CycloneEvent> eventList) {
-		Iterator<CycloneEvent> eventIterator = eventList.iterator();
-		while (eventIterator.hasNext()) {
-			CycloneEvent event = eventIterator.next();
-			switch (this.count.operator) {
-			case '>': {
-				if (event.getPressureCount() <= this.count.value) {
-					eventIterator.remove();
-				}
-				break;
-			}
-			case '<': {
-				if (event.getPressureCount() >= this.count.value) {
-					eventIterator.remove();
-				}
-				break;
-			}
-			case '=': {
-				if (event.getPressureCount() < this.count.value || event.getPressureCount() > this.count.value) {
-					eventIterator.remove();
-				}
-				break;
-			}
-			}
-		}
-		return eventList;
-	}
+//	public List<CycloneEvent> getCountEventList(List<CycloneEvent> eventList) {
+//		Iterator<CycloneEvent> eventIterator = eventList.iterator();
+//		while (eventIterator.hasNext()) {
+//			CycloneEvent event = eventIterator.next();
+//			switch (this.count.operator) {
+//			case '>': {
+//				if (event.getPressureCount() <= this.count.value) {
+//					eventIterator.remove();
+//				}
+//				break;
+//			}
+//			case '<': {
+//				if (event.getPressureCount() >= this.count.value) {
+//					eventIterator.remove();
+//				}
+//				break;
+//			}
+//			case '=': {
+//				if (event.getPressureCount() < this.count.value || event.getPressureCount() > this.count.value) {
+//					eventIterator.remove();
+//				}
+//				break;
+//			}
+//			}
+//		}
+//		return eventList;
+//	}
 
 	public List<Integer> getLevelList(String level, int[] levelArray) throws Exception {
 		List<Integer> levelList = null;

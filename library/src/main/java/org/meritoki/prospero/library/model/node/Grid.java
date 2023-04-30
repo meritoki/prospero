@@ -45,6 +45,7 @@ import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Index;
+import org.meritoki.prospero.library.model.unit.Legend;
 import org.meritoki.prospero.library.model.unit.Link;
 import org.meritoki.prospero.library.model.unit.Meter;
 import org.meritoki.prospero.library.model.unit.NetCDF;
@@ -262,7 +263,7 @@ public class Grid extends Spheroid {
 			this.trajectoryFlag = this.query.getTrajectory();
 			this.clearFlag = this.query.getClear();
 			this.regionList = this.query.getRegionList();
-			this.dimension = this.query.getDimension();
+			this.dimension = (this.query.getDimension() != null) ? this.query.getDimension() : 1;
 			this.meter = this.query.getMeter();
 			this.interval = this.query.getInterval();
 			this.window = this.query.getWindow();
@@ -271,7 +272,7 @@ public class Grid extends Spheroid {
 				this.endCalendar = this.window[1];
 			}
 			this.range = this.query.getRange();
-			this.scheme = (this.query.getScheme()!=null)?this.query.getScheme():this.scheme;
+			this.scheme = (this.query.getScheme() != null) ? this.query.getScheme() : this.scheme;
 			this.seriesMap = new TreeMap<>();
 			this.timeList = new ArrayList<>();
 		} catch (Exception e) {
@@ -369,13 +370,13 @@ public class Grid extends Spheroid {
 	}
 
 	public void initBandMinMax() {
-		this.initBandMinMax(this.bandList,true);
+		this.initBandMinMax(this.bandList, true);
 	}
-	
+
 	public void initBandMinMax(List<Band> bandList, boolean reset) {
 		double min = this.min;
 		double max = this.max;
-		if(reset) {
+		if (reset) {
 			min = Double.POSITIVE_INFINITY;
 			max = Double.NEGATIVE_INFINITY;
 		}
@@ -736,11 +737,11 @@ public class Grid extends Spheroid {
 			}
 		}
 	}
-	
+
 	public List<Coordinate> getCoordinateList(Event event) {
 		List<Coordinate> coordinateList = new ArrayList<>();
-		for(Coordinate c: event.coordinateList) {
-			if(c.flag) {
+		for (Coordinate c : event.coordinateList) {
+			if (c.flag) {
 				coordinateList.add(c);
 			}
 		}
@@ -774,7 +775,7 @@ public class Grid extends Spheroid {
 				List<Tile> tileList = entry.getValue();
 				this.initTileMinMax(tileList, false);
 			}
-			
+
 			for (Entry<Integer, List<Tile>> entry : this.tileListMap.entrySet()) {
 				((Graphics2D) graphics).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 //				int level = entry.getKey();
@@ -849,9 +850,9 @@ public class Grid extends Spheroid {
 		Point b;
 		Point c;
 		Point d;
-		
-		this.initBandMinMax(this.bandList,false);
-		
+
+		this.initBandMinMax(this.bandList, false);
+
 		for (Band band : this.bandList) {
 			for (Tile t : band.tileList) {
 				a = this.getProjection().getPoint(0, t.coordinate.latitude, t.coordinate.longitude);
@@ -886,45 +887,83 @@ public class Grid extends Spheroid {
 		this.chroma = new Chroma();
 		if (this.trajectoryFlag) {
 			this.paintTrajectory(graphics);
-		} 
+		}
 //		else {
-			for (int i = 0; i < this.eventList.size(); i++) {
-				Event event = (Event) this.eventList.get(i);
-				if (event.flag && event.containsCalendar(this.calendar)) {
+		Time currentTime = new Time("second", this.calendar);
+		List<Event> eventList = Event.getSelectedEventList(this.eventList, this.calendar);
+		int size = eventList.size();
+		for (int i = 0; i < eventList.size(); i++) {
+			Event event = (Event) eventList.get(i);
+			Color eventColor = this.chroma.getColor(i, 0, size);
+			event.attribute.put("color",eventColor);
+//				if (event.flag && event.containsCalendar(this.calendar)) {
+			List<Coordinate> coordinateList = new ArrayList<>();
+//			List<Coordinate> timeCoordinateList = event.getTimeCoordinateList();
+//			for(int t=0;t<timeCoordinateList.size();t++) {
+			Map<String, List<Coordinate>> timeCoordinateMap = event.getTimeCoordinateMap();
+			for (Map.Entry<String, List<Coordinate>> entry : timeCoordinateMap.entrySet()) {
+				String key = entry.getKey();
+				List<Coordinate> cList = timeCoordinateMap.get(key);
+				Calendar calendar = Time.getCalendar(key, Time.defaultTimeFormat);
+				Time time = new Time("hour", calendar);
+//				if (time.lessThan(currentTime)) {
+				if(calendar.before(this.calendar)) {
+					Coordinate c = event.getAverageCoordinate(cList, calendar);
+					c.flag = true;
+//					if(calendar.equals(this.calendar)) {
+//						c.attribute.put("color",Color.BLACK);
+//					}
+					coordinateList.add(c);
+				}
+			}
 //					202304 Test Implementation - Not Viable, Commented Out
 //					logger.info(this + ".paintEvent(...) event=" + event.id);
 //					Calendar calendar = Time.getCalendar("YYYY/MM/dd HH:mm:ss",this.query.getTime());
 //					this.setCalendarCoordinateList(this.calendar,event.coordinateList);
 //					202304281739 Code Review - Possible Incorrect Code/Implementation
 //					Next Two Lines. Set Calendar Coordinate List is supposed to set Coordinate Flag True where Calendar Equals Coordinate Calendar
-					event.setCalendarCoordinateList(this.calendar);
+			event.setCalendarCoordinateList(this.calendar);
 //					Code In Question is getAverageCoordinateList
-					List<Coordinate> coordinateList = new ArrayList<>();
-					coordinateList.add(event.getAverageCoordinate(event.getCoordinateList(),this.calendar));
-					List<Point> pointList = this.getProjection().getCoordinateList(0, coordinateList);
-					if (pointList != null) {
-						for (int j = 0; j < pointList.size(); j++) {// Coordinate c : coordinateList) {
-							Point s = pointList.get(j);
-							if (s.flag) {
+			Coordinate c = event.getAverageCoordinate(event.getCoordinateList(), this.calendar);
+			c.attribute.put("color",Color.BLACK);
+			coordinateList.add(c);
+			
+			List<Point> pointList = this.getProjection().getCoordinateList(0, coordinateList);
+			if (pointList != null) {
+				for (int j = 0; j < pointList.size(); j++) {// Coordinate c : coordinateList) {
+					Point p = pointList.get(j);
+					if (p.flag) {
 //								logger.info(this + ".paintEvent(...) event=" + event.id);
-								graphics.setColor(Color.RED);//this.chroma.getColor(j, 0, pointList.size()));
+						graphics.setColor(eventColor);
 //								Original
 //								graphics.drawLine((int) ((c.x) * this.getProjection().scale),
 //										(int) ((c.y) * this.getProjection().scale),
 //										(int) ((c.x) * this.getProjection().scale),
 //										(int) ((c.y) * this.getProjection().scale));
 //								New
-								double radius = 6;
-								double x = (s.x * this.getProjection().scale) - (radius / 2);
-								double y = (s.y * this.getProjection().scale) - (radius / 2);
-								graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
-								int unitWidth = graphics.getFontMetrics().stringWidth(event.id);
-								graphics.drawString(event.id, (int)(x - (unitWidth / 2)), (int)(y + 8));
-							}
+						double radius = 8;
+						double x = (p.x * this.getProjection().scale) - (radius / 2);
+						double y = (p.y * this.getProjection().scale) - (radius / 2);
+						graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
+//						int unitWidth = graphics.getFontMetrics().stringWidth(event.id);
+						Object color = p.attribute.get("color");
+						if(color instanceof Color) {
+							graphics.setColor((Color)color);
+							radius = 4;
+							x = (p.x * this.getProjection().scale) - (radius / 2);
+							y = (p.y * this.getProjection().scale) - (radius / 2);
+							graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
 						}
+//								graphics.drawString(event.id, (int)(x - (unitWidth / 2)), (int)(y + 8));
 					}
 				}
 			}
+//				}
+		}
+		Legend legend = new Legend((int) (this.getProjection().xMax * this.getProjection().scale));
+		legend.setKeyMap(eventList);
+		legend.paint(graphics);
+		
 //		}
 	}
 
@@ -1099,7 +1138,7 @@ public class Grid extends Spheroid {
 		Point c;
 		Point d;
 		java.util.Iterator<Tile> iterator = this.tileList.iterator();
-		this.initTileMinMax(this.tileList,true);
+		this.initTileMinMax(this.tileList, true);
 		while (iterator.hasNext()) {
 			Tile t = new Tile(iterator.next());
 			if (t != null) {
