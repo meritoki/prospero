@@ -61,10 +61,11 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 
 	public Coordinate(Coordinate coordinate) {
+		this.calendar = coordinate.calendar;
 		this.latitude = coordinate.latitude;
 		this.longitude = coordinate.longitude;
-		this.calendar = coordinate.calendar;
 		this.attribute = new TreeMap<>(coordinate.attribute);
+		this.flag = coordinate.flag;
 	}
 	
 	public boolean is() {
@@ -136,6 +137,18 @@ public class Coordinate implements Comparable<Coordinate> {
 	@JsonIgnore
 	public String getDateTime() {
 		return dateFormat.format(this.calendar.getTime());
+	}
+	
+	@JsonIgnore
+	public Integer getPressure() {
+		Object pressure = this.attribute.get("pressure");
+		return (pressure != null)?(int)pressure:null;
+	}
+	
+	@JsonIgnore
+	public Float getVorticity() {
+		Object vorticity = this.attribute.get("vorticity");
+		return (vorticity != null)?(float)vorticity:null;
 	}
 
 //	@JsonIgnore

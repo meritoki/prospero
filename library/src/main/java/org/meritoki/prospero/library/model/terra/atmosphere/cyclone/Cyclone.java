@@ -572,6 +572,9 @@ public class Cyclone extends Atmosphere {
 		if (eventList != null && eventList.size() > 0) {
 			tableList.add(new Table("Cyclone Event(s)", CycloneEvent.getTableModel(eventList)));
 		}
+		if (eventList != null && eventList.size() > 0) {
+			tableList.add(new Table("Cyclone Event Time", CycloneEvent.getTableModel(eventList,this.calendar)));
+		}
 		if (tileList != null && tileList.size() > 0) {
 			tableList.add(new Table("Tiles(s)", Tile.getTableModel(tileList)));
 		}

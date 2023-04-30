@@ -48,7 +48,7 @@ public class CycloneUTNERA5 extends CycloneSource {
 	public static String merged = "F339A7D11BBFA9F1EF71B466A94895F6-";
 	public static String topBottomPrefix = "100-125-150-175-200-225-250-300-400-500-600-700-775-825-850-875-925-975-";// "125-175-225-300-400-500-600-700-775-825-875-925-975-";
 	public static String bottomTopPrefix = "975-925-875-825-775-700-600-500-400-300-225-175-125-";
-	public int[] levelArray = { 50, 100, 125, 150, 175, 200, 225, 250, 300, 400, 500, 600, 700, 775, 825, 850, 875, 925,
+	public int[] pressureArray = { 50, 100, 125, 150, 175, 200, 225, 250, 300, 400, 500, 600, 700, 775, 825, 850, 875, 925,
 			975 };
 	private final int startYear = 1979;
 	private final int endYear = 2019;
@@ -88,7 +88,7 @@ public class CycloneUTNERA5 extends CycloneSource {
 
 	@Override
 	public int[] getLevelArray() {
-		return this.levelArray;
+		return this.pressureArray;
 	}
 
 

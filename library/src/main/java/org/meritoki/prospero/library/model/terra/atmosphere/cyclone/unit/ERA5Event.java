@@ -23,6 +23,9 @@ import org.meritoki.prospero.library.model.unit.Event;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ERA5Event extends CycloneEvent {
+	
+	public int[] pressureArray = { 100, 125, 150, 175, 200, 225, 250, 300, 400, 500, 600, 700, 775, 825, 850, 875, 925,
+			975 };
 
 	public ERA5Event() {
 		super();

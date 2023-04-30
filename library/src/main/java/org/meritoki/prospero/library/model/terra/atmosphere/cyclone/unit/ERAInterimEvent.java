@@ -22,6 +22,8 @@ import org.meritoki.prospero.library.model.unit.Coordinate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ERAInterimEvent extends CycloneEvent {
+	
+	public int[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
 
 	public ERAInterimEvent() {
 		super();

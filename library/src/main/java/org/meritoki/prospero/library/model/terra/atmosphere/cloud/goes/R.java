@@ -28,7 +28,7 @@ public class R extends Cloud {
 	
 	public R() {
 		super("R");
-		this.sourceMap.put("GOES-16","aefbd8d1-d423-458d-90c0-7c8429f2a653");
+		this.sourceMap.put("GOES","aefbd8d1-d423-458d-90c0-7c8429f2a653");
 		this.unit = "R";
 		this.scheme = Scheme.GRAYSCALE;
 	}

@@ -104,7 +104,7 @@ public class Grid extends Spheroid {
 	protected Double[] meter;
 	protected Calendar[] window;
 	public double[] range;
-	public double interval = 1;
+	public double interval = 0.5;
 	public double increment;
 	public String regression;
 	public String season;
@@ -886,15 +886,22 @@ public class Grid extends Spheroid {
 		this.chroma = new Chroma();
 		if (this.trajectoryFlag) {
 			this.paintTrajectory(graphics);
-		} else {
+		} 
+//		else {
 			for (int i = 0; i < this.eventList.size(); i++) {
 				Event event = (Event) this.eventList.get(i);
-				if (event.flag) {
+				if (event.flag && event.containsCalendar(this.calendar)) {
+//					202304 Test Implementation - Not Viable, Commented Out
 //					logger.info(this + ".paintEvent(...) event=" + event.id);
 //					Calendar calendar = Time.getCalendar("YYYY/MM/dd HH:mm:ss",this.query.getTime());
-					event.setCalendarCoordinateList(this.calendar);
 //					this.setCalendarCoordinateList(this.calendar,event.coordinateList);
-					List<Point> pointList = this.getProjection().getCoordinateList(0, event.getAverageCoordinateList(this.calendar));
+//					202304281739 Code Review - Possible Incorrect Code/Implementation
+//					Next Two Lines. Set Calendar Coordinate List is supposed to set Coordinate Flag True where Calendar Equals Coordinate Calendar
+					event.setCalendarCoordinateList(this.calendar);
+//					Code In Question is getAverageCoordinateList
+					List<Coordinate> coordinateList = new ArrayList<>();
+					coordinateList.add(event.getAverageCoordinate(event.getCoordinateList(),this.calendar));
+					List<Point> pointList = this.getProjection().getCoordinateList(0, coordinateList);
 					if (pointList != null) {
 						for (int j = 0; j < pointList.size(); j++) {// Coordinate c : coordinateList) {
 							Point s = pointList.get(j);
@@ -912,15 +919,19 @@ public class Grid extends Spheroid {
 								double y = (s.y * this.getProjection().scale) - (radius / 2);
 								graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
 								int unitWidth = graphics.getFontMetrics().stringWidth(event.id);
-//								graphics.drawString(event.id, (int)(x - (unitWidth / 2)), (int)(y + 8));
+								graphics.drawString(event.id, (int)(x - (unitWidth / 2)), (int)(y + 8));
 							}
 						}
 					}
 				}
 			}
-		}
+//		}
 	}
 
+	/**
+	 * 
+	 * @param graphics
+	 */
 	public void paintTrajectory(Graphics graphics) {
 		if (this.eventList != null) {
 			Graphics2D g2d = (Graphics2D) graphics;
@@ -934,7 +945,7 @@ public class Grid extends Spheroid {
 			g2d.setStroke(new BasicStroke(thickness));
 
 			for (Event event : this.eventList) {
-				if (event.flag && event instanceof CycloneEvent) {
+				if (event.flag && event instanceof CycloneEvent) {// && event.containsCalendar(this.calendar)) {
 					Map<Integer, List<Coordinate>> pressureCoordinateMap = ((CycloneEvent) event)
 							.getPressureCoordinateMap();
 					List<String> timeList = event.getTimeList();

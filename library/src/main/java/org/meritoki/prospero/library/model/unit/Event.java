@@ -213,6 +213,12 @@ public class Event {
 		return flag;
 	}
 	
+	/**
+	 * 202304281758 Code Review
+	 * Function Set Calendar Coordinate List Uses Calendar Parameter
+	 * Set Coordinate Flags to True or False Given Contains Calendar Condition
+	 * @param calendar
+	 */
 	public void setCalendarCoordinateList(Calendar calendar) {
 		for (Coordinate c : this.coordinateList) {
 			if (c.containsCalendar(calendar)) {
@@ -223,6 +229,11 @@ public class Event {
 		}
 	}
 	
+	/**
+	 * 202304281749 Get Coordinate List Code Review
+	 * Return a Copied List of Coordinates Where Coordinate Flag is True
+	 * @return
+	 */
 	public List<Coordinate> getCoordinateList() {
 		List<Coordinate> coordinateList = new ArrayList<>();
 		for(Coordinate c: this.coordinateList) {
@@ -233,34 +244,55 @@ public class Event {
 		return coordinateList;
 	}
 	
-	public List<Coordinate> getAverageCoordinateList(Calendar calendar) {
-		return getAverageCoordinateList(this.getCoordinateList(),calendar);
-	}
+//	/**
+//	 * 202304281749 Get Average Coordinate List Code Review
+//	 * 
+//	 * @param calendar
+//	 * @return
+//	 */
+//	public List<Coordinate> getAverageCoordinateList(Calendar calendar) {
+//		return getAverageCoordinateList(this.getCoordinateList(),calendar);
+//	}
 	
-	public List<Coordinate> getAverageCoordinateList(List<Coordinate> cList, Calendar calendar) {
-		List<Coordinate> coordinateList = new ArrayList<>();
-		Coordinate coordinate = this.getAverageCoordinate(cList,calendar);
-		if(coordinate != null)
-			coordinateList.add(coordinate);
-		return coordinateList; 
-	}
+	/**
+	 * 202304281750 Get Average Coordinate List Code Review
+	 * @param cList
+	 * @param calendar
+	 * @return
+	 */
+//	public List<Coordinate> getAverageCoordinateList(List<Coordinate> cList, Calendar calendar) {
+//		List<Coordinate> coordinateList = new ArrayList<>();
+//		Coordinate coordinate = this.getAverageCoordinate(cList,calendar);
+//		if(coordinate != null)
+//			coordinateList.add(coordinate);
+//		return coordinateList; 
+//	}
 	
+	/**
+	 * 202304281751 Get Average Coordinate Code Review
+	 * @param cList
+	 * @param calendar
+	 * @return
+	 */
 	@JsonIgnore
-	public Coordinate getAverageCoordinate(List<Coordinate> cList, Calendar calendar) {
+	public Coordinate getAverageCoordinate(List<Coordinate> coordinateList, Calendar calendar) {
 		Coordinate coordinate = null;
-		List<Coordinate> coordinateList = new ArrayList<>();
-		for (Coordinate c : cList) {
-			coordinateList.add(new Coordinate(c));
-		}
+// 		202304281805 Code Review Commented Out Due to Redundancy
+//		List<Coordinate> coordinateList = new ArrayList<>();
+//		for (Coordinate c : cList) {
+//			coordinateList.add(new Coordinate(c));
+//		}
 		if (coordinateList.size() > 0) {
 			double latitudeSum = 0;
 			double longitudeSum = 0;
 			double latitude;
 			double longitude;
+//			202304281817 Suspicious Code: Entire For Loop is Used to Correct Longitudes, Suspicious Code
 			for (int i = 0; i < coordinateList.size(); i++) {
 				if (i + 1 < coordinateList.size()) {
 					Coordinate a = coordinateList.get(i);
 					Coordinate b = coordinateList.get(i + 1);
+//					Correct Longitude Before Calculating Difference
 					double difference = Math.abs(a.longitude - b.longitude);
 					if (difference >= 180) {
 						if (a.longitude < 0) {
@@ -272,12 +304,14 @@ public class Event {
 					}
 				}
 			}
+//			202304281817 Suspicious Code: Here the List Corrected is Used to Compute a Sum for Latitude and Longitude
 			for (Coordinate c : coordinateList) {
 				latitudeSum += c.latitude;
 				longitudeSum += c.longitude;
 			}
 			latitude = latitudeSum / coordinateList.size();
 			longitude = longitudeSum / coordinateList.size();
+//			202304281817 Suspicious Code: Again, Longitude is Corrected
 			if (longitude > 180) {
 				longitude -= 360;
 			}

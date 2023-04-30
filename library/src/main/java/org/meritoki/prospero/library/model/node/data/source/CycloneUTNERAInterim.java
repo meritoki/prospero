@@ -48,7 +48,7 @@ public class CycloneUTNERAInterim extends CycloneSource {
 //	public static String path = basePath+"prospero-data" + seperator + "UTN" + seperator + "File"+ seperator +"Data"+ seperator +"Cyclone"+ seperator +"cyclone-20200704";
 	public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
 	public static String extension = "xlsx";
-	public int[] levelArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
+	public int[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
 	private final int startYear = 2001;
 	private final int endYear = 2017;
 	
@@ -69,7 +69,7 @@ public class CycloneUTNERAInterim extends CycloneSource {
 	
 	@Override
 	public int[] getLevelArray() {
-		return this.levelArray;
+		return this.pressureArray;
 	}
 	
 	public List<Event> read(int year, int month) {

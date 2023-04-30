@@ -155,6 +155,112 @@ public class CycloneEvent extends Event {
 		logger.info("getFamilyClassMap(...) map=" + map);
 		return map;
 	}
+	
+	public static TableModel getTableModel(List<Event> eventList, Calendar calendar) {
+		Object[] objectArray = getObjectArray(eventList, calendar);
+		return new javax.swing.table.DefaultTableModel((Object[][]) objectArray[1], (Object[]) objectArray[0]);
+	}
+	
+	public static Object[] getObjectArray(List<Event> eventList, Calendar calendar) {
+		Object[] objectArray = new Object[2];
+		Object[] columnArray = new Object[0];
+		Object[][] dataMatrix = null;
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		if (eventList != null) {
+			eventList = getSelectedEventList(eventList, calendar);
+			if (eventList.size() > 0) {
+				for (int i = 0; i < eventList.size(); i++) {
+					Event e = eventList.get(i);
+					if (e instanceof CycloneEvent) {
+						CycloneEvent event = (CycloneEvent) e;
+						int[] pressureArray = new int[0];
+						if(event instanceof ERA5Event) {
+							pressureArray = ((ERA5Event)e).pressureArray;
+
+						} else if(event instanceof ERAInterimEvent) {
+							pressureArray = ((ERAInterimEvent)e).pressureArray;
+						}
+						if (i == 0) {
+							columnArray = Table.getColumnNames(2+pressureArray.length).toArray();
+							dataMatrix = new Object[eventList.size() + 1][2+pressureArray.length];
+							dataMatrix[i][0] = "id";
+							dataMatrix[i][1] = "calendar";
+							for(int p =0;p<pressureArray.length;p++) {
+								dataMatrix[i][2+p] = pressureArray[p];
+							}
+//							20230428 
+//							if(event instanceof ERA5Event) {
+//								int[] pressureArray = ((ERA5Event)event).pressureArray;
+//								for(int p =0;p<pressureArray.length;p++) {
+//									dataMatrix[i][2+p] = pressureArray[p];
+//								}
+//							} else if(event instanceof ERAInterimEvent) {
+//								int[] pressureArray = ((ERAInterimEvent)event).pressureArray;
+//								for(int p =0;p<pressureArray.length;p++) {
+//									dataMatrix[i][2+p] = pressureArray[p];
+//								}
+//							}
+						}
+						dataMatrix[i + 1][0] = event.id;
+						dataMatrix[i + 1][1] = dateFormat.format(calendar.getTime());
+						event.setCalendarCoordinateList(calendar);
+						List<Coordinate> coordinateList = event.getCoordinateList();
+						int pressure;
+						for(int p =0;p<pressureArray.length;p++) {
+							pressure = pressureArray[p];
+							for(Coordinate coordinate:coordinateList) {
+								int cPressure = coordinate.getPressure();
+								if(cPressure == pressure) {
+									dataMatrix[i+1][2+p] = String.valueOf(coordinate.getVorticity());
+								}
+							}
+						}
+//						20230428 Failed Implementation
+//						if(e instanceof ERA5Event) {
+//							int[] pressureArray = ((ERA5Event)e).pressureArray;
+//							int pressure;
+//							for(int p =0;p<pressureArray.length;p++) {
+//								pressure = pressureArray[p];
+//								for(Coordinate coordinate:coordinateList) {
+//									int cPressure = coordinate.getPressure();
+//									if(cPressure == pressure) {
+//										dataMatrix[i+1][2+p] = 1;
+//									}
+//									
+//								}
+//								
+//							}
+//						} else if(e instanceof ERAInterimEvent) {
+//							int[] pressureArray = ((ERAInterimEvent)e).pressureArray;
+//							for(int p =0;p<pressureArray.length;p++) {
+//								dataMatrix[i+1][2+p] = pressureArray[p];
+//							}
+//						}
+						
+//						dataMatrix[i + 1][2] = dateFormat.format(event.getEndCalendar().getTime());
+//						dataMatrix[i + 1][3] = event.getDuration().days;
+//						dataMatrix[i + 1][4] = (event.family != null) ? event.family.toString() : "NULL";
+//						dataMatrix[i + 1][5] = (event.classification != null) ? event.classification.toString()
+//								: "NULL";
+//						dataMatrix[i + 1][6] = event.getDistance();
+//						dataMatrix[i + 1][7] = event.getMaxTimeLevelCount();
+//						dataMatrix[i + 1][8] = event.getPressureCount();
+//						dataMatrix[i + 1][9] = event.getLowerMostLevel();
+//						dataMatrix[i + 1][10] = event.getUpperMostLevel();
+//						dataMatrix[i + 1][11] = event.getGenesisLowermostLevel();
+//						dataMatrix[i + 1][12] = event.getGenesisUppermostLevel();
+//						dataMatrix[i + 1][13] = event.getLysisLowermostLevel();
+//						dataMatrix[i + 1][14] = event.getLysisUppermostLevel();
+//						dataMatrix[i + 1][15] = event.getMeanSpeed();
+//						dataMatrix[i + 1][16] = event.getMeanVorticity();
+					}
+				}
+			}
+			objectArray[0] = columnArray;
+			objectArray[1] = dataMatrix;
+		}
+		return objectArray;
+	}
 
 	public static TableModel getTableModel(List<Event> eventList) {
 		Object[] objectArray = getObjectArray(eventList);
@@ -225,6 +331,16 @@ public class CycloneEvent extends Event {
 		List<Event> eList = new ArrayList<>();
 		for (Event e : eventList) {
 			if (e.flag) {
+				eList.add(e);
+			}
+		}
+		return eList;
+	}
+	
+	public static List<Event> getSelectedEventList(List<Event> eventList, Calendar calendar) {
+		List<Event> eList = new ArrayList<>();
+		for (Event e : eventList) {
+			if (e.flag && e.containsCalendar(calendar)) {
 				eList.add(e);
 			}
 		}
@@ -947,9 +1063,9 @@ public class CycloneEvent extends Event {
 					Date dateB = dateFormat.parse(keyB);
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(dateA);
-					Coordinate coordinateA = this.getAverageCoordinate(coordinateListA, calendar);
+					Coordinate coordinateA = this.getAverageCoordinate(new ArrayList<>(coordinateListA), calendar);
 					calendar.setTime(dateB);
-					Coordinate coordinateB = this.getAverageCoordinate(coordinateListB, calendar);
+					Coordinate coordinateB = this.getAverageCoordinate(new ArrayList<>(coordinateListB), calendar);
 					Coordinate coordinate = this.getMeanCoordinate(coordinateA, coordinateB);
 					coordinate.calendar = Calendar.getInstance();
 					coordinate.calendar.setTime(dateA);
