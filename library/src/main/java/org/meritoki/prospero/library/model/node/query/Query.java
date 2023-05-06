@@ -170,6 +170,12 @@ public class Query {
 			name.append(this.getSource().replace(" ", "_"));
 			name.append("-");
 		}
+		if(this.getChannel() != null) {
+			name.append("channel");
+			name.append("-");
+			name.append(this.getChannel());
+			name.append("-");
+		}
 		if (this.getTime() != null) {
 			name.append("time");
 			name.append("-");
@@ -505,6 +511,12 @@ public class Query {
 			group = "month";
 		}
 		return group;
+	}
+	
+	@JsonIgnore
+	public String getChannel() {
+		String channel = this.map.get("channel");
+		return channel;
 	}
 
 	@JsonIgnore

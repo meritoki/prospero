@@ -45,9 +45,9 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-public class GOESNOAA extends Source {
+public class GOESNNOAA extends GOESNOAA {
 
-	static Logger logger = LogManager.getLogger(GOESNOAA.class.getName());
+	static Logger logger = LogManager.getLogger(GOESNNOAA.class.getName());
 	public static String prefix = "OR_ABI-L2-MCMIPF-M6_G16_";
 //	protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 	public ArrayFloat.D2 latitudeArray;
@@ -64,7 +64,7 @@ public class GOESNOAA extends Source {
 	private final Time startTime = new Time(2019,6,1,0,-1,-1);
 	private final Time endTime = new Time(2019,9,30,0,-1,-1);
 
-	public GOESNOAA() {
+	public GOESNNOAA() {
 		super();
 	}
 	

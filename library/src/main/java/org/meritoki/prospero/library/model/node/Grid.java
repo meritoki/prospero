@@ -960,9 +960,11 @@ public class Grid extends Spheroid {
 			}
 //				}
 		}
-		Legend legend = new Legend((int) (this.getProjection().xMax * this.getProjection().scale));
-		legend.setKeyMap(eventList);
-		legend.paint(graphics);
+//		if (projection.scale >= this.defaultScale) {
+			Legend legend = new Legend(((int)-(this.getProjection().xMax * this.getProjection().scale)-128));
+			legend.setKeyMap(eventList);
+			legend.paint(graphics);
+//		}
 		
 //		}
 	}
@@ -986,7 +988,7 @@ public class Grid extends Spheroid {
 			for (Event event : this.eventList) {
 				if (event.flag && event instanceof CycloneEvent) {// && event.containsCalendar(this.calendar)) {
 					Map<Integer, List<Coordinate>> pressureCoordinateMap = ((CycloneEvent) event)
-							.getPressureCoordinateMap();
+							.getPressureCoordinateListMap();
 					List<String> timeList = event.getTimeList();
 					int size = pressureCoordinateMap.size();
 					int index = 0;

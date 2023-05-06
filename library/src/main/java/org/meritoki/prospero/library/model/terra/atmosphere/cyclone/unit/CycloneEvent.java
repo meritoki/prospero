@@ -182,29 +182,34 @@ public class CycloneEvent extends Event {
 							pressureArray = ((ERAInterimEvent)e).pressureArray;
 						}
 						if (i == 0) {
-							columnArray = Table.getColumnNames(3+pressureArray.length).toArray();
-							dataMatrix = new Object[eventList.size() + 1][3+pressureArray.length];
+							columnArray = Table.getColumnNames(5+pressureArray.length).toArray();
+							dataMatrix = new Object[eventList.size() + 1][5+pressureArray.length];
 							dataMatrix[i][0] = "color";
 							dataMatrix[i][1] = "id";
 							dataMatrix[i][2] = "calendar";
+							dataMatrix[i][3] = "latitude";
+							dataMatrix[i][4] = "longitude";
 							for(int p =0;p<pressureArray.length;p++) {
-								dataMatrix[i][2+p] = pressureArray[p];
+								dataMatrix[i][5+p] = pressureArray[p];
 							}
 
 						}
 						Object color = event.attribute.get("color");
+						event.setCalendarCoordinateList(calendar);
+						List<Coordinate> coordinateList = event.getCoordinateList();
+						Coordinate c = event.getAverageCoordinate(event.getCoordinateList(), calendar);
 						dataMatrix[i + 1][0] = (color != null && color instanceof Color)?"#"+Integer.toHexString(((Color)color).getRGB()).substring(2):"NA";
 						dataMatrix[i + 1][1] = event.id;
 						dataMatrix[i + 1][2] = dateFormat.format(calendar.getTime());
-						event.setCalendarCoordinateList(calendar);
-						List<Coordinate> coordinateList = event.getCoordinateList();
+						dataMatrix[i + 1][3] = c.latitude;
+						dataMatrix[i + 1][4] = c.longitude;
 						int pressure;
 						for(int p =0;p<pressureArray.length;p++) {
 							pressure = pressureArray[p];
 							for(Coordinate coordinate:coordinateList) {
 								int cPressure = coordinate.getPressure();
 								if(cPressure == pressure) {
-									dataMatrix[i+1][3+p] = String.valueOf(coordinate.getVorticity());
+									dataMatrix[i+1][5+p] = String.valueOf(coordinate.getVorticity());
 								}
 							}
 						}
@@ -389,7 +394,7 @@ public class CycloneEvent extends Event {
 	}
 
 	@JsonIgnore
-	public Map<Integer, List<Coordinate>> getPressureCoordinateMap(List<Coordinate> coordinateList) {
+	public Map<Integer, List<Coordinate>> getPressureCoordinateListMap(List<Coordinate> coordinateList) {
 		Map<Integer, List<Coordinate>> pressureCoordinateMap = new HashMap<>();
 //		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Integer pressure;
@@ -413,8 +418,8 @@ public class CycloneEvent extends Event {
 	}
 
 	@JsonIgnore
-	public Map<Integer, List<Coordinate>> getPressureCoordinateMap() {
-		Map<Integer, List<Coordinate>> pressureCoordinateMap = this.getPressureCoordinateMap(this.coordinateList);
+	public Map<Integer, List<Coordinate>> getPressureCoordinateListMap() {
+		Map<Integer, List<Coordinate>> pressureCoordinateMap = this.getPressureCoordinateListMap(this.coordinateList);
 		Map<Integer, List<Coordinate>> pressureLinkMap = new TreeMap<>();
 		List<String> timeList = this.getTimeList();
 		for (Map.Entry<Integer, List<Coordinate>> entry : pressureCoordinateMap.entrySet()) {
@@ -706,14 +711,14 @@ public class CycloneEvent extends Event {
 
 	@JsonIgnore
 	public double getMeanSpeed() {
-		Map<String, List<Coordinate>> timePointMap = this.getTimeCoordinateMap();
+		Map<String, List<Coordinate>> timePointMap = this.getTimeCoordinateMap();//Receives Map sorted by Time Strings
 		int size = timePointMap.size();
 		String keyA;
 		String keyB;
 		List<String> keys = new ArrayList<>(timePointMap.keySet());
-		List<Integer> levelList = this.getPressureList();
-		List<Coordinate> pointListA;
-		List<Coordinate> pointListB;
+		List<Integer> pressureList = this.getPressureList();
+		List<Coordinate> coordinateListA;
+		List<Coordinate> coordinateListB;
 		List<Double> meanList = new ArrayList<>();
 		int count;
 		double dataSum;
@@ -722,19 +727,21 @@ public class CycloneEvent extends Event {
 			if (i + 1 < size) {
 				keyA = keys.get(i);
 				keyB = keys.get(i + 1);
-				pointListA = timePointMap.get(keyA);
-				pointListB = timePointMap.get(keyB);
+				coordinateListA = timePointMap.get(keyA);
+				coordinateListB = timePointMap.get(keyB);
+//				Map<Integer,Coordinate> pressureCoordinateMapA = this.getPressureCoordinateMap(coordinateListA);
+//				Map<Integer,Coordinate> pressureCoordinateMapB = this.getPressureCoordinateMap(coordinateListB);
 				count = 0;
 				dataSum = 0;
-				for (Integer level : levelList) {// iterate through all possible levels
-					for (Coordinate pointA : pointListA) {
-						for (Coordinate pointB : pointListB) {
-							int levelA = (int) pointA.attribute.get("pressure");
-							int levelB = (int) pointB.attribute.get("pressure");
-							if (level == levelA && level == levelB) {
+				for (Integer pressure : pressureList) {// iterate through all possible levels
+					for (Coordinate coordinateA : coordinateListA) {
+						for (Coordinate coordinateB : coordinateListB) {
+							int levelA = (int) coordinateA.attribute.get("pressure");
+							int levelB = (int) coordinateB.attribute.get("pressure");
+							if (pressure == levelA && pressure == levelB) {
 								count++;
-								double distance = this.getDistance(pointA, pointB);
-								Duration duration = this.getDuration(pointA, pointB);
+								double distance = this.getDistance(coordinateA, coordinateB);
+								Duration duration = this.getDuration(coordinateA, coordinateB);
 								double speed = distance / duration.seconds;
 //								logger.info("getMeanSpeed() speed="+speed);
 								dataSum += speed;

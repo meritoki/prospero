@@ -59,7 +59,8 @@ public class Event {
 	@JsonIgnore
 	public boolean print = false;
 
-	public Event() {}
+	public Event() {
+	}
 
 	public Event(Event event) {
 		this.id = event.id;
@@ -140,7 +141,28 @@ public class Event {
 //		logger.info("getDuration(...) duration="+duration);
 		return duration;
 	}
-	
+
+	/**
+	 * Haversine formula
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	@JsonIgnore
+	public double getDistance(Coordinate x, Coordinate y) {// (lat1,lon1,lat2,lon2)
+		int earthRadius = 6371; // Radius of the earth in km
+		double latitude = (double) (Math.toRadians(y.latitude - x.latitude)); // deg2rad below
+		double longitude = (double) (Math.toRadians(y.longitude - x.longitude));
+		double a = (double) (Math.sin(latitude / 2) * Math.sin(latitude / 2) + Math.cos(Math.toRadians(x.latitude))
+				* Math.cos(Math.toRadians(y.latitude)) * Math.sin(longitude / 2) * Math.sin(longitude / 2));
+		double c = (double) (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+		double kilometers = earthRadius * c; // Distance in km
+		double meters = kilometers * 1000; // Distance in m
+		// logger.info("getDistance("+x+","+y+") m="+meters);
+		return meters;
+	}
+
 	public static List<Event> getSelectedEventList(List<Event> eventList) {
 		List<Event> eList = new ArrayList<>();
 		for (Event e : eventList) {
@@ -150,7 +172,7 @@ public class Event {
 		}
 		return eList;
 	}
-	
+
 	public static List<Event> getSelectedEventList(List<Event> eventList, Calendar calendar) {
 		List<Event> eList = new ArrayList<>();
 		for (Event e : eventList) {
@@ -191,9 +213,25 @@ public class Event {
 		return timeCoordinateMap;
 //		return this.getTimeCoordinateMap(this.coordinateList);
 	}
+	
+	/**
+	 * Please ensure that Coordinate List contains only one Coordinate per Pressure.
+	 * Otherwise, the last Coordinate for a Given Pressure it added and may cause defects
+	 * @param coordinateList
+	 * @return
+	 */
+	public Map<Integer,Coordinate> getPressureCoordinateMap(List<Coordinate> coordinateList) {
+		Map<Integer,Coordinate> pressureCoordinateMap = new HashMap<>();
+		for(Coordinate c: coordinateList) {
+			Integer pressure = c.getPressure();
+			pressureCoordinateMap.put(pressure,c);
+		}
+		return pressureCoordinateMap;
+	}
 
 	/**
 	 * Difference is Coordinate Flag Check
+	 * 
 	 * @param coordinateList
 	 * @return
 	 */
@@ -220,7 +258,7 @@ public class Event {
 		timeCoordinateMap = new TreeMap<String, List<Coordinate>>(timeCoordinateMap);
 		return timeCoordinateMap;
 	}
-	
+
 	/**
 	 * Function Returns Coordinate List with Averaged Latitude and Longitude per
 	 * Time
@@ -386,26 +424,5 @@ public class Event {
 			coordinate.flag = true;
 		}
 		return coordinate;
-	}
-
-	/**
-	 * Haversine formula
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	@JsonIgnore
-	public double getDistance(Coordinate x, Coordinate y) {// (lat1,lon1,lat2,lon2)
-		int R = 6371; // Radius of the earth in km
-		double dLat = (double) (Math.toRadians(y.latitude - x.latitude)); // deg2rad below
-		double dLon = (double) (Math.toRadians(y.longitude - x.longitude));
-		double a = (double) (Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(x.latitude))
-				* Math.cos(Math.toRadians(y.latitude)) * Math.sin(dLon / 2) * Math.sin(dLon / 2));
-		double c = (double) (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
-		double d = R * c; // Distance in km
-		double meters = d * 1000; // Distance in m
-//		logger.info("getDistance("+x+","+y+") m="+meters);
-		return meters;
 	}
 }

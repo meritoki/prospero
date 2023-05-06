@@ -58,7 +58,7 @@ public class Model extends Variable {
 		this.addChild(this.solar);
 		this.addCamera(new Camera(this.solar));
 		this.setData(this.data);
-		this.calendar = new GregorianCalendar(2019, 5, 2, 0, 0, 0);
+		this.calendar = new GregorianCalendar(2019, 5, 1, 18, 0, 0);
 		this.startCalendar = new GregorianCalendar(2019, 0, 1, 0, 0, 0);
 		this.endCalendar = new GregorianCalendar(2019, 11, 31, 0, 0, 0);
 //		this.calendar = Calendar.getInstance();
