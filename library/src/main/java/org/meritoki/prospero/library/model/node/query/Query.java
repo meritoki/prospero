@@ -895,9 +895,9 @@ public class Query {
 	@JsonIgnore
 	public String getRegion() {
 		String region = map.get("region");
-		if (region == null) {
-			region = "-90,-180:0,180";
-		}
+//		if (region == null) {
+//			region = "-90,-180:0,180";
+//		}
 		return region;
 	}
 

@@ -830,7 +830,7 @@ public class Cyclone extends Atmosphere {
 		histogram.data = "event-total-mean-velocity-count-histogram";
 		Map<Integer, Integer> countMap = new HashMap<>();
 		histogram.setTitle("Mean Velocity Count");
-		histogram.setXLabel("Event Mean Velocity (km/s)");
+		histogram.setXLabel("Event Mean Velocity (m/s)");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
 			Integer count = 0;

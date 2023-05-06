@@ -720,8 +720,8 @@ public class CycloneEvent extends Event {
 		List<Coordinate> coordinateListA;
 		List<Coordinate> coordinateListB;
 		List<Double> meanList = new ArrayList<>();
-		int count;
-		double dataSum;
+		int coordinateCount;
+		double coordinateSum;
 		double mean;
 		for (int i = 0; i < size; i++) {
 			if (i + 1 < size) {
@@ -729,27 +729,39 @@ public class CycloneEvent extends Event {
 				keyB = keys.get(i + 1);
 				coordinateListA = timePointMap.get(keyA);
 				coordinateListB = timePointMap.get(keyB);
-//				Map<Integer,Coordinate> pressureCoordinateMapA = this.getPressureCoordinateMap(coordinateListA);
-//				Map<Integer,Coordinate> pressureCoordinateMapB = this.getPressureCoordinateMap(coordinateListB);
-				count = 0;
-				dataSum = 0;
+				Map<Integer,Coordinate> pressureCoordinateMapA = this.getPressureCoordinateMap(coordinateListA);
+				Map<Integer,Coordinate> pressureCoordinateMapB = this.getPressureCoordinateMap(coordinateListB);
+				coordinateCount = 0;
+				coordinateSum = 0;
 				for (Integer pressure : pressureList) {// iterate through all possible levels
-					for (Coordinate coordinateA : coordinateListA) {
-						for (Coordinate coordinateB : coordinateListB) {
-							int levelA = (int) coordinateA.attribute.get("pressure");
-							int levelB = (int) coordinateB.attribute.get("pressure");
-							if (pressure == levelA && pressure == levelB) {
-								count++;
-								double distance = this.getDistance(coordinateA, coordinateB);
-								Duration duration = this.getDuration(coordinateA, coordinateB);
-								double speed = distance / duration.seconds;
-//								logger.info("getMeanSpeed() speed="+speed);
-								dataSum += speed;
-							}
-						}
+					Coordinate coordinateA = pressureCoordinateMapA.get(pressure);
+					Coordinate coordinateB = pressureCoordinateMapB.get(pressure);
+					if(coordinateA != null && coordinateB != null) {
+						coordinateCount++;
+						double distance = this.getDistance(coordinateA, coordinateB);//meters
+						Duration duration = this.getDuration(coordinateA, coordinateB);//seconds
+						double speed = distance / duration.seconds;
+////						logger.info("getMeanSpeed() speed="+speed);
+						coordinateSum += speed;
 					}
 				}
-				mean = (count > 0) ? dataSum / count : 0;
+//				for (Integer pressure : pressureList) {// iterate through all possible levels
+//					for (Coordinate coordinateA : coordinateListA) {
+//						for (Coordinate coordinateB : coordinateListB) {
+//							int levelA = (int) coordinateA.attribute.get("pressure");
+//							int levelB = (int) coordinateB.attribute.get("pressure");
+//							if (pressure == levelA && pressure == levelB) {
+//								count++;
+//								double distance = this.getDistance(coordinateA, coordinateB);
+//								Duration duration = this.getDuration(coordinateA, coordinateB);
+//								double speed = distance / duration.seconds;
+////								logger.info("getMeanSpeed() speed="+speed);
+//								dataSum += speed;
+//							}
+//						}
+//					}
+//				}
+				mean = (coordinateCount > 0) ? coordinateSum / coordinateCount : 0;
 				meanList.add(mean);
 			}
 		}
