@@ -32,6 +32,10 @@ public class ERAInterimEvent extends CycloneEvent {
 	public ERAInterimEvent(CycloneEvent event) {
 		super(event);
 	}
+	
+	public ERAInterimEvent(List<Coordinate> coordinateList) {
+		super(coordinateList);
+	}
 
 	public ERAInterimEvent(String id, List<Coordinate> pointList) {
 		super(id, pointList);

@@ -29,7 +29,7 @@ import java.util.TimeZone;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
-import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.ERA5Event;
+import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.ERAInterimEvent;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Time;
@@ -47,8 +47,11 @@ public class CycloneUTNERA5 extends CycloneSource {
 	public static String prefix = "125-175-225-300-400-500-600-700-775-825-875-925-975-";
 	public static String merged = "F339A7D11BBFA9F1EF71B466A94895F6-";
 	public static String topBottomPrefix = "100-125-150-175-200-225-250-300-400-500-600-700-775-825-850-875-925-975-";// "125-175-225-300-400-500-600-700-775-825-875-925-975-";
+	public static String topBottomTestPrefix = "100-125-150-200-250-300-400-500-600-700-850-925-975-";
 	public static String bottomTopPrefix = "975-925-875-825-775-700-600-500-400-300-225-175-125-";
 	public int[] pressureArray = { 50, 100, 125, 150, 175, 200, 225, 250, 300, 400, 500, 600, 700, 775, 825, 850, 875, 925,
+			975 };
+	public int[] pressureTestArray = { 100, 125, 150,200, 250, 300, 400, 500, 600, 700, 850, 925,
 			975 };
 	private final int startYear = 1979;
 	private final int endYear = 2019;
@@ -60,8 +63,8 @@ public class CycloneUTNERA5 extends CycloneSource {
 	public CycloneUTNERA5() {
 		super();
 		this.single = true;
-		this.setBasePath("/home/jorodriguez/Drive/UTN-202112/");
-		this.setRelativePath("south");
+		this.setBasePath("/home/jorodriguez/Drive/Test/");
+		this.setRelativePath("era-5");
 //		this.setRelativePath(
 //				"UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator + "202103");
 	}
@@ -88,20 +91,20 @@ public class CycloneUTNERA5 extends CycloneSource {
 
 	@Override
 	public int[] getLevelArray() {
-		return this.pressureArray;
+		return this.pressureTestArray;
 	}
 
 
 
 	public List<Event> read(int year, int month) throws Exception {
 		logger.info("read(" + year + "," + month + ")");
-		this.setBasePath("/home/jorodriguez/Drive/UTN-202112/");
-		this.setRelativePath("south");
+		this.setBasePath("/home/jorodriguez/Drive/Test/");
+		this.setRelativePath("era-5");
 		String yearMonth = year + "" + String.format("%02d", month) + "01";
 //		prefix = topBottomPrefix;
 		switch (order) {
 		case "tb": {
-			prefix = topBottomPrefix;
+			prefix = topBottomTestPrefix;//20230516 Test Added
 			break;
 		}
 		case "bt": {
@@ -182,7 +185,7 @@ public class CycloneUTNERA5 extends CycloneSource {
 							throw new InterruptedException();
 						}
 					}
-					CycloneEvent event = new ERA5Event(coordinateList);
+					CycloneEvent event = new ERAInterimEvent(coordinateList);
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 					event.id = sdf.format(event.getStartCalendar().getTime()) + "-"
 							+ sdf.format(event.getEndCalendar().getTime()) + id;

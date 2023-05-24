@@ -48,7 +48,7 @@ import ucar.nc2.Variable;
 public class GOESNOAA extends Source {
 
 	static Logger logger = LogManager.getLogger(GOESNOAA.class.getName());
-	public static String prefix = "OR_ABI-L2-MCMIPF-M6_G16_";
+	public static String prefix = "OR_ABI-L2-MCMIPF-M}*{_G16_";//-M6_G16_";
 //	protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 	public ArrayFloat.D2 latitudeArray;
 	public ArrayFloat.D2 longitudeArray;
@@ -61,7 +61,7 @@ public class GOESNOAA extends Source {
 	public String variable = "CMI_C11";
 	private final int startYear = 1979;
 	private final int endYear = 2019;
-	private final Time startTime = new Time(2019,6,1,0,-1,-1);
+	private final Time startTime = new Time(2017,6,1,0,-1,-1);
 	private final Time endTime = new Time(2019,9,30,0,-1,-1);
 
 	public GOESNOAA() {
@@ -127,6 +127,13 @@ public class GOESNOAA extends Source {
 		String fileName = "";
 		if (dataType == DataType.CMI) {
 			this.setRelativePath("NOAA" + seperator + "GOES" + seperator + "16");
+//			String prefix = new String(this.prefix);
+//			prefix += ;
+//			if(time.year == 2017) {
+//				prefix += "-M3_G16_";
+//			} else if(time.year == 2019) {
+//				prefix += "-M6_G16_";
+//			}
 			fileName = prefix + "s" + time.year + days + ((hours != null) ? hours : "00")
 					+ ((minutes != null) ? minutes : "") + ((seconds != null && !seconds.equals("00")) ? seconds : "");
 		} else if (dataType == DataType.BAND_4) {
