@@ -20,6 +20,7 @@ import org.meritoki.prospero.library.model.node.color.Scheme;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classification;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Family;
+import org.meritoki.prospero.library.model.unit.Alias;
 import org.meritoki.prospero.library.model.unit.Analysis;
 import org.meritoki.prospero.library.model.unit.Count;
 import org.meritoki.prospero.library.model.unit.Duration;
