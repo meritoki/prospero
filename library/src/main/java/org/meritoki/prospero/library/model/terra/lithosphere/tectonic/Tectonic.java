@@ -25,7 +25,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiLineString;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
+import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Result;
 
@@ -48,6 +50,20 @@ public class Tectonic extends Lithosphere {
 			if (this.multiLineStringList.size() == 0) {
 				logger.warn("load(...) this.multiPolygonList.size() == 0");
 			}
+		}
+	}
+	
+	@Override
+	public void query(Query query) {
+		if (this.mode == Mode.COMPLETE) {
+			try {
+				this.process();
+			} catch (Exception e) {
+				logger.warn("query(" + query + ") Exception " + e.getMessage());
+				e.printStackTrace();
+			}
+		} else {
+			super.query(query);
 		}
 	}
 

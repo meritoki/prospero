@@ -182,14 +182,6 @@ public class Cyclone extends Atmosphere {
 						classFlag = true;
 					}
 					e.flag = durationFlag && familyFlag && classFlag;
-//					20230430 Retired for Generalized Function w/ Count Object
-//					if (e instanceof CycloneEvent) {
-//						if (((CycloneEvent) e).getPressureCount() > this.count) {
-//							e.flag = (e.flag) ? true : false;
-//						} else {
-//							e.flag = false;
-//						}
-//					}
 				}
 				this.setCountEventList(eventList, this.count);
 			}
@@ -1233,6 +1225,7 @@ public class Cyclone extends Atmosphere {
 		super.paint(graphics);
 	}
 }
+
 //@JsonIgnore
 //@Override
 //public void setCalendar(Calendar calendar) {

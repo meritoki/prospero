@@ -960,11 +960,11 @@ public class Grid extends Spheroid {
 			}
 //				}
 		}
-//		if (projection.scale >= this.defaultScale) {
+		if (this.getProjection().scale >= this.defaultScale) {
 			Legend legend = new Legend(((int)-(this.getProjection().xMax * this.getProjection().scale)-128));
 			legend.setKeyMap(eventList);
 			legend.paint(graphics);
-//		}
+		}
 		
 //		}
 	}

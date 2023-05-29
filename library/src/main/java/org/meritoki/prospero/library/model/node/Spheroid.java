@@ -20,8 +20,12 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.node.cartography.AzimuthalNorth;
+import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
+import org.meritoki.prospero.library.model.node.cartography.Cartography;
+import org.meritoki.prospero.library.model.node.cartography.Equirectangular;
+import org.meritoki.prospero.library.model.node.cartography.Mercator;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
-import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
@@ -40,7 +44,7 @@ public class Spheroid extends Energy {
 	static Logger logger = LogManager.getLogger(Spheroid.class.getName());
 	public Projection projection = new Projection();
 	public Projection selected = null;//If Null, Projection is a Spheroid
-	public boolean selectable = true;
+	public boolean selectable = false;
 	public double defaultScale = 1;
 	public double radius = 1;
 	public double a = this.radius;//Equator
@@ -71,6 +75,35 @@ public class Spheroid extends Energy {
 	public void setSelectedProjection(Projection selected) {
 //		logger.info(this.name+".setSelectedProjection("+selected+")");
 		this.selected = selected;
+	}
+	
+	public void setSelectedProjection(Cartography cartography) {
+		logger.debug(this.name+".setSelectedProjection("+cartography+")");
+		switch(cartography) {
+		case EQUIRECTANGULAR: {
+			this.selected = new Equirectangular();
+			break;
+		}
+		case AZIMUTHAL_SOUTH: {
+			this.selected = new AzimuthalSouth();
+			break;
+		}
+		case AZIMUTHAL_NORTH: {
+			this.selected = new AzimuthalNorth();
+			break;
+		}
+		case MERCATOR: {
+			this.selected = new Mercator();
+			break;
+		}
+		case NULL: {
+			this.selected = null;
+			break;
+		}
+		default: {
+			this.selected = null;
+		}
+		}
 	}
 	
 	public void setSelectable(boolean selectable) {
@@ -115,6 +148,14 @@ public class Spheroid extends Energy {
 				((Spheroid) n).setElevation(elevation);
 			}
 		}
+	}
+
+	public Projection getProjection() {
+		Projection projection = this.projection;
+		if (this.selectable && this.selected != null) {
+			projection = this.selected;
+		}
+		return projection;
 	}
 
 	public double getVolume() {
@@ -238,13 +279,7 @@ public class Spheroid extends Energy {
 		return resistance;
 	}
 
-	public Projection getProjection() {
-		Projection projection = this.projection;
-		if (this.selectable && this.selected != null) {
-			projection = this.selected;
-		}
-		return projection;
-	}
+	
 	
 //	public Projection getSelectedProjection() {
 ////		logger.info(this.name+".getProjection() projection="+projection);

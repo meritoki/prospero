@@ -44,7 +44,7 @@ public class Time {
 
 	public static void main(String[] args) {
 //		Date date = Time.getDate("djf");
-		Interval i = Time.getAliasInterval("all", 2000,2005);
+		Interval i = Time.getAliasInterval("all", 2000, 2005);
 		try {
 			System.out.println(Time.getTimeList(1, i));
 		} catch (Exception e) {
@@ -147,13 +147,14 @@ public class Time {
 	}
 
 	/**
-	 * 20230430 Problem w/ Hour Conditional
-	 * Deprecate, Convert to Calendar and Use Before, After, and Equals
+	 * 20230430 Problem w/ Hour Conditional Deprecate, Convert to Calendar and Use
+	 * Before, After, and Equals
+	 * 
 	 * @param time
 	 * @return
 	 */
 	public boolean lessThan(Time time) {
-		
+
 		boolean flag = true;
 		if (flag && this.year != -1 && time.year != -1) {
 			flag = this.year <= time.year;
@@ -377,6 +378,7 @@ public class Time {
 	 * <li>1 - Month</li>
 	 * <li>2 - Day</li>
 	 * </ul>
+	 * 
 	 * @param depth
 	 * @param i
 	 * @return List
@@ -480,9 +482,6 @@ public class Time {
 		return timeList;
 	}
 
-
-
-
 	public static boolean isTime(String value) {
 		boolean flag = false;
 		flag = (!flag) ? Time.isAlias(value) : flag;
@@ -528,6 +527,7 @@ public class Time {
 
 	public static boolean isMonth(String month) {
 		boolean flag = false;
+		if(month != null) {
 		month = month.toLowerCase();
 		switch (month) {
 		case "january": {
@@ -579,33 +579,36 @@ public class Time {
 			break;
 		}
 		}
+		}
 		return flag;
 	}
 
 	public static boolean isAlias(String alias) {
 		boolean flag = false;
-		alias = alias.toLowerCase();
-		switch (alias) {
-		case "all": {
-			flag = true;
-			break;
-		}
-		case "jja": {
-			flag = true;
-			break;
-		}
-		case "djf": {
-			flag = true;
-			break;
-		}
-		case "mam": {
-			flag = true;
-			break;
-		}
-		case "son": {
-			flag = true;
-			break;
-		}
+		if (alias != null) {
+			alias = alias.toLowerCase();
+			switch (alias) {
+			case "all": {
+				flag = true;
+				break;
+			}
+			case "jja": {
+				flag = true;
+				break;
+			}
+			case "djf": {
+				flag = true;
+				break;
+			}
+			case "mam": {
+				flag = true;
+				break;
+			}
+			case "son": {
+				flag = true;
+				break;
+			}
+			}
 		}
 		return flag;
 	}
@@ -824,7 +827,9 @@ public class Time {
 	}
 
 	/**
-	 * Function can invoke Get Date with any valid Format String to instantiate a Date.
+	 * Function can invoke Get Date with any valid Format String to instantiate a
+	 * Date.
+	 * 
 	 * @param value
 	 * @return
 	 */
@@ -857,17 +862,17 @@ public class Time {
 		String string = new SimpleDateFormat((format == null) ? defaultTimeFormat : format).format(date);
 		return string;
 	}
-	
+
 	public static String getDateFormattedString(String type, Date date) {
 		String string = null;
-		switch(type) {
+		switch (type) {
 		case "DATE_TIME": {
 			break;
 		}
-		case "DATE_MINUTE":{
+		case "DATE_MINUTE": {
 			break;
 		}
-		case "DATE_HOUR":{
+		case "DATE_HOUR": {
 			break;
 		}
 		}
@@ -926,7 +931,7 @@ public class Time {
 	@Override
 	public String toString() {
 		String string = "";
-		ObjectWriter ow = new ObjectMapper().writer();//.withDefaultPrettyPrinter();
+		ObjectWriter ow = new ObjectMapper().writer();// .withDefaultPrettyPrinter();
 		try {
 			string = ow.writeValueAsString(this);
 		} catch (IOException ex) {

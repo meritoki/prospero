@@ -29,11 +29,10 @@ import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
+import org.meritoki.prospero.library.model.node.cartography.Cartography;
 import org.meritoki.prospero.library.model.node.query.Query;
-import org.meritoki.prospero.library.model.terra.Terra;
-import org.meritoki.prospero.library.model.terra.biosphere.country.Country;
 import org.meritoki.prospero.library.model.unit.Analysis;
 import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Script;
@@ -124,22 +123,62 @@ public class ScriptPanel extends javax.swing.JPanel {
 		this.runnable = new Runnable() {
 			public void run() {
 				Thread.currentThread().setName("Script");
-//				if(model.scriptList.size() > 0) {
 				if(model.scriptList.size() > 0) {
-					Terra terra = (Terra)model.getVariable("Terra");
-//					terra.setAzimuth(azimuth);
-//					terra.setElevation(elevation);
-					terra.setSelectedProjection(new AzimuthalSouth());
-					Country country = (Country)terra.getVariable("Country");
-					country.start();
-					country.query.map.put("source","Natural Earth");
-					country.query.map.put("time","all");
-					country.query(country.query);
 					Iterator<Script> iterator = scriptList.iterator();
 					while (iterator.hasNext()) {
 						Script script = iterator.next();
 						if (script != null) {
+							Variable view = (script.getView() != null)?model.getVariable(script.getView()):null;
+							logger.info("query() view="+view);
+							if(view instanceof Spheroid) {
+								Cartography cartography = script.getCartography();
+								if(cartography != null) {
+									logger.info("query() cartography="+cartography);
+									((Spheroid)view).setSelectedProjection(cartography);
+								}
+							}
+							for (Query query : script.loadList) {
+								if (!Thread.currentThread().isInterrupted()) {
+									consoleTextArea.append("load " + query + "\n");
+									TimeController.start();
+									String variable = query.getVariable();
+									Variable node = model.getVariable(variable);
+									if (node != null) {
+										logger.info("query() node="+node);
+										model.getCamera().setNode(view);
+										node.start();//can be called more than once, no problem
+										try {
+											node.query(query);//discrete finite task that sets a new query, includes process
+											while (!node.isComplete() && !Thread.interrupted()) {
+												Thread.sleep(4000);
+											}
+											logger.info("query() node.isComplete()="+node.isComplete());
+											if (!Thread.currentThread().isInterrupted()) {
+												mainFrame.init();
+												MemoryController.log();
+												TimeController.stop();
+												consoleTextArea.append("load finished...\n");
+											} else {
+												consoleTextArea.append("script interrupt handled...\n");
+												break;
+											}
+											
+										} catch (Exception qe) {
+											consoleTextArea.append(qe.getMessage() + "\n");
+											node.stop();
+										}
+									} else {
+										logger.warn("query() node == null");
+										consoleTextArea.append("load failed...\n");
+									}
+								} else {
+									consoleTextArea.append("script interrupt handled...\n");
+									break;
+								}
+							}
+							
 							for (Query query : script.queryList) {
+								model.query = query;
 								if (!Thread.currentThread().isInterrupted()) {
 									consoleTextArea.append("query " + query + "\n");
 									TimeController.start();
@@ -147,7 +186,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 									Variable node = model.getVariable(variable);
 									if (node != null) {
 										logger.info("query() node="+node);
-										model.getCamera().setNode(terra);
+										model.getCamera().setNode(view);
 //										node.stop();
 										node.start();//can be called more than once, no problem
 										try {
@@ -159,7 +198,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 											if(((Grid)node).analysis == Analysis.CLUSTER) {
 												List<Cluster> clusterList = ((Grid)node).clusterList;
 												for(Cluster cluster:clusterList) {
-													Camera camera = new Camera(terra);
+													Camera camera = new Camera(view);
 													camera.configuration.put("node", node);
 													camera.configuration.put("cluster",cluster);
 													model.addCamera(camera);
@@ -171,12 +210,10 @@ public class ScriptPanel extends javax.swing.JPanel {
 												MemoryController.log();
 												TimeController.stop();
 												model.removeCameras();
-
-												model.addCamera(new Camera(terra));
+												model.addCamera(new Camera(view));
 												consoleTextArea.append("query finished...\n");
 											} else {
 												consoleTextArea.append("script interrupt handled...\n");
-		
 												break;
 											}
 											
@@ -311,6 +348,13 @@ public class ScriptPanel extends javax.swing.JPanel {
     private javax.swing.JTextArea scriptTextArea;
     // End of variables declaration//GEN-END:variables
 }
+//Terra terra = (Terra)model.getVariable("Terra");
+//terra.setSelectedProjection(new AzimuthalSouth());
+//Country country = (Country)terra.getVariable("Country");
+//country.start();
+//country.query.map.put("source","Natural Earth");
+//country.query.map.put("time","all");
+//country.query(country.query);
 ////this.query();
 //for(Script s:this.model.scriptList) {
 //this.scriptList.add(new Script(s));

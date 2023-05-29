@@ -19,7 +19,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
@@ -33,9 +32,8 @@ import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.data.Data;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.solar.Solar;
-import org.meritoki.prospero.library.model.terra.Terra;
-import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
 
@@ -52,13 +50,14 @@ public class Model extends Variable {
 	public List<Camera> cameraList = new ArrayList<>();
 	public int index;
 	public boolean execute;
+	public Query query;
 
 	public Model() {
 		super("Model");
 		this.addChild(this.solar);
 		this.addCamera(new Camera(this.solar));
 		this.setData(this.data);
-		this.calendar = new GregorianCalendar(2016, 7, 1, 0, 0, 0);
+		this.calendar = Calendar.getInstance();
 		this.startCalendar = new GregorianCalendar(2016, 0, 1, 0, 0, 0);
 		this.endCalendar = new GregorianCalendar(2016, 11, 31, 0, 0, 0);
 //		this.calendar = Calendar.getInstance();

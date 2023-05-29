@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.node.cartography.Cartography;
 import org.meritoki.prospero.library.model.node.color.Scheme;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classification;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
@@ -85,10 +86,18 @@ public class Query {
 	public boolean equals(Object object) {
 		if (object instanceof Query) {
 			Query q = (Query) object;
-			boolean flag = this.getTime().equals(q.getTime()) && this.getSource().equals(q.getSource());// &&
-																										// this.map.equals(q.map);
-			boolean idFlag = (this.getID() != null) ? this.getID().equals(q.getID()) : false;
-			flag = (flag) ? idFlag : false;
+			boolean flag = (this.getSource() != null && q.getSource() != null)?this.getSource().equals(q.getSource()):true; 
+			if(flag && Time.isAlias(q.getTime()) && Time.isAlias(this.getTime())) {
+				flag = this.getTime().equals(q.getTime());
+			}
+			if(flag && Time.isMonth(q.getTime()) && Time.isMonth(this.getTime())) {
+				flag = this.getTime().equals(q.getTime());
+			}
+//			if(flag && this.getID() != null && q.getID() != null) {
+//				
+//			} 
+//			boolean idFlag = (this.getID() != null) ? this.getID().equals(q.getID()) : false;
+//			flag = (flag) ? idFlag : false;
 //			logger.debug(this+".equals("+q+") flag="+flag);
 			return flag;
 		}
@@ -128,11 +137,13 @@ public class Query {
 
 	public void addVariable(String variable) {
 		String v = this.map.get("variable");
+		if(variable != null) {
 		if (v != null && v.length() > 0) {
 			v += "," + variable;
 			this.map.put("variable", v);
 		} else {
 			this.map.put("variable", variable);
+		}
 		}
 	}
 
@@ -281,7 +292,8 @@ public class Query {
 		}
 		return sourceList;
 	}
-
+	
+	
 	@JsonIgnore
 	public String getVariable() {
 		String variable = map.get("variable");
@@ -739,6 +751,26 @@ public class Query {
 		}
 		return r;
 	}
+	
+	@JsonIgnore
+	public String getIncrement() {
+		String increment = map.get("increment"); 
+		return (increment != null)?increment:"1";
+	}
+	
+	@JsonIgnore
+	public String getDelay() {
+		String delay = map.get("delay"); 
+		return (delay != null)?delay:"1000";
+	}
+	
+	@JsonIgnore
+	public String getUnit() {
+		String unit = map.get("unit"); 
+		return (unit != null)?unit:"Day";
+	}
+
+
 
 	@JsonIgnore
 	public String getDuration() {

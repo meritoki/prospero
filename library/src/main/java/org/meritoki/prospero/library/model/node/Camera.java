@@ -86,17 +86,23 @@ public class Camera {
 		this.image = image;
 	}
 	
+	/**
+	 * 20230529 Not Functional, Has Defects
+	 * Shows Earth AND Terra when Terra is selected
+	 * @param node
+	 */
 	@JsonIgnore
 	public void setNode(Variable node) {
-		if(this.node instanceof Terra) {
-			logger.debug("setNode("+node+") this.node instanceof Terra");
-			Spheroid s = ((Spheroid)this.node);
-			s.setSelectable(false);
-			logger.debug("setNode("+node+") s.selectable="+s.selectable);
-		}
+		
+//		if(this.node instanceof Terra) {
+//			logger.info("setNode("+node+") this.node instanceof Terra");
+//			Spheroid spheroid = ((Spheroid)this.node);
+//			spheroid.setSelectable(false);
+//			logger.debug("setNode("+node+") s.selectable="+spheroid.selectable);
+//		}
 		this.node = node;
 		if(this.node instanceof Spheroid) {
-			logger.debug("setNode("+node+") this.node instanceof Spheroid");
+			logger.info("setNode("+node+") this.node instanceof Spheroid");
 			Spheroid spheroid = ((Spheroid)this.node);
 			this.scale = spheroid.defaultScale;
 			this.azimuth = 0;
@@ -105,11 +111,11 @@ public class Camera {
 			spheroid.setAzimuth(this.azimuth);
 			spheroid.setElevation(this.elevation);
 
-		}
+		} 
 		if(this.node instanceof Orbital) {
-			logger.debug("setNode("+node+") this.node instanceof Orbital");
+			logger.info("setNode("+node+") this.node instanceof Orbital");
 			Orbital orbital = ((Orbital)this.node);
-			orbital.setSelectable(false);
+			orbital.setSelectable(true);
 		}
 	}
 

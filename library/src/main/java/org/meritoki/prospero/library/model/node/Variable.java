@@ -90,7 +90,7 @@ public class Variable extends Node {
 	@JsonIgnore
 	public String unit;
 	@JsonIgnore
-	public String format ="#.###E0";
+	public String format = "#.###E0";
 	@JsonIgnore
 	public boolean load;
 	@JsonIgnore
@@ -99,7 +99,6 @@ public class Variable extends Node {
 	public boolean cache;
 //	@JsonIgnore
 //	public boolean visible;
-
 
 	public Variable() {
 	}
@@ -190,13 +189,13 @@ public class Variable extends Node {
 	}
 
 	public void complete() {
-		logger.info(this+".complete()");
+		logger.info(this + ".complete()");
 	}
 
 	public boolean isComplete() {
 		return this.mode == Mode.COMPLETE;// || this.mode == Mode.EXCEPTION;
 	}
-	
+
 	public boolean isException() {
 		return this.mode == Mode.EXCEPTION;
 	}
@@ -213,30 +212,27 @@ public class Variable extends Node {
 	@JsonIgnore
 	public void query(Query query) {
 		this.query = query;
-		if (query.isReady()) {// should only move forward if we have a time & source
-			query.put("sourceUUID", this.sourceMap.get(query.getSource()));
-//			query.calendar = this.calendar;
-			logger.info("query(" + query + ")");
-			if (!query.equals(this.queryStack.peek())) {//Used to Detect Same Time Query More than Once In Time Order
-				query.objectList = this.objectList;
-				this.reset();//Reset b/c Found a New Query, Older No Longer Matter
-				this.init();
+		query.put("sourceUUID", this.sourceMap.get(query.getSource()));
+		logger.info("query(" + query + ")");
+		if (!query.equals(this.queryStack.peek())) {// Used to Detect Same Time Query More than Once In Time Order
+			query.objectList = this.objectList;
+			this.reset();// Reset b/c Found a New Query, Older No Longer Matter
+			this.init();
+			try {
+				this.data.add(query);
+				this.queryStack.push(new Query(query));
+			} catch (Exception e) {
+				logger.warn("query(" + query + ") Exception " + e.getMessage());
+				e.printStackTrace();
+			}
+		} else {
+			if (this.mode == Mode.COMPLETE) {
 				try {
-					this.data.add(query);
-					this.queryStack.push(new Query(query));
+					this.process();
 				} catch (Exception e) {
 					logger.warn("query(" + query + ") Exception " + e.getMessage());
 					e.printStackTrace();
 				}
-			} else {
-				if (this.mode == Mode.COMPLETE) {
-					try {
-						this.process();
-					} catch (Exception e) {
-						logger.warn("query(" + query + ") Exception " + e.getMessage());
-						e.printStackTrace();
-					}
-				} 
 			}
 		}
 	}
@@ -254,7 +250,8 @@ public class Variable extends Node {
 		this.queryStack = new LinkedList<>();
 	}
 
-	public void initVariableMap() {}
+	public void initVariableMap() {
+	}
 
 	@JsonIgnore
 	public Variable getVariable(String name) {
@@ -301,7 +298,7 @@ public class Variable extends Node {
 			n.setDocument(this.document);
 		}
 	}
-	
+
 //	@JsonIgnore
 //	public void setTimeZone(String timeZone) {
 //		this.timeZone = timeZone;
@@ -382,20 +379,19 @@ public class Variable extends Node {
 	public Calendar getCalendar() {
 		return this.calendar;
 	}
-	
+
 	@JsonIgnore
-	
+
 	public void addRootObject(Object object) {
 		Module module = this.getModel();
-		logger.debug(module+".addRootObject("+(object!=null)+")");
+		logger.debug(module + ".addRootObject(" + (object != null) + ")");
 		module.add(object);
 	}
-	
 
 	public Module getModel() {
-		if(this.getParents()== null) {
+		if (this.getParents() == null) {
 			return this;
-		} 
+		}
 		return this.getParents().getModel();
 	}
 
@@ -429,13 +425,12 @@ public class Variable extends Node {
 	}
 
 	public Variable getParents() {
-		return (Variable)this.getRoot();
+		return (Variable) this.getRoot();
 	}
-
 
 	@JsonIgnore
 	public void addChild(Variable child) {
-		logger.debug(this.name+".addChild("+child+")");
+		logger.debug(this.name + ".addChild(" + child + ")");
 		this.orderList.add(child.toString());
 		this.moduleMapPut(child);
 	}
@@ -453,15 +448,14 @@ public class Variable extends Node {
 	}
 
 	public Image getImage(Image image) throws Exception {
-		logger.debug(this+".getImage("+image+")");
+		logger.debug(this + ".getImage(" + image + ")");
 		Graphics graphics = (image != null) ? image.getGraphics() : null;
 		graphics.setColor(Color.white);
-		graphics.fillRect(0, 0, (int)dimension.width, (int)dimension.height);
-		graphics.translate((int) (dimension.width / 2.0), (int) (dimension.height/ 2.0));
+		graphics.fillRect(0, 0, (int) dimension.width, (int) dimension.height);
+		graphics.translate((int) (dimension.width / 2.0), (int) (dimension.height / 2.0));
 		this.paint(graphics);
 		return image;
 	}
-	
 
 	@JsonIgnore
 	public void paint(Graphics graphics) throws Exception {
@@ -472,6 +466,8 @@ public class Variable extends Node {
 		}
 	}
 }
+//if (query.isReady()) {// should only move forward if we have a time & source
+//query.calendar = this.calendar;
 //else if(this.mode == Mode.EXCEPTION) {
 //this.reset();
 //}
