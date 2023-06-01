@@ -62,7 +62,7 @@ public class Result {
 		if(object != null) {
 			eventList = (List<Event>)object; 
 			if (eventList.size() == 0) {
-				logger.warn("load(...) eventList.size() == 0");
+				logger.warn("getEventList() eventList.size() == 0");
 			}
 		}
 		return eventList;
@@ -74,7 +74,7 @@ public class Result {
 		if(object != null) {
 			frameList = (List<Frame>)object; 
 			if (frameList.size() == 0) {
-				logger.warn("load(...) frameList.size() == 0");
+				logger.warn("getFrameList() frameList.size() == 0");
 			}
 		}
 		return frameList;
@@ -86,7 +86,7 @@ public class Result {
 		if(object != null) {
 			netCDFList = (List<NetCDF>)object; 
 			if (netCDFList.size() == 0) {
-				logger.warn("load(...) netCDFList.size() == 0");
+				logger.warn("getNetCDFList() netCDFList.size() == 0");
 			}
 		}
 		return netCDFList;
@@ -94,14 +94,14 @@ public class Result {
 	
 	public List<Interval> getIntervalList() {
 		Object object = this.map.get("intervalList");
-		List<Interval> eventList = new ArrayList<>();
+		List<Interval> intervalList = new ArrayList<>();
 		if(object != null) {
-			eventList = (List<Interval>)object; 
-			if (eventList.size() == 0) {
-				logger.warn("load(...) intervalList.size() == 0");
+			intervalList = (List<Interval>)object; 
+			if (intervalList.size() == 0) {
+				logger.warn("getIntervalList() intervalList.size() == 0");
 			}
 		}
-		return eventList;
+		return intervalList;
 	}
 	
 	@JsonIgnore

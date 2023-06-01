@@ -42,7 +42,7 @@ public class Ocean extends Hydrosphere {
 //	public boolean[][] continentMatrix;
 	public DataType dataType;
 //	public double scale;
-	
+
 	public Ocean() {
 		super("Ocean");
 		this.addChild(new SeaSurfaceTemperature());
@@ -51,29 +51,30 @@ public class Ocean extends Hydrosphere {
 		this.addChild(new PDO());
 		this.addChild(new Ice());
 	}
-	
+
 	public Ocean(String name) {
 		super(name);
 	}
-	
+
 	@Override
 	public void init() {
 		this.dimension = 1;
 		super.init();
 	}
-	
+
 	@Override
 	public void load(Result result) {
 		super.load(result);
 		List<NetCDF> netCDFList = result.getNetCDFList();
+		this.netCDFList.addAll(netCDFList);
 		try {
-			this.process(netCDFList);
+			this.process(this.netCDFList);
 		} catch (Exception e) {
 			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Reviewed 202112160852 Good
 	 */
@@ -88,53 +89,60 @@ public class Ocean extends Hydrosphere {
 			e.printStackTrace();
 		}
 	}
-	
-	public void process(Object object) throws Exception { //List<NetCDF> netCDFList) throws Exception {
+
+	public void process(Object object) throws Exception { // List<NetCDF> netCDFList) throws Exception {
 		this.setMatrix(object);
 		this.tileList = this.getTileList();
+		this.tileFlag = true;
 		this.initTileMinMax();
 	}
-	
-	public void setMatrix(Object object) { //List<NetCDF> netCDFList) {
+
+	public void setMatrix(Object object) { // List<NetCDF> netCDFList) {
 		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, object);
-		for(Time t: timeList) {
-			if(!this.timeList.contains(t)) {
+		for (Time t : timeList) {
+			if (!this.timeList.contains(t)) {
 				this.timeList.add(t);
 			}
 		}
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
 	}
-	
+
 //	public void setMatrix(List<NetCDF> netCDFList) {
-	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, Object object) { //List<NetCDF> netCDFList) {
+	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, Object object) { // List<NetCDF>
+																														// netCDFList)
+																														// {
 //		System.out.println("setMatrix("+netCDFList.size()+")");
-		List<NetCDF> netCDFList = (List<NetCDF>)object;
+
 		List<Time> timeList = new ArrayList<>();
-		for (NetCDF netCDF : netCDFList) {
-			if (netCDF.type == this.dataType) {
-				long timeSize = netCDF.timeArray.getSize();
-				long latSize = netCDF.latArray.getSize();
-				long lonSize = netCDF.lonArray.getSize();
-				for (int t = 0; t < timeSize; t++) {
-					Calendar calendar = Calendar.getInstance();
-					calendar.setTime(Time.getNineteenHundredJanuaryFirstDate(netCDF.timeArray.get(t)));
-					for (int lat = 0; lat < latSize - 1; lat++) {
-						float latitude = netCDF.latArray.get(lat);
-						if (latitude <= 0) {
-							for (int lon = 0; lon < lonSize; lon++) {
-								float longitude = netCDF.lonArray.get(lon);
+		if (object != null) {
+			List<NetCDF> netCDFList = (List<NetCDF>) object;
+			for (NetCDF netCDF : netCDFList) {
+				if (netCDF.type == this.dataType) {
+					long timeSize = netCDF.timeArray.getSize();
+					long latSize = netCDF.latArray.getSize();
+					long lonSize = netCDF.lonArray.getSize();
+					for (int t = 0; t < timeSize; t++) {
+						Calendar calendar = Calendar.getInstance();
+						calendar.setTime(Time.getNineteenHundredJanuaryFirstDate(netCDF.timeArray.get(t)));
+						for (int lat = 0; lat < latSize - 1; lat++) {
+							float latitude = netCDF.latArray.get(lat);
+							if (latitude <= 0) {
+								for (int lon = 0; lon < lonSize; lon++) {
+									float longitude = netCDF.lonArray.get(lon);
 //								logger.info(latitude+";"+longitude);
 //								float variable = netCDF.variableArray.get(t, lat, lon);
-								int x = (int) ((latitude + this.latitude-1) * this.resolution);
-								int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = calendar.get(Calendar.MONTH);
+									int x = (int) ((latitude + this.latitude - 1) * this.resolution);
+									int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+									int z = calendar.get(Calendar.MONTH);
 //								System.out.println(x+","+y+","+z);
-								dataMatrix[x][y][z] += netCDF.variableArray.get(t, lat, lon);
-								coordinateMatrix[x][y][z]++;
-								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, -1, -1, -1, -1);
-								if (!timeList.contains(time)) {
-									timeList.add(time);
+									dataMatrix[x][y][z] += netCDF.variableArray.get(t, lat, lon);
+									coordinateMatrix[x][y][z]++;
+									Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1,
+											-1, -1, -1, -1);
+									if (!timeList.contains(time)) {
+										timeList.add(time);
+									}
 								}
 							}
 						}
@@ -144,9 +152,6 @@ public class Ocean extends Hydrosphere {
 		}
 		return timeList;
 	}
-	
-
-	
 
 }
 //@Override

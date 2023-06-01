@@ -68,6 +68,7 @@ public class Ice extends Ocean {
 	public void process(Object object) throws Exception {
 		this.setMatrix(object);
 		this.tileList = this.getTileList();
+		this.tileFlag = true;
 		this.initTileMinMax();
 	}
 	
@@ -113,9 +114,9 @@ public class Ice extends Ocean {
 	
 	@Override
 	public void setMatrix(Object object) {
-		logger.info("setMatrix("+(object != null)+")");
+//		logger.info("setMatrix("+(object != null)+")");
 		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, object);
-		this.tileFlag = true;
+		
 		for(Time t: timeList) {
 			if(!this.timeList.contains(t)) {
 				this.timeList.add(t);
