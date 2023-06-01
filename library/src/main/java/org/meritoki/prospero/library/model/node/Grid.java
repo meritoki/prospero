@@ -486,6 +486,7 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
+		logger.info("getTileList(...) tileList="+tileList.size());
 		return tileList;
 	}
 
@@ -585,6 +586,7 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
+		logger.info("getTileList(...) tileList="+tileList.size());
 		return tileList;
 	}
 

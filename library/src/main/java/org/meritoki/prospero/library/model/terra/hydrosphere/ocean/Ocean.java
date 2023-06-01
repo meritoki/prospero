@@ -41,7 +41,7 @@ public class Ocean extends Hydrosphere {
 //	public float[][] sumMatrix;
 //	public boolean[][] continentMatrix;
 	public DataType dataType;
-	public double scale;
+//	public double scale;
 	
 	public Ocean() {
 		super("Ocean");
@@ -81,7 +81,7 @@ public class Ocean extends Hydrosphere {
 	public void process() throws Exception {
 		super.process();
 		try {
-//			this.process(this.netCDFList);
+			this.process(this.netCDFList);
 			this.complete();
 		} catch (Exception e) {
 			logger.error("process() exception=" + e.getMessage());
@@ -89,14 +89,14 @@ public class Ocean extends Hydrosphere {
 		}
 	}
 	
-	public void process(List<NetCDF> netCDFList) throws Exception {
-		this.setMatrix(netCDFList);
+	public void process(Object object) throws Exception { //List<NetCDF> netCDFList) throws Exception {
+		this.setMatrix(object);
 		this.tileList = this.getTileList();
 		this.initTileMinMax();
 	}
 	
-	public void setMatrix(List<NetCDF> netCDFList) {
-		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, netCDFList);
+	public void setMatrix(Object object) { //List<NetCDF> netCDFList) {
+		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, object);
 		for(Time t: timeList) {
 			if(!this.timeList.contains(t)) {
 				this.timeList.add(t);
@@ -107,8 +107,9 @@ public class Ocean extends Hydrosphere {
 	}
 	
 //	public void setMatrix(List<NetCDF> netCDFList) {
-	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, List<NetCDF> netCDFList) {
-		System.out.println("setMatrix("+netCDFList.size()+")");
+	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, Object object) { //List<NetCDF> netCDFList) {
+//		System.out.println("setMatrix("+netCDFList.size()+")");
+		List<NetCDF> netCDFList = (List<NetCDF>)object;
 		List<Time> timeList = new ArrayList<>();
 		for (NetCDF netCDF : netCDFList) {
 			if (netCDF.type == this.dataType) {
@@ -146,65 +147,66 @@ public class Ocean extends Hydrosphere {
 	
 
 	
-	@Override
-	public List<Tile> getTileList() {
-		return this.getTileList(this.coordinateMatrix,this.dataMatrix);
-	}
-	
-	public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] dataMatrix) {
-		List<Tile> tileList = new ArrayList<>();
-		int yearCount = this.getYearCount();
-		int monthCount = this.getMonthCount();
-		Tile tile;
-		int coordinate;
-		float data;
-		float dataMean;
-		float dataMeanSum;
-		float value;
-		for (int i = 0; i < coordinateMatrix.length; i += this.dimension) {
-			for (int j = 0; j < coordinateMatrix[i].length; j += this.dimension) {
-				dataMeanSum = 0;
-				for (int m = 0; m < 12; m++) {
-					coordinate = 0;
-					data = 0;
-					for (int a = i; a < (i + this.dimension); a++) {
-						for (int b = j; b < (j + this.dimension); b++) {
-							if (a < this.latitude && b < this.longitude) {
-								coordinate += coordinateMatrix[a][b][m];
-								data += dataMatrix[a][b][m];
-							}
-						}
-					}
-					dataMean = (coordinate > 0) ? data / coordinate : 0;
-					dataMeanSum += dataMean;
-				}
-				value = dataMeanSum;
-				if (this.monthFlag) {
-					value /= monthCount;
-				} else if (this.yearFlag) {
-					value /= ((double) this.getMonthCount() / (double) yearCount);
-				}
-				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
-						this.dimension, value);
-				if (this.region != null) {
-					if (this.region.contains(tile)) {
-						tileList.add(tile);
-					}
-				} else if (this.regionList != null) {
-					for (Region region : this.regionList) {
-						if (region.contains(tile)) {
-							tileList.add(tile);
-							break;
-						}
-					}
-				} else {
-					tileList.add(tile);
-				}
-			}
-		}
-		return tileList;
-	}
+
 }
+//@Override
+//public List<Tile> getTileList() {
+//	return this.getTileList(this.coordinateMatrix,this.dataMatrix);
+//}
+//
+//public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] dataMatrix) {
+//	List<Tile> tileList = new ArrayList<>();
+//	int yearCount = this.getYearCount();
+//	int monthCount = this.getMonthCount();
+//	Tile tile;
+//	int coordinate;
+//	float data;
+//	float dataMean;
+//	float dataMeanSum;
+//	float value;
+//	for (int i = 0; i < coordinateMatrix.length; i += this.dimension) {
+//		for (int j = 0; j < coordinateMatrix[i].length; j += this.dimension) {
+//			dataMeanSum = 0;
+//			for (int m = 0; m < 12; m++) {
+//				coordinate = 0;
+//				data = 0;
+//				for (int a = i; a < (i + this.dimension); a++) {
+//					for (int b = j; b < (j + this.dimension); b++) {
+//						if (a < this.latitude && b < this.longitude) {
+//							coordinate += coordinateMatrix[a][b][m];
+//							data += dataMatrix[a][b][m];
+//						}
+//					}
+//				}
+//				dataMean = (coordinate > 0) ? data / coordinate : 0;
+//				dataMeanSum += dataMean;
+//			}
+//			value = dataMeanSum;
+//			if (this.monthFlag) {
+//				value /= monthCount;
+//			} else if (this.yearFlag) {
+//				value /= ((double) this.getMonthCount() / (double) yearCount);
+//			}
+//			tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
+//					this.dimension, value);
+//			if (this.region != null) {
+//				if (this.region.contains(tile)) {
+//					tileList.add(tile);
+//				}
+//			} else if (this.regionList != null) {
+//				for (Region region : this.regionList) {
+//					if (region.contains(tile)) {
+//						tileList.add(tile);
+//						break;
+//					}
+//				}
+//			} else {
+//				tileList.add(tile);
+//			}
+//		}
+//	}
+//	return tileList;
+//}
 //public List<Tile> getTileList() {
 //List<Tile> tileList = new ArrayList<>();
 //for (int i = 0; i < latitude; i++) {

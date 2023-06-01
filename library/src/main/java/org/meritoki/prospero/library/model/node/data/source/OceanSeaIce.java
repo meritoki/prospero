@@ -36,8 +36,7 @@ import org.meritoki.prospero.library.model.unit.Time;
 public class OceanSeaIce extends Source {
 
 	static Logger logger = LogManager.getLogger(OceanSeaIce.class.getName());
-	public String path = basePath + "prospero-data" + seperator + "Toth" + seperator + "hielo2020toths.txt";
-
+//	public String path = basePath + "prospero-data" + seperator + "Toth" + seperator + "hielo2020toths.txt";
 	private final int startYear = 1979;
 	private final int endYear = 2019;
 	
@@ -69,6 +68,7 @@ public class OceanSeaIce extends Source {
 	}
 	
 	public void load(Query query, Interval interval) throws Exception {
+		logger.info("load("+query+","+interval+")");
 		List<Time> timeList = Time.getTimeList(1,interval);
 		List<Frame> loadList;
 		for(Time time: timeList) {
@@ -87,7 +87,7 @@ public class OceanSeaIce extends Source {
 	public List<Frame> read(int year, int month) throws Exception {
 		logger.info("read("+year+","+month+")");
 		List<Frame> frameList = new ArrayList<>();
-		FileReader input = new FileReader(path);
+		FileReader input = new FileReader(this.getFilePath());
 		Frame frame = new Frame();
 		Calendar calendar = new GregorianCalendar(year, month + 1, 1);
 		frame.calendar = calendar;
