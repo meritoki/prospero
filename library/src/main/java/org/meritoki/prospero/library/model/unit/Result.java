@@ -56,6 +56,30 @@ public class Result {
 		return time;
 	}
 	
+	public List<Index> getIndexList() {
+		Object object = this.map.get("indexList");
+		List<Index> indexList = new ArrayList<>();
+		if(object != null) {
+			indexList = (List<Index>)object; 
+			if (indexList.size() == 0) {
+				logger.warn("getIndexList() indexList.size() == 0");
+			}
+		}
+		return indexList;
+	}
+	
+	public List<Station> getStationList() {
+		Object object = this.map.get("stationList");
+		List<Station> stationList = new ArrayList<>();
+		if(object != null) {
+			stationList = (List<Station>)object; 
+			if (stationList.size() == 0) {
+				logger.warn("getStationList() stationList.size() == 0");
+			}
+		}
+		return stationList;
+	}
+	
 	public List<Event> getEventList() {
 		Object object = this.map.get("eventList");
 		List<Event> eventList = new ArrayList<>();

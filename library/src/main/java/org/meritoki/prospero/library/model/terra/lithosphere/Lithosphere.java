@@ -21,7 +21,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.Terra;
+import org.meritoki.prospero.library.model.terra.lithosphere.earthquake.Earthquake;
 import org.meritoki.prospero.library.model.terra.lithosphere.tectonic.Tectonic;
+import org.meritoki.prospero.library.model.terra.lithosphere.volcano.Volcanic;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Result;
@@ -33,9 +35,9 @@ public class Lithosphere extends Terra {
 	public Lithosphere() {
 		super("Lithosphere");
 //		this.addChild(new Magnetic());
-//		this.addChild(new Earthquake());
+		this.addChild(new Earthquake());
 		this.addChild(new Tectonic());
-//		this.addChild(new Volcanic());
+		this.addChild(new Volcanic());
 		this.sourceMap.put("GEBCO", "1aac29c0-e2f6-45e8-9921-c88397957795");
 	}
 	

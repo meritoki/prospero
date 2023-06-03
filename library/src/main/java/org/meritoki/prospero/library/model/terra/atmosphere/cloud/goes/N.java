@@ -15,14 +15,8 @@
  */
 package org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes;
 
-import java.util.Calendar;
-import java.util.List;
-
-import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.color.Scheme;
 import org.meritoki.prospero.library.model.terra.atmosphere.cloud.Cloud;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class N extends Cloud {
 	
@@ -32,15 +26,14 @@ public class N extends Cloud {
 		this.unit = "K";
 		this.scheme = Scheme.GRAYSCALE;
 	}
-	
-//	@JsonIgnore
-//	@Override
-//	public void setCalendar(Calendar calendar) {
-//		this.calendar = calendar;
-//		this.query();
-//		List<Variable> nodeList = this.getChildren();
-//		for (Variable n : nodeList) {
-//			n.setCalendar(calendar);
-//		}
-//	}
 }
+//@JsonIgnore
+//@Override
+//public void setCalendar(Calendar calendar) {
+//	this.calendar = calendar;
+//	this.query();
+//	List<Variable> nodeList = this.getChildren();
+//	for (Variable n : nodeList) {
+//		n.setCalendar(calendar);
+//	}
+//}

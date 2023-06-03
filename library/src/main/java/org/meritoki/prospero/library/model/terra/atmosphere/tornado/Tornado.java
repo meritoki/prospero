@@ -33,10 +33,7 @@ public class Tornado extends Atmosphere {
 	
 	@Override
 	public void load(Result result) {
-		List<Event> eventList = (List<Event>) result.map.get("eventList");
-		if (eventList.size() == 0) {
-			logger.warn("loadResult(...) eventList.size() == 0");
-		}
+		List<Event> eventList = result.getEventList();
 		this.eventList = (eventList);
 	}
 }

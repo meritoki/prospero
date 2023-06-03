@@ -35,17 +35,9 @@ public class Temperature extends Atmosphere {
 
 	@Override
 	public void load(Result result) {
-		Object object = result.map.get("stationList");
-		if(object != null) {
-			this.stationList = (List<Station>)object;
-			if (this.stationList.size() == 0) {
-				logger.warn("load(...) this.stationList.size() == 0");
-			}
-			
-		}
+		List<Station> stationList = result.getStationList();
+		this.stationList.addAll(stationList);
 	}
-	
-	
 	
 	@Override
 	public void paint(Graphics graphics) throws Exception {

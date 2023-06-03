@@ -25,9 +25,7 @@ import org.meritoki.prospero.library.model.terra.atmosphere.wind.jetstream.Jetst
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.Frame;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
-import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
 public class Wind extends Atmosphere {
@@ -58,65 +56,6 @@ public class Wind extends Atmosphere {
 	}
 	
 	@Override
-	public List<Tile> getTileList() {
-		return this.getTileList(this.coordinateMatrix,this.dataMatrix);
-	}
-	
-	public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] dataMatrix) {
-		List<Tile> tileList = new ArrayList<>();
-		int yearCount = this.getYearCount();
-		int monthCount = this.getMonthCount();
-		Tile tile;
-		int coordinate;
-		float data;
-		float dataMean;
-		float dataMeanSum;
-		float value;
-		for (int i = 0; i < coordinateMatrix.length; i += this.dimension) {
-			for (int j = 0; j < coordinateMatrix[i].length; j += this.dimension) {
-				dataMeanSum = 0;
-				for (int m = 0; m < 12; m++) {
-					coordinate = 0;
-					data = 0;
-					for (int a = i; a < (i + this.dimension); a++) {
-						for (int b = j; b < (j + this.dimension); b++) {
-							if (a < this.latitude && b < this.longitude) {
-								coordinate += coordinateMatrix[a][b][m];
-								data += dataMatrix[a][b][m];
-							}
-						}
-					}
-					dataMean = (coordinate > 0) ? data / coordinate : 0;
-					dataMeanSum += dataMean;
-				}
-				value = dataMeanSum;
-				if (this.monthFlag) {
-					value /= monthCount;
-				} else if (this.yearFlag) {
-					value /= ((double) this.getMonthCount() / (double) yearCount);
-				}
-				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
-						this.dimension, value);
-				if (this.region != null) {
-					if (this.region.contains(tile)) {
-						tileList.add(tile);
-					}
-				} else if (this.regionList != null) {
-					for (Region region : this.regionList) {
-						if (region.contains(tile)) {
-							tileList.add(tile);
-							break;
-						}
-					}
-				} else {
-					tileList.add(tile);
-				}
-			}
-		}
-		return tileList;
-	}
-	
-	@Override
 	public void load(Result result) {
 		super.load(result);
 		List<Frame> frameList = result.getFrameList();
@@ -131,6 +70,7 @@ public class Wind extends Atmosphere {
 	public void process(List<Frame> frameList) throws Exception {
 		this.setMatrix(frameList);
 		this.tileList = this.getTileList();
+		this.tileFlag = true;
 		this.initTileMinMax();
 	}
 	
@@ -172,6 +112,64 @@ public class Wind extends Atmosphere {
 		this.initYearMap(this.timeList);
 	}
 }
+//@Override
+//public List<Tile> getTileList() {
+//	return this.getTileList(this.coordinateMatrix,this.dataMatrix);
+//}
+//
+//public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] dataMatrix) {
+//	List<Tile> tileList = new ArrayList<>();
+//	int yearCount = this.getYearCount();
+//	int monthCount = this.getMonthCount();
+//	Tile tile;
+//	int coordinate;
+//	float data;
+//	float dataMean;
+//	float dataMeanSum;
+//	float value;
+//	for (int i = 0; i < coordinateMatrix.length; i += this.dimension) {
+//		for (int j = 0; j < coordinateMatrix[i].length; j += this.dimension) {
+//			dataMeanSum = 0;
+//			for (int m = 0; m < 12; m++) {
+//				coordinate = 0;
+//				data = 0;
+//				for (int a = i; a < (i + this.dimension); a++) {
+//					for (int b = j; b < (j + this.dimension); b++) {
+//						if (a < this.latitude && b < this.longitude) {
+//							coordinate += coordinateMatrix[a][b][m];
+//							data += dataMatrix[a][b][m];
+//						}
+//					}
+//				}
+//				dataMean = (coordinate > 0) ? data / coordinate : 0;
+//				dataMeanSum += dataMean;
+//			}
+//			value = dataMeanSum;
+//			if (this.monthFlag) {
+//				value /= monthCount;
+//			} else if (this.yearFlag) {
+//				value /= ((double) this.getMonthCount() / (double) yearCount);
+//			}
+//			tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
+//					this.dimension, value);
+//			if (this.region != null) {
+//				if (this.region.contains(tile)) {
+//					tileList.add(tile);
+//				}
+//			} else if (this.regionList != null) {
+//				for (Region region : this.regionList) {
+//					if (region.contains(tile)) {
+//						tileList.add(tile);
+//						break;
+//					}
+//				}
+//			} else {
+//				tileList.add(tile);
+//			}
+//		}
+//	}
+//	return tileList;
+//}
 //public void setMatrix(List<Frame> frameList) {
 //System.out.println("setMatrix("+netCDFList.size()+")");
 //if (frameList != null) {

@@ -17,9 +17,9 @@ package org.meritoki.prospero.library.model.terra.lithosphere.volcano;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 
-public class Volcanic extends Grid {
+public class Volcanic extends Lithosphere {
 
 	static Logger logger = LogManager.getLogger(Volcanic.class.getName());
 

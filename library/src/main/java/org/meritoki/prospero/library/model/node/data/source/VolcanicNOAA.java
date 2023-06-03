@@ -34,11 +34,13 @@ import org.meritoki.prospero.library.model.unit.Result;
 public class VolcanicNOAA extends Source {
 
 	static Logger logger = LogManager.getLogger(VolcanicNOAA.class.getName());
-	public String path = basePath+"prospero-data/NOAA/VOLCANIC/";
+//	public String path = basePath+"prospero-data/NOAA/VOLCANIC/";
 
 
 	public VolcanicNOAA() {
 		super();
+		this.setRelativePath("NOAA"+seperator+"VOLCANIC");
+		this.setFileName("volerup.csv");
 	}
 	
 	@Override
@@ -54,7 +56,7 @@ public class VolcanicNOAA extends Source {
 	}
 
 	public List<Event> read() {
-		File file = new File(this.path);
+		File file = new File(this.getPath());
 		File[] fileArray = file.listFiles();
 		List<Event> eventList = new LinkedList<Event>();
 		if (fileArray != null) {

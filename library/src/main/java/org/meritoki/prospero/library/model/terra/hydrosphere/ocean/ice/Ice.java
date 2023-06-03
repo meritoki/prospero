@@ -24,9 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.Ocean;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Frame;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
-import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
 public class Ice extends Ocean {
@@ -45,11 +43,8 @@ public class Ice extends Ocean {
 	
 	@Override
 	public void init() {
-
 		super.init();
 	}
-	
-
 	
 	@Override
 	public void load(Result result) {
@@ -83,7 +78,6 @@ public class Ice extends Ocean {
 			e.printStackTrace();
 		}
 	}
-
 	
 	@Override
 	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, Object object) {
@@ -114,9 +108,7 @@ public class Ice extends Ocean {
 	
 	@Override
 	public void setMatrix(Object object) {
-//		logger.info("setMatrix("+(object != null)+")");
 		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, object);
-		
 		for(Time t: timeList) {
 			if(!this.timeList.contains(t)) {
 				this.timeList.add(t);

@@ -29,19 +29,13 @@ import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.pdo.PDO;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.tempurature.SeaSurfaceTemperature;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
-import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 
 public class Ocean extends Hydrosphere {
 
 	static Logger logger = LogManager.getLogger(Ocean.class.getName());
-//	public int[][] countMatrix;
-//	public float[][] sumMatrix;
-//	public boolean[][] continentMatrix;
 	public DataType dataType;
-//	public double scale;
 
 	public Ocean() {
 		super("Ocean");
@@ -108,12 +102,7 @@ public class Ocean extends Hydrosphere {
 		this.initYearMap(this.timeList);
 	}
 
-//	public void setMatrix(List<NetCDF> netCDFList) {
-	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, Object object) { // List<NetCDF>
-																														// netCDFList)
-																														// {
-//		System.out.println("setMatrix("+netCDFList.size()+")");
-
+	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, Object object) {
 		List<Time> timeList = new ArrayList<>();
 		if (object != null) {
 			List<NetCDF> netCDFList = (List<NetCDF>) object;
@@ -130,12 +119,9 @@ public class Ocean extends Hydrosphere {
 							if (latitude <= 0) {
 								for (int lon = 0; lon < lonSize; lon++) {
 									float longitude = netCDF.lonArray.get(lon);
-//								logger.info(latitude+";"+longitude);
-//								float variable = netCDF.variableArray.get(t, lat, lon);
 									int x = (int) ((latitude + this.latitude - 1) * this.resolution);
 									int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
 									int z = calendar.get(Calendar.MONTH);
-//								System.out.println(x+","+y+","+z);
 									dataMatrix[x][y][z] += netCDF.variableArray.get(t, lat, lon);
 									coordinateMatrix[x][y][z]++;
 									Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1,
@@ -152,8 +138,10 @@ public class Ocean extends Hydrosphere {
 		}
 		return timeList;
 	}
-
 }
+//public int[][] countMatrix;
+//public float[][] sumMatrix;
+//public boolean[][] continentMatrix;
 //@Override
 //public List<Tile> getTileList() {
 //	return this.getTileList(this.coordinateMatrix,this.dataMatrix);

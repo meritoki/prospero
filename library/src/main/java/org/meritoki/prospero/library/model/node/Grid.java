@@ -916,14 +916,14 @@ public class Grid extends Spheroid {
 					coordinateList.add(c);
 				}
 			}
-//					202304 Test Implementation - Not Viable, Commented Out
-//					logger.info(this + ".paintEvent(...) event=" + event.id);
-//					Calendar calendar = Time.getCalendar("YYYY/MM/dd HH:mm:ss",this.query.getTime());
-//					this.setCalendarCoordinateList(this.calendar,event.coordinateList);
-//					202304281739 Code Review - Possible Incorrect Code/Implementation
-//					Next Two Lines. Set Calendar Coordinate List is supposed to set Coordinate Flag True where Calendar Equals Coordinate Calendar
+//			202304 Test Implementation - Not Viable, Commented Out
+//			logger.info(this + ".paintEvent(...) event=" + event.id);
+//			Calendar calendar = Time.getCalendar("YYYY/MM/dd HH:mm:ss",this.query.getTime());
+//			this.setCalendarCoordinateList(this.calendar,event.coordinateList);
+//			202304281739 Code Review - Possible Incorrect Code/Implementation
+//			Next Two Lines. Set Calendar Coordinate List is supposed to set Coordinate Flag True where Calendar Equals Coordinate Calendar
 			event.setCalendarCoordinateList(this.calendar);
-//					Code In Question is getAverageCoordinateList
+//			Code In Question is getAverageCoordinateList
 			Coordinate c = event.getAverageCoordinate(event.getCoordinateList(), this.calendar);
 			c.attribute.put("color",Color.BLACK);
 			coordinateList.add(c);

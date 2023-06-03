@@ -34,11 +34,8 @@ public class Earthquake extends Lithosphere {
 	
 	@Override
 	public void load(Result result) {
-		List<Event> eventList = (List<Event>) result.map.get("eventList");
-		if (eventList.size() == 0) {
-			logger.warn("loadResult(...) eventList.size() == 0");
-		}
-		this.eventList = (eventList);
+		List<Event> eventList = result.getEventList();
+		this.eventList.addAll(eventList);
 	}
 }
 //@Override

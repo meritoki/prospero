@@ -46,8 +46,6 @@ public class Terra extends Grid {
 		this.defaultScale = 7200000.0;
 	}
 	
-
-	
 	@Override
 	public void setProjection(Projection projection) {
 		super.setProjection(projection);

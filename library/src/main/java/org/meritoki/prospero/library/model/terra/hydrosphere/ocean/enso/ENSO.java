@@ -39,21 +39,16 @@ public class ENSO extends Ocean {
 
 	@Override
 	public void load(Result result) {
-		Object object = result.map.get("indexList");
-		if(object != null) {
-			this.indexList = (List<Index>)object;
-			if (this.indexList.size() == 0) {
-				logger.warn("load(...) this.indexList.size() == 0");
+		List<Index> indexList = result.getIndexList();
+		this.indexList.addAll(indexList);
+		try {
+			Plot plot = this.getPlot(this.indexList);
+			if (plot != null) {
+				this.plotMap.put("main", plot);
 			}
-			try {
-				Plot plot = this.getPlot(this.indexList);
-				if (plot != null) {
-					this.plotMap.put("main", plot);
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -131,6 +126,14 @@ public class ENSO extends Ocean {
 		return tileList;
 	}
 }
+//Object object = result.map.get("indexList");
+//if(object != null) {
+//	this.indexList = (List<Index>)object;
+//	if (this.indexList.size() == 0) {
+//		logger.warn("load(...) this.indexList.size() == 0");
+//	}
+//
+//}
 //@Override
 //public List<Plot> getPlotList() throws Exception {
 //	String sourceUUID = this.sourceMap.get(this.sourceKey);
