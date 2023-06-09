@@ -19,10 +19,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.meritoki.library.controller.memory.MemoryController;
 
@@ -35,7 +35,7 @@ import ucar.nc2.Variable;
 
 public class OceanERA5SeaLevelPressure extends OceanSource {
 
-	static Logger logger = LogManager.getLogger(OceanERAInterimZeroTwoFive.class.getName());
+	static Logger logger = LoggerFactory.getLogger(OceanERAInterimZeroTwoFive.class.getName());
 //	public static String path = basePath + "prospero-data" + seperator + "ECMWF" + seperator + "File" + seperator
 //			+ "Data" + seperator + "ERA" + seperator + "5" + seperator + "SeaLevelPressure";
 	public static String prefix = "mean_sea_level_pressure_";

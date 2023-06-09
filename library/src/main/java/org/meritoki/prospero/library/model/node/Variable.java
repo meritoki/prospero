@@ -20,15 +20,12 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.document.Document;
 import org.meritoki.prospero.library.model.node.data.Data;
 import org.meritoki.prospero.library.model.node.query.Query;
@@ -40,6 +37,8 @@ import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.module.library.model.Module;
@@ -48,7 +47,7 @@ import com.meritoki.module.library.model.Node;
 
 public class Variable extends Node {
 
-	static Logger logger = LogManager.getLogger(Variable.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Variable.class.getName());
 	@JsonIgnore
 	public Mode mode = Mode.NULL;
 	@JsonIgnore

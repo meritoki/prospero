@@ -18,15 +18,14 @@ package org.meritoki.prospero.library.model.terra.atmosphere.temperature;
 import java.awt.Graphics;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
-import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Station;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Temperature extends Atmosphere {
-	static Logger logger = LogManager.getLogger(Temperature.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Temperature.class.getName());
 	
 	public Temperature() {
 		super("Temperature");

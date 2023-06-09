@@ -20,22 +20,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SILSOSunspot extends Source {
 	
-	static Logger logger = LogManager.getLogger(SILSOSunspot.class.getName());
+	static Logger logger = LoggerFactory.getLogger(SILSOSunspot.class.getName());
 //	public String fileName = basePath+"prospero-data/SILSO/SN_d_tot_V2.0.csv";
 	public List<Index> indexList;
 	

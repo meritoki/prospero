@@ -18,8 +18,6 @@ package org.meritoki.prospero.library.model.node;
 import java.awt.Graphics;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.cartography.AzimuthalNorth;
 import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
 import org.meritoki.prospero.library.model.node.cartography.Cartography;
@@ -29,6 +27,8 @@ import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Spheroid extends Energy {
 
-	static Logger logger = LogManager.getLogger(Spheroid.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Spheroid.class.getName());
 	public Projection projection = new Projection();
 	public Projection selected = null;//If Null, Projection is a Spheroid
 	public boolean selectable = false;

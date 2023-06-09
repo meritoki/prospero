@@ -19,8 +19,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
@@ -28,10 +26,12 @@ import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Polygon;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Country extends Biosphere {
 
-	static Logger logger = LogManager.getLogger(Country.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Country.class.getName());
 	public Color color = Color.BLACK;
 	private List<MultiPolygon> multiPolygonList;
 

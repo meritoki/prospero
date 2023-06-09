@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.meritoki.library.controller.memory.MemoryController;
 
@@ -38,7 +38,7 @@ import ucar.nc2.Variable;
 
 public class WindERAInterim extends WindSource {
 
-	static Logger logger = LogManager.getLogger(WindERAInterim.class.getName());
+	static Logger logger = LoggerFactory.getLogger(WindERAInterim.class.getName());
 
 	public static String prefix = "131-128-132-128_";
 	public static String suffix = "_200-250-300_F128";
@@ -92,7 +92,6 @@ public class WindERAInterim extends WindSource {
 			float v = 0;
 			float latitude;
 			float longitude;
-			Coordinate p = null;
 			Frame frame;
 			for (int t = 0; t < timeCount; t++) {
 				frame = new Frame();

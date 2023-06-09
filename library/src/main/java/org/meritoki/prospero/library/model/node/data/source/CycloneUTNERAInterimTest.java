@@ -26,13 +26,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.ERAInterimEvent;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.utn.library.stacker.model.Collection;
 import org.utn.library.stacker.model.Dot;
 import org.utn.library.stacker.model.Stack;
@@ -43,7 +43,7 @@ import com.meritoki.library.controller.node.NodeController;
 
 public class CycloneUTNERAInterimTest extends CycloneSource {
 
-	static Logger logger = LogManager.getLogger(CycloneUTNERAInterimTest.class.getName());
+	static Logger logger = LoggerFactory.getLogger(CycloneUTNERAInterimTest.class.getName());
 //	public static String path = basePath+"prospero-data" + seperator + "UTN" + seperator + "File"+ seperator +"Data"+ seperator +"Cyclone"+ seperator +"cyclone-20200704";
 	public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
 	public static String extension = "json";

@@ -19,19 +19,17 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
-//import org.locationtech.jts.geom.Point;
 import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
-import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class City extends Biosphere {
 
-	static Logger logger = LogManager.getLogger(City.class.getName());
+	static Logger logger = LoggerFactory.getLogger(City.class.getName());
 	public Color color = Color.BLACK;
 	public List<org.locationtech.jts.geom.Point> pointList;
 

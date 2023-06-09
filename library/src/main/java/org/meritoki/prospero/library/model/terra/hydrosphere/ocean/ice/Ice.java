@@ -19,17 +19,17 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.Ocean;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Ice extends Ocean {
 
-	static Logger logger = LogManager.getLogger(Ice.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Ice.class.getName());
 	
 	public Ice() {
 		super("Ice");

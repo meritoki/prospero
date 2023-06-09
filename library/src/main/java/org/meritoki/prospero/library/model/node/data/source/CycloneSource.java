@@ -23,22 +23,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classification;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
-import org.meritoki.prospero.library.model.unit.Count;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CycloneSource extends Source {
 
-	static Logger logger = LogManager.getLogger(CycloneSource.class.getName());
+	static Logger logger = LoggerFactory.getLogger(CycloneSource.class.getName());
 	protected Map<String, List<Event>> eventMap = new HashMap<>();
 	public LinkedList<String> eventQueue = new LinkedList<>();
 	public List<Index> indexList = new ArrayList<>();

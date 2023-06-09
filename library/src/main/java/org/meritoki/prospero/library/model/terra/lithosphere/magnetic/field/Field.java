@@ -18,15 +18,15 @@ package org.meritoki.prospero.library.model.terra.lithosphere.magnetic.field;
 import java.awt.Graphics;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.terra.lithosphere.magnetic.anamoly.Anomaly;
 import org.meritoki.prospero.library.model.unit.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Field extends Lithosphere {
 
-	static Logger logger = LogManager.getLogger(Anomaly.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Anomaly.class.getName());
 	
 	public Field() {
 		super("Field");

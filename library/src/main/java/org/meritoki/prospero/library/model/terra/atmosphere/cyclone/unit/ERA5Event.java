@@ -18,7 +18,6 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.unit.Coordinate;
-import org.meritoki.prospero.library.model.unit.Event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

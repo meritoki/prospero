@@ -25,16 +25,16 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Station;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AtmosphereWMO extends Source {
-	static Logger logger = LogManager.getLogger(VolcanicNOAA.class.getName());
+	static Logger logger = LoggerFactory.getLogger(VolcanicNOAA.class.getName());
 
 	public AtmosphereWMO() {
 		super();

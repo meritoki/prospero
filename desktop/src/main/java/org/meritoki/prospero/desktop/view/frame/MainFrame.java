@@ -26,8 +26,6 @@ import java.util.UUID;
 
 import javax.swing.JPanel;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.model.Model;
 import org.meritoki.prospero.desktop.view.dialog.AboutDialog;
@@ -41,6 +39,8 @@ import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Script;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -49,7 +49,7 @@ import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
 public class MainFrame extends javax.swing.JFrame {
 
 	private static final long serialVersionUID = -1201441426706336659L;
-	static Logger logger = LogManager.getLogger(MainFrame.class.getName());
+	static Logger logger = LoggerFactory.getLogger(MainFrame.class.getName());
 	public Model model;
 	public MainDialog mainDialog = new MainDialog(this, false);
 	public AboutDialog aboutDialog = new AboutDialog(this, false);

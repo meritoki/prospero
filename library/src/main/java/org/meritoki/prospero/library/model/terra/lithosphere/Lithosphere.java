@@ -18,8 +18,6 @@ package org.meritoki.prospero.library.model.terra.lithosphere;
 import java.awt.Graphics;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.lithosphere.earthquake.Earthquake;
 import org.meritoki.prospero.library.model.terra.lithosphere.tectonic.Tectonic;
@@ -27,10 +25,12 @@ import org.meritoki.prospero.library.model.terra.lithosphere.volcano.Volcanic;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Lithosphere extends Terra {
 	
-	static Logger logger = LogManager.getLogger(Lithosphere.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Lithosphere.class.getName());
 	
 	public Lithosphere() {
 		super("Lithosphere");

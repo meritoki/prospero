@@ -21,15 +21,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.locationtech.jts.geom.MultiLineString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Result {
-	protected Logger logger = LogManager.getLogger(Result.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Result.class.getName());
 	public Mode mode;
 	public String message;
 	public Map<String,Object> map = new HashMap<>();
@@ -66,6 +67,18 @@ public class Result {
 			}
 		}
 		return indexList;
+	}
+	
+	public List<MultiLineString> getMultiLineStringList() {
+		Object object = this.map.get("multiLineStringList");
+		List<MultiLineString> multiLineStringList = new ArrayList<>();
+		if(object != null) {
+			multiLineStringList = (List<MultiLineString>)object;
+			if (multiLineStringList.size() == 0) {
+				logger.warn("getMultiLineStringList() multiLineStringList.size() == 0");
+			}
+		}
+		return multiLineStringList;
 	}
 	
 	public List<Station> getStationList() {

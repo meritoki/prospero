@@ -18,23 +18,20 @@ package org.meritoki.prospero.library.model.node.data.source;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.satellite.Satellite;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.DataType;
-import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayFloat;
@@ -47,7 +44,7 @@ import ucar.nc2.Variable;
 
 public class GOESNOAA extends Source {
 
-	static Logger logger = LogManager.getLogger(GOESNOAA.class.getName());
+	static Logger logger = LoggerFactory.getLogger(GOESNOAA.class.getName());
 	public static String prefix = "OR_ABI-L2-MCMIPF-M}*{_G16_";//-M6_G16_";
 //	protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 	public ArrayFloat.D2 latitudeArray;

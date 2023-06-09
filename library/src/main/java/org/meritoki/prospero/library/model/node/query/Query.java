@@ -14,9 +14,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.cartography.Cartography;
 import org.meritoki.prospero.library.model.node.color.Scheme;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classification;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
@@ -30,6 +27,8 @@ import org.meritoki.prospero.library.model.unit.Operator;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Script;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -38,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Query {
 
-	static Logger logger = LogManager.getLogger(Query.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Query.class.getName());
 	@JsonIgnore
 	public String uuid;
 	@JsonProperty

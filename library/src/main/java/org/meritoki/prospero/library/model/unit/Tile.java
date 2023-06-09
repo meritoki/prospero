@@ -24,8 +24,8 @@ import javax.swing.table.TableModel;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Tile {
 
-	static Logger logger = LogManager.getLogger(Tile.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Tile.class.getName());
 	@JsonIgnore
 	public List<Point> pointList = new ArrayList<>();
 	@JsonProperty

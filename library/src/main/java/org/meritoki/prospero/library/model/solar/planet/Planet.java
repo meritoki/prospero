@@ -19,17 +19,16 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.function.Sine;
 import org.meritoki.prospero.library.model.node.Orbital;
-import org.meritoki.prospero.library.model.solar.star.Star;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Planet extends Orbital {
 
-	static Logger logger = LogManager.getLogger(Planet.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Planet.class.getName());
 	
 	public Planet(String name) {
 		super(name);

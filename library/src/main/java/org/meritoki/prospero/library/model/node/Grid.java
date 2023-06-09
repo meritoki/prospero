@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.color.Chroma;
 import org.meritoki.prospero.library.model.node.color.Scheme;
 import org.meritoki.prospero.library.model.plot.Plot;
@@ -58,10 +56,12 @@ import org.meritoki.prospero.library.model.unit.Station;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Grid extends Spheroid {
 
-	static Logger logger = LogManager.getLogger(Grid.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Grid.class.getName());
 //	public int latitude = 180;//20230417
 	public int latitude = 90;// Eventually need to implement with 180
 	public int longitude = 360;

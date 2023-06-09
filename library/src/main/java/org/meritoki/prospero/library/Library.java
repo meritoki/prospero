@@ -15,11 +15,12 @@
  */
 package org.meritoki.prospero.library;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Library {
-	static Logger logger = LogManager.getLogger(Library.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Library.class.getName());
 
 	public static void main(String args[]) {
 

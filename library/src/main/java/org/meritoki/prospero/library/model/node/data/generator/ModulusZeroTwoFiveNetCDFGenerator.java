@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.unit.Frame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.meritoki.library.controller.memory.MemoryController;
 
@@ -38,7 +38,7 @@ import ucar.nc2.Variable;
 
 public class ModulusZeroTwoFiveNetCDFGenerator extends OceanGenerator {
 
-	static Logger logger = LogManager.getLogger(ModulusZeroTwoFiveNetCDFGenerator.class.getName());
+	static Logger logger = LoggerFactory.getLogger(ModulusZeroTwoFiveNetCDFGenerator.class.getName());
 //	public static String path = "." + seperator + "data" + seperator + "hydrosphere" + seperator + "ocean" + seperator
 //			+ "sst";
 	public static String basePath = "/home/jorodriguez/Prospero/";

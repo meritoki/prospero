@@ -19,24 +19,22 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.N;
 import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.R;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
-import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ucar.ma2.ArrayFloat;
 import ucar.nc2.Dimension;
 
 public class Cloud extends Atmosphere {
 
-	static Logger logger = LogManager.getLogger(Cloud.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Cloud.class.getName());
 	protected DataType dataType;
 
 	public Cloud() {

@@ -17,23 +17,20 @@ package org.meritoki.prospero.library.model.terra.hydrosphere.ocean.pdo;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.time.TimePlot;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.enso.ENSO;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Tile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PDO extends Grid {
 	
-	static Logger logger = LogManager.getLogger(PDO.class.getName());
+	static Logger logger = LoggerFactory.getLogger(PDO.class.getName());
 
 	public PDO() {
 		super("Pacific Decadal Oscillation");

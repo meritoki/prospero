@@ -23,19 +23,19 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.unit.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class VariableMenu extends JPopupMenu {
 
 	@JsonIgnore
-	protected Logger logger = LogManager.getLogger(VariableMenu.class.getName());
+	static Logger logger = LoggerFactory.getLogger(VariableMenu.class.getName());
 	/**
 	 * 
 	 */

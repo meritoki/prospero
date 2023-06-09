@@ -16,15 +16,16 @@
 //https://makersportal.com/blog/2018/11/25/goes-r-satellite-latitude-and-longitude-grid-projection-algorithm
 package org.meritoki.prospero.library.model.solar.satellite;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Satellite extends Orbital {
 
-	static Logger logger = LogManager.getLogger(Satellite.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Satellite.class.getName());
 
 	public Satellite() {
 

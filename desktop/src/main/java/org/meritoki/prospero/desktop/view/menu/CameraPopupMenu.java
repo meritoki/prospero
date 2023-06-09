@@ -29,27 +29,23 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.view.panel.CameraPanel;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.node.cartography.AzimuthalNorth;
-import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
 import org.meritoki.prospero.library.model.node.cartography.Cartography;
-import org.meritoki.prospero.library.model.node.cartography.Equirectangular;
-import org.meritoki.prospero.library.model.node.cartography.Mercator;
 import org.meritoki.prospero.library.model.terra.Terra;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CameraPopupMenu extends JPopupMenu {
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 4405713496092773322L;
-	static Logger logger = LogManager.getLogger(CameraPopupMenu.class.getName());
+	static Logger logger = LoggerFactory.getLogger(CameraPopupMenu.class.getName());
 	private JMenuItem saveMenuItem;
 	private Model model;
 

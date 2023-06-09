@@ -18,18 +18,18 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.vorticity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Vorticity extends Cyclone {
 
-	static Logger logger = LogManager.getLogger(Vorticity.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Vorticity.class.getName());
 
 	public Vorticity() {
 		super("Vorticity");

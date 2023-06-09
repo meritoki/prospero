@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.data.generator.ModulusZeroTwoFiveNetCDFGenerator;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.meritoki.library.controller.memory.MemoryController;
 
@@ -37,7 +37,7 @@ import ucar.nc2.Variable;
 
 public class OceanERAInterimZeroTwoFive extends OceanSource {
 
-	static Logger logger = LogManager.getLogger(OceanERAInterimZeroTwoFive.class.getName());
+	static Logger logger = LoggerFactory.getLogger(OceanERAInterimZeroTwoFive.class.getName());
 
 	public static String prefix = "34-128_";
 	public static String suffix = "_0-25-0-25";

@@ -19,17 +19,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SeaLevelPressure extends Atmosphere {
 	
-	static Logger logger = LogManager.getLogger(SeaLevelPressure.class.getName());
+	static Logger logger = LoggerFactory.getLogger(SeaLevelPressure.class.getName());
 	public DataType dataType;
 	
 	public SeaLevelPressure() {

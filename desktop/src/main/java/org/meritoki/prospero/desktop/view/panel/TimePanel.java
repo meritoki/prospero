@@ -23,13 +23,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.meritoki.library.controller.memory.MemoryController;
 import com.meritoki.library.controller.time.TimeController;
@@ -41,7 +41,7 @@ import com.meritoki.library.controller.time.TimeController;
 public class TimePanel extends javax.swing.JPanel implements Runnable {
 
 	private static final long serialVersionUID = -1351214701842111648L;
-	static Logger logger = LogManager.getLogger(TimePanel.class.getName());
+	static Logger logger = LoggerFactory.getLogger(TimePanel.class.getName());
 	private Model model;
 	public MainFrame mainFrame;
 	public boolean forth;

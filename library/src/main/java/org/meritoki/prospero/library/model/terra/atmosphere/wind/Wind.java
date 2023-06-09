@@ -18,8 +18,6 @@ package org.meritoki.prospero.library.model.terra.atmosphere.wind;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.atmosphere.wind.jetstream.Jetstream;
 import org.meritoki.prospero.library.model.unit.Coordinate;
@@ -27,10 +25,12 @@ import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Wind extends Atmosphere {
 
-	static Logger logger = LogManager.getLogger(Wind.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Wind.class.getName());
 
 
 	public Wind() {

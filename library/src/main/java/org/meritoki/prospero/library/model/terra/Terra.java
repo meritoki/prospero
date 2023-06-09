@@ -18,8 +18,6 @@ package org.meritoki.prospero.library.model.terra;
 import java.awt.Graphics;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.cartography.Cartography;
@@ -28,9 +26,11 @@ import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.biosphere.Biosphere;
 import org.meritoki.prospero.library.model.terra.hydrosphere.Hydrosphere;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Terra extends Grid {
-	static Logger logger = LogManager.getLogger(Terra.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Terra.class.getName());
 	
 	public Terra() {
 		super("Terra");

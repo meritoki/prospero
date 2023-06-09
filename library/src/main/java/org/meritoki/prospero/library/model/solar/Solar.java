@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.function.Cosine;
 import org.meritoki.prospero.library.model.function.Sine;
 import org.meritoki.prospero.library.model.node.Energy;
@@ -47,6 +45,8 @@ import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Citation
@@ -57,7 +57,7 @@ import org.meritoki.prospero.library.model.unit.Table;
  */
 public class Solar extends Grid {
 
-	static Logger logger = LogManager.getLogger(Solar.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Solar.class.getName());
 	public Color color = Color.YELLOW;
 	private List<String> planetOrder = Arrays.asList("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus",
 			"Neptune");

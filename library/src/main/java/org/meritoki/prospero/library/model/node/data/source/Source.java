@@ -33,21 +33,21 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.module.library.model.Node;
 
 public class Source extends Node {// implements SourceInterface
 
-	static Logger logger = LogManager.getLogger(Source.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Source.class.getName());
 	@JsonIgnore
 	public static char seperator = File.separatorChar;
 	public String basePath = "." + seperator;

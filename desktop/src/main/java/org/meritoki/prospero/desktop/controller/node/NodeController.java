@@ -33,8 +33,9 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
 import javax.swing.JPanel;
 
-import org.apache.logging.log4j.LogManager;
 import org.meritoki.prospero.library.model.document.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -42,7 +43,7 @@ import org.meritoki.prospero.library.model.document.Document;
  */
 public class NodeController extends com.meritoki.library.controller.node.NodeController {
 
-	static org.apache.logging.log4j.Logger logger = LogManager.getLogger(NodeController.class.getName());
+	static Logger logger = LoggerFactory.getLogger(NodeController.class.getName());
 
 	public static String getSystemHome() {
 		return getUserHome() + getSeperator() + ".prospero";

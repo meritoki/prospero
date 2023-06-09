@@ -24,6 +24,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+/**
+ * 20230608 Use Time Object for Start and End
+ * @author jorodriguez
+ *
+ */
 public class Duration {
 	@JsonProperty
 	public long hours;

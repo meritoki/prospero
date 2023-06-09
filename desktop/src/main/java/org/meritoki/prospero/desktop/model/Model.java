@@ -18,17 +18,17 @@ package org.meritoki.prospero.desktop.model;
 import java.io.File;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.model.resource.Resource;
 import org.meritoki.prospero.desktop.model.system.System;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.document.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Model extends org.meritoki.prospero.library.model.Model {
 
-	private static final Logger logger = LogManager.getLogger(Model.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Model.class.getName());
 	public System system = new System();
 	public Resource resource = new Resource();
 	public MainFrame mainFrame;

@@ -19,14 +19,14 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.controller.node.NodeController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class System {
-	private static final Logger logger = LogManager.getLogger(System.class.getName());
+	static Logger logger = LoggerFactory.getLogger(System.class.getName());
 	public String product;
 	public String vendor;
 	public String version;

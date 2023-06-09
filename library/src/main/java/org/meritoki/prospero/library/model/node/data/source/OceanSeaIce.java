@@ -21,10 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.stream.IntStream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Frame;
@@ -32,10 +29,12 @@ import org.meritoki.prospero.library.model.unit.Interval;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OceanSeaIce extends Source {
 
-	static Logger logger = LogManager.getLogger(OceanSeaIce.class.getName());
+	static Logger logger = LoggerFactory.getLogger(OceanSeaIce.class.getName());
 //	public String path = basePath + "prospero-data" + seperator + "Toth" + seperator + "hielo2020toths.txt";
 	private final int startYear = 1979;
 	private final int endYear = 2019;

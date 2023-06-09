@@ -1,18 +1,8 @@
 package org.meritoki.prospero.library.model.node.data.generator;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
-import org.meritoki.prospero.library.model.unit.DataType;
-import org.meritoki.prospero.library.model.unit.NetCDF;
 
 import ucar.ma2.ArrayFloat;
-import ucar.ma2.ArrayShort;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
 
 public class CMIGenerator extends CloudGenerator {
 	

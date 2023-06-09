@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.data.generator.ModulusZeroTwoFiveNetCDFGenerator;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.meritoki.library.controller.memory.MemoryController;
 
@@ -37,7 +37,7 @@ import ucar.nc2.Variable;
 
 public class OceanERA5ZeroTwoFive extends OceanSource {
 
-	static Logger logger = LogManager.getLogger(OceanERA5ZeroTwoFive.class.getName());
+	static Logger logger = LoggerFactory.getLogger(OceanERA5ZeroTwoFive.class.getName());
 //	public static String path = "." + seperator + "data" + seperator + "hydrosphere" + seperator + "ocean" + seperator
 //			+ "sst";
 //	public static String path = basePath+"prospero-data" + seperator + "ECMWF" + seperator + "File" + seperator

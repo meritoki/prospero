@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.hydrosphere.Hydrosphere;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.enso.ENSO;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.ice.Ice;
@@ -31,10 +29,12 @@ import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Ocean extends Hydrosphere {
 
-	static Logger logger = LogManager.getLogger(Ocean.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Ocean.class.getName());
 	public DataType dataType;
 
 	public Ocean() {

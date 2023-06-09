@@ -20,17 +20,17 @@ import java.util.List;
 
 import javax.swing.table.TableModel;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Table {
-	private static Logger logger = LogManager.getLogger(Table.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Table.class.getName());
 	public String name;
 	public TableModel tableModel;
-	
+
 	public Table() {
 	}
-	
+
 	public Table(String name, TableModel tableModel) {
 		this.name = name;
 		this.tableModel = tableModel;
@@ -38,44 +38,45 @@ public class Table {
 
 	public static void printDataMatrix(Object[][] matrix) {
 		StringBuilder sb = new StringBuilder();
-		for(int i=0;i<matrix.length;i++) {
-			for(int j=0;j<matrix[i].length;j++) {
-				sb.append(matrix[i][j]+",");
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[i].length; j++) {
+				sb.append(matrix[i][j] + ",");
 			}
 			sb.append("\n");
 		}
 		System.out.println(sb.toString());
 	}
-	
+
 	public static List<String> getColumnNames(int n) {
-		logger.debug("getColumnNames("+n+")");
-	    List<String> result = new ArrayList<String>();
-	    String alphabets[] = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-	    StringBuilder sb = new StringBuilder();
-	    for(int j = 0; j < n; j++){
-	        int index = j/26;   
-	            char ch = (char) (j % 26 + 'A');               
-	          sb.append(ch);
-	          String item = "";
-	          if(index > 0) {
-	              item += alphabets[index-1];
-	          }
-	          item += alphabets[j % 26];
-	          result.add(item);
-	    }
-	    sb.reverse();
-	    return result;
+		logger.debug("getColumnNames(" + n + ")");
+		List<String> result = new ArrayList<String>();
+		String alphabets[] = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
+				"S", "T", "U", "V", "W", "X", "Y", "Z" };
+		StringBuilder sb = new StringBuilder();
+		for (int j = 0; j < n; j++) {
+			int index = j / 26;
+			char ch = (char) (j % 26 + 'A');
+			sb.append(ch);
+			String item = "";
+			if (index > 0) {
+				item += alphabets[index - 1];
+			}
+			item += alphabets[j % 26];
+			result.add(item);
+		}
+		sb.reverse();
+		return result;
 	}
-	
-    public static Object[][] getTableData (TableModel dtm) {
-        
-        int nRow = dtm.getRowCount(), nCol = dtm.getColumnCount();
-        Object[][] tableData = new Object[nRow][nCol];
-        for (int i = 0 ; i < nRow ; i++)
-            for (int j = 0 ; j < nCol ; j++)
-                tableData[i][j] = dtm.getValueAt(i,j);
-        return tableData;
-    }
+
+	public static Object[][] getTableData(TableModel dtm) {
+
+		int nRow = dtm.getRowCount(), nCol = dtm.getColumnCount();
+		Object[][] tableData = new Object[nRow][nCol];
+		for (int i = 0; i < nRow; i++)
+			for (int j = 0; j < nCol; j++)
+				tableData[i][j] = dtm.getValueAt(i, j);
+		return tableData;
+	}
 }
 //public static DefaultTableModel getDefaultTableMode(List<Regression> regressionList) {
 //System.out.println("getDefaultTableModel("+regressionList+")");

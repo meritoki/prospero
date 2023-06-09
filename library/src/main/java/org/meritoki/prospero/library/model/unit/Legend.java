@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Legend {
 
-	static Logger logger = LogManager.getLogger(Legend.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Legend.class.getName());
 	public final double DEFAULT_SCALE = 1;
 	public int startX;
 	public int width = 8;

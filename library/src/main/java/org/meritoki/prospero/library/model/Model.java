@@ -25,8 +25,6 @@ import java.util.Properties;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
@@ -36,6 +34,8 @@ import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.library.controller.node.NodeController;
@@ -43,7 +43,7 @@ import com.meritoki.module.library.model.N;
 
 public class Model extends Variable {
 
-	static Logger logger = LogManager.getLogger(Model.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Model.class.getName());
 	public Properties properties;
 	public Data data = new Data();
 	public Solar solar = new Solar();

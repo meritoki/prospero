@@ -22,8 +22,6 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.dialog.LoadDialog;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
@@ -36,6 +34,8 @@ import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Analysis;
 import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Script;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -50,7 +50,7 @@ import com.meritoki.library.controller.time.TimeController;
 public class ScriptPanel extends javax.swing.JPanel {
 
 	private static final long serialVersionUID = 1L;
-	static Logger logger = LogManager.getLogger(ScriptPanel.class.getName());
+	static Logger logger = LoggerFactory.getLogger(ScriptPanel.class.getName());
 	private Model model;
 	private MainFrame mainFrame;
 	public LoadDialog loadDialog;

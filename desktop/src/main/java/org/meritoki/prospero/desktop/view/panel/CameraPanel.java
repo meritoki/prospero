@@ -25,14 +25,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.CameraPopupMenu;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Camera;
-import org.meritoki.prospero.library.model.node.Spheroid;
-import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.unit.Dimension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -41,7 +39,7 @@ import org.meritoki.prospero.library.model.unit.Dimension;
 public class CameraPanel extends javax.swing.JPanel implements KeyListener, MouseListener, MouseMotionListener {
 
 	private static final long serialVersionUID = 1L;
-	static Logger logger = LogManager.getLogger(CameraPanel.class.getName());
+	static Logger logger = LoggerFactory.getLogger(CameraPanel.class.getName());
 	protected CameraPopupMenu menu;
 	public Model model;
 	public Dimension dimension;

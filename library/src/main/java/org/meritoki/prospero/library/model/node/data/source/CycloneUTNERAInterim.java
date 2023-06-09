@@ -28,8 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -39,12 +37,14 @@ import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Cyclone
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.ERAInterimEvent;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.meritoki.library.controller.memory.MemoryController;
 
 public class CycloneUTNERAInterim extends CycloneSource {
 
-	static Logger logger = LogManager.getLogger(CycloneUTNERAInterim.class.getName());
+	static Logger logger = LoggerFactory.getLogger(CycloneUTNERAInterim.class.getName());
 //	public static String path = basePath+"prospero-data" + seperator + "UTN" + seperator + "File"+ seperator +"Data"+ seperator +"Cyclone"+ seperator +"cyclone-20200704";
 	public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
 	public static String extension = "xlsx";

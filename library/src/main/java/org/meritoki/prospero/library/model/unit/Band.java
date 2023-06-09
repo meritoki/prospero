@@ -22,15 +22,15 @@ import java.util.List;
 
 import javax.swing.table.TableModel;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Band {
 	
 	@JsonIgnore
-	static Logger logger = LogManager.getLogger(Band.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Band.class.getName());
 	public List<Tile> tileList = new ArrayList<>();
 	public double value;
 	public double latitude;

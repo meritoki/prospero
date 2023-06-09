@@ -21,16 +21,16 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.model.Model;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.desktop.view.window.SplashWindow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Desktop {
 
-	static Logger logger = LogManager.getLogger(Desktop.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Desktop.class.getName());
 	public static String versionNumber = "0.17.202303-alpha";
 	public static String vendor = "Meritoki";
 	public static String about = "Version " + versionNumber + " Copyright " + vendor + " 2016-2023";
@@ -78,7 +78,7 @@ public class Desktop {
 				mainFlag = true;
 			}
 		} catch (org.apache.commons.cli.ParseException ex) {
-			logger.error(ex);
+			logger.error(ex.toString());
 		}
 
 		if(mainFlag) {
@@ -100,13 +100,13 @@ public class Desktop {
 						}
 					}
 				} catch (ClassNotFoundException ex) {
-					logger.error(ex);
+					logger.error(ex.toString());
 				} catch (InstantiationException ex) {
-					logger.error(ex);
+					logger.error(ex.toString());
 				} catch (IllegalAccessException ex) {
-					logger.error(ex);
+					logger.error(ex.toString());
 				} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-					logger.error(ex);
+					logger.error(ex.toString());
 				}
 				java.awt.EventQueue.invokeLater(new Runnable() {
 					public void run() {

@@ -19,18 +19,18 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.Ocean;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Tile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ENSO extends Ocean {
 
-	static Logger logger = LogManager.getLogger(ENSO.class.getName());
+	static Logger logger = LoggerFactory.getLogger(ENSO.class.getName());
 	
 	public ENSO() {
 		super("El Niño-Southern Oscillation");

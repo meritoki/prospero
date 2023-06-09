@@ -6,13 +6,13 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.model.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TableRenderer extends DefaultTableCellRenderer {
 
-	private static Logger logger = LogManager.getLogger(TableRenderer.class.getName());
+	static Logger logger = LoggerFactory.getLogger(TableRenderer.class.getName());
 	Color backgroundColor = Color.white;
 	Model model = null;
 

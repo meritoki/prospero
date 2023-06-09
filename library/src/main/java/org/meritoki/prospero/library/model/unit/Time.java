@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -53,7 +53,7 @@ public class Time {
 		}
 	}
 
-	static Logger logger = LogManager.getLogger(Time.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Time.class.getName());
 	public static String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
 	@JsonProperty
 	public int year = -1;

@@ -17,12 +17,12 @@ package org.meritoki.prospero.library.model.node.color;
 
 import java.awt.Color;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Chroma {
 
-	static Logger logger = LogManager.getLogger(Chroma.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Chroma.class.getName());
 	public double factor;
 	public double hue = 1;
 	public double saturation = 1;

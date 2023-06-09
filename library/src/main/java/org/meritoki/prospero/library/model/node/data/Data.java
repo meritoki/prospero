@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.data.source.AtmosphereWMO;
 import org.meritoki.prospero.library.model.node.data.source.CityNaturalEarth;
 import org.meritoki.prospero.library.model.node.data.source.CountryNaturalEarth;
@@ -48,6 +46,8 @@ import org.meritoki.prospero.library.model.node.data.source.VolcanicNOAA;
 import org.meritoki.prospero.library.model.node.data.source.WindERAInterim;
 import org.meritoki.prospero.library.model.node.data.source.WindJetstreamERA5;
 import org.meritoki.prospero.library.model.node.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.meritoki.module.library.model.Node;
 
@@ -65,7 +65,7 @@ import com.meritoki.module.library.model.Node;
  */
 public class Data extends Node {
 
-	static Logger logger = LogManager.getLogger(Data.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Data.class.getName());
 	public Map<String, Source> sourceMap = new HashMap<String, Source>();
 	
 	public Data() {

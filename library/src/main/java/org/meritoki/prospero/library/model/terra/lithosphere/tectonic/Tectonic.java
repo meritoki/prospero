@@ -22,18 +22,18 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiLineString;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Tectonic extends Lithosphere {
 
-	static Logger logger = LogManager.getLogger(Tectonic.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Tectonic.class.getName());
 	public Color color = Color.GRAY;
 	private List<MultiLineString> multiLineStringList;
 
@@ -44,13 +44,7 @@ public class Tectonic extends Lithosphere {
 	
 	@Override
 	public void load(Result result) {
-		Object object = result.map.get("multiLineStringList");
-		if(object != null) {
-			this.multiLineStringList = (List<MultiLineString>)object;
-			if (this.multiLineStringList.size() == 0) {
-				logger.warn("load(...) this.multiPolygonList.size() == 0");
-			}
-		}
+		this.multiLineStringList = result.getMultiLineStringList();
 	}
 	
 	@Override
@@ -82,6 +76,13 @@ public class Tectonic extends Lithosphere {
 		}
 	}
 }
+//Object object = result.map.get("multiLineStringList");
+//if(object != null) {
+//	this.multiLineStringList = (List<MultiLineString>)object;
+//	if (this.multiLineStringList.size() == 0) {
+//		logger.warn("load(...) this.multiPolygonList.size() == 0");
+//	}
+//}
 //String sourceUUID = this.sourceMap.get(this.sourceKey);
 //this.multiLineStringList = (List<MultiLineString>) this.data.query(sourceUUID, this.query);
 //@Override

@@ -7,14 +7,14 @@ import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.color.Chroma;
 import org.meritoki.prospero.library.model.unit.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Plot { 
 	
-	static Logger logger = LogManager.getLogger(Plot.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Plot.class.getName());
 	public final double DEFAULT_SCALE = 1;
 	public int panelWidth;
 	public int panelHeight;

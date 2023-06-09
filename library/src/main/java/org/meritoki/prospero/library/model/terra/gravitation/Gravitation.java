@@ -19,18 +19,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.gravitation.geopotential.Geopotential;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Gravitation extends Terra {
 
-	static Logger logger = LogManager.getLogger(Gravitation.class);
+	static Logger logger = LoggerFactory.getLogger(Gravitation.class);
 	public DataType dataType;
 	
 	public Gravitation() {

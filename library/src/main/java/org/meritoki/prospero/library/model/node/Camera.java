@@ -9,12 +9,11 @@ import java.util.TreeMap;
 
 import javax.swing.JPanel;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
-import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Dimension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Camera {
 
-	static Logger logger = LogManager.getLogger(Camera.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Camera.class.getName());
 	@JsonIgnore
 	public Variable node;
 	@JsonIgnore

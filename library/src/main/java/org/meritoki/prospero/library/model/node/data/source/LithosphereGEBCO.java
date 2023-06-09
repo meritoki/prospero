@@ -16,21 +16,18 @@
 package org.meritoki.prospero.library.model.node.data.source;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Tile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayShort;
@@ -39,7 +36,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 
 public class LithosphereGEBCO extends Source {
-	static Logger logger = LogManager.getLogger(LithosphereGEBCO.class.getName());
+	static Logger logger = LoggerFactory.getLogger(LithosphereGEBCO.class.getName());
 	public static int longitudeCount = 0;
 	public static int latitudeCount = 0;
 	public static int elevationCount = 0;

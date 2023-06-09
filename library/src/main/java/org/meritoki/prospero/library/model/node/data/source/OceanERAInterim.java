@@ -15,30 +15,14 @@
  */
 package org.meritoki.prospero.library.model.node.data.source;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.unit.Data;
-import org.meritoki.prospero.library.model.unit.DataType;
-import org.meritoki.prospero.library.model.unit.Frame;
-import org.meritoki.prospero.library.model.unit.Time;
-
-import com.meritoki.library.controller.memory.MemoryController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ucar.ma2.ArrayFloat;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.ArrayShort;
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
 
 public class OceanERAInterim extends OceanSource {
 	
-	static Logger logger = LogManager.getLogger(OceanERAInterim.class.getName());
+	static Logger logger = LoggerFactory.getLogger(OceanERAInterim.class.getName());
 //	public static String path = basePath+"prospero-data" + seperator + "ECMWF" + seperator + "File" + seperator
 //			+ "Data" + seperator + "ERA" + seperator +"Interim"+seperator +"SST";
 	public static String prefix = "34-128_";

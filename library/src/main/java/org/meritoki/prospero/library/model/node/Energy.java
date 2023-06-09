@@ -30,13 +30,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Energy extends Variable {
 
-	static Logger logger = LogManager.getLogger(Energy.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Energy.class.getName());
 	@JsonProperty
 	public double mass;
 	@JsonProperty

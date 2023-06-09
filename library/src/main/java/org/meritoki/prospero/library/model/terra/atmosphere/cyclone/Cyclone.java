@@ -32,8 +32,6 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.histogram.Histogram;
@@ -66,13 +64,15 @@ import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.meritoki.library.controller.node.Exit;
 import com.meritoki.library.controller.node.NodeController;
 
 public class Cyclone extends Atmosphere {
 
-	static Logger logger = LogManager.getLogger(Cyclone.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Cyclone.class.getName());
 	public String title = this.name;
 	public List<Integer> pressureList;
 	public List<Duration> durationList;

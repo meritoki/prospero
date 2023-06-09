@@ -18,11 +18,10 @@ package org.meritoki.prospero.library.model.unit;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Interval {
 
-	static Logger logger = LogManager.getLogger(Interval.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Interval.class.getName());
 
 	@JsonIgnore
 	public Time start = new Time();

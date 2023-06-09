@@ -31,13 +31,13 @@ import java.util.TreeMap;
 
 import javax.swing.table.TableModel;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Duration;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Link;
 import org.meritoki.prospero.library.model.unit.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -53,7 +53,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class CycloneEvent extends Event {
 
 	@JsonIgnore
-	static Logger logger = LogManager.getLogger(CycloneEvent.class.getName());
+	static Logger logger = LoggerFactory.getLogger(CycloneEvent.class.getName());
 	@JsonProperty
 	public List<Integer> pressureList;
 	@JsonProperty

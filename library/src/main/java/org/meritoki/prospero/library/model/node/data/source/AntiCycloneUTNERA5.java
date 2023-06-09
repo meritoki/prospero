@@ -26,13 +26,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.ERA5Event;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.utn.library.stacker.model.Collection;
 import org.utn.library.stacker.model.Dot;
 import org.utn.library.stacker.model.Stack;
@@ -42,7 +42,7 @@ import com.meritoki.library.controller.memory.MemoryController;
 import com.meritoki.library.controller.node.NodeController;
 
 public class AntiCycloneUTNERA5 extends CycloneSource {
-	static Logger logger = LogManager.getLogger(AntiCycloneUTNERA5.class.getName());
+	static Logger logger = LoggerFactory.getLogger(AntiCycloneUTNERA5.class.getName());
 	public static String prefix = "125-175-225-300-400-500-600-700-775-825-875-925-975-";
 	public static String merged = "F339A7D11BBFA9F1EF71B466A94895F6-";
 	public static String topBottomPrefix = "100-125-150-175-200-225-250-300-400-500-600-700-775-825-850-875-925-975-";// "125-175-225-300-400-500-600-700-775-825-875-925-975-";

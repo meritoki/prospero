@@ -19,14 +19,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Region {
-	static Logger logger = LogManager.getLogger(Region.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Region.class.getName());
 	//20221109 Future Use Coordinate
 	public double latitudeA;
 	public double longitudeA;

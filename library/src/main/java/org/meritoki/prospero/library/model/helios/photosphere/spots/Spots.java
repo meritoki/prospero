@@ -17,23 +17,19 @@ package org.meritoki.prospero.library.model.helios.photosphere.spots;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.Grid;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.time.TimePlot;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.enso.ENSO;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Spots extends Grid {
 
-	static Logger logger = LogManager.getLogger(Spots.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Spots.class.getName());
 	
 	public Spots() {
 		super("Spots");

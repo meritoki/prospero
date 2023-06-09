@@ -17,15 +17,15 @@ package org.meritoki.prospero.library.model.terra.lithosphere.earthquake;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Earthquake extends Lithosphere {
 
-	static Logger logger = LogManager.getLogger(Earthquake.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Earthquake.class.getName());
 
 	public Earthquake() {
 		super("Earthquake");

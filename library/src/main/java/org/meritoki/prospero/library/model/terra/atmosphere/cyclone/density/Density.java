@@ -17,17 +17,17 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Density extends Cyclone {
 
-	static Logger logger = LogManager.getLogger(Density.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Density.class.getName());
 
 	public Density() {
 		super("Density");

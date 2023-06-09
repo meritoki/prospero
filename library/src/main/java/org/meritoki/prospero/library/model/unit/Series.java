@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Series {
 
-	static Logger logger = LogManager.getLogger(Series.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Series.class.getName());
 	public List<Index> indexList = new ArrayList<>();
 	public List<Time> timeList = new ArrayList<>();
 	public Map<String, Object> map = new TreeMap<>();
