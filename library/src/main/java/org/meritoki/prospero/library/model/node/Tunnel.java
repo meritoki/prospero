@@ -14,12 +14,13 @@ import javax.swing.table.TableModel;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.solar.Solar;
-import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
-import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Table;
+import org.meritoki.prospero.library.model.unit.Time;
 import org.meritoki.prospero.library.model.unit.Unit;
 
 public class Tunnel extends Spheroid {
@@ -33,7 +34,6 @@ public class Tunnel extends Spheroid {
 		this.b = b;
 		this.a.addTunnel(this);
 		this.b.addTunnel(this);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -54,20 +54,21 @@ public class Tunnel extends Spheroid {
 	}
 
 	@Override
-	public Map<String, List<Index>> getIndexListMap() throws Exception {
-		Map<String, List<Index>> map = this.indexListMap;
+	public Map<String, Series> getSeriesMap() throws Exception {
+		Map<String, Series> map = this.seriesMap;
 		if (map == null) {
-			map = this.initIndexListMap();
-			this.indexListMap = map;
+			map = this.initSeriesMap();
+			this.seriesMap = map;
 		}
 		return map;
 	}
 
-	public Map<String, List<Index>> initIndexListMap() throws Exception {
-		System.out.println("initIndexListMap()");
-		Map<String, List<Index>> map = new HashMap<>();
+	@Override
+	public Map<String, Series> initSeriesMap() throws Exception {
+		logger.info("initSeriesMap()");
+		Map<String, Series> map = new HashMap<>();
 		Solar solar = (Solar) this.getParent().getParent();
-		List<String> dateList = getDateList(this.period, Calendar.DATE);
+		List<String> dateList = Time.getDateStringList(Time.getPeriod(this.startCalendar,this.endCalendar), Calendar.DATE);
 		Calendar calendar = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		for (String date : dateList) {
@@ -95,22 +96,16 @@ public class Tunnel extends Spheroid {
 		return map;
 	}
 
-//	public void mapPut(Map<String,List<Index>> map, Calendar calendar, String key, double value) {
-//		Index index = new Index();
-//		index.startCalendar = calendar;
-//		List<Index> indexList = map.get(key);
-//		if(indexList == null) {
-//			indexList = new ArrayList<>();
-//		}
-//		index.value = value;
-//		indexList.add(index);
-//		map.put(key,indexList);
-//	}
 
-	public List<Index> getDistanceList() throws Exception {
-		List<Index> indexList = new ArrayList<>();
+
+	public Series getDistanceList() throws Exception {
+		Series series = new Series();
+		series.map.put("startCalendar",this.startCalendar);
+		series.map.put("endCalendar",this.endCalendar);
+		series.map.put("query",new Query());
+		series.map.put("region",name);
 		Solar solar = (Solar) this.getParent().getParent();
-		List<String> dateList = getDateList(this.period, Calendar.DATE);
+		List<String> dateList = Time.getDateStringList(Time.getPeriod(this.startCalendar,this.endCalendar), Calendar.DATE);
 		Calendar c = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		Energy energy = (Energy) this.getVariable(name);
@@ -121,16 +116,20 @@ public class Tunnel extends Spheroid {
 			Index index = new Index();
 			index.value = this.getDistance();
 			index.startCalendar = c;
-			indexList.add(index);
+			series.add(index);
 		}
 
-		return indexList;
+		return series;
 	}
 
-	public List<Index> getCalculateGravityForceList() throws Exception {
-		List<Index> indexList = new ArrayList<>();
+	public Series getCalculateGravityForceList() throws Exception {
+		Series series = new Series();
+		series.map.put("startCalendar",this.startCalendar);
+		series.map.put("endCalendar",this.endCalendar);
+		series.map.put("query",new Query());
+		series.map.put("region",name);
 		Solar solar = (Solar) this.getParent().getParent();
-		List<String> dateList = getDateList(this.period, Calendar.DATE);
+		List<String> dateList = Time.getDateStringList(Time.getPeriod(this.startCalendar,this.endCalendar), Calendar.DATE);
 		Calendar c = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		Energy energy = (Energy) this.getVariable(name);
@@ -141,16 +140,16 @@ public class Tunnel extends Spheroid {
 			Index index = new Index();
 			index.value = this.getChargeForce() * this.getC();
 			index.startCalendar = c;
-			indexList.add(index);
+			series.add(index);
 		}
 
-		return indexList;
+		return series;
 	}
 
-	public List<Index> getCalculateDistanceList() throws Exception {
-		List<Index> indexList = new ArrayList<>();
+	public Series getCalculateDistanceList() throws Exception {
+		Series indexList = new Series();
 		Solar solar = (Solar) this.getParent().getParent();
-		List<String> dateList = getDateList(this.period, Calendar.DATE);
+		List<String> dateList = Time.getDateStringList(Time.getPeriod(this.startCalendar,this.endCalendar), Calendar.DATE);
 		Calendar c = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		Energy energy = (Energy) this.getVariable(name);
@@ -739,6 +738,17 @@ public class Tunnel extends Spheroid {
 	}
 
 }
+//public void mapPut(Map<String,List<Index>> map, Calendar calendar, String key, double value) {
+//Index index = new Index();
+//index.startCalendar = calendar;
+//List<Index> indexList = map.get(key);
+//if(indexList == null) {
+//	indexList = new ArrayList<>();
+//}
+//index.value = value;
+//indexList.add(index);
+//map.put(key,indexList);
+//}
 
 //System.out.println("A Cent. Gravity: "+this.a.getCentroidGravity());
 //System.out.println("A Gravity Force: "+this.getGravityForceA());

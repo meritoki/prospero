@@ -76,22 +76,21 @@ public class CycloneUTNERAInterim extends CycloneSource {
 		if(this.startYear <= year && year <= this.endYear) {
 			logger.debug("read(" + year + "," + month + ")");
 			String fileName = this.getFilePath(prefix + year + "" + String.format("%02d", month) + "01" + "." + extension);
-//			return this.read(new File(fileName));
 			List<Event> eventList = this.read(new File(fileName));
-			Calendar calendar;
-			Integer m = null;
-			Integer y = null;
-			ListIterator<Event> eventIterator = eventList.listIterator();
-			while(eventIterator.hasNext()) {
-				Event e = eventIterator.next();
-				calendar = e.getStartCalendar();
-				m = calendar.get(Calendar.MONTH)+1;
-				y = calendar.get(Calendar.YEAR);
-				if(year != y || month != m) {
-//					logger.info("read(" + year + "," + month + ") y="+year+" m="+m);
-					eventIterator.remove();
-				}
-			}
+//			Calendar calendar;
+//			Integer m = null;
+//			Integer y = null;
+//			ListIterator<Event> eventIterator = eventList.listIterator();
+//			while(eventIterator.hasNext()) {
+//				Event e = eventIterator.next();
+//				calendar = e.getStartCalendar();
+//				m = calendar.get(Calendar.MONTH)+1;
+//				y = calendar.get(Calendar.YEAR);
+//				if(year != y || month != m) {
+////					logger.info("read(" + year + "," + month + ") y="+year+" m="+m);
+//					eventIterator.remove();
+//				}
+//			}
 			return eventList;
 		}
 		return null;
@@ -110,7 +109,7 @@ public class CycloneUTNERAInterim extends CycloneSource {
 			Iterator<Row> iterator = datatypeSheet.iterator();
 			eventList = new ArrayList<Event>();
 			CycloneEvent event = null;
-			Coordinate point = null;
+			Coordinate coordinate = null;
 			short id = 0;
 			short idBuffer = 0;
 			int level = 0;
@@ -119,7 +118,7 @@ public class CycloneUTNERAInterim extends CycloneSource {
 			float longitude;
 			float vorticity;
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			List<Coordinate> pointList = new ArrayList<>();
+			List<Coordinate> coordinateList = new ArrayList<>();
 			boolean flag = true;
 			while (iterator.hasNext()) {
 				if (!Thread.interrupted()) {
@@ -134,10 +133,13 @@ public class CycloneUTNERAInterim extends CycloneSource {
 					flag = false;
 				} else {
 					if (id != idBuffer) {
-						event = new ERAInterimEvent(date + "-" + Integer.toString(id), pointList);
+						event = new ERAInterimEvent(coordinateList);
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+						event.id = sdf.format(event.getStartCalendar().getTime()) + "-"
+								+ sdf.format(event.getEndCalendar().getTime()) + id;
 						eventList.add(event);
 						id = idBuffer;
-						pointList = new ArrayList<>();
+						coordinateList = new ArrayList<>();
 					}
 				}
 				level = Short.parseShort(cellIterator.next().getStringCellValue());
@@ -146,30 +148,34 @@ public class CycloneUTNERAInterim extends CycloneSource {
 				longitude = Float.parseFloat(cellIterator.next().getStringCellValue());
 				vorticity = (float) cellIterator.next().getNumericCellValue();
 				// Instantiate Point
-				point = new Coordinate();
+				coordinate = new Coordinate();
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(formatter.parse(date));
-				point.calendar = calendar;//formatter.parse(date);
-				point.latitude = latitude;
+				coordinate.calendar = calendar;//formatter.parse(date);
+				coordinate.latitude = latitude;
 				if (longitude < 180) {
-					point.longitude = longitude;
+					coordinate.longitude = longitude;
 				} else {
-					point.longitude = longitude - 360;
+					coordinate.longitude = longitude - 360;
 				}
-				point.attribute.put("pressure", level);
-				point.attribute.put("vorticity", vorticity);
-				pointList.add(point);
+				coordinate.attribute.put("pressure", level);
+				coordinate.attribute.put("vorticity", vorticity);
+				coordinateList.add(coordinate);
 				} else {
 					break;
 				}
 			}
 			workbook.close();
 			
-			event = new ERAInterimEvent(date + "-" + Integer.toString(id), pointList);
+			event = new ERAInterimEvent(coordinateList);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			event.id = sdf.format(event.getStartCalendar().getTime()) + "-"
+					+ sdf.format(event.getEndCalendar().getTime()) + id;
+			eventList.add(event);
 //			Calendar calendar = event.getStartCalendar();
 //			Integer month = calendar.get(Calendar.MONTH);
 //			Integer year = calendar.get(Calendar.YEAR);
-			eventList.add(event);
+//			eventList.add(event);
 		} catch (FileNotFoundException e) {
 			logger.error("FileNotFoundException " + e.getMessage());
 		} catch (IOException e) {

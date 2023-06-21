@@ -96,7 +96,7 @@ public class Grid extends Spheroid {
 	public Map<Integer, int[][][]> coordinateMatrixMap = new HashMap<>();
 	public Map<Integer, float[][][]> dataMatrixMap = new HashMap<>();
 	public Map<Integer, Integer> yearMap = new HashMap<>();
-	public Map<String, Series> seriesMap = new TreeMap<>();
+//	public Map<String, Series> seriesMap = new TreeMap<>();
 	public Map<String, Plot> plotMap = new TreeMap<>();
 	public Map<Time, List<Tile>> timeTileMap = new HashMap<>();
 	protected Cluster cluster;

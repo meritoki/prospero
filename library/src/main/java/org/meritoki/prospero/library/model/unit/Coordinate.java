@@ -139,6 +139,11 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 	
 	@JsonIgnore
+	public Calendar getCalendar() {
+		return this.calendar;
+	}
+	
+	@JsonIgnore
 	public Integer getPressure() {
 		Object pressure = this.attribute.get("pressure");
 		return (pressure != null)?(int)pressure:null;

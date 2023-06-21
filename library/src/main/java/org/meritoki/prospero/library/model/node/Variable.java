@@ -96,8 +96,7 @@ public class Variable extends Node {
 	public boolean correlation;
 	@JsonIgnore
 	public boolean cache;
-//	@JsonIgnore
-//	public boolean visible;
+
 
 	public Variable() {
 	}
@@ -119,9 +118,10 @@ public class Variable extends Node {
 	}
 
 	public void start() {
+		logger.info(this+".start()");
 		super.start();
 		this.load = true;
-		this.initVariableMap();
+		
 	}
 
 	@Override
@@ -250,6 +250,9 @@ public class Variable extends Node {
 	}
 
 	public void initVariableMap() {
+		for (Variable n : this.getList()) {
+			n.initVariableMap();
+		}
 	}
 
 	@JsonIgnore
@@ -277,6 +280,14 @@ public class Variable extends Node {
 			}
 		}
 		return plotList;
+	}
+	
+	public void initPlotList() throws Exception {
+		for (Variable n : this.getList()) {
+			if (n.load) {
+				n.initPlotList();
+			}
+		}
 	}
 
 	public List<Table> getTableList() throws Exception {
@@ -459,12 +470,15 @@ public class Variable extends Node {
 	@JsonIgnore
 	public void paint(Graphics graphics) throws Exception {
 //		logger.debug(this+".paint(" + (graphics != null) + ")");
+		this.initPlotList();
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			n.paint(graphics);
 		}
 	}
 }
+//@JsonIgnore
+//public boolean visible;
 //if (query.isReady()) {// should only move forward if we have a time & source
 //query.calendar = this.calendar;
 //else if(this.mode == Mode.EXCEPTION) {

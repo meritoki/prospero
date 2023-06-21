@@ -34,6 +34,7 @@ import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
+import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,23 +58,23 @@ public class Model extends Variable {
 		this.addChild(this.solar);
 		this.addCamera(new Camera(this.solar));
 		this.setData(this.data);
-		this.calendar = Calendar.getInstance();
-		this.startCalendar = new GregorianCalendar(2016, 0, 1, 0, 0, 0);
-		this.endCalendar = new GregorianCalendar(2016, 11, 31, 0, 0, 0);
+//		this.calendar = Calendar.getInstance();
+//		this.startCalendar = new GregorianCalendar(2016, 0, 1, 0, 0, 0);
+//		this.endCalendar = new GregorianCalendar(2016, 11, 31, 0, 0, 0);
 //		this.calendar = Calendar.getInstance();
 //		this.calendar.setTime(new Date());
-		this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
-		this.setCalendar(this.calendar);
-		this.setStartCalendar(this.startCalendar);
-		this.setEndCalendar(this.endCalendar);
+//		this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
+//		this.setCalendar(this.calendar);
+//		this.setStartCalendar(this.startCalendar);
+//		this.setEndCalendar(this.endCalendar);
 	}
-	
+
 	@Override
 	public void start() {
 		super.start();
-		logger.info(this+".start()");
+		logger.info(this + ".start()");
 	}
-	
+
 	public void removeCameras() {
 		this.cameraList = new ArrayList<>();
 	}
@@ -85,6 +86,30 @@ public class Model extends Variable {
 		if (basePath instanceof String) {
 			this.data.setBasePath((String) basePath);
 		}
+		Object calendar = this.properties.get("calendar");
+		if (calendar instanceof String) {
+			this.calendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) calendar);
+			
+		} else {
+			this.calendar = Calendar.getInstance();
+		}
+		Object startCalendar = this.properties.get("startCalendar");
+		if (startCalendar instanceof String) {
+			this.startCalendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) startCalendar);
+			
+		} else {
+			this.startCalendar = Time.getStartCalendar(this.calendar);
+		}
+		Object endCalendar = this.properties.get("endCalendar");
+		if (endCalendar instanceof String) {
+			this.endCalendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) endCalendar);
+			
+		} else {
+			this.endCalendar = Time.getEndCalendar(this.calendar);
+		}
+		this.setCalendar(this.calendar);
+		this.setStartCalendar(this.startCalendar);
+		this.setEndCalendar(this.endCalendar);
 	}
 
 	@JsonIgnore
@@ -93,14 +118,14 @@ public class Model extends Variable {
 			this.data.setBasePath(basePath);
 		}
 	}
-	
+
 	@Override
 	protected void defaultState(Object object) {
 		if (object instanceof Result) {
 			Result result = (Result) object;
 			switch (result.mode) {
 			case PAINT: {
-				logger.debug("defaultState(" + (object != null) + ") result.mode="+result.mode);
+				logger.debug("defaultState(" + (object != null) + ") result.mode=" + result.mode);
 				this.init();
 				break;
 			}
@@ -120,7 +145,7 @@ public class Model extends Variable {
 	@JsonIgnore
 	public void addCamera(Camera camera) {
 		if (camera != null) {
-			this.cameraList.add(camera);//, this.scale, this.azimuth, this.elevation));
+			this.cameraList.add(camera);// , this.scale, this.azimuth, this.elevation));
 			this.index = this.cameraList.size() - 1;
 //			logger.info(this + ".addCamera(" + camera + ") this.index=" + this.index);
 		}
@@ -179,7 +204,7 @@ public class Model extends Variable {
 
 	@JsonIgnore
 	public Camera getCamera(int index) {
-		return (this.cameraList.size()>0)?this.cameraList.get(index):null;
+		return (this.cameraList.size() > 0) ? this.cameraList.get(index) : null;
 	}
 
 	@SuppressWarnings("resource")
@@ -200,7 +225,7 @@ public class Model extends Variable {
 			this.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
 			this.solar.setAzimuth(c.azimuth);
 			this.solar.setElevation(c.elevation);
-			this.solar.setScale(c.scale);//o.getProjection().scale);
+			this.solar.setScale(c.scale);// o.getProjection().scale);
 			c.buffer = this.solar;
 		} else if (node instanceof Spheroid) {
 			logger.debug("updateCamera(" + node + ") instanceof Spheroid");
@@ -223,7 +248,6 @@ public class Model extends Variable {
 			c.buffer = s;
 		}
 	}
-
 
 	public void setCache(boolean cache) {
 		this.cache = cache;

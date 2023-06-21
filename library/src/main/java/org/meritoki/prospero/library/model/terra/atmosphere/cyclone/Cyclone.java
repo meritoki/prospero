@@ -293,7 +293,7 @@ public class Cyclone extends Atmosphere {
 									series = this.newSeries();
 								}
 								super.filter(eventList);
-								series.addIndex(this.getIndex(time, eventList));
+								series.add(this.getIndex(time, eventList));
 								this.seriesMap.put(region.toString(), series);
 							}
 							this.initPlotList(this.seriesMap, null);
@@ -326,7 +326,7 @@ public class Cyclone extends Atmosphere {
 								series = this.newSeries();
 							}
 							super.filter(eventList);
-							series.addIndex(this.getIndex(time, eventList));
+							series.add(this.getIndex(time, eventList));
 							this.seriesMap.put(region.toString(), series);
 						}
 						this.eventMap.remove(time);
@@ -485,7 +485,7 @@ public class Cyclone extends Atmosphere {
 				cluster.addTilePoint(average);
 				Index index = time.getIndex();
 				index.value = average;
-				series.addIndex(index);
+				series.add(index);
 				seriesMap.put(cluster.uuid, series);
 			}
 		}
@@ -511,17 +511,6 @@ public class Cyclone extends Atmosphere {
 		q.map.put("region", region.toString());
 		series.map.put("query", q);
 		return series;
-	}
-
-	public Plot getPlot(Series series) throws Exception {
-		Plot plot = null;
-		if (series.indexList != null && series.indexList.size() > 0) {
-			series.map.put("startCalendar", this.startCalendar);
-			series.map.put("endCalendar", this.endCalendar);
-			series.setRegression(this.regression);
-			plot = new TimePlot(series);
-		}
-		return plot;
 	}
 
 	public List<Time> setEventMap(HashMap<Time, List<Event>> eventMap, List<Event> eventList) {
@@ -616,16 +605,6 @@ public class Cyclone extends Atmosphere {
 		this.tableList = tableList;
 	}
 
-	@Override
-	public List<Table> getTableList() throws Exception {
-		return this.tableList;
-	}
-
-	@Override
-	public List<Plot> getPlotList() throws Exception {
-		return this.plotList;
-	}
-
 	public void setMatrix(List<Event> eventList) {
 		List<Time> timeList = this.setCoordinateMatrix(this.coordinateMatrix, eventList);
 		for (Time t : timeList) {
@@ -646,24 +625,6 @@ public class Cyclone extends Atmosphere {
 				this.tileListMap.put(level, tileList);
 			}
 		}
-	}
-
-	public List<Band> getBandList(List<Tile> tileList) {
-		List<Band> bandList = new ArrayList<>();
-		if (tileList != null && tileList.size() > 0) {
-			List<Double> tileLatitudeList = this.getTileLatitudeList(tileList);
-			for (Double latitude : tileLatitudeList) {
-				List<Tile> bandTileList = new ArrayList<>();
-				for (Tile t : tileList) {
-					if (latitude.equals(t.coordinate.latitude)) {
-						bandTileList.add(t);
-					}
-				}
-				Band band = new Band(bandTileList, latitude);
-				bandList.add(band);
-			}
-		}
-		return bandList;
 	}
 
 	public List<Time> setCoordinateMatrix(int[][][] coordinateMatrix, List<Event> eventList) {
@@ -720,6 +681,45 @@ public class Cyclone extends Atmosphere {
 			}
 		}
 		return timeList;
+	}
+
+	@Override
+	public List<Table> getTableList() throws Exception {
+		return this.tableList;
+	}
+
+	@Override
+	public List<Plot> getPlotList() throws Exception {
+		return this.plotList;
+	}
+
+	public Plot getPlot(Series series) throws Exception {
+		Plot plot = null;
+		if (series.indexList != null && series.indexList.size() > 0) {
+			series.map.put("startCalendar", this.startCalendar);
+			series.map.put("endCalendar", this.endCalendar);
+			series.setRegression(this.regression);
+			plot = new TimePlot(series);
+		}
+		return plot;
+	}
+
+	public List<Band> getBandList(List<Tile> tileList) {
+		List<Band> bandList = new ArrayList<>();
+		if (tileList != null && tileList.size() > 0) {
+			List<Double> tileLatitudeList = this.getTileLatitudeList(tileList);
+			for (Double latitude : tileLatitudeList) {
+				List<Tile> bandTileList = new ArrayList<>();
+				for (Tile t : tileList) {
+					if (latitude.equals(t.coordinate.latitude)) {
+						bandTileList.add(t);
+					}
+				}
+				Band band = new Band(bandTileList, latitude);
+				bandList.add(band);
+			}
+		}
+		return bandList;
 	}
 
 	public Time getTime(String value, Event e) {

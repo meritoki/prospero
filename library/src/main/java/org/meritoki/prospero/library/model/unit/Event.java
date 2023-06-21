@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +57,6 @@ public class Event {
 	public DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	@JsonIgnore
 	public boolean flag = false;
-	@JsonIgnore
-	public boolean print = false;
 
 	public Event() {
 	}
@@ -72,11 +71,13 @@ public class Event {
 
 	public Event(List<Coordinate> coordinateList) {
 		this.coordinateList = coordinateList;
+		Collections.sort(this.coordinateList, Comparator.comparing(Coordinate::getCalendar).thenComparing(Coordinate::getPressure));
 	}
 
 	public Event(String id, List<Coordinate> coordinateList) {
 		this.id = id;
 		this.coordinateList = coordinateList;
+		Collections.sort(this.coordinateList, Comparator.comparing(Coordinate::getCalendar).thenComparing(Coordinate::getPressure));
 	}
 
 	public void reset() {
@@ -94,17 +95,13 @@ public class Event {
 		Date endDate = (this.getEndCoordinate() != null && this.getEndCoordinate().calendar != null)
 				? this.getEndCoordinate().calendar.getTime()
 				: null;
-		if (print)
-			System.out.println("date=" + date);
-		if (print)
-			System.out.println("startDate=" + startDate);
-		if (print)
-			System.out.println("endDate=" + endDate);
+		logger.debug("date=" + date);
+		logger.debug("startDate=" + startDate);
+		logger.debug("endDate=" + endDate);
 		boolean flag = (startDate != null && endDate != null)
 				? startDate.before(date) && date.before(endDate) || startDate.equals(date) || endDate.equals(date)
 				: false;
-		if (print)
-			System.out.println("flag=" + flag);
+		logger.debug("flag=" + flag);
 		return flag;
 	}
 
@@ -138,7 +135,7 @@ public class Event {
 	@JsonIgnore
 	public Duration getDuration(Coordinate a, Coordinate b) {
 		Duration duration = new Duration(a.calendar.getTime(), b.calendar.getTime());
-//		logger.info("getDuration(...) duration="+duration);
+		logger.debug("getDuration(...) duration="+duration);
 		return duration;
 	}
 

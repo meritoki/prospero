@@ -97,7 +97,7 @@ public class VariableMenu extends JPopupMenu {
 				public void actionPerformed(ActionEvent ev) {
 					JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) ev.getSource();
 					if (menuItem.isSelected()) {
-						System.out.println(ev.getActionCommand());
+						logger.info(ev.getActionCommand());
 						model.getCamera().node.start();
 						model.getCamera().node.variableMap.put(ev.getActionCommand(), true);
 					} else {

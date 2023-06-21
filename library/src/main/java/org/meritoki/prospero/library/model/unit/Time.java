@@ -42,19 +42,8 @@ import com.fasterxml.jackson.databind.ObjectWriter;
  */
 public class Time {
 
-	public static void main(String[] args) {
-//		Date date = Time.getDate("djf");
-		Interval i = Time.getAliasInterval("all", 2000, 2005);
-		try {
-			System.out.println(Time.getTimeList(1, i));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	static Logger logger = LoggerFactory.getLogger(Time.class.getName());
-	public static String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
+	public static String defaultTimeFormat = "yyyy/MM/dd HH:mm:ss";//"yyyy-MM-dd HH:mm:ss";
 	@JsonProperty
 	public int year = -1;
 	@JsonProperty
@@ -507,7 +496,7 @@ public class Time {
 		type = (type == null) ? Time.isDate(value, "HH", "HOUR") : type;
 		type = (type == null) ? Time.isDate(value, "yyyy/MM", "YEAR_MONTH") : type;
 		type = (type == null) ? Time.isDate(value, "yyyy", "YEAR") : type;
-//		System.out.println("isDate("+value+") flag="+flag);
+//		logger.info("isDate("+value+") flag="+flag);
 		return type;
 	}
 
@@ -820,11 +809,35 @@ public class Time {
 
 	public static GregorianCalendar getCalendar(String format, String time) {
 		GregorianCalendar calendar = new GregorianCalendar();
-		Date date = Time.getDate(format, time);
+		Date date = Time.getDate(time,format);
 		if (date != null)
 			calendar.setTime(date);
 		return calendar;
 	}
+	
+	public static Calendar getStartCalendar(Calendar c) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, c.get(Calendar.YEAR));
+		calendar.set(Calendar.MONTH, 0);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		return calendar;
+	}
+	
+	public static Calendar getEndCalendar(Calendar c) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, c.get(Calendar.YEAR));
+		calendar.set(Calendar.MONTH, 11);
+		calendar.set(Calendar.DAY_OF_MONTH, 31);
+		calendar.set(Calendar.HOUR_OF_DAY, 24);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		return calendar;
+	}
+	
+	
 
 	/**
 	 * Function can invoke Get Date with any valid Format String to instantiate a
@@ -899,7 +912,7 @@ public class Time {
 	}
 
 	public static int getYearMonthDays(int year, int month) {
-		System.out.println("getYearMonthDays(" + year + "," + month + ")");
+		logger.info("getYearMonthDays(" + year + "," + month + ")");
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, year);
 		calendar.set(Calendar.MONTH, month - 1);
@@ -926,6 +939,49 @@ public class Time {
 		g.set(Calendar.MILLISECOND, 0);
 		return g.getTime();
 	}
+	
+	public static String getPeriod(Calendar start, Calendar end) {
+		return getCalendarString("yyyyMMdd",start)+"-"+getCalendarString("yyyyMMdd",end);
+		
+	}
+	
+	public static List<String> getDateStringList(String value, int increment) {
+		List<String> dateList = new ArrayList<>();
+		String[] dashArray = value.split("-");
+		if (dashArray.length == 2) {
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+			try {
+				Date startDate = simpleDateFormat.parse(dashArray[0]);
+				Date endDate = simpleDateFormat.parse(dashArray[1]);
+				Date currentDate = startDate;
+				dateList.add(simpleDateFormat.format(startDate));
+				do {
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(currentDate);
+					calendar.add(increment, 1);// Calendar.MONTH
+					currentDate = calendar.getTime();
+					dateList.add(simpleDateFormat.format(currentDate));
+				} while (currentDate.before(endDate));
+
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		} else {
+			dateList.add(value);
+		}
+		// logger.info("getDateList("+value+") dateList="+dateList);
+		return dateList;
+	}
+	
+	/**
+	 * 20230609 Formally daysBetween 
+	 * @param d1
+	 * @param d2
+	 * @return
+	 */
+	public int getDays(Date d1, Date d2) {
+		return (int) ((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
+	}
 
 	@JsonIgnore
 	@Override
@@ -940,6 +996,16 @@ public class Time {
 		return string;
 	}
 }
+//public static void main(String[] args) {
+////Date date = Time.getDate("djf");
+//Interval i = Time.getAliasInterval("all", 2000, 2005);
+//try {
+//logger.info(Time.getTimeList(1, i));
+//} catch (Exception e) {
+//// TODO Auto-generated catch block
+//e.printStackTrace();
+//}
+//}
 //public static List<Time> getTimeList(Interval i) throws Exception {
 ////logger.info("load(query, " + i + ")");
 //List<Time> timeList = new ArrayList<>();

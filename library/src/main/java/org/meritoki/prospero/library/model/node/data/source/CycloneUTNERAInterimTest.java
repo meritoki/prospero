@@ -46,6 +46,7 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 	static Logger logger = LoggerFactory.getLogger(CycloneUTNERAInterimTest.class.getName());
 //	public static String path = basePath+"prospero-data" + seperator + "UTN" + seperator + "File"+ seperator +"Data"+ seperator +"Cyclone"+ seperator +"cyclone-20200704";
 	public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
+//	public static String prefix = "925-850-700-600-500-400-300-250-200-150-125-100-";
 	public static String extension = "json";
 	public int[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
 	private final int startYear = 2001;
@@ -55,7 +56,7 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 		super();
 //		this.setRelativePath("UTN" + seperator + "File"+ seperator +"Data"+ seperator +"Cyclone"+ seperator +"cyclone-20200704"+seperator);
 		this.setBasePath("/home/jorodriguez/Drive/Test/");
-		this.setRelativePath("era-interim");
+		this.setRelativePath("era-interim-north");
 	}
 
 	@Override
@@ -81,19 +82,19 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 			String yearMonth = year + "" + String.format("%02d", month) + "01";
 			List<Event> eventList = this.read(new File(this.getFilePath(yearMonth + seperator + "stack" + seperator
 					+ "collection" + seperator + prefix + yearMonth + "." + extension)));
-			Calendar calendar;
-			Integer m = null;
-			Integer y = null;
-			ListIterator<Event> eventIterator = eventList.listIterator();
-			while (eventIterator.hasNext()) {
-				Event e = eventIterator.next();
-				calendar = e.getStartCalendar();
-				m = calendar.get(Calendar.MONTH) + 1;
-				y = calendar.get(Calendar.YEAR);
-				if (year != y || month != m) {
-					eventIterator.remove();
-				}
-			}
+//			Calendar calendar;
+//			Integer m = null;
+//			Integer y = null;
+//			ListIterator<Event> eventIterator = eventList.listIterator();
+//			while (eventIterator.hasNext()) {
+//				Event e = eventIterator.next();
+//				calendar = e.getStartCalendar();
+//				m = calendar.get(Calendar.MONTH) + 1;
+//				y = calendar.get(Calendar.YEAR);
+//				if (year != y || month != m) {
+//					eventIterator.remove();
+//				}
+//			}
 
 			return eventList;
 		}

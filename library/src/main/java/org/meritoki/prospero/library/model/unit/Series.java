@@ -41,7 +41,7 @@ public class Series {
 
 	public void addIndexList(List<Index> indexList) {
 		for (Index i : indexList) {
-			this.addIndex(i);
+			this.add(i);
 		}
 	}
 	
@@ -81,7 +81,7 @@ public class Series {
 	 * 
 	 * @param index
 	 */
-	public void addIndex(Index index) {
+	public void add(Index index) {
 		if (index != null && !this.indexList.contains(index)) {
 			this.indexList.add(index);
 		} 

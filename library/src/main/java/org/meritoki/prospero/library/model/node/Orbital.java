@@ -70,6 +70,33 @@ public class Orbital extends Grid {
 		super(name);
 		
 	}
+	
+	@Override
+	public void initVariableMap() {
+		super.initVariableMap();
+		if (this.tunnelList != null) {
+			this.variableMap.put("Gravity Force", false);
+			this.variableMap.put("Charge Force", false);
+			this.variableMap.put("Calculate Gravity Force", false);
+			this.variableMap.put("Calculate Charge Force", false);
+			this.variableMap.put("Charge", false);
+			this.variableMap.put("Distance", false);
+			this.variableMap.put("X", false);
+			this.variableMap.put("Z", false);
+			this.variableMap.put("A", false);
+			this.variableMap.put("B", false);
+			this.variableMap.put("C", false);
+			this.variableMap.put("Print", false);
+			this.variableMap.put("Resistance", false);
+			this.variableMap.put("Tesla", false);
+			this.variableMap.put("Voltage", false);
+			this.variableMap.put("Print", false);
+			this.variableMap.put("X Ratio", false);
+		}
+		if (this.triangleList != null) {
+			this.variableMap.put("Angle", false);
+		}
+	}
 
 	@JsonIgnore
 	public void setCalendar(Calendar calendar) {

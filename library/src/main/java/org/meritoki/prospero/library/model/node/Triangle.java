@@ -25,6 +25,8 @@ import java.util.Map;
 
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.unit.Index;
+import org.meritoki.prospero.library.model.unit.Series;
+import org.meritoki.prospero.library.model.unit.Time;
 
 public class Triangle extends Energy {
 
@@ -60,14 +62,14 @@ public class Triangle extends Energy {
 	}
 	
 	@Override
-	public Map<String,List<Index>> getIndexListMap() throws Exception {
+	public Map<String,Series> getSeriesMap() throws Exception {
 		
-		Map<String, List<Index>> map = this.indexListMap;
+		Map<String, Series> map = this.seriesMap;
 		if(map == null) {
 			map = new HashMap<>();
-			this.indexListMap = map;
+			this.seriesMap = map;
 		}
-		List<Index> indexList = null;
+		Series indexList = null;
 		indexList = map.get("Angle");
 		if(indexList == null) {
 			map.put("Angle", this.getAngleList());
@@ -76,10 +78,10 @@ public class Triangle extends Energy {
 		return map;
 	}
 	
-	public List<Index> getAngleList() throws Exception{
-		List<Index> indexList = new ArrayList<>();
+	public Series getAngleList() throws Exception{
+		Series indexList = new Series();
 		Solar solar = (Solar)this.getParent().getParent();
-		List<String> dateList = getDateList(this.period, Calendar.DATE);
+		List<String> dateList = Time.getDateStringList(Time.getPeriod(this.startCalendar,this.endCalendar), Calendar.DATE);
 		Calendar c = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		for (String date : dateList) {

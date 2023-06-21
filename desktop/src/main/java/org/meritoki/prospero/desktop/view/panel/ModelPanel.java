@@ -116,6 +116,7 @@ public class ModelPanel extends javax.swing.JPanel {
 						if (e.getClickCount() == 1) {
 							if (model != null) {
 								Variable node = model.getVariable(lastPathComponent.toString());
+//								node.initVariableMap();
 								if (node != null) {
 									model.getCamera().setNode(node);
 									nodeMenu = new VariableMenu(model, mainFrame);//can conceivably pass model
@@ -131,6 +132,7 @@ public class ModelPanel extends javax.swing.JPanel {
 						if (e.getClickCount() == 1) {
 							if (model != null) {
 								Variable node = model.getVariable(lastPathComponent.toString());
+//								node.initVariableMap();
 								if (node != null) {
 									model.getCamera().setNode(node);
 //									model.updateNode(node);
