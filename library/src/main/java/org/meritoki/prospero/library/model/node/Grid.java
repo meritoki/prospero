@@ -85,7 +85,7 @@ public class Grid extends Spheroid {
 	public List<Event> eventList = Collections.synchronizedList(new ArrayList<>());
 	public List<Time> timeList = new ArrayList<>();
 	public List<Station> stationList = new ArrayList<>();
-	public List<Plot> plotList = new ArrayList<>();
+//	public List<Plot> plotList = new ArrayList<>();
 	public List<Table> tableList = new ArrayList<>();
 	public List<Index> indexList = new ArrayList<>();
 	public List<Cluster> clusterList = new ArrayList<>();
@@ -851,7 +851,7 @@ public class Grid extends Spheroid {
 	 * @param graphics
 	 */
 	public void paintTrajectory(Graphics graphics) {
-		logger.info("paintTrajectory(" + (graphics != null) + ") this.eventList.size()="+this.eventList.size());
+		logger.debug("paintTrajectory(" + (graphics != null) + ") this.eventList.size()="+this.eventList.size());
 		Graphics2D g2d = (Graphics2D) graphics;
 		Point aPoint;
 		Point bPoint;
@@ -861,7 +861,7 @@ public class Grid extends Spheroid {
 		Stroke old = g2d.getStroke();
 		g2d.setStroke(new BasicStroke(thickness));
 		List<Event> eventList = Event.getSelectedEventList(this.eventList, this.calendar);
-		logger.info("paintTrajectory(" + (graphics != null) + ") eventList.size()="+eventList.size());
+		logger.debug("paintTrajectory(" + (graphics != null) + ") eventList.size()="+eventList.size());
 		for (Event event : eventList) {
 			if (event instanceof CycloneEvent) {
 				Map<Integer, List<Coordinate>> pressureCoordinateMap = ((CycloneEvent) event)

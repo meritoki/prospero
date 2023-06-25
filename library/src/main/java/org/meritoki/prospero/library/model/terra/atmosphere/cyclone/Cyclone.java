@@ -343,7 +343,7 @@ public class Cyclone extends Atmosphere {
 		}
 		this.initPlotList(this.seriesMap, this.eventList);
 		this.initTableList(this.eventList, this.tileList, this.bandList, this.clusterList);
-		this.addRootObject(new Result(Mode.PAINT));
+		this.addModelObject(new Result(Mode.PAINT));
 	}
 
 	/**

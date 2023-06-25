@@ -54,7 +54,7 @@ public class TimePlot extends Plot {
 	public TimePlot(Series series) {
 		super();
 		logger.info("TimePlot("+series.indexList.size()+")");
-		logger.info("TimePlot("+series.indexList.size()+") series.map="+series.map);
+//		logger.info("TimePlot("+series.indexList.size()+") series.map="+series.map);
 		this.blackIndexMatrix = new ArrayList<>();
 		this.colorIndexMatrix = new ArrayList<>();
 		this.blackIndexMatrix.add(series.indexList);

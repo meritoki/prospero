@@ -30,6 +30,8 @@ import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.unit.Index;
+import org.meritoki.prospero.library.model.unit.Mode;
+import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
@@ -63,13 +65,28 @@ public class Energy extends Variable {
 	@JsonIgnore
 	public Map<String, Series> seriesMap = null;//new TreeMap<>();
 	@JsonIgnore
+	public List<Plot> plotList = new ArrayList<>();
+	@JsonIgnore
 	public List<String> energyList = new ArrayList<>();
 
 	public Energy(String name) {
 		super(name);
+		this.initVariableMap();
 	}
 
 
+	
+	@Override
+	public void query() {
+		super.query();
+		try {
+			this.initPlotList();
+			this.addModelObject(new Result(Mode.PAINT));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	@JsonIgnore
 	public void setSpace(Space space) {
@@ -147,55 +164,63 @@ public class Energy extends Variable {
 	}
 
 	public Map<String, Series> initSeriesMap() throws Exception {
-		logger.info("initIndexListMap()");
+		logger.info("initSeriesMap()");
 		Map<String, Series> map = new HashMap<>();
+		this.seriesMapPut(map, "X", this.tunnelList);
+		this.seriesMapPut(map, "Z", this.tunnelList);
+		this.seriesMapPut(map, "A", this.tunnelList);
+		this.seriesMapPut(map, "B", this.tunnelList);
+		this.seriesMapPut(map, "C", this.tunnelList);
+		this.seriesMapPut(map, "Distance", this.tunnelList);
+		this.seriesMapPut(map, "Gravity Force", this.tunnelList);
+		this.seriesMapPut(map, "Charge Force", this.tunnelList);
+		this.seriesMapPut(map, "Calculate Gravity Force", this.tunnelList);
+		this.seriesMapPut(map, "Calculate Charge Force", this.tunnelList);
+		this.seriesMapPut(map, "Charge", this.tunnelList);
+		this.seriesMapPut(map, "Resistance", this.tunnelList);
+		this.seriesMapPut(map, "Resistance Ratio", this.tunnelList);
+		this.seriesMapPut(map, "Tesla", this.tunnelList);
+		this.seriesMapPut(map, "Voltage", this.tunnelList);
+		this.seriesMapPut(map, "Angle", this.triangleList);
 		return map;
 	}
 
 	public Map<String, Series> getSeriesMap() throws Exception {
-		Map<String, Series> map = this.seriesMap;
-		if (map == null) {
-			map = new HashMap<>();
-			this.seriesMap = map;
-		}
-		this.mapPut(map, "X", this.tunnelList);
-		this.mapPut(map, "Z", this.tunnelList);
-		this.mapPut(map, "A", this.tunnelList);
-		this.mapPut(map, "B", this.tunnelList);
-		this.mapPut(map, "C", this.tunnelList);
-		this.mapPut(map, "Distance", this.tunnelList);
-		this.mapPut(map, "Gravity Force", this.tunnelList);
-		this.mapPut(map, "Charge Force", this.tunnelList);
-		this.mapPut(map, "Calculate Gravity Force", this.tunnelList);
-		this.mapPut(map, "Calculate Charge Force", this.tunnelList);
-		this.mapPut(map, "Charge", this.tunnelList);
-		this.mapPut(map, "Resistance", this.tunnelList);
-		this.mapPut(map, "Resistance Ratio", this.tunnelList);
-		this.mapPut(map, "Tesla", this.tunnelList);
-		this.mapPut(map, "Voltage", this.tunnelList);
-		this.mapPut(map, "Angle", this.triangleList);
-		return map;
+//		if (this.seriesMap == null) {
+			this.seriesMap = this.initSeriesMap();
+//		}
+		return this.seriesMap;
 	}
 
-	public void mapPut(Map<String, Series> map, String key, Object object) throws Exception {
+	public void seriesMapPut(Map<String, Series> seriesMap, String key, Object object) throws Exception {
 //		System.out.println("mapPut("+map.size()+","+key+","+object+")");
-		Series indexList = map.get(key);
-		if (indexList == null && object != null) {
-			map.put(key, this.getSeries(key, object));
+		Series series = seriesMap.get(key);
+		if (series == null && object != null) {
+			seriesMap.put(key, this.getSeries(key, object));
 		}
 	}
 
-	public void mapPut(Map<String, Series> map, Calendar calendar, String key, double value) {
+//	public void mapPut(Map<String, Series> map, Calendar calendar, String key, double value) {
+////		logger.info("mapPut("+map.size()+","+calendar.getTime()+","+key+","+value+")");
+//		Index index = new Index();
+//		index.startCalendar = calendar;
+//		Series indexList = map.get(key);
+//		if (indexList == null) {
+//			indexList = new Series();
+//		}
+//		index.value = value;
+//		indexList.add(index);
+//		map.put(key, indexList);
+//	}
+	
+	public void seriesMapPut(Map<String, Series> seriesMap, String key, Index index) {
 //		logger.info("mapPut("+map.size()+","+calendar.getTime()+","+key+","+value+")");
-		Index index = new Index();
-		index.startCalendar = calendar;
-		Series indexList = map.get(key);
-		if (indexList == null) {
-			indexList = new Series();
+		Series series = seriesMap.get(key);
+		if (series == null) {
+			series = new Series();
 		}
-		index.value = value;
-		indexList.add(index);
-		map.put(key, indexList);
+		series.add(index);
+		seriesMap.put(key, series);
 	}
 
 	public Series getSeries(String key, Object object) throws Exception {
@@ -225,9 +250,15 @@ public class Energy extends Variable {
 		}
 		return series;
 	}
-
+	
 	@Override
 	public List<Plot> getPlotList() throws Exception {
+		return this.plotList;
+	}
+
+	@Override
+	public void initPlotList() throws Exception {
+		logger.info("initPlotList()");
 		List<Plot> plotList = new ArrayList<>();
 		for (Entry<String, Boolean> variable : this.variableMap.entrySet()) {
 			String variableKey = variable.getKey();
@@ -344,8 +375,6 @@ public class Energy extends Variable {
 				}
 				}
 				if (series != null) {
-//					List<List<Index>> blackPointMatrix = new ArrayList<>();
-//					blackPointMatrix.add((indexList));
 					series.map.put("startCalendar", this.startCalendar);
 					series.map.put("endCalendar", this.endCalendar);
 					series.map.put("query", new Query());
@@ -359,7 +388,7 @@ public class Energy extends Variable {
 			}
 		}
 
-		return plotList;
+		this.plotList = plotList;
 	}
 
 	public void addTunnel(Tunnel tunnel) {
@@ -607,6 +636,34 @@ public class Energy extends Variable {
 		super.paint(graphics);
 	}
 }
+//@Override
+//public void initVariableMap() {
+//	super.initVariableMap();
+//	if (this.tunnelList != null) {
+//		this.variableMap.put("Gravity Force", false);
+//		this.variableMap.put("Charge Force", false);
+//		this.variableMap.put("Calculate Gravity Force", false);
+//		this.variableMap.put("Calculate Charge Force", false);
+//		this.variableMap.put("Charge", false);
+//		this.variableMap.put("Distance", false);
+//		this.variableMap.put("X", false);
+//		this.variableMap.put("Z", false);
+//		this.variableMap.put("A", false);
+//		this.variableMap.put("B", false);
+//		this.variableMap.put("C", false);
+//		this.variableMap.put("Print", false);
+//		this.variableMap.put("Resistance", false);
+//		this.variableMap.put("Tesla", false);
+//		this.variableMap.put("Voltage", false);
+//		this.variableMap.put("Print", false);
+//		this.variableMap.put("X Ratio", false);
+//	}
+//	if (this.triangleList != null) {
+//		this.variableMap.put("Angle", false);
+//	}
+//}
+//List<List<Index>> blackPointMatrix = new ArrayList<>();
+//blackPointMatrix.add((indexList));
 //@Override
 //public void initVariableMap() {
 //	super.initVariableMap();

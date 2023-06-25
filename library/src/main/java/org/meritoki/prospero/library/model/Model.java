@@ -114,19 +114,19 @@ public class Model extends Variable {
 	
 	@Override
 	public void setCalendar(Calendar calendar) {
-//		logger.info("setCalendar("+Time.getCalendarString(null,calendar)+")");
+		logger.debug("setCalendar("+Time.getCalendarString(null,calendar)+")");
 		super.setCalendar(calendar);
 	}
 	
 	@Override
 	public void setStartCalendar(Calendar calendar) {
-//		logger.info("setStartCalendar("+Time.getCalendarString(null,calendar)+")");
+		logger.debug("setStartCalendar("+Time.getCalendarString(null,calendar)+")");
 		super.setStartCalendar(calendar);
 	}
 	
 	@Override
 	public void setEndCalendar(Calendar calendar) {
-//		logger.info("setEndCalendar("+Time.getCalendarString(null,calendar)+")");
+		logger.debug("setEndCalendar("+Time.getCalendarString(null,calendar)+")");
 		super.setEndCalendar(calendar);
 	}
 
@@ -167,7 +167,7 @@ public class Model extends Variable {
 		if (camera != null) {
 			this.cameraList.add(camera);
 			this.index = this.cameraList.size() - 1;
-//			logger.info(this + ".addCamera(" + camera + ") this.index=" + this.index);
+			logger.debug(this + ".addCamera(" + camera + ") this.index=" + this.index);
 		}
 	}
 
@@ -231,14 +231,14 @@ public class Model extends Variable {
 	public void setCameraBuffer(Camera c) {
 		Variable node = c.getNode();
 		if (node instanceof Solar) {
-			logger.debug("updateCamera(" + node + ") instanceof Solar");
+			logger.debug("setCameraBuffer(" + node + ") instanceof Solar");
 			this.solar.setCenter(this.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
 			this.solar.setAzimuth(c.azimuth);
 			this.solar.setElevation(c.elevation);
 			this.solar.setScale(c.scale);
 			c.buffer = this.solar;
 		} else if (node instanceof Orbital) {
-			logger.debug("updateCamera(" + node + ") instanceof Orbital");
+			logger.debug("setCameraBuffer(" + node + ") instanceof Orbital");
 			Orbital o = (Orbital) node;
 			o.updateSpace();
 			this.solar.setSelectable(false);
@@ -248,7 +248,7 @@ public class Model extends Variable {
 			this.solar.setScale(c.scale);// o.getProjection().scale);
 			c.buffer = this.solar;
 		} else if (node instanceof Spheroid) {
-			logger.debug("updateCamera(" + node + ") instanceof Spheroid");
+			logger.debug("setCameraBuffer(" + node + ") instanceof Spheroid");
 			Spheroid s = (Spheroid) node;
 			s.setSelectable(true);
 			s.setAzimuth(c.azimuth);

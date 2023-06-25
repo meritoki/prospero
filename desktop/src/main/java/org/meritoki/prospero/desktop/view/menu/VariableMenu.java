@@ -100,6 +100,7 @@ public class VariableMenu extends JPopupMenu {
 						logger.info(ev.getActionCommand());
 						model.getCamera().node.start();
 						model.getCamera().node.variableMap.put(ev.getActionCommand(), true);
+						model.getCamera().node.query();
 					} else {
 						model.getCamera().node.stop();
 						model.getCamera().node.variableMap.put(ev.getActionCommand(), false);

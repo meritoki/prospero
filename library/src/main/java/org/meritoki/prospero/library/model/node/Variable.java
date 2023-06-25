@@ -58,7 +58,6 @@ public class Variable extends Node {
 	public Calendar endCalendar;
 	@JsonIgnore
 	public List<Script> scriptList = new ArrayList<>();
-
 	@JsonIgnore
 	public LinkedList<Time> timeList = new LinkedList<>();
 	@JsonIgnore
@@ -91,8 +90,6 @@ public class Variable extends Node {
 	public String format = "#.###E0";
 	@JsonIgnore
 	public boolean load;
-	@JsonIgnore
-	public boolean correlation;
 	@JsonIgnore
 	public boolean cache;
 
@@ -137,13 +134,13 @@ public class Variable extends Node {
 			case LOAD: {
 				this.mode = Mode.LOAD;
 				this.load(result);
-				this.addRootObject(new Result(Mode.PAINT));
+				this.addModelObject(new Result(Mode.PAINT));
 				break;
 			}
 			case COMPLETE: {
 				this.complete();
 				this.mode = Mode.COMPLETE;
-				this.addRootObject(new Result(Mode.PAINT));
+				this.addModelObject(new Result(Mode.PAINT));
 				break;
 			}
 			case EXCEPTION: {
@@ -284,6 +281,7 @@ public class Variable extends Node {
 				plotList.addAll(n.getPlotList());
 			}
 		}
+		logger.debug("getPlotList() plotList.size()="+plotList.size());
 		return plotList;
 	}
 	
@@ -390,7 +388,7 @@ public class Variable extends Node {
 
 	@JsonIgnore
 
-	public void addRootObject(Object object) {
+	public void addModelObject(Object object) {
 		Module module = this.getModel();
 		logger.debug(module + ".addRootObject(" + (object != null) + ")");
 		module.add(object);
@@ -475,6 +473,8 @@ public class Variable extends Node {
 		}
 	}
 }
+//@JsonIgnore
+//public boolean correlation;
 //@JsonIgnore
 //public List<String> orderList = new ArrayList<>();
 //@JsonIgnore
