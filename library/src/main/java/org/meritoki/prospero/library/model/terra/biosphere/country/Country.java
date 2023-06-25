@@ -71,22 +71,22 @@ public class Country extends Biosphere {
 		if (this.load) {
 			if (this.multiPolygonList != null) {
 				graphics.setColor(this.color);
-				if (this.getProjection().verticalList.size() > 0) {
-					for (Double vertical : this.getProjection().verticalList) {
-						List<Polygon> polygonList = this.getProjection().getPolygonList(vertical, this.multiPolygonList);
-						for (Polygon p : polygonList) {
-							if (p.pointList.size() > 0) {
-								for (int i = 0; i < p.pointList.size(); i++) {
-									Point c = p.pointList.get(i);
-									graphics.drawLine((int) ((c.x) * this.getProjection().scale),
-											(int) ((c.y) * this.getProjection().scale),
-											(int) ((c.x) * this.getProjection().scale),
-											(int) ((c.y) * this.getProjection().scale));
-								}
-							}
-						}
-					}
-				} else {
+//				if (this.getProjection().verticalList.size() > 0) {
+//					for (Double vertical : this.getProjection().verticalList) {
+//						List<Polygon> polygonList = this.getProjection().getPolygonList(vertical, this.multiPolygonList);
+//						for (Polygon p : polygonList) {
+//							if (p.pointList.size() > 0) {
+//								for (int i = 0; i < p.pointList.size(); i++) {
+//									Point c = p.pointList.get(i);
+//									graphics.drawLine((int) ((c.x) * this.getProjection().scale),
+//											(int) ((c.y) * this.getProjection().scale),
+//											(int) ((c.x) * this.getProjection().scale),
+//											(int) ((c.y) * this.getProjection().scale));
+//								}
+//							}
+//						}
+//					}
+//				} else {
 					List<Polygon> polygonList = this.getProjection().getPolygonList(0, this.multiPolygonList);
 					for (Polygon p : polygonList) {
 						if (p.pointList.size() > 0) {
@@ -99,7 +99,7 @@ public class Country extends Biosphere {
 							}
 						}
 					}
-				}
+//				}
 			}
 		}
 	}

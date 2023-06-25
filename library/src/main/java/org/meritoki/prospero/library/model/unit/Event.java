@@ -188,12 +188,13 @@ public class Event {
 	@JsonIgnore
 	public Map<String, List<Coordinate>> getTimeCoordinateMap() {
 		Map<String, List<Coordinate>> timeCoordinateMap = new HashMap<>();
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String date;
 		List<Coordinate> coordinateList;
 		for (Coordinate coordinate : this.coordinateList) {
 			if (coordinate.calendar != null) {
-				date = dateFormat.format(coordinate.calendar.getTime());
+//				date = dateFormat.format(coordinate.calendar.getTime());
+				date = Time.getDateString(Time.defaultFormat,coordinate.calendar.getTime());
 				coordinateList = timeCoordinateMap.get(date);
 				if (coordinateList == null) {
 					coordinateList = new ArrayList<>();

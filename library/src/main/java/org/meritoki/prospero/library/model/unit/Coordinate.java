@@ -51,7 +51,7 @@ public class Coordinate implements Comparable<Coordinate> {
 	@JsonProperty
 	public boolean flag;
 	@JsonIgnore
-	public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//	public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public Coordinate() {}
 	
@@ -135,7 +135,7 @@ public class Coordinate implements Comparable<Coordinate> {
 	
 	@JsonIgnore
 	public String getDateTime() {
-		return dateFormat.format(this.calendar.getTime());
+		return Time.getDateString(Time.defaultFormat,this.calendar.getTime());
 	}
 	
 	@JsonIgnore
@@ -150,9 +150,40 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 	
 	@JsonIgnore
+	public double getMeters() {
+		return this.getMeters(this.getPressure());
+	}
+	
+	@JsonIgnore
+	public double getMeters(int pressure) {
+		double p = (double) pressure;
+		double p0 = 1013.25;
+		double T = 15;
+		double meters = ((Math.pow(p0 / p, 1 / 5.257) - 1) * (T + 273.15)) / 0.0065;
+		// logger.info("getMeters("+level+") meters="+meters);
+		return meters;
+	}
+	
+	@JsonIgnore
 	public Float getVorticity() {
 		Object vorticity = this.attribute.get("vorticity");
 		return (vorticity != null)?(float)vorticity:null;
+	}
+	
+	public static double getArea(double dimension) {
+		return dimension * dimension;
+	}
+
+	public static double getArea(double latitude, double longitude, double dimension) {
+		return Math.cos(Math.abs(Math.toRadians(getCenterLatitude(latitude, dimension))));
+	}
+
+	public static double getCenterLatitude(double latitude, double dimension) {
+		return latitude + (dimension / 2);
+	}
+
+	public static double getCenterLongitude(double longitude, double dimension) {
+		return longitude + (dimension / 2);
 	}
 
 

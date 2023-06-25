@@ -89,10 +89,10 @@ public class CycloneUTNERA5 extends CycloneSource {
 		return this.endTime;
 	}
 
-	@Override
-	public int[] getLevelArray() {
-		return this.pressureTestArray;
-	}
+//	@Override
+//	public int[] getPressureArray() {
+//		return this.pressureTestArray;
+//	}
 
 
 

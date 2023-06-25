@@ -215,7 +215,7 @@ public class GOESNNOAA extends GOESNOAA {
 				for (int y = 0; y < ySize; y++) {
 					short yShort = yArray.get(y);
 					float Y = (yShort * yScaleFactor) + yAddOffset;
-					Coordinate c = Satellite.getCoordinate(earth, longitude, -Y, -X, height);
+					Coordinate c = Satellite.getCoordinate(6378.137,6357.00,  longitude, -Y, -X, height);
 					if (c.is()) {
 						this.latitudeArray.set(x, y, (float) c.latitude);
 						this.longitudeArray.set(x, y, (float) c.longitude);

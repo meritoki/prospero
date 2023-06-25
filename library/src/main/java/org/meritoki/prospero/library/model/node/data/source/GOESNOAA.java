@@ -51,9 +51,10 @@ public class GOESNOAA extends Source {
 	public ArrayFloat.D2 longitudeArray;
 	public ArrayFloat.D2 dataMatrix;
 	public ArrayDouble.D1 timeArray;
-	public Earth earth = new Earth();
+//	public Earth earth = new Earth();
+	public double earthRadius = 6378.137;//km
 	public double longitude = -75.2;
-	public double height = 35786023.0 + (earth.radius * 1000);
+	public double height = 35786023.0 + (earthRadius * 1000);
 	public DataType dataType = DataType.CMI;
 	public String variable = "CMI_C11";
 	private final int startYear = 1979;
@@ -211,7 +212,7 @@ public class GOESNOAA extends Source {
 			this.dataMatrix = new ArrayFloat.D2(xSize, ySize);
 			this.timeArray = new ArrayDouble.D1(1);
 			this.timeArray.set(0, t);
-			this.height = (double) (nominalSatelliteHeight * 1000) + (earth.radius * 1000);
+			this.height = (double) (nominalSatelliteHeight * 1000) + (earthRadius * 1000);
 			this.longitude = (double) nominalSatelliteSubpointLon;
 //			logger.info("read16(...) height=" + height);
 			NetCDF netCDF = new NetCDF();
@@ -222,7 +223,7 @@ public class GOESNOAA extends Source {
 				for (int y = 0; y < ySize; y++) {
 					short yShort = yArray.get(y);
 					float Y = (yShort * yScaleFactor) + yAddOffset;
-					Coordinate c = Satellite.getCoordinate(earth, longitude, -Y, -X, height);
+					Coordinate c = Satellite.getCoordinate(6378.137,6357.00, longitude, -Y, -X, height);
 					if (c.is()) {
 						this.latitudeArray.set(x, y, (float) c.latitude);
 						this.longitudeArray.set(x, y, (float) c.longitude);

@@ -75,13 +75,13 @@ public class Source extends Node {// implements SourceInterface
 
 	@JsonIgnore
 	public void setBasePath(String basePath) {
-		logger.debug("setBasePath(" + basePath + ")");
+		logger.trace("setBasePath(" + basePath + ")");
 		this.basePath = basePath;
 	}
 
 	@JsonIgnore
 	public void setRelativePath(String relativePath) {
-		logger.debug("setRelativePath(" + relativePath + ")");
+		logger.trace("setRelativePath(" + relativePath + ")");
 		this.relativePath = relativePath;
 	}
 

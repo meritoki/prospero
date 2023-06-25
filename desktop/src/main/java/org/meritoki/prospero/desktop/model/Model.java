@@ -32,8 +32,7 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 	public System system = new System();
 	public Resource resource = new Resource();
 	public MainFrame mainFrame;
-	public String version;
-//	public Properties properties = NodeController.openPropertiesXML(new File("prospero.xml"));
+//	public String version;
 	
 	public Model(MainFrame mainFrame) {
 		super();
@@ -43,7 +42,7 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 	
 	@Override
 	public void init() {
-//		logger.info(this+".init()");
+		logger.debug(this+".init()");
 		this.mainFrame.init();
 	}
 	
@@ -92,3 +91,4 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 		this.system.newDocument = false;
 	}
 }
+//public Properties properties = NodeController.openPropertiesXML(new File("prospero.xml"));

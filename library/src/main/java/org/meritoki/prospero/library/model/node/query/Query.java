@@ -526,6 +526,18 @@ public class Query {
 	}
 	
 	@JsonIgnore
+	public String getBasePath() {
+		String basePath = this.map.get("basePath");
+		return basePath;
+	}
+	
+	@JsonIgnore
+	public String getRelativePath() {
+		String relativePath = this.map.get("relativePath");
+		return relativePath;
+	}
+	
+	@JsonIgnore
 	public String getChannel() {
 		String channel = this.map.get("channel");
 		return channel;

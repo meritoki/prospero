@@ -55,7 +55,7 @@ public class Projection implements ProjectionInterface {
 	public float nearEye = 3;
 	public float nearObject = 1.5f;
 	public boolean zFlag = true;
-	public List<Double> verticalList = new ArrayList<>();
+//	public List<Double> verticalList = new ArrayList<>();
 
 	public Projection() {
 	}

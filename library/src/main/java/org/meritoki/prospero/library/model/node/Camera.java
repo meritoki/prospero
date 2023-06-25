@@ -92,7 +92,7 @@ public class Camera {
 	 */
 	@JsonIgnore
 	public void setNode(Variable node) {
-		
+		logger.info("setNode("+node+")");
 //		if(this.node instanceof Terra) {
 //			logger.info("setNode("+node+") this.node instanceof Terra");
 //			Spheroid spheroid = ((Spheroid)this.node);
@@ -101,7 +101,7 @@ public class Camera {
 //		}
 		this.node = node;
 		if(this.node instanceof Spheroid) {
-			logger.info("setNode("+node+") this.node instanceof Spheroid");
+			logger.debug("setNode("+node+") this.node instanceof Spheroid");
 			Spheroid spheroid = ((Spheroid)this.node);
 			this.scale = spheroid.defaultScale;
 			this.azimuth = 0;
@@ -112,7 +112,7 @@ public class Camera {
 
 		} 
 		if(this.node instanceof Orbital) {
-			logger.info("setNode("+node+") this.node instanceof Orbital");
+			logger.debug("setNode("+node+") this.node instanceof Orbital");
 			Orbital orbital = ((Orbital)this.node);
 			orbital.setSelectable(true);
 		}

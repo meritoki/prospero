@@ -62,8 +62,8 @@ import org.slf4j.LoggerFactory;
 public class Grid extends Spheroid {
 
 	static Logger logger = LoggerFactory.getLogger(Grid.class.getName());
-//	public int latitude = 180;//20230417
-	public int latitude = 90;// Eventually need to implement with 180
+	public int latitude = 180;// 20230417, 20230621
+//	public int latitude = 90;// Eventually need to implement with 180
 	public int longitude = 360;
 	public int resolution = 1;// Need to Clean Dimension Resolution Implementation
 	public int[] monthArray;
@@ -163,8 +163,8 @@ public class Grid extends Spheroid {
 		if (eventList != null) {
 			for (Event e : eventList) {
 				e.flag = false;
-				for (Coordinate p : e.coordinateList) {
-					p.flag = false;
+				for (Coordinate c : e.coordinateList) {
+					c.flag = false;
 				}
 			}
 		}
@@ -226,6 +226,11 @@ public class Grid extends Spheroid {
 		}
 	}
 
+	/**
+	 * 20230621 Recommended only to use on list copies
+	 * 
+	 * @param eventList
+	 */
 	public void prune(List<Event> eventList) {
 		Iterator<Event> eventIterator = eventList.iterator();
 		while (eventIterator.hasNext()) {
@@ -281,7 +286,7 @@ public class Grid extends Spheroid {
 		}
 	}
 
-	public void initCoordinateMinMax(String variable, Double nullValue) {
+	public void initCoordinateListMinMax(String variable, Double nullValue) {
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
 		boolean flag = true;
@@ -318,8 +323,7 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
-		// if (print && detail)
-		logger.debug("initMonthArray() this.monthArray=" + Arrays.toString(this.monthArray));
+		logger.debug("initMonthArray(" + timeList.size() + ") this.monthArray=" + Arrays.toString(this.monthArray));
 	}
 
 	public Map<Integer, Integer> initYearMap(List<Time> timeList) {
@@ -336,8 +340,7 @@ public class Grid extends Spheroid {
 				this.yearMap.put(year, count);
 			}
 		}
-		// if (print && detail)
-		logger.debug("initYearMap() this.yearMap=" + yearMap);
+		logger.debug("initYearMap(" + timeList.size() + ") this.yearMap=" + this.yearMap);
 		return this.yearMap;
 	}
 
@@ -366,7 +369,8 @@ public class Grid extends Spheroid {
 		}
 		this.max = max;
 		this.min = min;
-		logger.debug("initTileMinMax() this.min=" + this.min + " this.max=" + this.max);
+		logger.debug(
+				"initTileMinMax(" + tileList.size() + "," + reset + ") this.min=" + this.min + " this.max=" + this.max);
 	}
 
 	public void initBandMinMax() {
@@ -394,22 +398,13 @@ public class Grid extends Spheroid {
 		}
 		this.max = max;
 		this.min = min;
+		logger.debug(
+				"initBandMinMax(" + bandList.size() + "," + reset + ") this.min=" + this.min + " this.max=" + this.max);
 	}
 
 	@Override
 	public void updateSpace() {
 		super.updateSpace();
-	}
-
-	public List<Coordinate> calendarCoordinateList(Calendar calendar, List<Coordinate> coordinateList) {
-		List<Coordinate> cList = new ArrayList<>();
-		for (Coordinate c : coordinateList) {
-			// System.out.println(calendar.getTime()+":"+c.calendar.getTime());
-			if (c.containsCalendar(calendar)) {
-				cList.add(c);
-			}
-		}
-		return cList;
 	}
 
 	public List<Tile> getTileList() {
@@ -453,7 +448,7 @@ public class Grid extends Spheroid {
 							}
 						}
 					}
-					weight = this.getArea(i - this.latitude, j - this.longitude / 2, dimension);
+					weight = Coordinate.getArea(i - this.latitude / 2, j - this.longitude / 2, dimension);
 					weightedData = (weight > 0) ? data / weight : data;
 					count = this.monthArray[m];
 					quotient = (count > 0) ? weightedData / count : weightedData;
@@ -462,13 +457,8 @@ public class Grid extends Spheroid {
 				value = quotientSum;
 				// Correct Solution Applied 2022/12/07
 				value /= (monthCount > 0) ? monthCount : 1;
-//				if (this.monthFlag) {
-//					value /= (monthCount > 0) ? monthCount : 1;
-//				} else if (this.yearFlag) {
-//					value /= yearCount;
-//				}
-				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
-						dimension, value);
+				tile = new Tile((i - (this.latitude / 2)) / this.resolution,
+						(j - (this.longitude / 2)) / this.resolution, dimension, value);
 
 				if (this.region != null) {
 					if (this.region.contains(tile)) {
@@ -571,8 +561,8 @@ public class Grid extends Spheroid {
 				// The fix applied coincides with the addition of Band Support
 				// Detected because Yearly Averages for Lifetime seemed too small/low
 //				}
-				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
-						this.dimension, value);
+				tile = new Tile((i - (this.latitude / 2)) / this.resolution,
+						(j - (this.longitude / 2)) / this.resolution, this.dimension, value);
 				if (this.regionList != null) {
 					for (Region region : this.regionList) {
 						if (region.contains(tile)) {
@@ -586,32 +576,6 @@ public class Grid extends Spheroid {
 			}
 		}
 		return tileList;
-	}
-
-	public double getArea(double dimension) {
-		return dimension * dimension;
-	}
-
-	public double getArea(double latitude, double longitude, double dimension) {
-		return Math.cos(Math.abs(Math.toRadians(this.getCenterLatitude(latitude, dimension))));
-	}
-
-	public double getCenterLatitude(double latitude, double dimension) {
-		return latitude + (dimension / 2);
-	}
-
-	public double getCenterLongitude(double longitude, double dimension) {
-		return longitude + (dimension / 2);
-	}
-
-	public List<Frame> getCalendarFrameList(Calendar calendar, List<Frame> frameList) {
-		List<Frame> fList = new ArrayList<>();
-		for (Frame f : frameList) {
-			if (f.containsCalendar(calendar)) {
-				fList.add(f);
-			}
-		}
-		return fList;
 	}
 
 	public List<Double> getTileLatitudeList(List<Tile> tileList) {
@@ -680,76 +644,13 @@ public class Grid extends Spheroid {
 		return this.increment;
 	}
 
-	public double getMeters(int level) {
-		double p = (double) level;
-		double p0 = 1013.25;
-		double T = 15;
-		double meters = ((Math.pow(p0 / p, 1 / 5.257) - 1) * (T + 273.15)) / 0.0065;
-		// logger.info("getMeters("+level+") meters="+meters);
-		return meters;
-	}
-
-	public Color getCorrelationColor(Double correlation) {
-		// logger.info(this + ".getCorrelatinColor(" + correlation + ")");
-		Color color = Color.BLACK;
-		if (correlation != null) {
-			double hue = 0;
-			// if(correlation < 0) {
-			// hue = 0.3;
-			// } else {
-			// hue = 240;
-			// }
-			double saturation = 0;
-			double brightness = Math.abs(correlation) * 100;
-			color = Color.getHSBColor((float) hue, (float) saturation, (float) brightness);
-		}
-		return color;
-	}
-
-	public Color getSignificanceColor(Double significance) {
-		if (significance != null && significance <= this.significance) {
-			return Color.GREEN;
-		}
-		return Color.RED;
-	}
-
 	@Override
 	public void setCenter(Space center) {
 		super.setCenter(center);
 	}
 
-	public void setCalendarEventList(Calendar calendar, List<Event> eventList) {
-		for (Event c : eventList) {
-			if (c.containsCalendar(calendar)) {
-				c.flag = true;
-			} else {
-				c.flag = false;
-			}
-		}
-	}
-
-	public void setCalendarCoordinateList(Calendar calendar, List<Coordinate> coordinateList) {
-		for (Coordinate c : coordinateList) {
-			if (c.containsCalendar(calendar)) {
-				c.flag = true;
-			} else {
-				c.flag = false;
-			}
-		}
-	}
-
-	public List<Coordinate> getCoordinateList(Event event) {
-		List<Coordinate> coordinateList = new ArrayList<>();
-		for (Coordinate c : event.coordinateList) {
-			if (c.flag) {
-				coordinateList.add(c);
-			}
-		}
-		return coordinateList;
-	}
-
 	public void setCluster(Cluster cluster) {
-//		logger.info("setCluster("+cluster+")");
+		logger.debug("setCluster(" + cluster + ")");
 		this.cluster = cluster;
 	}
 
@@ -782,9 +683,9 @@ public class Grid extends Spheroid {
 				List<Tile> tileList = entry.getValue();
 //				this.initTileMinMax(tileList, false);
 				double vertical = index * this.interval;
-				if (!this.getProjection().verticalList.contains(vertical)) {
-					this.getProjection().verticalList.add(vertical);
-				}
+//				if (!this.getProjection().verticalList.contains(vertical)) {
+//					this.getProjection().verticalList.add(vertical);
+//				}
 				if (tileList != null && tileList.size() > 0) {
 					for (Tile t : tileList) {
 						Point a = this.getProjection().getPoint(vertical, t.coordinate.latitude,
@@ -851,8 +752,7 @@ public class Grid extends Spheroid {
 		Point c;
 		Point d;
 
-		this.initBandMinMax(this.bandList, false);
-
+		this.initBandMinMax();
 		for (Band band : this.bandList) {
 			for (Tile t : band.tileList) {
 				a = this.getProjection().getPoint(0, t.coordinate.latitude, t.coordinate.longitude);
@@ -873,7 +773,6 @@ public class Grid extends Spheroid {
 				}
 			}
 		}
-//		this.initBandMinMax();
 		if (projection.scale >= this.defaultScale) {
 			Meter meter = new Meter(0.9, (int) (projection.xMax * this.getProjection().scale), this.getMax(),
 					this.getMin(), this.unit, this.getIncrement(), this.format);
@@ -885,34 +784,23 @@ public class Grid extends Spheroid {
 	public void paintEvent(Graphics graphics) {
 //		logger.info(this + ".paintEvent(...) eventList.size() = " + this.eventList.size());
 		this.chroma = new Chroma();
-		if (this.trajectoryFlag) {
-			this.paintTrajectory(graphics);
-		}
-//		else {
-		Time currentTime = new Time("second", this.calendar);
+
 		List<Event> eventList = Event.getSelectedEventList(this.eventList, this.calendar);
 		int size = eventList.size();
 		for (int i = 0; i < eventList.size(); i++) {
 			Event event = (Event) eventList.get(i);
 			Color eventColor = this.chroma.getColor(i, 0, size);
-			event.attribute.put("color",eventColor);
-//				if (event.flag && event.containsCalendar(this.calendar)) {
+			event.attribute.put("color", eventColor);
 			List<Coordinate> coordinateList = new ArrayList<>();
-//			List<Coordinate> timeCoordinateList = event.getTimeCoordinateList();
-//			for(int t=0;t<timeCoordinateList.size();t++) {
 			Map<String, List<Coordinate>> timeCoordinateMap = event.getTimeCoordinateMap();
 			for (Map.Entry<String, List<Coordinate>> entry : timeCoordinateMap.entrySet()) {
 				String key = entry.getKey();
 				List<Coordinate> cList = timeCoordinateMap.get(key);
-				Calendar calendar = Time.getCalendar(key, Time.defaultTimeFormat);
-				Time time = new Time("hour", calendar);
-//				if (time.lessThan(currentTime)) {
-				if(calendar.before(this.calendar)) {
+				Calendar calendar = Time.getCalendar(Time.defaultFormat, key);// 20230624 Defect Fix, Event Time Trails
+																				// not showing
+				if (calendar.before(this.calendar)) {
 					Coordinate c = event.getAverageCoordinate(cList, calendar);
 					c.flag = true;
-//					if(calendar.equals(this.calendar)) {
-//						c.attribute.put("color",Color.BLACK);
-//					}
 					coordinateList.add(c);
 				}
 			}
@@ -925,48 +813,37 @@ public class Grid extends Spheroid {
 			event.setCalendarCoordinateList(this.calendar);
 //			Code In Question is getAverageCoordinateList
 			Coordinate c = event.getAverageCoordinate(event.getCoordinateList(), this.calendar);
-			c.attribute.put("color",Color.BLACK);
+			c.attribute.put("color", Color.BLACK);
 			coordinateList.add(c);
-			
 			List<Point> pointList = this.getProjection().getCoordinateList(0, coordinateList);
 			if (pointList != null) {
-				for (int j = 0; j < pointList.size(); j++) {// Coordinate c : coordinateList) {
+				for (int j = 0; j < pointList.size(); j++) {
 					Point p = pointList.get(j);
 					if (p.flag) {
-//								logger.info(this + ".paintEvent(...) event=" + event.id);
 						graphics.setColor(eventColor);
-//								Original
-//								graphics.drawLine((int) ((c.x) * this.getProjection().scale),
-//										(int) ((c.y) * this.getProjection().scale),
-//										(int) ((c.x) * this.getProjection().scale),
-//										(int) ((c.y) * this.getProjection().scale));
-//								New
 						double radius = 8;
 						double x = (p.x * this.getProjection().scale) - (radius / 2);
 						double y = (p.y * this.getProjection().scale) - (radius / 2);
 						graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
 //						int unitWidth = graphics.getFontMetrics().stringWidth(event.id);
 						Object color = p.attribute.get("color");
-						if(color instanceof Color) {
-							graphics.setColor((Color)color);
+						if (color instanceof Color) {
+							graphics.setColor((Color) color);
 							radius = 4;
 							x = (p.x * this.getProjection().scale) - (radius / 2);
 							y = (p.y * this.getProjection().scale) - (radius / 2);
 							graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
 						}
-//								graphics.drawString(event.id, (int)(x - (unitWidth / 2)), (int)(y + 8));
+//						graphics.drawString(event.id, (int)(x - (unitWidth / 2)), (int)(y + 8));
 					}
 				}
 			}
-//				}
 		}
 		if (this.getProjection().scale >= this.defaultScale) {
-			Legend legend = new Legend(((int)-(this.getProjection().xMax * this.getProjection().scale)-128));
+			Legend legend = new Legend(((int) -(this.getProjection().xMax * this.getProjection().scale) - 128));
 			legend.setKeyMap(eventList);
 			legend.paint(graphics);
 		}
-		
-//		}
 	}
 
 	/**
@@ -974,117 +851,112 @@ public class Grid extends Spheroid {
 	 * @param graphics
 	 */
 	public void paintTrajectory(Graphics graphics) {
-		if (this.eventList != null) {
-			Graphics2D g2d = (Graphics2D) graphics;
-			Point aPoint;
-			Point bPoint;
-			Coordinate aCoordinate;
-			Coordinate bCoordinate;
-//			List<Event> eventList = new ArrayList<>(this.eventList);
-			int thickness = 2;
-			Stroke old = g2d.getStroke();
-			g2d.setStroke(new BasicStroke(thickness));
-
-			for (Event event : this.eventList) {
-				if (event.flag && event instanceof CycloneEvent) {// && event.containsCalendar(this.calendar)) {
-					Map<Integer, List<Coordinate>> pressureCoordinateMap = ((CycloneEvent) event)
-							.getPressureCoordinateListMap();
-					List<String> timeList = event.getTimeList();
-					int size = pressureCoordinateMap.size();
-					int index = 0;
-					for (Map.Entry<Integer, List<Coordinate>> entry : pressureCoordinateMap.entrySet()) {
-						Integer key = entry.getKey();
-						List<Coordinate> coordinateList = pressureCoordinateMap.get(key);
-						((CycloneEvent) event).setPointColor(coordinateList);
-						double vertical = index * this.interval;
-//						if (!this.getProjection().verticalList.contains(vertical)) {
-//							this.getProjection().verticalList.add(vertical);
-//						}
-						for (int i = 0; i < coordinateList.size(); i++) {
-							if (i + 1 < coordinateList.size()) {
-								aCoordinate = coordinateList.get(i);
-								bCoordinate = coordinateList.get(i + 1);
-								if (aCoordinate instanceof Link && bCoordinate instanceof Link) {
-									Link linkA = (Link) aCoordinate;
-									Link linkB = (Link) bCoordinate;
-									if (linkA.type == Link.START && linkB.type == Link.STOP) {
-										aPoint = this.getProjection().getPoint(vertical, aCoordinate.latitude,
-												(aCoordinate.longitude));
-										bPoint = this.getProjection().getPoint(vertical, bCoordinate.latitude,
-												(bCoordinate.longitude));
-										graphics.setColor(aCoordinate.getColor());
-										if (aPoint != null && bPoint != null) {
-											graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
-													(int) ((aPoint.y) * this.getProjection().scale),
-													(int) ((bPoint.x) * this.getProjection().scale),
-													(int) ((bPoint.y) * this.getProjection().scale));
-										}
+		logger.info("paintTrajectory(" + (graphics != null) + ") this.eventList.size()="+this.eventList.size());
+		Graphics2D g2d = (Graphics2D) graphics;
+		Point aPoint;
+		Point bPoint;
+		Coordinate aCoordinate;
+		Coordinate bCoordinate;
+		int thickness = 2;
+		Stroke old = g2d.getStroke();
+		g2d.setStroke(new BasicStroke(thickness));
+		List<Event> eventList = Event.getSelectedEventList(this.eventList, this.calendar);
+		logger.info("paintTrajectory(" + (graphics != null) + ") eventList.size()="+eventList.size());
+		for (Event event : eventList) {
+			if (event instanceof CycloneEvent) {
+				Map<Integer, List<Coordinate>> pressureCoordinateMap = ((CycloneEvent) event)
+						.getPressureCoordinateListMap();
+				List<String> timeList = event.getTimeList();
+				int index = 1;
+				for (Map.Entry<Integer, List<Coordinate>> entry : pressureCoordinateMap.entrySet()) {
+					Integer pressure = entry.getKey();
+					List<Coordinate> coordinateList = pressureCoordinateMap.get(pressure);
+					((CycloneEvent) event).setPointColor(coordinateList);
+					double vertical = index * this.interval;
+					for (int i = 0; i < coordinateList.size(); i++) {
+						if (i + 1 < coordinateList.size()) {
+							aCoordinate = coordinateList.get(i);
+							bCoordinate = coordinateList.get(i + 1);
+							if (aCoordinate instanceof Link && bCoordinate instanceof Link) {
+								Link linkA = (Link) aCoordinate;
+								Link linkB = (Link) bCoordinate;
+								if (linkA.type == Link.START && linkB.type == Link.STOP) {
+									aPoint = this.getProjection().getPoint(vertical, aCoordinate.latitude,
+											(aCoordinate.longitude));
+									bPoint = this.getProjection().getPoint(vertical, bCoordinate.latitude,
+											(bCoordinate.longitude));
+									graphics.setColor(aCoordinate.getColor());
+									if (aPoint != null && bPoint != null) {
+										graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
+												(int) ((aPoint.y) * this.getProjection().scale),
+												(int) ((bPoint.x) * this.getProjection().scale),
+												(int) ((bPoint.y) * this.getProjection().scale));
 									}
-								} else if (aCoordinate instanceof Link) {
-									Link linkA = (Link) aCoordinate;
-									if (linkA.type == Link.START) {
-										aPoint = this.getProjection().getPoint(vertical, aCoordinate.latitude,
-												(aCoordinate.longitude));
-										bPoint = this.getProjection().getPoint(vertical, bCoordinate.latitude,
-												(bCoordinate.longitude));
-										graphics.setColor(aCoordinate.getColor());
-										if (aPoint != null && bPoint != null) {
-											graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
-													(int) ((aPoint.y) * this.getProjection().scale),
-													(int) ((bPoint.x) * this.getProjection().scale),
-													(int) ((bPoint.y) * this.getProjection().scale));
-										}
+								}
+							} else if (aCoordinate instanceof Link) {
+								Link linkA = (Link) aCoordinate;
+								if (linkA.type == Link.START) {
+									aPoint = this.getProjection().getPoint(vertical, aCoordinate.latitude,
+											(aCoordinate.longitude));
+									bPoint = this.getProjection().getPoint(vertical, bCoordinate.latitude,
+											(bCoordinate.longitude));
+									graphics.setColor(aCoordinate.getColor());
+									if (aPoint != null && bPoint != null) {
+										graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
+												(int) ((aPoint.y) * this.getProjection().scale),
+												(int) ((bPoint.x) * this.getProjection().scale),
+												(int) ((bPoint.y) * this.getProjection().scale));
 									}
-								} else if (bCoordinate instanceof Link) {
-									Link linkB = (Link) bCoordinate;
-									if (linkB.type == Link.STOP) {
-										aPoint = this.getProjection().getPoint(vertical, aCoordinate.latitude,
-												(aCoordinate.longitude));
-										bPoint = this.getProjection().getPoint(vertical, bCoordinate.latitude,
-												(bCoordinate.longitude));
-										graphics.setColor(aCoordinate.getColor());
-										if (aPoint != null && bPoint != null) {
-											graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
-													(int) ((aPoint.y) * this.getProjection().scale),
-													(int) ((bPoint.x) * this.getProjection().scale),
-													(int) ((bPoint.y) * this.getProjection().scale));
-										}
+								}
+							} else if (bCoordinate instanceof Link) {
+								Link linkB = (Link) bCoordinate;
+								if (linkB.type == Link.STOP) {
+									aPoint = this.getProjection().getPoint(vertical, aCoordinate.latitude,
+											(aCoordinate.longitude));
+									bPoint = this.getProjection().getPoint(vertical, bCoordinate.latitude,
+											(bCoordinate.longitude));
+									graphics.setColor(aCoordinate.getColor());
+									if (aPoint != null && bPoint != null) {
+										graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
+												(int) ((aPoint.y) * this.getProjection().scale),
+												(int) ((bPoint.x) * this.getProjection().scale),
+												(int) ((bPoint.y) * this.getProjection().scale));
 									}
-								} else {
-									int aIndex = timeList.indexOf(aCoordinate.getDateTime());
-									int bIndex = timeList.indexOf(bCoordinate.getDateTime());
-									if ((aIndex + 1) == bIndex) {
-										aPoint = this.getProjection().getPoint(vertical, aCoordinate.latitude,
-												(aCoordinate.longitude));
-										bPoint = this.getProjection().getPoint(vertical, bCoordinate.latitude,
-												(bCoordinate.longitude));
-										graphics.setColor(aCoordinate.getColor());
-										if (aPoint != null && bPoint != null) {
-											graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
-													(int) ((aPoint.y) * this.getProjection().scale),
-													(int) ((bPoint.x) * this.getProjection().scale),
-													(int) ((bPoint.y) * this.getProjection().scale));
-										}
+								}
+							} else {
+								int aIndex = timeList.indexOf(aCoordinate.getDateTime());
+								int bIndex = timeList.indexOf(bCoordinate.getDateTime());
+								if ((aIndex + 1) == bIndex) {
+									aPoint = this.getProjection().getPoint(vertical, aCoordinate.latitude,
+											(aCoordinate.longitude));
+									bPoint = this.getProjection().getPoint(vertical, bCoordinate.latitude,
+											(bCoordinate.longitude));
+									graphics.setColor(aCoordinate.getColor());
+									if (aPoint != null && bPoint != null) {
+										graphics.drawLine((int) ((aPoint.x) * this.getProjection().scale),
+												(int) ((aPoint.y) * this.getProjection().scale),
+												(int) ((bPoint.x) * this.getProjection().scale),
+												(int) ((bPoint.y) * this.getProjection().scale));
 									}
 								}
 							}
 						}
-						g2d.setStroke(old);
-						graphics.setColor(Color.LIGHT_GRAY);
-						List<Point> pointList = this.getProjection().getGridPointList(vertical, 15, 30);
-						for (Point p : pointList) {
-							graphics.drawLine((int) ((p.x) * this.getProjection().scale),
-									(int) ((p.y) * this.getProjection().scale),
-									(int) ((p.x) * this.getProjection().scale),
-									(int) ((p.y) * this.getProjection().scale));
-						}
-						g2d.setStroke(new BasicStroke(thickness));
-						index++;
 					}
+					g2d.setStroke(old);
+					graphics.setColor(Color.LIGHT_GRAY);
+					List<Point> pointList = this.getProjection().getGridPointList(vertical, 15, 30);
+					for (Point p : pointList) {
+						graphics.drawLine((int) ((p.x) * this.getProjection().scale),
+								(int) ((p.y) * this.getProjection().scale), (int) ((p.x) * this.getProjection().scale),
+								(int) ((p.y) * this.getProjection().scale));
+					}
+					g2d.setStroke(new BasicStroke(thickness));
+					index++;
 				}
 			}
-			g2d.setStroke(old);
 		}
+		g2d.setStroke(old);
+
 	}
 
 	public void paintCluster(Graphics graphics) throws Exception {
@@ -1110,7 +982,7 @@ public class Grid extends Spheroid {
 							(int) (b.y * this.getProjection().scale), (int) (c.y * this.getProjection().scale),
 							(int) (d.y * this.getProjection().scale) };
 					int npoints = 4;
-					graphics.setColor(this.getCorrelationColor(t.getCorrelation()));
+					graphics.setColor(Tile.getCorrelationColor(t.getCorrelation()));
 					g2d.fillPolygon(xpoints, ypoints, npoints);
 					if (t.flag) {
 						int thickness = 3;
@@ -1125,7 +997,7 @@ public class Grid extends Spheroid {
 					double radius = 4;
 					double x = (s.x * this.getProjection().scale) - (radius / 2);
 					double y = (s.y * this.getProjection().scale) - (radius / 2);
-					graphics.setColor(this.getSignificanceColor(t.getSignificance()));
+					graphics.setColor(Tile.getSignificanceColor(t, this.significance));// t.getSignificance()));
 					graphics.fillOval((int) x, (int) y, (int) radius, (int) radius);
 				}
 			}
@@ -1209,13 +1081,127 @@ public class Grid extends Spheroid {
 				} else if (this.tileFlag && this.tileList != null && this.tileList.size() > 0) {
 					this.paintTile(graphics);
 				} else if (this.eventList != null && this.eventList.size() > 0) {
-					this.paintEvent(graphics);
+					if (this.trajectoryFlag) {
+						this.paintTrajectory(graphics);
+						this.paintEvent(graphics);
+					} else {
+						this.paintEvent(graphics);
+					}
 				}
 			}
 		}
 		super.paint(graphics);
 	}
 }
+//this.initBandMinMax(this.bandList, false);
+//if (!this.getProjection().verticalList.contains(vertical)) {
+//this.getProjection().verticalList.add(vertical);
+//}
+//logger.info("paintTrajectory("+(graphics != null)+") vertical="+vertical);
+//logger.info("paintTrajectory("+(graphics != null)+") this.getProjection().verticalList="+this.getProjection().verticalList);
+//Original
+//graphics.drawLine((int) ((c.x) * this.getProjection().scale),
+//		(int) ((c.y) * this.getProjection().scale),
+//		(int) ((c.x) * this.getProjection().scale),
+//		(int) ((c.y) * this.getProjection().scale));
+//New
+//Time time = new Time("hour", calendar);
+//if (time.lessThan(currentTime)) {
+//public Color getCorrelationColor(Double correlation) {
+//// logger.info(this + ".getCorrelatinColor(" + correlation + ")");
+//Color color = Color.BLACK;
+//if (correlation != null) {
+//	double hue = 0;
+//	// if(correlation < 0) {
+//	// hue = 0.3;
+//	// } else {
+//	// hue = 240;
+//	// }
+//	double saturation = 0;
+//	double brightness = Math.abs(correlation) * 100;
+//	color = Color.getHSBColor((float) hue, (float) saturation, (float) brightness);
+//}
+//return color;
+//}
+
+//public Color getSignificanceColor(Double significance) {
+//if (significance != null && significance <= this.significance) {
+//	return Color.GREEN;
+//}
+//return Color.RED;
+//}
+//public List<Coordinate> calendarCoordinateList(Calendar calendar, List<Coordinate> coordinateList) {
+//List<Coordinate> cList = new ArrayList<>();
+//for (Coordinate c : coordinateList) {
+//	// System.out.println(calendar.getTime()+":"+c.calendar.getTime());
+//	if (c.containsCalendar(calendar)) {
+//		cList.add(c);
+//	}
+//}
+//return cList;
+//}
+//public void setCalendarEventList(Calendar calendar, List<Event> eventList) {
+//for (Event c : eventList) {
+//	if (c.containsCalendar(calendar)) {
+//		c.flag = true;
+//	} else {
+//		c.flag = false;
+//	}
+//}
+//}
+
+//public void setCalendarCoordinateList(Calendar calendar, List<Coordinate> coordinateList) {
+//for (Coordinate c : coordinateList) {
+//	if (c.containsCalendar(calendar)) {
+//		c.flag = true;
+//	} else {
+//		c.flag = false;
+//	}
+//}
+//}
+
+//public List<Coordinate> getCoordinateList(Event event) {
+//List<Coordinate> coordinateList = new ArrayList<>();
+//for (Coordinate c : event.coordinateList) {
+//	if (c.flag) {
+//		coordinateList.add(c);
+//	}
+//}
+//return coordinateList;
+//}
+//
+//public List<Frame> getCalendarFrameList(Calendar calendar, List<Frame> frameList) {
+//	List<Frame> fList = new ArrayList<>();
+//	for (Frame f : frameList) {
+//		if (f.containsCalendar(calendar)) {
+//			fList.add(f);
+//		}
+//	}
+//	return fList;
+//}
+//public double getArea(double dimension) {
+//return dimension * dimension;
+//}
+//
+//public double getArea(double latitude, double longitude, double dimension) {
+//return Math.cos(Math.abs(Math.toRadians(this.getCenterLatitude(latitude, dimension))));
+//}
+//
+//public double getCenterLatitude(double latitude, double dimension) {
+//return latitude + (dimension / 2);
+//}
+//
+//public double getCenterLongitude(double longitude, double dimension) {
+//return longitude + (dimension / 2);
+//}
+//public double getMeters(int level) {
+//double p = (double) level;
+//double p0 = 1013.25;
+//double T = 15;
+//double meters = ((Math.pow(p0 / p, 1 / 5.257) - 1) * (T + 273.15)) / 0.0065;
+//// logger.info("getMeters("+level+") meters="+meters);
+//return meters;
+//}
 //if("month".equals(group)) {
 //
 //} else if("year".equals(group)) {

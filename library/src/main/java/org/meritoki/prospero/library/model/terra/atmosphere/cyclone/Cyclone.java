@@ -644,7 +644,7 @@ public class Cyclone extends Atmosphere {
 							if (p.flag && ((Integer) p.attribute.get("pressure")).equals(pressure)) {
 								Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
 								if (startTime.lessThan(time) && time.lessThan(endTime)) {
-									int x = (int) ((p.latitude + this.latitude) * this.resolution);
+									int x = (int) ((p.latitude + this.latitude) / 2 * this.resolution);
 									int y = (int) ((p.longitude + this.longitude / 2) * this.resolution)
 											% this.longitude;
 									int z = p.getMonth() - 1;
@@ -665,7 +665,7 @@ public class Cyclone extends Atmosphere {
 							if (c.flag) {
 								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 								if (startTime.lessThan(time) && time.lessThan(endTime)) {
-									int x = (int) ((c.latitude + this.latitude) * this.resolution);
+									int x = (int) ((c.latitude + this.latitude) / 2 * this.resolution);
 									int y = (int) ((c.longitude + this.longitude / 2) * this.resolution)
 											% this.longitude;
 									int z = c.getMonth() - 1;

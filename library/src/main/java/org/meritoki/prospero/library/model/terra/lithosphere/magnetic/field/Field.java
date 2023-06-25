@@ -39,7 +39,7 @@ public class Field extends Lithosphere {
 		if (this.load) {
 			if (this.coordinateList != null) {
 				String variable = "intensity";
-				this.initCoordinateMinMax(variable,null);
+				this.initCoordinateListMinMax(variable,null);
 				List<Point> coordinateList = this.getProjection().getCoordinateList(0, this.coordinateList);
 				if (coordinateList != null) {
 					for (Point c : coordinateList) {

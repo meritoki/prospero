@@ -41,7 +41,7 @@ public class Anomaly extends Lithosphere {
 		if (this.load) {
 
 			if (this.coordinateList != null) {
-				this.initCoordinateMinMax("z",99999.0);
+				this.initCoordinateListMinMax("z",99999.0);
 				List<Point> coordinateList = this.getProjection().getCoordinateList(0, this.coordinateList);
 				if (coordinateList != null) {
 					for (Point c : coordinateList) {
@@ -60,7 +60,7 @@ public class Anomaly extends Lithosphere {
 	}
 
 	@Override
-	public void initCoordinateMinMax(String variable, Double nullValue) {
+	public void initCoordinateListMinMax(String variable, Double nullValue) {
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
 		for (Coordinate c : this.coordinateList) {

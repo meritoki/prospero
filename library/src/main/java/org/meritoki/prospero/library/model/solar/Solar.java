@@ -71,7 +71,7 @@ public class Solar extends Grid {
 		this.energyList = Arrays.asList("Sun","Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus",
 				"Neptune");
 		this.addChild(this.sun);
-		this.addChildren(this.getTunnelList());
+//		this.addChildren(this.getTunnelList());
 		//20230621 Would like to remove this block and/or understand better
 		this.defaultScale = 16;
 		this.setScale(this.defaultScale);

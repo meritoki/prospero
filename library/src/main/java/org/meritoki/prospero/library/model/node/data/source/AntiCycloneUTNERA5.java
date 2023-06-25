@@ -82,10 +82,10 @@ public class AntiCycloneUTNERA5 extends CycloneSource {
 		return this.endTime;
 	}
 
-	@Override
-	public int[] getLevelArray() {
-		return this.levelArray;
-	}
+//	@Override
+//	public int[] getPressureArray() {
+//		return this.levelArray;
+//	}
 
 //	public List<CycloneEvent> read(int year, int month) {
 //		logger.info("read(" + year + "," + month + ")");

@@ -73,7 +73,7 @@ public class Earth extends Planet {
 		this.terra.color = this.color;
 		this.addChild(this.terra);
 		this.addChild(new Luna());
-		this.addChild(new Satellite());
+//		this.addChild(new Satellite());
 		this.setProjection(new Projection(this.a, this.b, this.c));
 	}
 	

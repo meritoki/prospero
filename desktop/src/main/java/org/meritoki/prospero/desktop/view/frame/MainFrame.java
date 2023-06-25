@@ -70,8 +70,8 @@ public class MainFrame extends javax.swing.JFrame {
 
 	public void setModel(Model model) {
 		this.model = model;
-		if (this.model.version != null) {
-			this.setTitle("Prospero Desktop Application v" + this.model.version);
+		if (this.model.system.version != null) {
+			this.setTitle("Prospero Desktop Application v" + this.model.system.version);
 		}
 		this.mainDialog.setModel(this.model);
 		this.mainDialog.setVisible(true);

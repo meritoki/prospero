@@ -31,10 +31,10 @@ public class Satellite extends Orbital {
 
 	}
 
-	public static Coordinate getCoordinate(Spheroid spheroid, double longitude, double x, double y, double height) {
+	public static Coordinate getCoordinate(double ra, double rb, double longitude, double x, double y, double height) {
 //		logger.info("getCoordinate("+(spheroid != null)+","+longitude+","+x+","+y+","+height+")");
-		double radiusEquator = spheroid.radius * 1000;
-		double radiusPolar = spheroid.c * 1000;
+		double radiusEquator = ra * 1000;
+		double radiusPolar = rb * 1000;
 		double a = getA(x, y, radiusEquator, radiusPolar);
 		double b = getB(x, y, height);
 		double c = getC(height, radiusEquator);

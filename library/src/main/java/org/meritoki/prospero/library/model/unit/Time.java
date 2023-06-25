@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class Time {
 
 	static Logger logger = LoggerFactory.getLogger(Time.class.getName());
-	public static String defaultTimeFormat = "yyyy/MM/dd HH:mm:ss";//"yyyy-MM-dd HH:mm:ss";
+	public static String defaultFormat = "yyyy/MM/dd HH:mm:ss";//"yyyy-MM-dd HH:mm:ss";
 	@JsonProperty
 	public int year = -1;
 	@JsonProperty
@@ -861,7 +861,7 @@ public class Time {
 
 	public static Date getDate(String value, String format) {
 		Date date = null;
-		SimpleDateFormat formatter = new SimpleDateFormat((format == null) ? defaultTimeFormat : format);
+		SimpleDateFormat formatter = new SimpleDateFormat((format == null) ? defaultFormat : format);
 		;
 		try {
 			date = formatter.parse(value);
@@ -872,7 +872,7 @@ public class Time {
 	}
 
 	public static String getDateString(String format, Date date) {
-		String string = new SimpleDateFormat((format == null) ? defaultTimeFormat : format).format(date);
+		String string = new SimpleDateFormat((format == null) ? defaultFormat : format).format(date);
 		return string;
 	}
 

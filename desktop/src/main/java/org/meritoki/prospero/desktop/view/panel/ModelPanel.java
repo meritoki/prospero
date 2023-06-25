@@ -52,7 +52,7 @@ public class ModelPanel extends javax.swing.JPanel {
      */
     public ModelPanel() {
         initComponents();
-		this.addDataTreeSelectionListener();
+//		this.addDataTreeSelectionListener();
 		this.initDataTreeMouseListener();
     }
     

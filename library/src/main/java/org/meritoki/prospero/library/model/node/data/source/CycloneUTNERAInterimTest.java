@@ -44,19 +44,18 @@ import com.meritoki.library.controller.node.NodeController;
 public class CycloneUTNERAInterimTest extends CycloneSource {
 
 	static Logger logger = LoggerFactory.getLogger(CycloneUTNERAInterimTest.class.getName());
-//	public static String path = basePath+"prospero-data" + seperator + "UTN" + seperator + "File"+ seperator +"Data"+ seperator +"Cyclone"+ seperator +"cyclone-20200704";
-	public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
-//	public static String prefix = "925-850-700-600-500-400-300-250-200-150-125-100-";
+//	public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
+	public static String prefix = "925-850-700-600-500-400-300-250-200-150-125-100-";
 	public static String extension = "json";
-	public int[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
+//	public int[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
 	private final int startYear = 2001;
 	private final int endYear = 2017;
 
 	public CycloneUTNERAInterimTest() {
 		super();
-//		this.setRelativePath("UTN" + seperator + "File"+ seperator +"Data"+ seperator +"Cyclone"+ seperator +"cyclone-20200704"+seperator);
+		this.setPressureArray(new Integer[]{ 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 });
 		this.setBasePath("/home/jorodriguez/Drive/Test/");
-		this.setRelativePath("era-interim-north");
+		this.setRelativePath("output/era-interim-202306181145");
 	}
 
 	@Override
@@ -69,33 +68,19 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 		return this.endYear;
 	}
 
-	@Override
-	public int[] getLevelArray() {
-		return this.pressureArray;
-	}
+//	@Override
+//	public int[] getPressureArray() {
+//		return this.pressureArray;
+//	}
+	
+	
 
 	public List<Event> read(int year, int month) throws Exception {
 		if (this.startYear <= year && year <= this.endYear) {
 			logger.debug("read(" + year + "," + month + ")");
-			this.setBasePath("/home/jorodriguez/Drive/Test/");
-			this.setRelativePath("era-interim");
 			String yearMonth = year + "" + String.format("%02d", month) + "01";
 			List<Event> eventList = this.read(new File(this.getFilePath(yearMonth + seperator + "stack" + seperator
 					+ "collection" + seperator + prefix + yearMonth + "." + extension)));
-//			Calendar calendar;
-//			Integer m = null;
-//			Integer y = null;
-//			ListIterator<Event> eventIterator = eventList.listIterator();
-//			while (eventIterator.hasNext()) {
-//				Event e = eventIterator.next();
-//				calendar = e.getStartCalendar();
-//				m = calendar.get(Calendar.MONTH) + 1;
-//				y = calendar.get(Calendar.YEAR);
-//				if (year != y || month != m) {
-//					eventIterator.remove();
-//				}
-//			}
-
 			return eventList;
 		}
 		return null;
@@ -124,22 +109,26 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 							dotMap = trackEntry.getValue().dotMap;
 							for (Entry<Integer, Dot> dotEntry : dotMap.entrySet()) {
 								if (!Thread.interrupted()) {
-									Coordinate point = new Coordinate();
+									Coordinate coordinate = new Coordinate();
 									double latitude = dotEntry.getValue().lat;
 									double longitude = dotEntry.getValue().lon;
-									point.calendar = this.getCalendar(dotEntry.getValue().startDate,
+									coordinate.calendar = this.getCalendar(dotEntry.getValue().startDate,
 											dotEntry.getValue().frame);
 									int pressure = dotEntry.getValue().gph;
 									float vorticity = (float) (dotEntry.getValue().module * Math.pow(10.0, -5.0) * -1);
-									point.latitude = (float) latitude;
-									if (longitude < 180) {
-										point.longitude = (float) longitude;
+									if(latitude < 90) {
+										coordinate.latitude = (float) latitude;
 									} else {
-										point.longitude = (float) (longitude - 360);
+										coordinate.latitude = (float) (latitude - 180);
 									}
-									point.attribute.put("pressure", pressure);
-									point.attribute.put("vorticity", vorticity);
-									coordinateList.add(point);
+									if (longitude < 180) {
+										coordinate.longitude = (float) longitude;
+									} else {
+										coordinate.longitude = (float) (longitude - 360);
+									}
+									coordinate.attribute.put("pressure", pressure);
+									coordinate.attribute.put("vorticity", vorticity);
+									coordinateList.add(coordinate);
 								} else {
 									throw new InterruptedException();
 								}
@@ -187,90 +176,106 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 		return calendar;
 	}
 
-//	public List<Event> read(File file) {
-//		if(logger.isDebugEnabled()) {
-//			MemoryController.log();
-//			logger.debug("read(" + file + ")");
-//		}
-//		List<Event> eventList = null;
-//		try {
-//			FileInputStream excelFile = new FileInputStream(file);
-//			Workbook workbook = new XSSFWorkbook(excelFile);
-//			Sheet datatypeSheet = workbook.getSheetAt(0);
-//			Iterator<Row> iterator = datatypeSheet.iterator();
-//			eventList = new ArrayList<Event>();
-//			CycloneEvent event = null;
-//			Coordinate point = null;
-//			short id = 0;
-//			short idBuffer = 0;
-//			int level = 0;
-//			String date = null;
-//			float latitude;
-//			float longitude;
-//			float vorticity;
-//			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//			List<Coordinate> pointList = new ArrayList<>();
-//			boolean flag = true;
-//			while (iterator.hasNext()) {
-//				if (!Thread.interrupted()) {
-//				Row currentRow = iterator.next();
-//				if (currentRow.getRowNum() == 0) {
-//					continue; // just skip the rows if row number is 0 or 1
-//				}
-//				Iterator<Cell> cellIterator = currentRow.iterator();
-//				idBuffer = Short.parseShort(cellIterator.next().getStringCellValue());
-//				if (flag) {
-//					id = idBuffer;
-//					flag = false;
-//				} else {
-//					if (id != idBuffer) {
-//						event = new ERAInterimEvent(date + "-" + Integer.toString(id), pointList);
-//						eventList.add(event);
-//						id = idBuffer;
-//						pointList = new ArrayList<>();
-//					}
-//				}
-//				level = Short.parseShort(cellIterator.next().getStringCellValue());
-//				date = cellIterator.next().getStringCellValue();
-//				latitude = Float.parseFloat(cellIterator.next().getStringCellValue());
-//				longitude = Float.parseFloat(cellIterator.next().getStringCellValue());
-//				vorticity = (float) cellIterator.next().getNumericCellValue();
-//				// Instantiate Point
-//				point = new Coordinate();
-//				Calendar calendar = Calendar.getInstance();
-//				calendar.setTime(formatter.parse(date));
-//				point.calendar = calendar;//formatter.parse(date);
-//				point.latitude = latitude;
-//				if (longitude < 180) {
-//					point.longitude = longitude;
-//				} else {
-//					point.longitude = longitude - 360;
-//				}
-//				point.attribute.put("pressure", level);
-//				point.attribute.put("vorticity", vorticity);
-//				pointList.add(point);
-//				} else {
-//					break;
-//				}
-//			}
-//			workbook.close();
-//			
-//			event = new ERAInterimEvent(date + "-" + Integer.toString(id), pointList);
-////			Calendar calendar = event.getStartCalendar();
-////			Integer month = calendar.get(Calendar.MONTH);
-////			Integer year = calendar.get(Calendar.YEAR);
-//			eventList.add(event);
-//		} catch (FileNotFoundException e) {
-//			logger.error("FileNotFoundException " + e.getMessage());
-//		} catch (IOException e) {
-//			logger.error("IOException " + e.getMessage());
-//		} catch (ParseException e) {
-//			logger.error("ParseException " + e.getMessage());
-//		}
-////		MemoryController.log();
-//		return eventList;
-//	}
+
 }
+//Calendar calendar;
+//Integer m = null;
+//Integer y = null;
+//ListIterator<Event> eventIterator = eventList.listIterator();
+//while (eventIterator.hasNext()) {
+//	Event e = eventIterator.next();
+//	calendar = e.getStartCalendar();
+//	m = calendar.get(Calendar.MONTH) + 1;
+//	y = calendar.get(Calendar.YEAR);
+//	if (year != y || month != m) {
+//		eventIterator.remove();
+//	}
+//}
+//public List<Event> read(File file) {
+//if(logger.isDebugEnabled()) {
+//	MemoryController.log();
+//	logger.debug("read(" + file + ")");
+//}
+//List<Event> eventList = null;
+//try {
+//	FileInputStream excelFile = new FileInputStream(file);
+//	Workbook workbook = new XSSFWorkbook(excelFile);
+//	Sheet datatypeSheet = workbook.getSheetAt(0);
+//	Iterator<Row> iterator = datatypeSheet.iterator();
+//	eventList = new ArrayList<Event>();
+//	CycloneEvent event = null;
+//	Coordinate point = null;
+//	short id = 0;
+//	short idBuffer = 0;
+//	int level = 0;
+//	String date = null;
+//	float latitude;
+//	float longitude;
+//	float vorticity;
+//	DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//	List<Coordinate> pointList = new ArrayList<>();
+//	boolean flag = true;
+//	while (iterator.hasNext()) {
+//		if (!Thread.interrupted()) {
+//		Row currentRow = iterator.next();
+//		if (currentRow.getRowNum() == 0) {
+//			continue; // just skip the rows if row number is 0 or 1
+//		}
+//		Iterator<Cell> cellIterator = currentRow.iterator();
+//		idBuffer = Short.parseShort(cellIterator.next().getStringCellValue());
+//		if (flag) {
+//			id = idBuffer;
+//			flag = false;
+//		} else {
+//			if (id != idBuffer) {
+//				event = new ERAInterimEvent(date + "-" + Integer.toString(id), pointList);
+//				eventList.add(event);
+//				id = idBuffer;
+//				pointList = new ArrayList<>();
+//			}
+//		}
+//		level = Short.parseShort(cellIterator.next().getStringCellValue());
+//		date = cellIterator.next().getStringCellValue();
+//		latitude = Float.parseFloat(cellIterator.next().getStringCellValue());
+//		longitude = Float.parseFloat(cellIterator.next().getStringCellValue());
+//		vorticity = (float) cellIterator.next().getNumericCellValue();
+//		// Instantiate Point
+//		point = new Coordinate();
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setTime(formatter.parse(date));
+//		point.calendar = calendar;//formatter.parse(date);
+//		point.latitude = latitude;
+//		if (longitude < 180) {
+//			point.longitude = longitude;
+//		} else {
+//			point.longitude = longitude - 360;
+//		}
+//		point.attribute.put("pressure", level);
+//		point.attribute.put("vorticity", vorticity);
+//		pointList.add(point);
+//		} else {
+//			break;
+//		}
+//	}
+//	workbook.close();
+//	
+//	event = new ERAInterimEvent(date + "-" + Integer.toString(id), pointList);
+////	Calendar calendar = event.getStartCalendar();
+////	Integer month = calendar.get(Calendar.MONTH);
+////	Integer year = calendar.get(Calendar.YEAR);
+//	eventList.add(event);
+//} catch (FileNotFoundException e) {
+//	logger.error("FileNotFoundException " + e.getMessage());
+//} catch (IOException e) {
+//	logger.error("IOException " + e.getMessage());
+//} catch (ParseException e) {
+//	logger.error("ParseException " + e.getMessage());
+//}
+////MemoryController.log();
+//return eventList;
+//}
+//this.setBasePath("/home/jorodriguez/Drive/Test/");
+//this.setRelativePath("era-interim-north");
 //@Override
 //public List<CycloneEvent> eventMapGet(int y, int m) {
 //	if(this.eventMap == null) {

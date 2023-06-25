@@ -72,7 +72,7 @@ public class Model extends Variable {
 	@Override
 	public void start() {
 		super.start();
-		logger.info(this + ".start()");
+//		logger.info(this + ".start()");
 	}
 
 	public void removeCameras() {
@@ -111,6 +111,26 @@ public class Model extends Variable {
 		this.setStartCalendar(this.startCalendar);
 		this.setEndCalendar(this.endCalendar);
 	}
+	
+	@Override
+	public void setCalendar(Calendar calendar) {
+//		logger.info("setCalendar("+Time.getCalendarString(null,calendar)+")");
+		super.setCalendar(calendar);
+	}
+	
+	@Override
+	public void setStartCalendar(Calendar calendar) {
+//		logger.info("setStartCalendar("+Time.getCalendarString(null,calendar)+")");
+		super.setStartCalendar(calendar);
+	}
+	
+	@Override
+	public void setEndCalendar(Calendar calendar) {
+//		logger.info("setEndCalendar("+Time.getCalendarString(null,calendar)+")");
+		super.setEndCalendar(calendar);
+	}
+
+
 
 	@JsonIgnore
 	public void setBasePath(String basePath) {
@@ -145,7 +165,7 @@ public class Model extends Variable {
 	@JsonIgnore
 	public void addCamera(Camera camera) {
 		if (camera != null) {
-			this.cameraList.add(camera);// , this.scale, this.azimuth, this.elevation));
+			this.cameraList.add(camera);
 			this.index = this.cameraList.size() - 1;
 //			logger.info(this + ".addCamera(" + camera + ") this.index=" + this.index);
 		}
@@ -298,6 +318,7 @@ public class Model extends Variable {
 		return script;
 	}
 }
+//, this.scale, this.azimuth, this.elevation));
 //this.solar.setScale(o.defaultScale);
 //this.solar.setAzimuth(this.defaultAzimuth);
 //this.solar.setElevation(this.defaultElevation);

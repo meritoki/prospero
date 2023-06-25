@@ -400,7 +400,7 @@ public class CycloneEvent extends Event {
 		Integer pressure;
 		List<Coordinate> cList;
 		for (Coordinate c : coordinateList) {
-			if (c.flag) {
+//			if (c.flag) { 20230624 Defect Fix Trajectory Persistence
 				pressure = (Integer) c.attribute.get("pressure");// dateFormat.format(c.calendar.getTime());
 				cList = pressureCoordinateMap.get(pressure);
 				if (cList == null) {
@@ -411,7 +411,7 @@ public class CycloneEvent extends Event {
 				}
 //				Collections.sort(cList);
 				pressureCoordinateMap.put(pressure, cList);
-			}
+//			}
 		}
 		pressureCoordinateMap = new TreeMap<Integer, List<Coordinate>>(pressureCoordinateMap);
 		return pressureCoordinateMap;
@@ -423,8 +423,8 @@ public class CycloneEvent extends Event {
 		Map<Integer, List<Coordinate>> pressureLinkMap = new TreeMap<>();
 		List<String> timeList = this.getTimeList();
 		for (Map.Entry<Integer, List<Coordinate>> entry : pressureCoordinateMap.entrySet()) {
-			Integer key = entry.getKey();
-			List<Coordinate> linkList = pressureLinkMap.get(key);
+			Integer pressure = entry.getKey();
+			List<Coordinate> linkList = pressureLinkMap.get(pressure);
 			if (linkList == null) {
 				linkList = new ArrayList<>();
 			}
@@ -487,7 +487,7 @@ public class CycloneEvent extends Event {
 					}
 				}
 			}
-			pressureLinkMap.put(key, linkList);
+			pressureLinkMap.put(pressure, linkList);
 		}
 		return pressureLinkMap;
 	}

@@ -16,11 +16,14 @@
 package org.meritoki.prospero.library.model.node.data.source;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.TreeMap;
 
 import org.meritoki.prospero.library.model.node.query.Query;
@@ -43,8 +46,7 @@ public class CycloneSource extends Source {
 	public List<Index> indexList = new ArrayList<>();
 	public Map<String, Time> idTimeMap = new TreeMap<>();
 	public String order = "tb";
-//	public Count count = new Count('>', 1);
-	public int[] levelArray;
+	public Integer[] pressureArray;
 	public boolean single = false;
 	public int cacheSize = 8;
 	public boolean test = true;
@@ -53,9 +55,44 @@ public class CycloneSource extends Source {
 		super();
 		this.calendarFlag = true;
 	}
+	
+	public String getOrder() {
+		return this.order;
+	}
+	
+	public void setOrder(String order) {
+		this.order = order;
+	}
+	
+	public void setPressureArray(Integer[] pressureArray) {
+		this.pressureArray = pressureArray;
+	}
+	
+	public String getPressureString() {
+		String string = "";
+		if(this.pressureArray.length > 0) {
+			if("tb".equals(this.getOrder())) {
+				 Arrays.sort(this.pressureArray);
+			} else if("bt".equals(this.getOrder())) {
+				 Arrays.sort(this.pressureArray, Collections.reverseOrder());
+			}
+			StringJoiner joiner = new StringJoiner("-");
+			for(Integer pressure:this.pressureArray) {
+				joiner.add(pressure.toString());
+			}
+			string = joiner.toString(); 
+		}
+		return string;
+	}
 
 	@Override
 	public void query(Query query) throws Exception {
+		if(query.getBasePath() != null) {
+			this.setBasePath(query.getBasePath());
+		}
+		if(query.getRelativePath() != null) {
+			this.setRelativePath(query.getRelativePath());
+		}
 		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
 		if (this.intervalList != null) {
 			List<String> idList = query.getIDList();
@@ -122,8 +159,8 @@ public class CycloneSource extends Source {
 		return loadList;
 	}
 
-	public int[] getLevelArray() {
-		return this.levelArray;
+	public Integer[] getPressureArray() {
+		return this.pressureArray;
 	}
 
 
@@ -184,33 +221,7 @@ public class CycloneSource extends Source {
 		return classificationList;
 	}
 
-//	public List<CycloneEvent> getCountEventList(List<CycloneEvent> eventList) {
-//		Iterator<CycloneEvent> eventIterator = eventList.iterator();
-//		while (eventIterator.hasNext()) {
-//			CycloneEvent event = eventIterator.next();
-//			switch (this.count.operator) {
-//			case '>': {
-//				if (event.getPressureCount() <= this.count.value) {
-//					eventIterator.remove();
-//				}
-//				break;
-//			}
-//			case '<': {
-//				if (event.getPressureCount() >= this.count.value) {
-//					eventIterator.remove();
-//				}
-//				break;
-//			}
-//			case '=': {
-//				if (event.getPressureCount() < this.count.value || event.getPressureCount() > this.count.value) {
-//					eventIterator.remove();
-//				}
-//				break;
-//			}
-//			}
-//		}
-//		return eventList;
-//	}
+
 
 	public List<Integer> getLevelList(String level, int[] levelArray) throws Exception {
 		List<Integer> levelList = null;
@@ -368,6 +379,34 @@ public class CycloneSource extends Source {
 	}
 
 }
+//public Count count = new Count('>', 1);
+//public List<CycloneEvent> getCountEventList(List<CycloneEvent> eventList) {
+//Iterator<CycloneEvent> eventIterator = eventList.iterator();
+//while (eventIterator.hasNext()) {
+//	CycloneEvent event = eventIterator.next();
+//	switch (this.count.operator) {
+//	case '>': {
+//		if (event.getPressureCount() <= this.count.value) {
+//			eventIterator.remove();
+//		}
+//		break;
+//	}
+//	case '<': {
+//		if (event.getPressureCount() >= this.count.value) {
+//			eventIterator.remove();
+//		}
+//		break;
+//	}
+//	case '=': {
+//		if (event.getPressureCount() < this.count.value || event.getPressureCount() > this.count.value) {
+//			eventIterator.remove();
+//		}
+//		break;
+//	}
+//	}
+//}
+//return eventList;
+//}
 //logger.info("getSingleCountList("+listA+","+listB+") listB="+listB);
 //this.indexList.add(this.getIndex(y, m, eList));
 ///**

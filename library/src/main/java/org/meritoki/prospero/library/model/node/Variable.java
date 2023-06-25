@@ -58,8 +58,7 @@ public class Variable extends Node {
 	public Calendar endCalendar;
 	@JsonIgnore
 	public List<Script> scriptList = new ArrayList<>();
-	@JsonIgnore
-	public List<String> orderList = new ArrayList<>();
+
 	@JsonIgnore
 	public LinkedList<Time> timeList = new LinkedList<>();
 	@JsonIgnore
@@ -118,7 +117,7 @@ public class Variable extends Node {
 	}
 
 	public void start() {
-		logger.info(this+".start()");
+		logger.debug(this+".start()");
 		super.start();
 		this.load = true;
 		
@@ -255,6 +254,12 @@ public class Variable extends Node {
 		}
 	}
 
+	/**
+	 * 20230621 Returns first Variable that matches name
+	 * Must convert to Name.Name format
+	 * @param name
+	 * @return
+	 */
 	@JsonIgnore
 	public Variable getVariable(String name) {
 //		logger.debug(this.name+".getVariable("+name+")");
@@ -345,14 +350,7 @@ public class Variable extends Node {
 		}
 	}
 
-	@JsonIgnore
-	public void setFilter(Query filter) {
-		this.query = filter;
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.setFilter(filter);
-		}
-	}
+
 
 	@JsonIgnore
 	public void setData(Data data) {
@@ -441,7 +439,7 @@ public class Variable extends Node {
 	@JsonIgnore
 	public void addChild(Variable child) {
 		logger.debug(this.name + ".addChild(" + child + ")");
-		this.orderList.add(child.toString());
+//		this.orderList.add(child.toString());
 		this.moduleMapPut(child);
 	}
 
@@ -470,13 +468,23 @@ public class Variable extends Node {
 	@JsonIgnore
 	public void paint(Graphics graphics) throws Exception {
 //		logger.debug(this+".paint(" + (graphics != null) + ")");
-		this.initPlotList();
+//		this.initPlotList(); 20230622 Terrible Idea
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			n.paint(graphics);
 		}
 	}
 }
+//@JsonIgnore
+//public List<String> orderList = new ArrayList<>();
+//@JsonIgnore
+//public void setFilter(Query filter) {
+//	this.query = filter;
+//	List<Variable> nodeList = this.getChildren();
+//	for (Variable n : nodeList) {
+//		n.setFilter(filter);
+//	}
+//}
 //@JsonIgnore
 //public boolean visible;
 //if (query.isReady()) {// should only move forward if we have a time & source

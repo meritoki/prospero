@@ -47,7 +47,7 @@ public class Desktop {
 	public static boolean cacheFlag = false;
 
 	public static void main(String args[]) {
-		logger.info("Starting Prospero Desktop Application...");
+		System.out.println("Hello World");
 		Options options = new Options();
 		options.addOption(cacheOption);
 		options.addOption(helpOption);
@@ -82,10 +82,12 @@ public class Desktop {
 		}
 
 		if(mainFlag) {
+			logger.info("Starting Prospero Desktop Application "+about);
 			final MainFrame mainFrame = new MainFrame();
 			final SplashWindow splashWindow = new SplashWindow("/Splash.png", mainFrame, 2000);
 			final Model model = new Model(mainFrame);
-			model.version = versionNumber;
+			model.system.version = versionNumber;
+			model.system.vendor = vendor;
 			model.setCache(cacheFlag);
 			model.setBasePath(dataPath);
 			model.start();

@@ -67,10 +67,10 @@ public class CycloneUTNERAInterim extends CycloneSource {
 		return this.endYear;
 	}
 	
-	@Override
-	public int[] getLevelArray() {
-		return this.pressureArray;
-	}
+//	@Override
+//	public int[] getPressureArray() {
+//		return this.pressureArray;
+//	}
 	
 	public List<Event> read(int year, int month) {
 		if(this.startYear <= year && year <= this.endYear) {

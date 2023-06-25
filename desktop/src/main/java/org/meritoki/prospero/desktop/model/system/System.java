@@ -27,11 +27,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class System {
 	static Logger logger = LoggerFactory.getLogger(System.class.getName());
-	public String product;
 	public String vendor;
 	public String version;
-	public String author;
-	public String contributor;
 	
 	Map<String,String> map = new HashMap<>();
 	
@@ -49,7 +46,7 @@ public class System {
 	}
 	
 	public void init() {
-		logger.info("init()");
+		logger.trace("init()");
 		this.initDirectories();
 	}
 	

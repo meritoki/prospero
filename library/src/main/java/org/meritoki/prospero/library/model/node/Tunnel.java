@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,7 @@ import java.util.Map;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.solar.Solar;
@@ -67,14 +67,15 @@ public class Tunnel extends Spheroid {
 	public Map<String, Series> initSeriesMap() throws Exception {
 		logger.info("initSeriesMap()");
 		Map<String, Series> map = new HashMap<>();
-		Solar solar = (Solar) this.getParent().getParent();
+//		Solar solar = (Solar) this.getParent().getParent();
+		Model model = (Model)this.getModel();
 		List<String> dateList = Time.getDateStringList(Time.getPeriod(this.startCalendar,this.endCalendar), Calendar.DATE);
 		Calendar calendar = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		for (String date : dateList) {
 			calendar = Calendar.getInstance();
 			calendar.setTime(sdf.parse(date));
-			solar.setCalendar(calendar);
+			model.setCalendar(calendar);
 			this.mapPut(map, calendar, "Charge", 1 / this.getCharge());
 			this.mapPut(map, calendar, "Charge Force", this.getChargeForce());
 			this.mapPut(map, calendar, "Gravity Force", this.getGravityForce());

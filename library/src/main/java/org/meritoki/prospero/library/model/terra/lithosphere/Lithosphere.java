@@ -64,7 +64,7 @@ public class Lithosphere extends Terra {
 //			String sourceUUID = this.sourceMap.get(this.sourceKey);
 //			this.coordinateList = (List<Coordinate>) this.data.get(sourceUUID, this.query);
 			if (this.coordinateList != null) {
-				this.initCoordinateMinMax("elevation", null);
+				this.initCoordinateListMinMax("elevation", null);
 				List<Point> coordinateList = this.projection.getCoordinateList(0, this.coordinateList);
 				if (coordinateList != null) {
 					for (Point c : coordinateList) {
