@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -46,7 +45,7 @@ public class CycloneUTNERAInterim extends CycloneSource {
 
 	static Logger logger = LoggerFactory.getLogger(CycloneUTNERAInterim.class.getName());
 //	public static String path = basePath+"prospero-data" + seperator + "UTN" + seperator + "File"+ seperator +"Data"+ seperator +"Cyclone"+ seperator +"cyclone-20200704";
-	public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
+//	public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
 	public static String extension = "xlsx";
 	public int[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
 	private final int startYear = 2001;
@@ -54,6 +53,7 @@ public class CycloneUTNERAInterim extends CycloneSource {
 	
 	public CycloneUTNERAInterim() {
 		super();
+		this.setPressureArray(ERAInterimEvent.pressureArray);
 		this.setRelativePath("UTN" + seperator + "File"+ seperator +"Data"+ seperator +"Cyclone"+ seperator +"cyclone-20200704"+seperator);
 	}
 	
@@ -75,7 +75,8 @@ public class CycloneUTNERAInterim extends CycloneSource {
 	public List<Event> read(int year, int month) {
 		if(this.startYear <= year && year <= this.endYear) {
 			logger.debug("read(" + year + "," + month + ")");
-			String fileName = this.getFilePath(prefix + year + "" + String.format("%02d", month) + "01" + "." + extension);
+			this.setPrefix(this.getPressureString());
+			String fileName = this.getFilePath(this.getPrefix() + "-" + year + "" + String.format("%02d", month) + "01" + "." + extension);
 			List<Event> eventList = this.read(new File(fileName));
 //			Calendar calendar;
 //			Integer m = null;
@@ -153,7 +154,7 @@ public class CycloneUTNERAInterim extends CycloneSource {
 				calendar.setTime(formatter.parse(date));
 				coordinate.calendar = calendar;//formatter.parse(date);
 				coordinate.latitude = latitude;
-				if (longitude < 180) {
+				if (longitude <= 180) {
 					coordinate.longitude = longitude;
 				} else {
 					coordinate.longitude = longitude - 360;

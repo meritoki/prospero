@@ -120,6 +120,7 @@ public class Grid extends Spheroid {
 	public boolean monthFlag;
 	public boolean yearFlag;
 	public boolean clearFlag;
+	public boolean histogramFlag;
 
 	public Grid(String name) {
 		super(name);
@@ -280,6 +281,7 @@ public class Grid extends Spheroid {
 			this.scheme = (this.query.getScheme() != null) ? this.query.getScheme() : this.scheme;
 			this.seriesMap = new TreeMap<>();
 			this.timeList = new ArrayList<>();
+			this.histogramFlag = this.query.getHistogram();
 		} catch (Exception e) {
 			logger.error("init() exception=" + e.getMessage());
 			e.printStackTrace();

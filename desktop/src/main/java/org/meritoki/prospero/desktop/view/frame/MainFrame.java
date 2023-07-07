@@ -26,12 +26,12 @@ import java.util.UUID;
 
 import javax.swing.JPanel;
 
-import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.model.Model;
 import org.meritoki.prospero.desktop.view.dialog.AboutDialog;
 import org.meritoki.prospero.desktop.view.dialog.MainDialog;
 import org.meritoki.prospero.desktop.view.dialog.OpenDialog;
 import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
+import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;

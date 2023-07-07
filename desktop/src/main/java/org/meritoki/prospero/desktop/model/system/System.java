@@ -19,7 +19,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.meritoki.prospero.desktop.controller.node.NodeController;
+import org.meritoki.prospero.library.controller.node.NodeController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

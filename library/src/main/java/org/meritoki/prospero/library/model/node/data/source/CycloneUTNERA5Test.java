@@ -28,6 +28,7 @@ import java.util.TimeZone;
 
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.ERA5Event;
+import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.ERAInterimEvent;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Time;
@@ -41,9 +42,9 @@ import org.utn.library.stacker.model.Track;
 import com.meritoki.library.controller.memory.MemoryController;
 import com.meritoki.library.controller.node.NodeController;
 
-public class CycloneUTNERA5 extends CycloneSource {
-	static Logger logger = LoggerFactory.getLogger(CycloneUTNERA5.class.getName());
-	private final String merged = "F339A7D11BBFA9F1EF71B466A94895F6";
+public class CycloneUTNERA5Test extends CycloneSource {
+	static Logger logger = LoggerFactory.getLogger(CycloneUTNERA5Test.class.getName());
+	private final String merged = "";
 	private final int startYear = 1979;
 	private final int endYear = 2019;
 	private final Time startTime = new Time(1979,1,1,-1,-1,-1);
@@ -51,10 +52,10 @@ public class CycloneUTNERA5 extends CycloneSource {
 	public static String extension = "json";
 	public String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
-	public CycloneUTNERA5() {
+	public CycloneUTNERA5Test() {
 		super();
 		this.single = true;
-		this.setPressureArray(ERA5Event.pressureArray);
+		this.setPressureArray(ERAInterimEvent.pressureArray);
 		this.setPrefix(merged);
 		this.setRelativePath("UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator + "202103");
 	}
@@ -153,7 +154,7 @@ public class CycloneUTNERA5 extends CycloneSource {
 							throw new InterruptedException();
 						}
 					}
-					CycloneEvent event = new ERA5Event(coordinateList);
+					CycloneEvent event = new ERAInterimEvent(coordinateList);
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 					event.id = sdf.format(event.getStartCalendar().getTime()) + "-"
 							+ sdf.format(event.getEndCalendar().getTime()) + id;

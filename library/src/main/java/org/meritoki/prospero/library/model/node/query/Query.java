@@ -515,6 +515,21 @@ public class Query {
 		}
 		return false;
 	}
+	
+	@JsonIgnore
+	public Boolean getHistogram() {
+		String histogram = this.map.get("histogram");
+		if (histogram != null) {
+			return Boolean.valueOf(histogram);
+		}
+		return false;
+	}
+	
+	@JsonIgnore
+	public String getOrder() {
+		String order = this.map.get("order");
+		return order;
+	}
 
 	@JsonIgnore
 	public String getGroup() {

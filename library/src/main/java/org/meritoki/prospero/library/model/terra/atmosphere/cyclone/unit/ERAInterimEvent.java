@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ERAInterimEvent extends CycloneEvent {
 	
-	public int[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
+	public static Integer[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
 
 	public ERAInterimEvent() {
 		super();

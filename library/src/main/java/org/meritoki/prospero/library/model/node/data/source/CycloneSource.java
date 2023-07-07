@@ -46,6 +46,7 @@ public class CycloneSource extends Source {
 	public List<Index> indexList = new ArrayList<>();
 	public Map<String, Time> idTimeMap = new TreeMap<>();
 	public String order = "tb";
+	public String prefix = "";
 	public Integer[] pressureArray;
 	public boolean single = false;
 	public int cacheSize = 8;
@@ -75,6 +76,8 @@ public class CycloneSource extends Source {
 				 Arrays.sort(this.pressureArray);
 			} else if("bt".equals(this.getOrder())) {
 				 Arrays.sort(this.pressureArray, Collections.reverseOrder());
+			} else {
+				Arrays.sort(this.pressureArray);
 			}
 			StringJoiner joiner = new StringJoiner("-");
 			for(Integer pressure:this.pressureArray) {
@@ -84,6 +87,14 @@ public class CycloneSource extends Source {
 		}
 		return string;
 	}
+	
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+	
+	public String getPrefix() {
+		return this.prefix;
+	}
 
 	@Override
 	public void query(Query query) throws Exception {
@@ -92,6 +103,9 @@ public class CycloneSource extends Source {
 		}
 		if(query.getRelativePath() != null) {
 			this.setRelativePath(query.getRelativePath());
+		}
+		if(query.getOrder() != null) {
+			this.setOrder(query.getOrder());
 		}
 		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
 		if (this.intervalList != null) {

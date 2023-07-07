@@ -18,10 +18,10 @@ package org.meritoki.prospero.desktop.model;
 import java.io.File;
 import java.util.Properties;
 
-import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.model.resource.Resource;
 import org.meritoki.prospero.desktop.model.system.System;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
+import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -18,10 +18,9 @@ package org.meritoki.prospero.desktop.model.resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.meritoki.prospero.desktop.controller.node.NodeController;
+import org.meritoki.prospero.library.controller.node.NodeController;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

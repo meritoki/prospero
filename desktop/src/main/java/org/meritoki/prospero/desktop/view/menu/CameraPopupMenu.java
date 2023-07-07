@@ -29,8 +29,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.view.panel.CameraPanel;
+import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.Spheroid;

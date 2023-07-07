@@ -174,12 +174,12 @@ public class CycloneEvent extends Event {
 					Event e = eventList.get(i);
 					if (e instanceof CycloneEvent) {
 						CycloneEvent event = (CycloneEvent) e;
-						int[] pressureArray = new int[0];
+						Integer[] pressureArray = new Integer[0];
 						if(event instanceof ERA5Event) {
-							pressureArray = ((ERA5Event)e).pressureArray;
+							pressureArray = ERA5Event.pressureArray;
 
 						} else if(event instanceof ERAInterimEvent) {
-							pressureArray = ((ERAInterimEvent)e).pressureArray;
+							pressureArray = ERAInterimEvent.pressureArray;
 						}
 						if (i == 0) {
 							columnArray = Table.getColumnNames(5+pressureArray.length).toArray();
@@ -899,10 +899,10 @@ public class CycloneEvent extends Event {
 
 	@JsonIgnore
 	public int getMaxTimeLevelCount() {
-		Map<String, List<Coordinate>> timePointMap = this.getTimeCoordinateMap();
+		Map<String, List<Coordinate>> timeCoordinateMap = this.getTimeCoordinateMap();
 		int max = 0;
 		int value = 0;
-		for (Map.Entry<String, List<Coordinate>> entry : timePointMap.entrySet()) {
+		for (Map.Entry<String, List<Coordinate>> entry : timeCoordinateMap.entrySet()) {
 			value = entry.getValue().size();
 			if (value > max) {
 				max = value;

@@ -97,6 +97,7 @@ public class Cyclone extends Atmosphere {
 	public Cyclone(String name) {
 		super(name);
 		this.sourceMap.put("UTN ERA INTERIM", "2d611935-9786-4c28-9dcf-f18cf3e99a3a");
+		this.sourceMap.put("UTN ERA INTERIM TEST", "cc7b89a0-ccc4-4a76-a79b-c0e04b9dd45a");
 		this.sourceMap.put("UTN ERA 5", "281cbf52-7014-4229-bffd-35c8ba41bcb5");
 	}
 
@@ -567,7 +568,7 @@ public class Cyclone extends Atmosphere {
 				e.printStackTrace();
 			}
 		}
-		if (eventList != null) {
+		if (this.histogramFlag && eventList != null) {
 			plotList.add(this.getEventTotalDurationCountHistogram(eventList));
 			plotList.add(this.getEventTotalDistanceCountHistogram(eventList));
 			plotList.add(this.getEventTotalMeanVelocityCountHistogram(eventList));

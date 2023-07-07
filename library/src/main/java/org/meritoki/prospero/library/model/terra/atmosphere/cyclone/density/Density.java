@@ -32,11 +32,13 @@ public class Density extends Cyclone {
 	public Density() {
 		super("Density");
 		this.format = "##.##E0";
+		this.tileFlag = true;
 	}
 
 	public Density(String name) {
 		super(name);
 		this.format = "##.##E0";
+		this.tileFlag = true;
 	}
 
 	@Override

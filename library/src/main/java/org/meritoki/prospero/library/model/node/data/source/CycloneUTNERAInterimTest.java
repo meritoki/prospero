@@ -45,7 +45,7 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 
 	static Logger logger = LoggerFactory.getLogger(CycloneUTNERAInterimTest.class.getName());
 //	public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
-	public static String prefix = "925-850-700-600-500-400-300-250-200-150-125-100-";
+//	public static String prefix = "925-850-700-600-500-400-300-250-200-150-125-100-";
 	public static String extension = "json";
 //	public int[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
 	private final int startYear = 2001;
@@ -53,9 +53,9 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 
 	public CycloneUTNERAInterimTest() {
 		super();
-		this.setPressureArray(new Integer[]{ 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 });
+		this.setPressureArray(ERAInterimEvent.pressureArray);
 		this.setBasePath("/home/jorodriguez/Drive/Test/");
-		this.setRelativePath("output/era-interim-202306181145");
+		this.setRelativePath("output/era-interim-test");
 	}
 
 	@Override
@@ -78,19 +78,18 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 	public List<Event> read(int year, int month) throws Exception {
 		if (this.startYear <= year && year <= this.endYear) {
 			logger.debug("read(" + year + "," + month + ")");
+			this.setPrefix(this.getPressureString());
 			String yearMonth = year + "" + String.format("%02d", month) + "01";
 			List<Event> eventList = this.read(new File(this.getFilePath(yearMonth + seperator + "stack" + seperator
-					+ "collection" + seperator + prefix + yearMonth + "." + extension)));
+					+ "collection" + seperator + this.getPrefix() + "-" + yearMonth + "." + extension)));
 			return eventList;
 		}
 		return null;
 	}
 
 	public List<Event> read(File file) throws Exception {
-		if (logger.isDebugEnabled()) {
-			MemoryController.log();
-			logger.debug("read(" + file + ")");
-		}
+		MemoryController.log();
+		logger.info("read(" + file + ")");
 		List<Event> eventList = new ArrayList<>();
 		Object object = NodeController.openJson(file, Collection.class);
 		if (object != null) {
@@ -116,12 +115,12 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 											dotEntry.getValue().frame);
 									int pressure = dotEntry.getValue().gph;
 									float vorticity = (float) (dotEntry.getValue().module * Math.pow(10.0, -5.0) * -1);
-									if(latitude < 90) {
+//									if(latitude <= 90) {
 										coordinate.latitude = (float) latitude;
-									} else {
-										coordinate.latitude = (float) (latitude - 180);
-									}
-									if (longitude < 180) {
+//									} else {
+//										coordinate.latitude = (float) (latitude - 180);
+//									}
+									if (longitude <= 180) {
 										coordinate.longitude = (float) longitude;
 									} else {
 										coordinate.longitude = (float) (longitude - 360);
