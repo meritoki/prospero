@@ -81,7 +81,7 @@ public class Source extends Node {// implements SourceInterface
 
 	@JsonIgnore
 	public void setRelativePath(String relativePath) {
-		logger.trace("setRelativePath(" + relativePath + ")");
+		logger.info("setRelativePath(" + relativePath + ")");
 		this.relativePath = relativePath;
 	}
 

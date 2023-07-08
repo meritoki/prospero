@@ -23,5 +23,6 @@ public enum DataType {
 	MSL,
 	GEOPOTENTIAL,
 	BAND_4,
-	CMI
+	CMI,
+	VORTICITY
 }

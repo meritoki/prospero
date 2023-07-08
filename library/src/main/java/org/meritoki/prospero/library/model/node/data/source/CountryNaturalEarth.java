@@ -31,6 +31,8 @@ import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.opengis.feature.simple.SimpleFeature;
 
+import com.vividsolutions.jts.geom.Point;
+
 public class CountryNaturalEarth extends Source {
 
 	public CountryNaturalEarth() {
