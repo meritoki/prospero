@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+//https://www.baeldung.com/java-compress-and-uncompress
 package org.meritoki.prospero.library.controller.node;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Iterator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -56,11 +64,69 @@ public class NodeController extends com.meritoki.library.controller.node.NodeCon
 	public static String getDocumentCache(String uuid) {
 		return getDocumentCache() + getSeperator() + uuid;
 	}
-	
+
 	public static String getResourceCache() {
 		return getSystemHome() + getSeperator() + "resource";
 	}
+
+	public static void downloadFile(String fileURL, String path, String fileName) {
+		try (BufferedInputStream in = new BufferedInputStream(new URL(fileURL).openStream());
+				FileOutputStream fileOutputStream = new FileOutputStream(path + fileName)) {
+			byte dataBuffer[] = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+				fileOutputStream.write(dataBuffer, 0, bytesRead);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
+	public static void unzipFile(String zipFile, String destinationPath) throws Exception {
+        File destDir = new File(destinationPath);
+        byte[] buffer = new byte[1024];
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
+        ZipEntry zipEntry = zis.getNextEntry();
+        while (zipEntry != null) {
+            File newFile = newFile(destDir, zipEntry);
+            if (zipEntry.isDirectory()) {
+                if (!newFile.isDirectory() && !newFile.mkdirs()) {
+                    throw new IOException("Failed to create directory " + newFile);
+                }
+            } else {
+                // fix for Windows-created archives
+                File parent = newFile.getParentFile();
+                if (!parent.isDirectory() && !parent.mkdirs()) {
+                    throw new IOException("Failed to create directory " + parent);
+                }
+
+                // write file content
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+            }
+            zipEntry = zis.getNextEntry();
+        }
+        zis.closeEntry();
+        zis.close();
+	}
+	
+	public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+	    File destFile = new File(destinationDir, zipEntry.getName());
+
+	    String destDirPath = destinationDir.getCanonicalPath();
+	    String destFilePath = destFile.getCanonicalPath();
+
+	    if (!destFilePath.startsWith(destDirPath + File.separator)) {
+	        throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+	    }
+
+	    return destFile;
+	}
+
 	public static void saveDocument(String filePath, String fileName, Document document) {
 		logger.info("saveDocument(" + filePath + ", " + fileName + ", " + document + ")");
 		NodeController.saveJson(filePath, fileName, document);
@@ -83,39 +149,37 @@ public class NodeController extends com.meritoki.library.controller.node.NodeCon
 		logger.info("openDocument(" + file + ") document=" + document);
 		return document;
 	}
-	
+
 	public static double DPI = 300;
 	public static double INCH_2_CM = 2.54;
-	
+
 	public static void savePanel(JPanel panel, String path, String name) {
 		savePanel(panel, path, name, "png");
 	}
-	
-    public static BufferedImage toBufferedImage(Image img)
-    {
-        if (img instanceof BufferedImage)
-        {
-            return (BufferedImage) img;
-        }
 
-        // Create a buffered image with transparency
-        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+	public static BufferedImage toBufferedImage(Image img) {
+		if (img instanceof BufferedImage) {
+			return (BufferedImage) img;
+		}
 
-        // Draw the image on to the buffered image
-        Graphics2D bGr = bimage.createGraphics();
-        bGr.drawImage(img, 0, 0, null);
-        bGr.dispose();
+		// Create a buffered image with transparency
+		BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
 
-        // Return the buffered image
-        return bimage;
-    }
+		// Draw the image on to the buffered image
+		Graphics2D bGr = bimage.createGraphics();
+		bGr.drawImage(img, 0, 0, null);
+		bGr.dispose();
+
+		// Return the buffered image
+		return bimage;
+	}
 
 	private static void savePanel(JPanel panel, String path, String name, String extension) {
 		File directory = new File(path);
-		if(!directory.exists()) {
+		if (!directory.exists()) {
 			directory.mkdirs();
 		}
-		File file = new File(path+File.separatorChar+name+"."+extension);
+		File file = new File(path + File.separatorChar + name + "." + extension);
 		try {
 			BufferedImage bufferedImage = new Robot().createScreenCapture(panel.getBounds());
 			Graphics2D graphics2D = bufferedImage.createGraphics();
@@ -131,17 +195,15 @@ public class NodeController extends com.meritoki.library.controller.node.NodeCon
 				}
 				setDPI(metadata);
 				final ImageOutputStream stream = ImageIO.createImageOutputStream(file);
-				if(stream != null) {
-				try {
-					writer.setOutput(stream);
-					writer.write(metadata, new IIOImage(bufferedImage, null, metadata), writeParam);
-				} 
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-				finally {
-					stream.close();
-				}
+				if (stream != null) {
+					try {
+						writer.setOutput(stream);
+						writer.write(metadata, new IIOImage(bufferedImage, null, metadata), writeParam);
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						stream.close();
+					}
 				}
 				break;
 			}

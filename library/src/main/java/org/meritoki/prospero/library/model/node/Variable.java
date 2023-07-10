@@ -259,9 +259,26 @@ public class Variable extends Node {
 	 */
 	@JsonIgnore
 	public Variable getVariable(String name) {
-//		logger.debug(this.name+".getVariable("+name+")");
-		if (this.name != null && this.name.equals(name)) {
-			return this;
+//		logger.info(this.name+".getVariable("+name+")");
+		String parent = null;
+		String child = null;
+		if(name.indexOf(".") > -1) {
+			parent = name.split("\\.")[0];
+			child = name.split("\\.")[1];
+		} else {
+			child = name;
+		}
+		if (this.name != null && this.name.equals(child)) {
+			if(parent != null) {
+				Variable p = (Variable)this.getRoot();
+				if(p.name.equals(parent)) {
+					return this;
+				} else {
+					return null;
+				}
+			} else {
+				return this;
+			}
 		} else {
 			List<Variable> nodeList = this.getChildren();
 			for (Variable n : nodeList) {

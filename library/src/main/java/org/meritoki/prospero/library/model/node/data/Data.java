@@ -42,6 +42,7 @@ import org.meritoki.prospero.library.model.node.data.source.SILSOSunspot;
 import org.meritoki.prospero.library.model.node.data.source.Source;
 import org.meritoki.prospero.library.model.node.data.source.TectonicPeterBird;
 import org.meritoki.prospero.library.model.node.data.source.TornadoHistoryProject;
+import org.meritoki.prospero.library.model.node.data.source.UTNTrack;
 import org.meritoki.prospero.library.model.node.data.source.VolcanicNOAA;
 import org.meritoki.prospero.library.model.node.data.source.VorticityERA5;
 import org.meritoki.prospero.library.model.node.data.source.VorticityERAInterim;
@@ -100,6 +101,7 @@ public class Data extends Node {
 		this.sourceMap.put("aefbd8d1-d423-458d-90c0-7c8429f2a653", new GOESNOAA());
 		this.sourceMap.put("316bab36-ac3b-4930-87ae-5a32e4cdb81c", new VorticityERAInterim());
 		this.sourceMap.put("e7e20f49-2387-40ce-917f-5b592c0b8b67", new VorticityERA5());
+		this.sourceMap.put("9c51699e-d185-4469-a38a-08ca02b88931", new UTNTrack());
 		this.start();
 	}
 	

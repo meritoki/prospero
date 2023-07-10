@@ -1,19 +1,24 @@
 package org.meritoki.prospero.library.model.node.data.source;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.ERA5Event;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
+import org.meritoki.prospero.library.model.unit.Interval;
+import org.meritoki.prospero.library.model.unit.Mode;
+import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,34 +30,23 @@ import org.utn.library.stacker.model.Track;
 import com.meritoki.library.controller.memory.MemoryController;
 import com.meritoki.library.controller.node.NodeController;
 
-public class UTNStackerEvent extends Source {
+public class UTNTrack extends Source {
 	
 	static Logger logger = LoggerFactory.getLogger(CycloneUTNERA5.class.getName());
-	private final String merged = "F339A7D11BBFA9F1EF71B466A94895F6";
-	private final int startYear = 1979;
-	private final int endYear = 2019;
-	private final Time startTime = new Time(1979,1,1,-1,-1,-1);
-	private final Time endTime = new Time(2019,12,31,-1,-1,-1);
-	public static String extension = "json";
+	public String prefix;
+	public String suffix;
+	public String extension = "json";
+	private Time startTime = new Time(1979,1,1,-1,-1,-1);
+	private Time endTime = new Time(2019,12,31,-1,-1,-1);
+	public List<Integer> pressureList = new ArrayList<>();
 	public String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
-	public UTNStackerEvent() {
+	public UTNTrack() {
 		super();
-//		this.single = true;
-//		this.setPressureArray(ERA5Event.pressureArray);
-//		this.setPrefix(merged);
-//		this.setRelativePath("UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator + "202103");
+		this.prefix = "138-128_";
+		this.suffix = "_F128";
 	}
 
-	@Override
-	public int getStartYear() {
-		return this.startYear;
-	}
-
-	@Override
-	public int getEndYear() {
-		return this.endYear;
-	}
 	
 	@Override
 	public Time getStartTime() {
@@ -63,41 +57,73 @@ public class UTNStackerEvent extends Source {
 	public Time getEndTime() {
 		return this.endTime;
 	}
+	
+	@Override
+	public void query(Query query) throws Exception {
+		logger.info("query("+query+")");
+		if(query.getBasePath() != null) {
+			this.setBasePath(query.getBasePath());
+		}
+		if(query.getRelativePath() != null) {
+			this.setRelativePath(query.getRelativePath());
+		}
+		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
+		this.pressureList = query.getPressureList();
+		if (this.intervalList != null) {
+			for (Interval i : this.intervalList) {
+				this.load(query, i);
+			}
+			query.objectListAdd(new Result(Mode.COMPLETE));
+		}
+	}
+	
+	public void load(Query query, Interval interval) throws Exception {
+		List<Time> timeList = Time.getTimeList(2, interval);
+		List<Event> loadList;
+		for (Time time : timeList) {
+			if (!Thread.interrupted()) {
+				loadList = this.read(time);
+				Result result = new Result();
+				result.map.put("time", time);
+				result.map.put("eventList", new ArrayList<Event>((loadList)));
+				query.objectList.add(result);
+			} else {
+				throw new InterruptedException();
+			}
+		}
+	}
 
-//	public List<Event> read(int year, int month) throws Exception {
-//		logger.info("read(" + year + "," + month + ")");
-////		String yearMonth = year + "" + String.format("%02d", month) + "01";
-////		if("m".equals(this.order)) {
-////			this.setPrefix(merged);
-////		} else {
-////			this.setPrefix(this.getPressureString());
-////		}
-////		List<Event> eventList = this.read(new File(this.getFilePath(yearMonth + seperator + "stack" + seperator
-////				+ "collection" + seperator + this.getPrefix() + "-" + yearMonth + "." + extension)));
-////		Calendar calendar;
-////		Integer m = null;
-////		Integer y = null;
-////		ListIterator<Event> eventIterator = eventList.listIterator();
-////		while (eventIterator.hasNext()) {
-////			Event e = eventIterator.next();
-////			calendar = e.getStartCalendar();
-////			m = calendar.get(Calendar.MONTH) + 1;
-////			y = calendar.get(Calendar.YEAR);
-////			if (year != y || month != m) {
-//////				logger.info("read(" + year + "," + month + ") y="+year+" m="+m);
-////				eventIterator.remove();
-////			}
-////		}
-//		return eventList;
-//	}
+	public List<Event> read(Time time) throws Exception {
+		List<Event> eventList = new ArrayList<>();
+		String start = time.year + String.format("%02d", time.month) + String.format("%02d", 1);
+		String end = time.year + String.format("%02d", time.month)
+				+ String.format("%02d", this.getYearMonthDays(time.year, time.month));
+		String path = start + seperator + prefix + start + "-" + end + "_}*{" + suffix + seperator + "collection" + seperator;
+		String fileName = "}*{" + "-"+start;
+		if (this.pressureList.size() > 0) {
+			for (int pressure : this.pressureList) {
+				eventList.addAll(this.read(
+						this.getFilePath(start + seperator + prefix + start + "-" + end + "_" + pressure + suffix + seperator + "collection" + seperator + pressure + "-" + start + "." + extension)));
+			}
+		} else {
+			String pattern = "glob:{" + path + fileName + "}*.{"+extension+"}";
+			logger.info("read(" + time + ") pattern=" + pattern);
+			List<String> matchList = this.getWildCardFileList(Paths.get(this.getPath()), pattern);
+			for (String m : matchList) {
+				eventList.addAll(this.read(this.getPath() + m));
+			}
+		}
 
-	public List<Event> read(File file) throws Exception {
+		return eventList;
+	}
+
+	public List<Event> read(String fileName) throws Exception {
 		if (logger.isDebugEnabled()) {
 			MemoryController.log();
-			logger.debug("read(" + file + ")");
+			logger.debug("read(" + fileName + ")");
 		}
 		List<Event> eventList = new ArrayList<>();
-		Object object = NodeController.openJson(file, Collection.class);
+		Object object = NodeController.openJson(new File(fileName), Collection.class);
 		if (object != null) {
 			Collection collection = (Collection) object;
 			Map<Integer, Stack> stackMap = collection.stackMap;
@@ -106,7 +132,6 @@ public class UTNStackerEvent extends Source {
 			for (Entry<Integer, Stack> stackEntry : stackMap.entrySet()) {
 				if (!Thread.interrupted()) {
 					int id = stackEntry.getValue().id;
-//					String date = stackEntry.getValue().getFirstDot().startDate;
 					List<Coordinate> coordinateList = new ArrayList<Coordinate>();
 					trackMap = stackEntry.getValue().trackMap;
 					for (Entry<Integer, Track> trackEntry : trackMap.entrySet()) {
@@ -114,22 +139,22 @@ public class UTNStackerEvent extends Source {
 							dotMap = trackEntry.getValue().dotMap;
 							for (Entry<Integer, Dot> dotEntry : dotMap.entrySet()) {
 								if (!Thread.interrupted()) {
-									Coordinate point = new Coordinate();
+									Coordinate coordinate = new Coordinate();
 									double latitude = dotEntry.getValue().lat;
 									double longitude = dotEntry.getValue().lon;
-									point.calendar = this.getCalendar(dotEntry.getValue().startDate,
+									coordinate.calendar = this.getCalendar(dotEntry.getValue().startDate,
 											dotEntry.getValue().frame);
 									int pressure = dotEntry.getValue().gph;
 									float vorticity = (float) (dotEntry.getValue().module * Math.pow(10.0, -5.0) * -1);
-									point.latitude = (float) latitude;
+									coordinate.latitude = (float) latitude;
 									if (longitude < 180) {
-										point.longitude = (float) longitude;
+										coordinate.longitude = (float) longitude;
 									} else {
-										point.longitude = (float) (longitude - 360);
+										coordinate.longitude = (float) (longitude - 360);
 									}
-									point.attribute.put("pressure", pressure);
-									point.attribute.put("vorticity", vorticity);
-									coordinateList.add(point);
+									coordinate.attribute.put("pressure", pressure);
+									coordinate.attribute.put("vorticity", vorticity);
+									coordinateList.add(coordinate);
 								} else {
 									throw new InterruptedException();
 								}
@@ -158,12 +183,7 @@ public class UTNStackerEvent extends Source {
 		int product = index * 6;
 		calendar.add(Calendar.HOUR_OF_DAY, (product));
 		int hour = calendar.get(Calendar.HOUR_OF_DAY);
-//		System.out.println(hour);
-//		if(hour %2 == 0) {
-//			hour++;
-//		}
 		calendar.set(Calendar.HOUR_OF_DAY, hour);
-//		System.out.println("getCalendar("+time+","+index+") calendar="+calendar.getTime());
 		return calendar;
 	}
 

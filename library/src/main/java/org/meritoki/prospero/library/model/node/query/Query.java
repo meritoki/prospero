@@ -354,6 +354,19 @@ public class Query {
 //		System.out.println("array.length="+array.length);
 		return array;
 	}
+	
+	@JsonIgnore
+	public boolean isDateTime() {
+		boolean flag = false;
+		String time = this.getTime();
+		if(time != null) {
+			String type = Time.isDate(time);
+			if("DATE_TIME".equals(type)) {
+				flag = true;
+			}
+		}
+		return flag;
+	}
 
 	/**
 	 * In Future, support time djf;2001/01-2001/02 This feature changes the Plot
@@ -521,6 +534,15 @@ public class Query {
 		String histogram = this.map.get("histogram");
 		if (histogram != null) {
 			return Boolean.valueOf(histogram);
+		}
+		return false;
+	}
+	
+	@JsonIgnore
+	public Boolean getDownload() {
+		String download = this.map.get("download");
+		if (download != null) {
+			return Boolean.valueOf(download);
 		}
 		return false;
 	}

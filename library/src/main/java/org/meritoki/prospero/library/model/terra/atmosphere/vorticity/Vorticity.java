@@ -3,11 +3,9 @@ package org.meritoki.prospero.library.model.terra.atmosphere.vorticity;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
-import org.meritoki.prospero.library.model.terra.atmosphere.cloud.Cloud;
-import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.N;
-import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.R;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;
@@ -15,11 +13,8 @@ import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ucar.ma2.ArrayFloat;
-import ucar.nc2.Dimension;
-
 public class Vorticity extends Atmosphere {
-	static Logger logger = LoggerFactory.getLogger(Cloud.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Vorticity.class.getName());
 	protected DataType dataType;
 
 	public Vorticity() {
@@ -45,6 +40,7 @@ public class Vorticity extends Atmosphere {
 	public void load(Result result) {
 		super.load(result);
 		List<NetCDF> netCDFList = result.getNetCDFList();
+		this.netCDFList.addAll(netCDFList);
 		try {
 			this.process(netCDFList);
 		} catch (Exception e) {
@@ -57,7 +53,7 @@ public class Vorticity extends Atmosphere {
 	public void process() throws Exception {
 		super.process();
 		try {
-//			this.process(this.netCDFList);
+			this.process(this.netCDFList);
 			this.complete();
 		} catch (Exception e) {
 			logger.error("process() exception=" + e.getMessage());
@@ -95,9 +91,15 @@ public class Vorticity extends Atmosphere {
 				for (int t = 0; t < timeSize; t++) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(Time.getNineteenHundredJanuaryFirstDate(netCDF.timeArray.get(t)));
-					for (int lat = 0; lat < latSize - 1; lat++) {
-						float latitude = netCDF.latArray.get(lat);
-						if (latitude <= 0) {
+					boolean flag = true;
+					if (this.query.isDateTime()) {
+						if (!this.calendar.equals(calendar)) {
+							flag = false;
+						}
+					}
+					if (flag) {
+						for (int lat = 0; lat < latSize - 1; lat++) {
+							float latitude = netCDF.latArray.get(lat);
 							for (int lon = 0; lon < lonSize; lon++) {
 								float longitude = netCDF.lonArray.get(lon);
 								int x = (int) ((latitude + this.latitude / 2) * this.resolution);
@@ -105,8 +107,8 @@ public class Vorticity extends Atmosphere {
 								int z = calendar.get(Calendar.MONTH);
 								dataMatrix[x][y][z] += netCDF.variableArray.get(t, lat, lon);
 								coordinateMatrix[x][y][z]++;
-								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1,
-										-1, -1, -1, -1);
+								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, -1,
+										-1, -1, -1);
 								if (!timeList.contains(time)) {
 									timeList.add(time);
 								}
@@ -114,10 +116,8 @@ public class Vorticity extends Atmosphere {
 						}
 					}
 				}
-			} 
+			}
 		}
 		return timeList;
 	}
 }
-
-

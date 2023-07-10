@@ -26,24 +26,40 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.filter.text.ecql.ECQL;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.WKTReader;
+import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.opengis.feature.simple.SimpleFeature;
 
-import com.vividsolutions.jts.geom.Point;
-
 public class CountryNaturalEarth extends Source {
+	
+	public String downloadURL = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries.zip";
+	public String zipFile = "ne_10m_admin_0_countries.zip";
 
 	public CountryNaturalEarth() {
 		super();
 		this.setRelativePath("NaturalEarth"+seperator+"ne_10m_admin_0_countries");
+		this.setDownloadPath("NaturalEarth");
 		this.setFileName("ne_10m_admin_0_countries.shp");
 	}
 	
 	@Override
 	public void query(Query query) throws Exception {
 		logger.info("query(" + query + ")");
+		if(query.getDownload()) {
+			File file = new File(this.getFilePath());
+			if(!file.exists()) {
+				logger.info("query(" + (query  != null)+ ") download");
+				File zip = new File(this.getDownloadPath()+zipFile);
+				if(!zip.exists()) {
+					logger.info("query(" + (query  != null)+ ") downloading");
+					NodeController.downloadFile(downloadURL,this.getDownloadPath(),zipFile);
+				}
+				logger.info("query(" + (query  != null) + ") extracting");
+				NodeController.unzipFile(this.getDownloadPath()+zipFile,this.getDownloadPath()+"ne_10m_admin_0_countries");
+			}
+		}
 		Result result = new Result();
 		result.map.put("multiPolygonList",this.box(-180, 90, 180, -90));
 		result.mode = Mode.LOAD;

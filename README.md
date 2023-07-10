@@ -9,3 +9,6 @@ Prospero is a simple and extensible interface for visualization of spatial tempo
 
 ## [Wiki](https://github.com/meritoki/prospero/wiki)
 Checkout the Wiki to learn more
+
+## Reference
+1. https://www.codejava.net/aws/setup-aws-sdk-for-java-s3 

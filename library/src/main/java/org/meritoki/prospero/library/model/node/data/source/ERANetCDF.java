@@ -49,6 +49,12 @@ public class ERANetCDF extends Source {
 	@Override
 	public void query(Query query) throws Exception {
 		logger.info("query("+query+")");
+		if(query.getBasePath() != null) {
+			this.setBasePath(query.getBasePath());
+		}
+		if(query.getRelativePath() != null) {
+			this.setRelativePath(query.getRelativePath());
+		}
 		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
 		this.pressureList = query.getPressureList();
 		if (this.intervalList != null) {
@@ -60,7 +66,7 @@ public class ERANetCDF extends Source {
 	}
 
 	public void load(Query query, Interval interval) throws Exception {
-		List<Time> timeList = Time.getTimeList(2, interval);
+		List<Time> timeList = Time.getTimeList(1, interval);
 		List<NetCDF> loadList;
 		for (Time time : timeList) {
 			if (!Thread.interrupted()) {
@@ -78,13 +84,14 @@ public class ERANetCDF extends Source {
 	public List<NetCDF> read(Time time) throws Exception {
 		List<NetCDF> netCDFList = new ArrayList<>();
 		String start = time.year + String.format("%02d", time.month) + String.format("%02d", 1);
-		String stop = time.year + String.format("%02d", time.month)
+		String end = time.year + String.format("%02d", time.month)
 				+ String.format("%02d", this.getYearMonthDays(time.year, time.month));
-		String fileName = prefix + start + "-" + stop + "_}*{" + suffix;
+		String fileName = prefix + start + "-" + end + "_}*{" + suffix;
 		if (this.pressureList.size() > 0) {
 			for (int pressure : this.pressureList) {
+				logger.info("read("+time+") pressure="+pressure);
 				netCDFList.addAll(this.read(
-						this.getFilePath(prefix + start + "-" + stop + "_" + pressure + suffix + "." + extension)));
+						this.getFilePath(prefix + start + "-" + end + "_" + pressure + suffix + "." + extension)));
 			}
 		} else {
 			String pattern = "glob:{" + fileName + "}*.{"+extension+"}";

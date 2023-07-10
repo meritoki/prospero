@@ -51,6 +51,7 @@ public class Source extends Node {// implements SourceInterface
 	@JsonIgnore
 	public static char seperator = File.separatorChar;
 	public String basePath = "." + seperator;
+	public String downloadPath = null;
 	public String relativePath = null;
 	public String fileName = null;
 	public String timeZone = "GMT-3";
@@ -84,6 +85,12 @@ public class Source extends Node {// implements SourceInterface
 		logger.info("setRelativePath(" + relativePath + ")");
 		this.relativePath = relativePath;
 	}
+	
+	@JsonIgnore
+	public void setDownloadPath(String downloadPath) {
+		logger.info("setDownloadPath(" + downloadPath + ")");
+		this.downloadPath = downloadPath;
+	}
 
 	@JsonIgnore
 	public void setFileName(String fileName) {
@@ -93,6 +100,11 @@ public class Source extends Node {// implements SourceInterface
 	@JsonIgnore
 	public String getPath() {
 		return this.basePath + seperator + this.relativePath + seperator;
+	}
+	
+	@JsonIgnore
+	public String getDownloadPath() {
+		return this.basePath + seperator + this.downloadPath + seperator;
 	}
 
 	@JsonIgnore
