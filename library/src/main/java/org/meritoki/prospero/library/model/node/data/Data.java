@@ -28,7 +28,7 @@ import org.meritoki.prospero.library.model.node.data.source.CycloneUTNERAInterim
 import org.meritoki.prospero.library.model.node.data.source.ENSONOAA;
 import org.meritoki.prospero.library.model.node.data.source.EarthquakeUSGSEarthquakeHazardProgram;
 import org.meritoki.prospero.library.model.node.data.source.GOESNOAA;
-import org.meritoki.prospero.library.model.node.data.source.GravitationERA5Geopotential;
+import org.meritoki.prospero.library.model.node.data.source.GeopotentialERA5;
 import org.meritoki.prospero.library.model.node.data.source.LithosphereGEBCO;
 import org.meritoki.prospero.library.model.node.data.source.MagneticNOAAEMAG;
 import org.meritoki.prospero.library.model.node.data.source.MagneticNOAAWMM;
@@ -97,7 +97,7 @@ public class Data extends Node {
 		this.sourceMap.put("ecb98f29-fc40-4025-ab0e-24faeaa39d5e", new SILSOSunspot());
 		this.sourceMap.put("8b2215c6-945b-4109-bfb4-6c764636e390", new OceanSeaIce());
 		this.sourceMap.put("25742cae-1bf4-11ed-861d-0242ac120002", new OceanERA5SeaLevelPressure());
-		this.sourceMap.put("80607606-1671-4f9f-967b-db7f59e87b81", new GravitationERA5Geopotential());
+		this.sourceMap.put("80607606-1671-4f9f-967b-db7f59e87b81", new GeopotentialERA5());
 		this.sourceMap.put("aefbd8d1-d423-458d-90c0-7c8429f2a653", new GOESNOAA());
 		this.sourceMap.put("316bab36-ac3b-4930-87ae-5a32e4cdb81c", new VorticityERAInterim());
 		this.sourceMap.put("e7e20f49-2387-40ce-917f-5b592c0b8b67", new VorticityERA5());

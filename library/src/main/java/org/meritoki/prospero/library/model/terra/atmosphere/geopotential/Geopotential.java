@@ -1,11 +1,26 @@
-package org.meritoki.prospero.library.model.terra.atmosphere.vorticity;
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.meritoki.prospero.library.model.terra.atmosphere.geopotential;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
+import org.meritoki.prospero.library.model.terra.atmosphere.vorticity.Vorticity;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;
@@ -13,23 +28,18 @@ import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vorticity extends Atmosphere {
+public class Geopotential extends Atmosphere {
+	
 	static Logger logger = LoggerFactory.getLogger(Vorticity.class.getName());
 	protected DataType dataType;
 
-	public Vorticity() {
-		super("Vorticity");
-		this.tileFlag = true;
-		this.dataType = DataType.VORTICITY;
-		this.sourceMap.put("ERA 5", "e7e20f49-2387-40ce-917f-5b592c0b8b67");
-//		this.sourceMap.put("ERA INTERIM", "316bab36-ac3b-4930-87ae-5a32e4cdb81c");
-	}
 
-	public Vorticity(String name) {
-		super(name);
-		this.tileFlag = true;
+	public Geopotential() {
+		super("Geopotential");
+		this.sourceMap.put("ERA 5","80607606-1671-4f9f-967b-db7f59e87b81");
+		this.dataType = DataType.GEOPOTENTIAL;
 	}
-
+	
 	@Override
 	public void init() {
 		this.dimension = 1;

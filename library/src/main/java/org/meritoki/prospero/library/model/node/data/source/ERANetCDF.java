@@ -48,11 +48,11 @@ public class ERANetCDF extends Source {
 
 	@Override
 	public void query(Query query) throws Exception {
-		logger.info("query("+query+")");
-		if(query.getBasePath() != null) {
+		logger.info("query(" + query + ")");
+		if (query.getBasePath() != null) {
 			this.setBasePath(query.getBasePath());
 		}
-		if(query.getRelativePath() != null) {
+		if (query.getRelativePath() != null) {
 			this.setRelativePath(query.getRelativePath());
 		}
 		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
@@ -62,6 +62,9 @@ public class ERANetCDF extends Source {
 				this.load(query, i);
 			}
 			query.objectListAdd(new Result(Mode.COMPLETE));
+			if(query.getDownload()) {
+				this.download();
+			}
 		}
 	}
 
@@ -89,20 +92,33 @@ public class ERANetCDF extends Source {
 		String fileName = prefix + start + "-" + end + "_}*{" + suffix;
 		if (this.pressureList.size() > 0) {
 			for (int pressure : this.pressureList) {
-				logger.info("read("+time+") pressure="+pressure);
-				netCDFList.addAll(this.read(
-						this.getFilePath(prefix + start + "-" + end + "_" + pressure + suffix + "." + extension)));
+				logger.info("read(" + time + ") pressure=" + pressure);
+				this.setFileName(prefix + start + "-" + end + "_" + pressure + suffix + "." + extension);
+				if(this.fileExists()) {
+					netCDFList.addAll(this.read(this.getFilePath()));
+				} else {
+					this.form(time, pressure);
+				}
 			}
 		} else {
-			String pattern = "glob:{" + fileName + "}*.{"+extension+"}";
+			String pattern = "glob:{" + fileName + "}*.{" + extension + "}";
 			logger.info("read(" + time + ") pattern=" + pattern);
 			List<String> matchList = this.getWildCardFileList(Paths.get(this.getPath()), pattern);
 			for (String m : matchList) {
-				netCDFList.addAll(this.read(this.getPath() + m));
+				this.setFileName(m);
+				netCDFList.addAll(this.read(this.getFilePath()));
 			}
 		}
 
 		return netCDFList;
+	}
+	
+	public void form(Time time, Integer pressure) {
+		logger.info("form("+time+", "+pressure+")");
+	}
+	
+	public void download() {
+		logger.info("download()");
 	}
 
 	public List<NetCDF> read(String fileName) {

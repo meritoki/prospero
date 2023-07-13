@@ -77,6 +77,11 @@
 			<version>0.2.202102</version>
 		</dependency>
 		<dependency>
+			<groupId>org.utn.app.command</groupId>
+			<artifactId>era</artifactId>
+			<version>0.4.202209</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>

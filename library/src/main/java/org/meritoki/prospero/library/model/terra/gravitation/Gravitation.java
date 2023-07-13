@@ -20,7 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.terra.Terra;
-import org.meritoki.prospero.library.model.terra.gravitation.geopotential.Geopotential;
+import org.meritoki.prospero.library.model.terra.atmosphere.geopotential.Geopotential;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;

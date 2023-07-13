@@ -111,6 +111,11 @@ public class Source extends Node {// implements SourceInterface
 	public String getFilePath() {
 		return this.getPath() + this.fileName;
 	}
+	
+	@JsonIgnore
+	public boolean fileExists() {
+		return new File(this.getFilePath()).exists();
+	}
 
 	@JsonIgnore
 	public String getFilePath(String fileName) {
