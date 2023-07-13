@@ -33,51 +33,53 @@ import org.meritoki.prospero.library.model.unit.Result;
 import org.opengis.feature.simple.SimpleFeature;
 
 public class CountryNaturalEarth extends Source {
-	
+
 	public String downloadURL = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries.zip";
 	public String zipFile = "ne_10m_admin_0_countries.zip";
 
 	public CountryNaturalEarth() {
 		super();
-		this.setRelativePath("NaturalEarth"+seperator+"ne_10m_admin_0_countries");
+		this.setRelativePath("NaturalEarth" + seperator + "ne_10m_admin_0_countries");
 		this.setDownloadPath("NaturalEarth");
 		this.setFileName("ne_10m_admin_0_countries.shp");
 	}
-	
+
 	@Override
 	public void query(Query query) throws Exception {
 		logger.info("query(" + query + ")");
-		if(query.getDownload()) {
+		if (query.getDownload()) {
 			File file = new File(this.getFilePath());
-			if(!file.exists()) {
-				logger.info("query(" + (query  != null)+ ") download");
-				File zip = new File(this.getDownloadPath()+zipFile);
-				if(!zip.exists()) {
-					logger.info("query(" + (query  != null)+ ") downloading");
-					NodeController.downloadFile(downloadURL,this.getDownloadPath(),zipFile);
+			if (!file.exists()) {
+				logger.info("query(" + (query != null) + ") download");
+				File zip = new File(this.getDownloadPath() + zipFile);
+				if (!zip.exists()) {
+					logger.info("query(" + (query != null) + ") downloading");
+					NodeController.downloadFile(downloadURL, this.getDownloadPath(), zipFile);
 				}
-				logger.info("query(" + (query  != null) + ") extracting");
-				NodeController.unzipFile(this.getDownloadPath()+zipFile,this.getDownloadPath()+"ne_10m_admin_0_countries");
+				logger.info("query(" + (query != null) + ") extracting");
+				NodeController.unzipFile(this.getDownloadPath() + zipFile,
+						this.getDownloadPath() + "ne_10m_admin_0_countries");
 			}
 		}
 		Result result = new Result();
-		result.map.put("multiPolygonList",this.box(-180, 90, 180, -90));
+		result.map.put("multiPolygonList", this.box(-180, 90, 180, -90));
 		result.mode = Mode.LOAD;
 		query.objectList.add(result);
 		result = new Result();
 		result.mode = Mode.COMPLETE;
 		query.objectList.add(result);
 	}
-	
+
 	public MultiPolygon point(double latitude, double longitude) {
 		MultiPolygon f = null;
-		File file = new File(this.getFilePath());//this.getFilePath());
+		File file = new File(this.getFilePath());
 		try {
 			ShapefileDataStore dataStore = new ShapefileDataStore(file.toURI().toURL());
 			String[] typeNames = dataStore.getTypeNames();
 			String typeName = typeNames[0];
 			SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
-			org.opengis.filter.Filter filter = ECQL.toFilter("CONTAINS (the_geom, POINT(" + latitude + " " + longitude + "))");
+			org.opengis.filter.Filter filter = ECQL
+					.toFilter("CONTAINS (the_geom, POINT(" + latitude + " " + longitude + "))");
 			SimpleFeatureCollection collection = featureSource.getFeatures(filter);
 			SimpleFeatureIterator iterator = collection.features();
 			try {
@@ -85,8 +87,8 @@ public class CountryNaturalEarth extends Source {
 					SimpleFeature feature = iterator.next();
 					System.out.println(feature.getAttribute("NAME"));
 					WKTReader reader = new WKTReader();
-					MultiPolygon polygon = (MultiPolygon) reader.read(feature.getDefaultGeometry()+"");
-					f=polygon;
+					MultiPolygon polygon = (MultiPolygon) reader.read(feature.getDefaultGeometry() + "");
+					f = polygon;
 				}
 			} finally {
 				iterator.close();
@@ -97,38 +99,37 @@ public class CountryNaturalEarth extends Source {
 	}
 
 	public List<MultiPolygon> box(double latitudeA, double longitudeA, double latitudeB, double longitudeB) {
-//		System.out.println("box("+latitudeA+","+longitudeA+")");
 		File file = new File(this.getFilePath());
-		MultiPolygon f =null;
+		MultiPolygon f = null;
 		List<MultiPolygon> mList = new LinkedList<MultiPolygon>();
 		try {
 			ShapefileDataStore dataStore = new ShapefileDataStore(file.toURI().toURL());
 			String[] typeNames = dataStore.getTypeNames();
 			String typeName = typeNames[0];
 			SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
-			org.opengis.filter.Filter filter = ECQL.toFilter("BBOX (the_geom, " + latitudeA + ", " + longitudeA + ", " + latitudeB + ", " + longitudeB + ")");
+			org.opengis.filter.Filter filter = ECQL.toFilter(
+					"BBOX (the_geom, " + latitudeA + ", " + longitudeA + ", " + latitudeB + ", " + longitudeB + ")");
 			SimpleFeatureCollection collection = featureSource.getFeatures(filter);
 			SimpleFeatureIterator iterator = collection.features();
 			try {
 				while (iterator.hasNext()) {
 					SimpleFeature feature = iterator.next();
-//					GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory( null );
 					WKTReader reader = new WKTReader();
-					MultiPolygon polygon = (MultiPolygon) reader.read(feature.getDefaultGeometry()+"");
-					f=polygon;
+					MultiPolygon polygon = (MultiPolygon) reader.read(feature.getDefaultGeometry() + "");
+					f = polygon;
 					mList.add(f);
 				}
 			} finally {
 				iterator.close();
 			}
-
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 		return mList;
 	}
 }
-
+//GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory( null );
+//System.out.println("box("+latitudeA+","+longitudeA+")");
 //private String fileName = this.basePath+"prospero-data/NaturalEarth/ne_10m_admin_0_countries/ne_10m_admin_0_countries.shp";
 //private List<MultiPolygon> multiPolygonList;
 
