@@ -115,7 +115,7 @@ public class Geopotential extends Atmosphere {
 								int x = (int) ((latitude + this.latitude / 2) * this.resolution);
 								int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
 								int z = calendar.get(Calendar.MONTH);
-								dataMatrix[x][y][z] += netCDF.variableArray.get(t, lat, lon);
+								dataMatrix[x][y][z] += netCDF.variableCube.get(t, lat, lon);
 								coordinateMatrix[x][y][z]++;
 								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, -1,
 										-1, -1, -1);

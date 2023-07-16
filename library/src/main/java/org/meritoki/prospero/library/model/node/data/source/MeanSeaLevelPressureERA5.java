@@ -122,7 +122,7 @@ public class MeanSeaLevelPressureERA5 extends OceanERA {
 				ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
 				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
 				ArrayShort.D3 mslArray = (ArrayShort.D3) mslVar.read();
-				this.variableArray = this.getMSLArray(mslArray, timeCount, latitudeCount, longitudeCount, scaleFactor,
+				this.variableCube = this.getMSLArray(mslArray, timeCount, latitudeCount, longitudeCount, scaleFactor,
 						addOffset);
 				NetCDF netCDF = new NetCDF();
 				netCDF.continent = this.getContinent(scaleFactor, addOffset);
@@ -130,7 +130,7 @@ public class MeanSeaLevelPressureERA5 extends OceanERA {
 				netCDF.latArray = latArray;
 				netCDF.lonArray = lonArray;
 				netCDF.timeArray = timeArray;
-				netCDF.variableArray = this.variableArray;
+				netCDF.variableCube = this.variableCube;
 				dataFile.close();
 				System.gc();
 				netCDFList.add(netCDF);

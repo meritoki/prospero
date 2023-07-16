@@ -44,39 +44,19 @@ import com.meritoki.library.controller.node.NodeController;
 public class CycloneUTNERAInterimTest extends CycloneSource {
 
 	static Logger logger = LoggerFactory.getLogger(CycloneUTNERAInterimTest.class.getName());
-//	public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
-//	public static String prefix = "925-850-700-600-500-400-300-250-200-150-125-100-";
 	public static String extension = "json";
-//	public int[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
-	private final int startYear = 2001;
-	private final int endYear = 2017;
 
 	public CycloneUTNERAInterimTest() {
 		super();
+		this.startTime = new Time(2001,1,1,-1,-1,-1);
+		this.endTime = new Time(2017,12,31,-1,-1,-1);
 		this.setPressureArray(ERAInterimEvent.pressureArray);
 		this.setBasePath("/home/jorodriguez/Drive/Test/");
 		this.setRelativePath("output/era-interim-test");
 	}
 
-	@Override
-	public int getStartYear() {
-		return this.startYear;
-	}
-
-	@Override
-	public int getEndYear() {
-		return this.endYear;
-	}
-
-//	@Override
-//	public int[] getPressureArray() {
-//		return this.pressureArray;
-//	}
-	
-	
-
 	public List<Event> read(int year, int month) throws Exception {
-		if (this.startYear <= year && year <= this.endYear) {
+		if (this.startTime.year <= year && year <= this.endTime.year) {
 			logger.debug("read(" + year + "," + month + ")");
 			this.setPrefix(this.getPressureString());
 			String yearMonth = year + "" + String.format("%02d", month) + "01";
@@ -174,9 +154,26 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 		calendar.set(Calendar.SECOND, 0);
 		return calendar;
 	}
-
-
 }
+//@Override
+//public int getStartYear() {
+//	return this.startYear;
+//}
+//
+//@Override
+//public int getEndYear() {
+//	return this.endYear;
+//}
+
+//@Override
+//public int[] getPressureArray() {
+//	return this.pressureArray;
+//}
+//public static String prefix = "100-125-150-200-250-300-400-500-600-700-850-925-";
+//public static String prefix = "925-850-700-600-500-400-300-250-200-150-125-100-";
+//public int[] pressureArray = { 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925 };
+//private final int startYear = 2001;
+//private final int endYear = 2017;
 //Calendar calendar;
 //Integer m = null;
 //Integer y = null;

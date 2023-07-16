@@ -31,8 +31,6 @@ import org.meritoki.prospero.library.model.unit.Result;
 
 public class ENSONOAA extends Source {
 
-//	public String fileName = this.basePath+"prospero-data/NOAA/MEI/meiv2.data";
-	
 	public ENSONOAA() {
 		super();
 		this.setRelativePath("NOAA"+seperator+"MEI"+seperator);
@@ -117,6 +115,7 @@ public class ENSONOAA extends Source {
 		return indexList;
 	}
 }
+//public String fileName = this.basePath+"prospero-data/NOAA/MEI/meiv2.data";
 //public List<Index> indexList;
 
 //public static void main(String[] args) {

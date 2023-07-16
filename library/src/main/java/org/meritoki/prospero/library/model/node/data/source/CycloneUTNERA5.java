@@ -44,29 +44,17 @@ import com.meritoki.library.controller.node.NodeController;
 public class CycloneUTNERA5 extends CycloneSource {
 	static Logger logger = LoggerFactory.getLogger(CycloneUTNERA5.class.getName());
 	private final String merged = "F339A7D11BBFA9F1EF71B466A94895F6";
-	private final int startYear = 1979;
-	private final int endYear = 2019;
-	private final Time startTime = new Time(1979,1,1,-1,-1,-1);
-	private final Time endTime = new Time(2019,12,31,-1,-1,-1);
 	public static String extension = "json";
 	public String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
 	public CycloneUTNERA5() {
 		super();
 		this.single = true;
+		this.startTime = new Time(1979,1,1,-1,-1,-1);
+		this.endTime = new Time(2019,12,31,-1,-1,-1);
 		this.setPressureArray(ERA5Event.pressureArray);
 		this.setPrefix(merged);
 		this.setRelativePath("UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator + "202103");
-	}
-
-	@Override
-	public int getStartYear() {
-		return this.startYear;
-	}
-
-	@Override
-	public int getEndYear() {
-		return this.endYear;
 	}
 	
 	@Override
@@ -194,6 +182,18 @@ public class CycloneUTNERA5 extends CycloneSource {
 
 
 }
+//
+//@Override
+//public int getStartYear() {
+//	return this.startYear;
+//}
+//
+//@Override
+//public int getEndYear() {
+//	return this.endYear;
+//}
+//private final int startYear = 1979;
+//private final int endYear = 2019;
 //@Override
 //public int[] getPressureArray() {
 //	return this.pressureTestArray;

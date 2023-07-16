@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.module.library.model.Node;
 
-public class Source extends Node {// implements SourceInterface
+public class Source extends Node {
 
 	static Logger logger = LoggerFactory.getLogger(Source.class.getName());
 	@JsonIgnore
@@ -60,10 +60,8 @@ public class Source extends Node {// implements SourceInterface
 	public int resolution = 1;
 	public List<Interval> intervalList;
 	public List<Region> regionList;
-	private final int startYear = -1;
-	private final int endYear = -1;
-	private final Time startTime = new Time();
-	private final Time endTime = new Time();
+	public Time startTime = new Time();
+	public Time endTime = new Time();
 
 	public Source() {
 		this.filter = false;
@@ -84,8 +82,12 @@ public class Source extends Node {// implements SourceInterface
 	public void setRelativePath(String relativePath) {
 		logger.info("setRelativePath(" + relativePath + ")");
 		this.relativePath = relativePath;
+		File file = new File(this.relativePath);
+		if (!file.exists() && file.isDirectory()) {
+			file.mkdirs();
+		}
 	}
-	
+
 	@JsonIgnore
 	public void setDownloadPath(String downloadPath) {
 		logger.info("setDownloadPath(" + downloadPath + ")");
@@ -94,7 +96,7 @@ public class Source extends Node {// implements SourceInterface
 
 	@JsonIgnore
 	public void setFileName(String fileName) {
-		logger.info("setFileName("+fileName+")");
+		logger.info("setFileName(" + fileName + ")");
 		this.fileName = fileName;
 	}
 
@@ -102,7 +104,7 @@ public class Source extends Node {// implements SourceInterface
 	public String getPath() {
 		return this.basePath + seperator + this.relativePath + seperator;
 	}
-	
+
 	@JsonIgnore
 	public String getDownloadPath() {
 		return this.basePath + seperator + this.downloadPath + seperator;
@@ -112,7 +114,7 @@ public class Source extends Node {// implements SourceInterface
 	public String getFilePath() {
 		return this.getPath() + this.fileName;
 	}
-	
+
 	@JsonIgnore
 	public boolean fileExists() {
 		return new File(this.getFilePath()).exists();
@@ -166,14 +168,6 @@ public class Source extends Node {// implements SourceInterface
 	public void query(Query query) throws Exception {
 	}
 
-	public int getStartYear() {
-		return this.startYear;
-	}
-
-	public int getEndYear() {
-		return this.endYear;
-	}
-	
 	public Time getStartTime() {
 		return this.startTime;
 	}
@@ -220,6 +214,16 @@ public class Source extends Node {// implements SourceInterface
 			throw new Exception("source does not support " + field);
 	}
 }
+//public int getStartYear() {
+//return this.startYear;
+//}
+//
+//public int getEndYear() {
+//return this.endYear;
+//}
+//private final int startYear = -1;
+//private final int endYear = -1;
+//implements SourceInterface
 //public int getInteger(String value) throws Exception {
 //return Integer.parseInt(value);
 //}

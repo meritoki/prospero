@@ -104,7 +104,7 @@ public class Cloud extends Atmosphere {
 			if (netCDF.type == DataType.BAND_4) {
 				ArrayFloat.D2 latMatrix = netCDF.latMatrix;
 				ArrayFloat.D2 lonMatrix = netCDF.lonMatrix;
-				ArrayFloat.D3 dataArray = netCDF.variableArray;
+				ArrayFloat.D3 dataArray = netCDF.variableCube;
 				Dimension xDimension = netCDF.xDimension;
 				Dimension yDimension = netCDF.yDimension;
 				long timeSize = netCDF.timeArray.getSize();

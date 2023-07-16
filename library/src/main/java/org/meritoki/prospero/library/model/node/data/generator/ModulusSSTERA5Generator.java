@@ -233,7 +233,7 @@ public class ModulusSSTERA5Generator extends OceanGenerator {
 			}
 
 			NetcdfFileWriter netCDFFile = null;
-			fileName = path + seperator + "modulus"+"_" + start + "-" + stop + suffix + "." + extension;
+			fileName = path + seperator + outputFileName;
 			try {
 				netCDFFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, fileName);
 				Dimension latitudeDimension = netCDFFile.addDimension(null, "latitude", (int) latitudeArray.getSize());
@@ -280,9 +280,9 @@ public class ModulusSSTERA5Generator extends OceanGenerator {
 				}
 			}
 		}
-		logger.info("write(" + year + "," + month + ") complete");
-		MemoryController.log();
-		return frameList;
+//		logger.info("write(" + year + "," + month + ") complete");
+//		MemoryController.log();
+//		return frameList;
 	}
 
 	public void write() {

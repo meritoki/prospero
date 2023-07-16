@@ -31,7 +31,7 @@ public class NetCDF {
 	public ArrayFloat.D2 lonMatrix;
 	public ArrayInt.D1 timeArray;
 	public ArrayDouble.D1 timeDoubleArray;
-	public ArrayFloat.D3 variableArray;
+	public ArrayFloat.D3 variableCube;
 	public ArrayFloat.D2 variableMatrix;
 	public Object variable;
 }

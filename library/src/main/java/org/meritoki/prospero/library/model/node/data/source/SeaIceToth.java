@@ -35,24 +35,14 @@ import org.slf4j.LoggerFactory;
 public class SeaIceToth extends Source {
 
 	static Logger logger = LoggerFactory.getLogger(SeaIceToth.class.getName());
-//	public String path = basePath + "prospero-data" + seperator + "Toth" + seperator + "hielo2020toths.txt";
-	private final int startYear = 1979;
-	private final int endYear = 2019;
+
 	
 	public SeaIceToth() {
 		super();
+		this.startTime = new Time(1979, 1, 1, 0, -1, -1);
+		this.endTime = new Time(2019, 12, 31, 24, -1, -1);
 		this.setRelativePath("Toth"+seperator);
 		this.setFileName("hielo2020toths.txt");
-	}
-
-	@Override
-	public int getStartYear() {
-		return this.startYear;
-	}
-
-	@Override
-	public int getEndYear() {
-		return this.endYear;
 	}
 	
 	@Override
@@ -119,6 +109,18 @@ public class SeaIceToth extends Source {
 		return frameList;
 	}
 }
+//public String path = basePath + "prospero-data" + seperator + "Toth" + seperator + "hielo2020toths.txt";
+//private final int startYear = 1979;
+//private final int endYear = 2019;
+//@Override
+//public int getStartYear() {
+//	return this.startYear;
+//}
+//
+//@Override
+//public int getEndYear() {
+//	return this.endYear;
+//}
 //String[] tempArray = IntStream.range(2, lineArray.length).mapToObj(i -> lineArray[i])
 //.toArray(String[]::new);
 //@Override

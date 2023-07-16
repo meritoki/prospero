@@ -28,7 +28,7 @@ public class ERANetCDF extends Source {
 
 	public String variable;
 	public DataType dataType;
-	public ArrayFloat.D3 variableArray;
+	public ArrayFloat.D3 variableCube;
 	public String prefix;
 	public String suffix;
 	public String extension = "nc";
@@ -152,18 +152,18 @@ public class ERANetCDF extends Source {
 				ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
 				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
 				ArrayShort.D3 variableArray = (ArrayShort.D3) variableVar.read();
-				this.variableArray = this.getVariableArray(variableArray, timeCount, latitudeCount, longitudeCount,
+				this.variableCube = this.getVariableArray(variableArray, timeCount, latitudeCount, longitudeCount,
 						scaleFactor, addOffset);
 				NetCDF netCDF = new NetCDF();
 				netCDF.type = this.dataType;
 				netCDF.latArray = latArray;
 				netCDF.lonArray = lonArray;
 				netCDF.timeArray = timeArray;
-				netCDF.variableArray = this.variableArray;
+				netCDF.variableCube = this.variableCube;
 				dataFile.close();
 				System.gc();
 				netCDFList.add(netCDF);
-				this.netCDFMap.put(fileName,netCDFList);
+				this.netCDFMap.put(fileName, netCDFList);
 			} catch (java.io.IOException e) {
 				logger.error("IOException " + e.getMessage());
 

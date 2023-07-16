@@ -46,7 +46,6 @@ public class GOESRNOAA extends GOESNOAA {
 
 	static Logger logger = LoggerFactory.getLogger(GOESRNOAA.class.getName());
 	public static String prefix = "OR_ABI-L2-MCMIPF-M6_G16_";
-//	protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 	public ArrayFloat.D2 latitudeArray;
 	public ArrayFloat.D2 longitudeArray;
 	public ArrayFloat.D2 dataMatrix;
@@ -56,24 +55,15 @@ public class GOESRNOAA extends GOESNOAA {
 	public double height = 35786023.0 + (earth.radius * 1000);
 	public DataType dataType = DataType.CMI;
 	public String variable = "CMI_C11";
-	private final int startYear = 1979;
-	private final int endYear = 2019;
-	private final Time startTime = new Time(2019,6,1,0,-1,-1);
-	private final Time endTime = new Time(2019,9,30,0,-1,-1);
+
 
 	public GOESRNOAA() {
 		super();
+		this.startTime = new Time(2019,6,1,0,-1,-1);
+		this.endTime = new Time(2019,9,30,0,-1,-1);
 	}
 	
-	@Override
-	public int getStartYear() {
-		return this.startYear;
-	}
 
-	@Override
-	public int getEndYear() {
-		return this.endYear;
-	}
 	
 	@Override
 	public Time getStartTime() {
@@ -278,7 +268,7 @@ public class GOESRNOAA extends GOESNOAA {
 			netCDF.latMatrix = latArray;
 			netCDF.lonMatrix = lonArray;
 			netCDF.timeArray = timeArray;
-			netCDF.variableArray = dataArray;
+			netCDF.variableCube = dataArray;
 			dataFile.close();
 			System.gc();
 			netCDFList.add(netCDF);
@@ -298,6 +288,16 @@ public class GOESRNOAA extends GOESNOAA {
 		return netCDFList;
 	}
 }
+//protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
+//@Override
+//public int getStartYear() {
+//	return this.startYear;
+//}
+//
+//@Override
+//public int getEndYear() {
+//	return this.endYear;
+//}
 //fileName = this.getPath()+"OR_ABI-L2-CMIPF-M3C01_G16_s20190011600366_e20190011611133_c20190011611205.nc";
 //Object[] objectArray = this.getDataArray(latArray,lonArray,dataArray,timeDimension.getLength(),xcDimension.getLength(),ycDimension.getLength());
 //public Object[] getDataArray(ArrayFloat.D2 latitudeArray, ArrayFloat.D2 longitudeArray, ArrayFloat.D3 dataArray, int timeCount, int xCount, int yCount) {

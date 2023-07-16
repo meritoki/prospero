@@ -120,61 +120,165 @@ public class SeaSurfaceTemperatureERA5 extends OceanERA {
 				int longitudeCount = (int) longitudeVar.getSize();
 				int latitudeCount = (int) latitudeVar.getSize();
 				int timeCount = (int) timeVar.getSize();
-				ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
-				ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
+				ArrayFloat.D1 latitudeArray = (ArrayFloat.D1) latitudeVar.read();
+				ArrayFloat.D1 longitudeArray = (ArrayFloat.D1) longitudeVar.read();
 				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
 				ArrayShort.D3 sstArray = (ArrayShort.D3) sstVar.read();
-				this.variableArray = this.getSSTArray(sstArray, timeCount, latitudeCount, longitudeCount, scaleFactor,
+				this.variableCube = this.getSSTArray(sstArray, timeCount, latitudeCount, longitudeCount, scaleFactor,
 						addOffset);
 				NetCDF netCDF = new NetCDF();
 //				netCDF.continent = this.getContinent(scaleFactor, addOffset);
 				netCDF.type = DataType.SST;
-				netCDF.latArray = latArray;
-				netCDF.lonArray = lonArray;
+				netCDF.latArray = latitudeArray;
+				netCDF.lonArray = longitudeArray;
 				netCDF.timeArray = timeArray;
-				netCDF.variableArray = this.variableArray;
+				netCDF.variableCube = this.variableCube;
 				dataFile.close();
 				System.gc();
 				netCDFList.add(netCDF);
-				this.netCDFMap.put(fileName,netCDFList);
-			} catch (java.io.IOException e) {
-				logger.error("IOException " + e.getMessage());
+				// MODULUS
+				ArrayFloat.D3 variableArray = new ArrayFloat.D3(timeCount, latitudeCount, longitudeCount);
+				float continent = this.getContinent(scaleFactor, addOffset);
+				boolean latitudeCentralFlag = false;
+				boolean latitudeBackwardFlag = false;
+				boolean latitudeForwardFlag = false;
+				boolean longitudeCentralFlag = false;
+				boolean longitudeBackwardFlag = false;
+				boolean longitudeForwardFlag = false;
+				boolean dPhiFlag = false;
+				boolean dThetaFlag = false;
+				for (int time = 0; time < timeCount; time++) {
+					for (int lat = 0; lat < latitudeCount; lat++) {
+						float latitude = latitudeArray.get(lat);
+						float latitudeA = 0;
+						float latitudeB = 0;
+						latitudeCentralFlag = false;
+						latitudeForwardFlag = false;
+						latitudeBackwardFlag = false;
+						if ((lat) == 0) {
+							latitudeForwardFlag = true;
+							latitudeA = latitudeArray.get(lat);
+							latitudeB = latitudeArray.get(lat + 1);
+						} else if ((lat + 1) == latitudeCount) {
+							latitudeBackwardFlag = true;
+							latitudeA = latitudeArray.get(lat - 1);
+							latitudeB = latitudeArray.get(lat);
+						} else if ((lat - 1) >= 0 && (lat + 1) < latitudeCount) {
+							latitudeCentralFlag = true;
+							latitudeA = latitudeArray.get(lat - 1);
+							latitudeB = latitudeArray.get(lat + 1);
+						}
 
-			} finally {
-				if (dataFile != null) {
-					try {
-						dataFile.close();
-					} catch (IOException e) {
-						logger.error("IOException " + e.getMessage());
+						float phi = 90 - latitude;
+						float phiA = 90 - latitudeA;
+						float phiB = 90 - latitudeB;
+						phi = (float) Math.toRadians(phi);
+						phiA = (float) Math.toRadians(phiA);
+						phiB = (float) Math.toRadians(phiB);
+						latitude += 90;
+						for (int lon = 0; lon < longitudeCount; lon++) {
+							float longitude = longitudeArray.get(lon);
+							float longitudeA = 0;
+							float longitudeB = 0;
+							longitudeCentralFlag = false;
+							longitudeForwardFlag = false;
+							longitudeBackwardFlag = false;
+							if (lon == 0) {
+								longitudeForwardFlag = true;
+								longitudeA = longitudeArray.get(lon);
+								longitudeB = longitudeArray.get(lon + 1);
+							} else if (lon + 1 == longitudeCount) {
+								longitudeBackwardFlag = true;
+								longitudeA = longitudeArray.get(lon - 1);
+								longitudeB = longitudeArray.get(lon);
+							} else if ((lon - 1) >= 0 && (lon + 1) < longitudeCount) {
+								longitudeCentralFlag = true;
+								longitudeA = longitudeArray.get(lon - 1);
+								longitudeB = longitudeArray.get(lon + 1);
+							}
+							double theta = longitude;
+							double thetaA = longitudeA;
+							double thetaB = longitudeB;
+							theta = Math.toRadians(theta);
+							thetaA = Math.toRadians(thetaA);
+							thetaB = Math.toRadians(thetaB);
+							float sst = this.variableCube.get(time, lat, lon);
+							float sstPhiA;
+							float sstPhiB;
+							float sstThetaA;
+							float sstThetaB;
+							float modulus = 0;
+							double dPhi = -1;
+							double dTheta = -1;
+							if (sst != continent) {
+								dPhiFlag = false;
+								if (latitudeForwardFlag) {
+									sstPhiA = this.variableCube.get(time, lat, lon);
+									sstPhiB = this.variableCube.get(time, lat + 1, lon);
+									if (sstPhiA != continent && sstPhiB != continent) {
+										dPhiFlag = true;
+										dPhi = this.getDerivative("forward", sstPhiA, sstPhiB, phiA, phiB);
+									}
+								} else if (latitudeBackwardFlag) {
+									sstPhiA = this.variableCube.get(time, lat - 1, lon);
+									sstPhiB = this.variableCube.get(time, lat, lon);
+									if (sstPhiA != continent && sstPhiB != continent) {
+										dPhiFlag = true;
+										dPhi = this.getDerivative("backward", sstPhiA, sstPhiB, phiA, phiB);
+									}
+								} else if (latitudeCentralFlag) {
+									sstPhiA = this.variableCube.get(time, lat - 1, lon);
+									sstPhiB = this.variableCube.get(time, lat + 1, lon);
+									if (sstPhiA != continent && sstPhiB != continent) {
+										dPhiFlag = true;
+										dPhi = this.getDerivative("central", sstPhiA, sstPhiB, phiA, phiB);
+									}
+								}
+								dThetaFlag = false;
+								if (longitudeForwardFlag) {
+									sstThetaA = this.variableCube.get(time, lat, lon);
+									sstThetaB = this.variableCube.get(time, lat, lon + 1);
+									if (sstThetaA != continent && sstThetaB != continent) {
+										dThetaFlag = true;
+										dTheta = this.getDerivative("forward", sstThetaA, sstThetaB, thetaA, thetaB);
+									}
+								} else if (longitudeBackwardFlag) {
+									sstThetaA = this.variableCube.get(time, lat, lon - 1);
+									sstThetaB = this.variableCube.get(time, lat, lon);
+									if (sstThetaA != continent && sstThetaB != continent) {
+										dThetaFlag = true;
+										dTheta = this.getDerivative("backward", sstThetaA, sstThetaB, thetaA, thetaB);
+									}
+								} else if (longitudeCentralFlag) {
+									sstThetaA = this.variableCube.get(time, lat, lon - 1);
+									sstThetaB = this.variableCube.get(time, lat, lon + 1);
+									if (sstThetaA != continent && sstThetaB != continent) {
+										dThetaFlag = true;
+										dTheta = this.getDerivative("central", sstThetaA, sstThetaB, thetaA, thetaB);
+									}
+								}
+								if (dPhiFlag && dThetaFlag) {
+									modulus = (float) this.getModulus(this.earthRadius, phi, theta, 0, dPhi, dTheta);
+								} else {
+									modulus = 0;
+								}
+								variableArray.set(time, lat, lon, modulus);
+							} else {
+								variableArray.set(time, lat, lon, 0);
+							}
+						}
 					}
 				}
-			}
-			String outputFileName = this.getFilePath("modulus" + "_" + fileName);
-			File file = new File(fileName);
-			if (!file.exists()) {
-				ModulusSSTERA5Generator generator = new ModulusSSTERA5Generator();
-				generator.write(fileName, outputFileName);
-			}
-			try {
-				dataFile = NetcdfFile.open(outputFileName, null);
-				Variable latitudeVar = dataFile.findVariable("latitude");
-				Variable longitudeVar = dataFile.findVariable("longitude");
-				Variable timeVar = dataFile.findVariable("time");
-				Variable modulusVar = dataFile.findVariable("modulus");
-				ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
-				ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
-				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
-				ArrayFloat.D3 modulusArray = (ArrayFloat.D3) modulusVar.read();
-				NetCDF netCDF = new NetCDF();
-				netCDF.continent = 0;
+				netCDF = new NetCDF();
+//				netCDF.continent = this.getContinent(scaleFactor, addOffset);
 				netCDF.type = DataType.MODULUS;
-				netCDF.latArray = latArray;
-				netCDF.lonArray = lonArray;
+				netCDF.latArray = latitudeArray;
+				netCDF.lonArray = longitudeArray;
 				netCDF.timeArray = timeArray;
-				netCDF.variableArray = modulusArray;
-				dataFile.close();
-				System.gc();
+				netCDF.variableCube = variableArray;
 				netCDFList.add(netCDF);
+				// MODULUS
+				this.netCDFMap.put(fileName, netCDFList);
 			} catch (java.io.IOException e) {
 				logger.error("IOException " + e.getMessage());
 
@@ -187,7 +291,45 @@ public class SeaSurfaceTemperatureERA5 extends OceanERA {
 					}
 				}
 			}
-			MemoryController.log();
+//			String outputFileName = this.getFilePath("modulus" + "_" + fileName);
+//			File file = new File(fileName);
+//			if (!file.exists()) {
+//				ModulusSSTERA5Generator generator = new ModulusSSTERA5Generator();
+//				generator.write(fileName, outputFileName);
+//			}
+//			try {
+//				dataFile = NetcdfFile.open(outputFileName, null);
+//				Variable latitudeVar = dataFile.findVariable("latitude");
+//				Variable longitudeVar = dataFile.findVariable("longitude");
+//				Variable timeVar = dataFile.findVariable("time");
+//				Variable modulusVar = dataFile.findVariable("modulus");
+//				ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
+//				ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
+//				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
+//				ArrayFloat.D3 modulusArray = (ArrayFloat.D3) modulusVar.read();
+//				NetCDF netCDF = new NetCDF();
+//				netCDF.continent = 0;
+//				netCDF.type = DataType.MODULUS;
+//				netCDF.latArray = latArray;
+//				netCDF.lonArray = lonArray;
+//				netCDF.timeArray = timeArray;
+//				netCDF.variableArray = modulusArray;
+//				dataFile.close();
+//				System.gc();
+//				netCDFList.add(netCDF);
+//			} catch (java.io.IOException e) {
+//				logger.error("IOException " + e.getMessage());
+//
+//			} finally {
+//				if (dataFile != null) {
+//					try {
+//						dataFile.close();
+//					} catch (IOException e) {
+//						logger.error("IOException " + e.getMessage());
+//					}
+//				}
+//			}
+//			MemoryController.log();
 		}
 		return netCDFList;
 	}

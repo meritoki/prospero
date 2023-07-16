@@ -46,7 +46,6 @@ public class GOESNNOAA extends GOESNOAA {
 
 	static Logger logger = LoggerFactory.getLogger(GOESNNOAA.class.getName());
 	public static String prefix = "OR_ABI-L2-MCMIPF-M6_G16_";
-//	protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 	public ArrayFloat.D2 latitudeArray;
 	public ArrayFloat.D2 longitudeArray;
 	public ArrayFloat.D2 dataMatrix;
@@ -56,25 +55,13 @@ public class GOESNNOAA extends GOESNOAA {
 	public double height = 35786023.0 + (earth.radius * 1000);
 	public DataType dataType = DataType.CMI;
 	public String variable = "CMI_C11";
-	private final int startYear = 1979;
-	private final int endYear = 2019;
-	private final Time startTime = new Time(2019,6,1,0,-1,-1);
-	private final Time endTime = new Time(2019,9,30,0,-1,-1);
 
 	public GOESNNOAA() {
 		super();
-	}
-	
-	@Override
-	public int getStartYear() {
-		return this.startYear;
+		this.startTime = new Time(2019, 6, 1, 0, -1, -1);
+		this.endTime = new Time(2019, 9, 30, 0, -1, -1);
 	}
 
-	@Override
-	public int getEndYear() {
-		return this.endYear;
-	}
-	
 	@Override
 	public Time getStartTime() {
 		return this.startTime;
@@ -88,7 +75,7 @@ public class GOESNNOAA extends GOESNOAA {
 	@Override
 	public void query(Query query) throws Exception {
 		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
-		this.variable = (query.getChannel()!= null)?query.getChannel():"CMI_C08";
+		this.variable = (query.getChannel() != null) ? query.getChannel() : "CMI_C08";
 		if (this.intervalList != null) {
 			for (Interval i : this.intervalList) {
 				this.load(query, i);
@@ -98,7 +85,7 @@ public class GOESNNOAA extends GOESNOAA {
 	}
 
 	public void load(Query query, Interval interval) throws Exception {
-		List<Time> timeList = Time.getTimeList(2,interval);
+		List<Time> timeList = Time.getTimeList(2, interval);
 		List<NetCDF> loadList;
 		for (Time time : timeList) {
 			if (!Thread.interrupted()) {
@@ -137,10 +124,10 @@ public class GOESNNOAA extends GOESNOAA {
 //		if(list != null) {
 //			netCDFList = list;
 //		} else {
-			List<String> matchList = this.getWildCardFileList(Paths.get(this.getPath()), pattern);
-			for (String m : matchList) {
-				netCDFList.addAll(this.read(this.getPath() + m));
-			}
+		List<String> matchList = this.getWildCardFileList(Paths.get(this.getPath()), pattern);
+		for (String m : matchList) {
+			netCDFList.addAll(this.read(this.getPath() + m));
+		}
 //			if(netCDFList.size() > 0) {
 //				this.netCDFMap.put(pattern,netCDFList);
 //			}
@@ -199,8 +186,8 @@ public class GOESNNOAA extends GOESNOAA {
 //			logger.info("read16(...) yScaleFactor=" + yScaleFactor);
 //			logger.info("read16(...) nominalSatelliteSubpointLon=" + nominalSatelliteSubpointLon);
 //			logger.info("read16(...) nominalSatelliteHeight=" + nominalSatelliteHeight);
-			this.latitudeArray = new ArrayFloat.D2(xSize,ySize);
-			this.longitudeArray = new ArrayFloat.D2(xSize,ySize);
+			this.latitudeArray = new ArrayFloat.D2(xSize, ySize);
+			this.longitudeArray = new ArrayFloat.D2(xSize, ySize);
 			this.dataMatrix = new ArrayFloat.D2(xSize, ySize);
 			this.timeArray = new ArrayDouble.D1(1);
 			this.timeArray.set(0, t);
@@ -215,7 +202,7 @@ public class GOESNNOAA extends GOESNOAA {
 				for (int y = 0; y < ySize; y++) {
 					short yShort = yArray.get(y);
 					float Y = (yShort * yScaleFactor) + yAddOffset;
-					Coordinate c = Satellite.getCoordinate(6378.137,6357.00,  longitude, -Y, -X, height);
+					Coordinate c = Satellite.getCoordinate(6378.137, 6357.00, longitude, -Y, -X, height);
 					if (c.is()) {
 						this.latitudeArray.set(x, y, (float) c.latitude);
 						this.longitudeArray.set(x, y, (float) c.longitude);
@@ -278,7 +265,7 @@ public class GOESNNOAA extends GOESNOAA {
 			netCDF.latMatrix = latArray;
 			netCDF.lonMatrix = lonArray;
 			netCDF.timeArray = timeArray;
-			netCDF.variableArray = dataArray;
+			netCDF.variableCube = dataArray;
 			dataFile.close();
 			System.gc();
 			netCDFList.add(netCDF);
@@ -298,6 +285,16 @@ public class GOESNNOAA extends GOESNOAA {
 		return netCDFList;
 	}
 }
+//protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
+//@Override
+//public int getStartYear() {
+//	return this.startYear;
+//}
+//
+//@Override
+//public int getEndYear() {
+//	return this.endYear;
+//}
 //fileName = this.getPath()+"OR_ABI-L2-CMIPF-M3C01_G16_s20190011600366_e20190011611133_c20190011611205.nc";
 //Object[] objectArray = this.getDataArray(latArray,lonArray,dataArray,timeDimension.getLength(),xcDimension.getLength(),ycDimension.getLength());
 //public Object[] getDataArray(ArrayFloat.D2 latitudeArray, ArrayFloat.D2 longitudeArray, ArrayFloat.D3 dataArray, int timeCount, int xCount, int yCount) {

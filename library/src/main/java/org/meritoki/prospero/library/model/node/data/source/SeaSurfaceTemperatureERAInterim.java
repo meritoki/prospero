@@ -89,7 +89,7 @@ public class SeaSurfaceTemperatureERAInterim extends OceanERA {
 			netCDF.latArray = latArray;
 			netCDF.lonArray = lonArray;
 			netCDF.timeArray = timeArray;
-			netCDF.variableArray = this.sstArray;
+			netCDF.variableCube = this.sstArray;
 			dataFile.close();
 			System.gc();
 			netCDFList.add(netCDF);
@@ -127,7 +127,7 @@ public class SeaSurfaceTemperatureERAInterim extends OceanERA {
 			netCDF.latArray = latArray;
 			netCDF.lonArray = lonArray;
 			netCDF.timeArray = timeArray;
-			netCDF.variableArray = modulusArray;
+			netCDF.variableCube = modulusArray;
 			dataFile.close();
 			System.gc();
 			netCDFList.add(netCDF);
