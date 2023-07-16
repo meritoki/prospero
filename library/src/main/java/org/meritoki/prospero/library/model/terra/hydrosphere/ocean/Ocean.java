@@ -24,7 +24,7 @@ import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.enso.ENSO;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.ice.Ice;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.modulus.Modulus;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.pdo.PDO;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.tempurature.SeaSurfaceTemperature;
+import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.temperature.SeaSurfaceTemperature;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;
@@ -114,12 +114,18 @@ public class Ocean extends Hydrosphere {
 					for (int t = 0; t < timeSize; t++) {
 						Calendar calendar = Calendar.getInstance();
 						calendar.setTime(Time.getNineteenHundredJanuaryFirstDate(netCDF.timeArray.get(t)));
-						for (int lat = 0; lat < latSize - 1; lat++) {
-							float latitude = netCDF.latArray.get(lat);
-							if (latitude <= 0) {
+						boolean flag = true;
+						if (this.query.isDateTime()) {
+							if (!this.calendar.equals(calendar)) {
+								flag = false;
+							}
+						}
+						if (flag) {
+							for (int lat = 0; lat < latSize; lat++) {
+								float latitude = netCDF.latArray.get(lat);
 								for (int lon = 0; lon < lonSize; lon++) {
 									float longitude = netCDF.lonArray.get(lon);
-									int x = (int) ((latitude + this.latitude - 1) * this.resolution);
+									int x = (int) ((latitude + this.latitude / 2) * this.resolution) % this.latitude;
 									int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
 									int z = calendar.get(Calendar.MONTH);
 									dataMatrix[x][y][z] += netCDF.variableArray.get(t, lat, lon);

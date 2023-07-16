@@ -36,9 +36,9 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 
-public class ModulusZeroTwoFiveNetCDFGenerator extends OceanGenerator {
+public class ModulusSSTERA5Generator extends OceanGenerator {
 
-	static Logger logger = LoggerFactory.getLogger(ModulusZeroTwoFiveNetCDFGenerator.class.getName());
+	static Logger logger = LoggerFactory.getLogger(ModulusSSTERA5Generator.class.getName());
 //	public static String path = "." + seperator + "data" + seperator + "hydrosphere" + seperator + "ocean" + seperator
 //			+ "sst";
 	public static String basePath = "/home/jorodriguez/Prospero/";
@@ -59,26 +59,26 @@ public class ModulusZeroTwoFiveNetCDFGenerator extends OceanGenerator {
 	Variable timeVar;
 
 	public static void main(String[] args) {
-		ModulusZeroTwoFiveNetCDFGenerator modulusGenerator = new ModulusZeroTwoFiveNetCDFGenerator();
-		modulusGenerator.write(2001, 01);
+		ModulusSSTERA5Generator modulusGenerator = new ModulusSSTERA5Generator();
+//		modulusGenerator.write(2001, 01);
 	}
 	
-	public ModulusZeroTwoFiveNetCDFGenerator() {
+	public ModulusSSTERA5Generator() {
 		
 	}
 	
-	public ModulusZeroTwoFiveNetCDFGenerator(String basePath) {
+	public ModulusSSTERA5Generator(String basePath) {
 		
 	}
 
-	public List<Frame> write(int year, int month) {
-		logger.info("write(" + year + "," + month + ")");
+	public void write(String fileName, String outputFileName) {
+		logger.info("write(" + fileName + ")");
 		MemoryController.log();
-		List<Frame> frameList;
-		String start = year + String.format("%02d", month) + String.format("%02d", 1);
-		String stop = year + String.format("%02d", month) + String.format("%02d", this.getYearMonthDays(year, month));
-		frameList = new ArrayList<>();
-		String fileName = path + seperator + prefix + start + "-" + stop + suffix + "." + extension;
+//		List<Frame> frameList;
+//		String start = year + String.format("%02d", month) + String.format("%02d", 1);
+//		String stop = year + String.format("%02d", month) + String.format("%02d", this.getYearMonthDays(year, month));
+//		frameList = new ArrayList<>();
+//		String fileName = path + seperator + prefix + start + "-" + stop + suffix + "." + extension;
 		NetcdfFile dataFile = null;
 		try {
 			dataFile = NetcdfFile.open(fileName, null);

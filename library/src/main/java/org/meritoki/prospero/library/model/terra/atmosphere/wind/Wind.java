@@ -16,13 +16,13 @@
 package org.meritoki.prospero.library.model.terra.atmosphere.wind;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.atmosphere.wind.jetstream.Jetstream;
-import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.DataType;
-import org.meritoki.prospero.library.model.unit.Frame;
+import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 public class Wind extends Atmosphere {
 
 	static Logger logger = LoggerFactory.getLogger(Wind.class.getName());
+	protected DataType dataType;
 
 
 	public Wind() {
@@ -43,55 +44,87 @@ public class Wind extends Atmosphere {
 	}
 	
 	@Override
-	public void reset() {
-		super.reset();
-	}
-	
-	@Override
 	public void init() {
 		this.dimension = 1;
-		this.latitude = 180;
-		this.longitude = 360;
 		super.init();
 	}
-	
+
 	@Override
 	public void load(Result result) {
 		super.load(result);
-		List<Frame> frameList = result.getFrameList();
+		List<NetCDF> netCDFList = result.getNetCDFList();
+		this.netCDFList.addAll(netCDFList);
 		try {
-			this.process(frameList);
+			this.process(netCDFList);
 		} catch (Exception e) {
 			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	
-	public void process(List<Frame> frameList) throws Exception {
-		this.setMatrix(frameList);
+
+	@Override
+	public void process() throws Exception {
+		super.process();
+		try {
+			this.process(this.netCDFList);
+			this.complete();
+		} catch (Exception e) {
+			logger.error("process() exception=" + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	public void process(List<NetCDF> netCDFList) throws Exception {
+		this.setMatrix(netCDFList);
 		this.tileList = this.getTileList();
 		this.tileFlag = true;
 		this.initTileMinMax();
 	}
-	
-	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, List<Frame> frameList) {
-		List<Time> timeList = null;
-		if (frameList != null) {
-			timeList = new ArrayList<>();
-			for (Frame f : frameList) {
-				if (f.flag) {
-					for (Coordinate c : f.coordinateList) {
-						if (c.flag) {
-							int x = (int) (c.latitude);//((c.latitude + this.latitude) * this.resolution);
-							int y = (int) (c.longitude);//((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-							int z = c.getMonth()-1;
-//							System.out.println("coordinate:"+c.latitude+","+c.longitude+","+c.getMonth());
-//							System.out.println("index:"+x+","+y+","+z);
-							dataMatrix[x][y][z] += (float)c.attribute.get(DataType.INTENSITY.toString());
-							coordinateMatrix[x][y][z]++;
-							Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
-							if (!timeList.contains(time)) {
-								timeList.add(time);
+
+	public void setMatrix(List<NetCDF> netCDFList) {
+		logger.info("setMatrix(" + netCDFList.size() + ")");
+		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, netCDFList);
+		for (Time t : timeList) {
+			if (!this.timeList.contains(t)) {
+				this.timeList.add(t);
+			}
+		}
+		this.initMonthArray(this.timeList);
+		this.initYearMap(this.timeList);
+	}
+
+	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix,
+			List<NetCDF> netCDFList) {
+		List<Time> timeList = new ArrayList<>();
+		for (NetCDF netCDF : netCDFList) {
+			if (netCDF.type == this.dataType) {
+				long timeSize = netCDF.timeArray.getSize();
+				long latSize = netCDF.latArray.getSize();
+				long lonSize = netCDF.lonArray.getSize();
+				for (int t = 0; t < timeSize; t++) {
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(Time.getNineteenHundredJanuaryFirstDate(netCDF.timeArray.get(t)));
+					boolean flag = true;
+					if (this.query.isDateTime()) {
+						if (!this.calendar.equals(calendar)) {
+							flag = false;
+						}
+					}
+					if (flag) {
+						for (int lat = 0; lat < latSize - 1; lat++) {
+							float latitude = netCDF.latArray.get(lat);
+							for (int lon = 0; lon < lonSize; lon++) {
+								float longitude = netCDF.lonArray.get(lon);
+								int x = (int) ((latitude + this.latitude / 2) * this.resolution);
+								int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int z = calendar.get(Calendar.MONTH);
+								dataMatrix[x][y][z] += netCDF.variableArray.get(t, lat, lon);
+								coordinateMatrix[x][y][z]++;
+								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, -1,
+										-1, -1, -1);
+								if (!timeList.contains(time)) {
+									timeList.add(time);
+								}
 							}
 						}
 					}
@@ -100,18 +133,71 @@ public class Wind extends Atmosphere {
 		}
 		return timeList;
 	}
-	
-	public void setMatrix(List<Frame> frameList) {
-		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, frameList);
-		for(Time t: timeList) {
-			if(!this.timeList.contains(t)) {
-				this.timeList.add(t);
-			}
-		}
-		this.initMonthArray(this.timeList);
-		this.initYearMap(this.timeList);
-	}
 }
+//@Override
+//public void init() {
+//	this.dimension = 1;
+//	this.latitude = 180;
+//	this.longitude = 360;
+//	super.init();
+//}
+//
+//@Override
+//public void load(Result result) {
+//	super.load(result);
+//	List<Frame> frameList = result.getFrameList();
+//	try {
+//		this.process(frameList);
+//	} catch (Exception e) {
+//		logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
+//		e.printStackTrace();
+//	}
+//}
+//
+//public void process(List<Frame> frameList) throws Exception {
+//	this.setMatrix(frameList);
+//	this.tileList = this.getTileList();
+//	this.tileFlag = true;
+//	this.initTileMinMax();
+//}
+//
+//public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, List<Frame> frameList) {
+//	List<Time> timeList = null;
+//	if (frameList != null) {
+//		timeList = new ArrayList<>();
+//		for (Frame f : frameList) {
+//			if (f.flag) {
+//				for (Coordinate c : f.coordinateList) {
+//					if (c.flag) {
+//						int x = (int) (c.latitude);//((c.latitude + this.latitude) * this.resolution);
+//						int y = (int) (c.longitude);//((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+//						int z = c.getMonth()-1;
+////						System.out.println("coordinate:"+c.latitude+","+c.longitude+","+c.getMonth());
+////						System.out.println("index:"+x+","+y+","+z);
+//						dataMatrix[x][y][z] += (float)c.attribute.get(DataType.INTENSITY.toString());
+//						coordinateMatrix[x][y][z]++;
+//						Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
+//						if (!timeList.contains(time)) {
+//							timeList.add(time);
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+//	return timeList;
+//}
+//
+//public void setMatrix(List<Frame> frameList) {
+//	List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, frameList);
+//	for(Time t: timeList) {
+//		if(!this.timeList.contains(t)) {
+//			this.timeList.add(t);
+//		}
+//	}
+//	this.initMonthArray(this.timeList);
+//	this.initYearMap(this.timeList);
+//}
 //@Override
 //public List<Tile> getTileList() {
 //	return this.getTileList(this.coordinateMatrix,this.dataMatrix);

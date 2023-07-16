@@ -98,7 +98,7 @@ public class Vorticity extends Atmosphere {
 						}
 					}
 					if (flag) {
-						for (int lat = 0; lat < latSize - 1; lat++) {
+						for (int lat = 0; lat < latSize; lat++) {
 							float latitude = netCDF.latArray.get(lat);
 							for (int lon = 0; lon < lonSize; lon++) {
 								float longitude = netCDF.lonArray.get(lon);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.meritoki.prospero.library.model.terra.hydrosphere.ocean.tempurature;
+package org.meritoki.prospero.library.model.terra.hydrosphere.ocean.temperature;
 
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.Ocean;
 import org.meritoki.prospero.library.model.unit.DataType;

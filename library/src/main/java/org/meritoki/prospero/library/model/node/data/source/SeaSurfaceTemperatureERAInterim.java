@@ -20,9 +20,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.meritoki.prospero.library.model.node.data.generator.ModulusZeroTwoFiveNetCDFGenerator;
+import org.meritoki.prospero.library.model.node.data.generator.ModulusSSTERA5Generator;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,35 +36,24 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-public class OceanERA5ZeroTwoFive extends OceanSource {
+public class SeaSurfaceTemperatureERAInterim extends OceanERA {
 
-	static Logger logger = LoggerFactory.getLogger(OceanERA5ZeroTwoFive.class.getName());
-//	public static String path = "." + seperator + "data" + seperator + "hydrosphere" + seperator + "ocean" + seperator
-//			+ "sst";
-//	public static String path = basePath+"prospero-data" + seperator + "ECMWF" + seperator + "File" + seperator
-//			+ "Data" + seperator + "ERA" + seperator +"5"+seperator +"SST";
-	public static String prefix = "sea_surface_temperature_";
-	public static String suffix = "_0-25-0-25";
+	static Logger logger = LoggerFactory.getLogger(SeaSurfaceTemperatureERAInterim.class.getName());
+
 	public static String extension = "nc";
-	public int startYear = 1979;
-	public int endYear = 2019;
-	public boolean test = false;
+//	public int startYear = 2001;
+//	public int endYear = 2017;
+//	public boolean test = false;
 	public ArrayFloat.D3 sstArray;
 
-	public OceanERA5ZeroTwoFive() {
+	public SeaSurfaceTemperatureERAInterim() {
 		super();
-		this.setRelativePath("ECMWF" + seperator + "File" + seperator + "Data" + seperator + "ERA" + seperator + "5"
-				+ seperator + "SST");
-	}
-
-	@Override
-	public int getStartYear() {
-		return this.startYear;
-	}
-
-	@Override
-	public int getEndYear() {
-		return this.endYear;
+		this.prefix = "34-128_";
+		this.suffix = "_0-25-0-25";
+		this.startTime = new Time(2001, 1, 1, 0, -1, -1);
+		this.endTime = new Time(2017, 12, 31, 24, -1, -1);
+		this.setRelativePath("ECMWF" + seperator + "File" + seperator + "Data" + seperator + "ERA" + seperator
+				+ "Interim" + seperator + "SST");
 	}
 
 	public List<NetCDF> read(int year, int month) {
@@ -118,8 +108,8 @@ public class OceanERA5ZeroTwoFive extends OceanSource {
 		fileName = this.getFilePath("modulus" + "_" + start + "-" + stop + suffix + "." + extension);
 		File file = new File(fileName);
 		if (!file.exists()) {
-			ModulusZeroTwoFiveNetCDFGenerator generator = new ModulusZeroTwoFiveNetCDFGenerator();
-			generator.write(year, month);
+			ModulusSSTERA5Generator generator = new ModulusSSTERA5Generator();
+//			generator.write(fileName);
 		}
 		try {
 			dataFile = NetcdfFile.open(fileName, null);
@@ -200,7 +190,10 @@ public class OceanERA5ZeroTwoFive extends OceanSource {
 //		}
 //	}
 }
-
+//public static String path = "." + seperator + "data" + seperator + "hydrosphere" + seperator + "ocean" + seperator
+//+ "sst";
+//public static String path = basePath + "prospero-data" + seperator + "ECMWF" + seperator + "File" + seperator
+//+ "Data" + seperator + "ERA" + seperator + "Interim" + seperator + "SST";
 //public void query(Query query) throws Exception {
 //logger.info("query(" + query + ")");
 //this.unsupportedException("level", query.level);

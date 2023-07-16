@@ -50,8 +50,7 @@ public class Coordinate implements Comparable<Coordinate> {
 	public Map<String, Object> attribute = new TreeMap<>();
 	@JsonProperty
 	public boolean flag;
-	@JsonIgnore
-//	public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 
 	public Coordinate() {}
 	
@@ -200,6 +199,8 @@ public class Coordinate implements Comparable<Coordinate> {
 		return string;
 	}
 }
+//@JsonIgnore
+//public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //@JsonIgnore
 //@Override
 //public String toString() {

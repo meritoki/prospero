@@ -15,80 +15,17 @@
  */
 package org.meritoki.prospero.library.model.node.data.source;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Vector;
-
-import org.meritoki.prospero.library.model.node.query.Query;
-import org.meritoki.prospero.library.model.unit.Event;
-import org.meritoki.prospero.library.model.unit.NetCDF;
-import org.meritoki.prospero.library.model.unit.Interval;
-import org.meritoki.prospero.library.model.unit.Mode;
-import org.meritoki.prospero.library.model.unit.Result;
-import org.meritoki.prospero.library.model.unit.Time;
 
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.ArrayShort;
 
-public class OceanSource extends Source {
+public class OceanERA extends ERANetCDF {
 	
-	protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 	public float earthRadius = 6371;
 	
-	public OceanSource() {
+	public OceanERA() {
 		super();
-		this.calendarFlag = true;
-	}
-	
-	@Override
-	public void query(Query query) throws Exception {
-		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
-		if (this.intervalList != null) {
-			for (Interval i : this.intervalList) {
-				this.load(query, i);
-			}
-			query.objectListAdd(new Result(Mode.COMPLETE));
-		}
-	}
-
-
-	
-	public void load(Query query, Interval interval) throws Exception {
-		List<Time> timeList = Time.getTimeList(1,interval);
-		List<NetCDF> loadList;
-		for(Time time: timeList) {
-			if (!Thread.interrupted()) {
-				loadList = this.read(time.year, time.month);
-				Result result = new Result();
-				result.map.put("time", time);
-				result.map.put("netCDFList", new ArrayList<NetCDF>((loadList)));
-				query.objectList.add(result);
-			} else {
-				throw new InterruptedException();
-			}
-		}
-	}
-	
-	public List<NetCDF> netCDFMapGet(int y, int m) throws Exception {
-		if (this.netCDFMap == null)
-			this.netCDFMap = new HashMap<>();
-		List<NetCDF> eList = this.netCDFMap.get(y + "" + m);
-		if (eList == null) {
-			eList = this.read(y, m);
-			if (eList != null) {
-				this.netCDFMap.put(y + "" + m, eList);
-			} else {
-				eList = new ArrayList<>();
-			}
-		}
-		eList = new ArrayList<>(eList);
-		return eList;
-	}
-	
-	public List<NetCDF> read(int year, int month) throws Exception {
-		return null;
 	}
 
 	public double getModulus(double radius, double phi, double theta, double dRadius, double dPhi, double dTheta) {

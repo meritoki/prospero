@@ -32,14 +32,14 @@ import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OceanSeaIce extends Source {
+public class SeaIceToth extends Source {
 
-	static Logger logger = LoggerFactory.getLogger(OceanSeaIce.class.getName());
+	static Logger logger = LoggerFactory.getLogger(SeaIceToth.class.getName());
 //	public String path = basePath + "prospero-data" + seperator + "Toth" + seperator + "hielo2020toths.txt";
 	private final int startYear = 1979;
 	private final int endYear = 2019;
 	
-	public OceanSeaIce() {
+	public SeaIceToth() {
 		super();
 		this.setRelativePath("Toth"+seperator);
 		this.setFileName("hielo2020toths.txt");
@@ -103,8 +103,6 @@ public class OceanSeaIce extends Source {
 					if (lineArray.length == 522) {
 						double latitude = Double.parseDouble(lineArray[0]);
 						double longitude = Double.parseDouble(lineArray[1]);
-//						String[] tempArray = IntStream.range(2, lineArray.length).mapToObj(i -> lineArray[i])
-//								.toArray(String[]::new);
 						Coordinate coordinate = new Coordinate();
 						coordinate.calendar = frame.calendar;
 						coordinate.attribute.put("density", Double.parseDouble(lineArray[index]));
@@ -121,7 +119,8 @@ public class OceanSeaIce extends Source {
 		return frameList;
 	}
 }
-
+//String[] tempArray = IntStream.range(2, lineArray.length).mapToObj(i -> lineArray[i])
+//.toArray(String[]::new);
 //@Override
 //public void query(Query query) throws Exception {
 //	logger.info("query(" + query + ")");

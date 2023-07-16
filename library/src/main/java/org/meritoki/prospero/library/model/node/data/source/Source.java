@@ -94,6 +94,7 @@ public class Source extends Node {// implements SourceInterface
 
 	@JsonIgnore
 	public void setFileName(String fileName) {
+		logger.info("setFileName("+fileName+")");
 		this.fileName = fileName;
 	}
 

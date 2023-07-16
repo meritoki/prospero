@@ -28,22 +28,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SeaLevelPressure extends Atmosphere {
-	
+
 	static Logger logger = LoggerFactory.getLogger(SeaLevelPressure.class.getName());
 	public DataType dataType;
-	
+
 	public SeaLevelPressure() {
 		super("SeaLevelPressure");
 		this.dataType = DataType.MSL;
 		this.sourceMap.put("ERA 5", "25742cae-1bf4-11ed-861d-0242ac120002");
 	}
-	
+
 	@Override
 	public void init() {
 		this.dimension = 1;
 		super.init();
 	}
-	
+
 	@Override
 	public void load(Result result) {
 		super.load(result);
@@ -55,7 +55,7 @@ public class SeaLevelPressure extends Atmosphere {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Reviewed 202112160852 Good
 	 */
@@ -70,26 +70,27 @@ public class SeaLevelPressure extends Atmosphere {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void process(List<NetCDF> netCDFList) throws Exception {
 		this.setMatrix(netCDFList);
 		this.tileList = this.getTileList();
 		this.tileFlag = true;
 		this.initTileMinMax();
 	}
-	
+
 	public void setMatrix(List<NetCDF> netCDFList) {
 		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, netCDFList);
-		for(Time t: timeList) {
-			if(!this.timeList.contains(t)) {
+		for (Time t : timeList) {
+			if (!this.timeList.contains(t)) {
 				this.timeList.add(t);
 			}
 		}
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
 	}
-	
-	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, List<NetCDF> netCDFList) {
+
+	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix,
+			List<NetCDF> netCDFList) {
 		List<Time> timeList = new ArrayList<>();
 		for (NetCDF netCDF : netCDFList) {
 			if (netCDF.type == this.dataType) {
@@ -99,19 +100,28 @@ public class SeaLevelPressure extends Atmosphere {
 				for (int t = 0; t < timeSize; t++) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(Time.getNineteenHundredJanuaryFirstDate(netCDF.timeArray.get(t)));
-					for (int lat = 0; lat < latSize - 1; lat++) {
-						float latitude = netCDF.latArray.get(lat);
-						if (latitude <= 0) {
-							for (int lon = 0; lon < lonSize; lon++) {
-								float longitude = netCDF.lonArray.get(lon);
-								int x = (int) ((latitude + this.latitude-1) * this.resolution);
-								int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = calendar.get(Calendar.MONTH);
-								dataMatrix[x][y][z] += netCDF.variableArray.get(t, lat, lon);
-								coordinateMatrix[x][y][z]++;
-								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1, -1, -1, -1, -1);
-								if (!timeList.contains(time)) {
-									timeList.add(time);
+					boolean flag = true;
+					if (this.query.isDateTime()) {
+						if (!this.calendar.equals(calendar)) {
+							flag = false;
+						}
+					}
+					if (flag) {
+						for (int lat = 0; lat < latSize - 1; lat++) {
+							float latitude = netCDF.latArray.get(lat);
+							if (latitude <= 0) {
+								for (int lon = 0; lon < lonSize; lon++) {
+									float longitude = netCDF.lonArray.get(lon);
+									int x = (int) ((latitude + this.latitude / 2) * this.resolution);
+									int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+									int z = calendar.get(Calendar.MONTH);
+									dataMatrix[x][y][z] += netCDF.variableArray.get(t, lat, lon);
+									coordinateMatrix[x][y][z]++;
+									Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1,
+											-1, -1, -1, -1);
+									if (!timeList.contains(time)) {
+										timeList.add(time);
+									}
 								}
 							}
 						}
@@ -180,4 +190,3 @@ public class SeaLevelPressure extends Atmosphere {
 //	}
 //	return tileList;
 //}
-

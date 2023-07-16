@@ -17,6 +17,7 @@ package org.meritoki.prospero.library.model.terra.hydrosphere.ocean.ice;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.Ocean;
@@ -30,22 +31,23 @@ import org.slf4j.LoggerFactory;
 public class Ice extends Ocean {
 
 	static Logger logger = LoggerFactory.getLogger(Ice.class.getName());
-	
+
 	public Ice() {
 		super("Ice");
-		this.sourceMap.put("Toth","8b2215c6-945b-4109-bfb4-6c764636e390");
+		this.tileFlag = true;
+		this.sourceMap.put("Toth", "8b2215c6-945b-4109-bfb4-6c764636e390");
 	}
-	
+
 	@Override
 	public void reset() {
 		super.reset();
 	}
-	
+
 	@Override
 	public void init() {
 		super.init();
 	}
-	
+
 	@Override
 	public void load(Result result) {
 		super.load(result);
@@ -58,7 +60,7 @@ public class Ice extends Ocean {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void process(Object object) throws Exception {
 		this.setMatrix(object);
@@ -66,7 +68,7 @@ public class Ice extends Ocean {
 		this.tileFlag = true;
 		this.initTileMinMax();
 	}
-	
+
 	@Override
 	public void process() throws Exception {
 		super.process();
@@ -78,25 +80,34 @@ public class Ice extends Ocean {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public List<Time> setCoordinateAndDataMatrix(int[][][] coordinateMatrix, float[][][] dataMatrix, Object object) {
 		List<Time> timeList = new ArrayList<>();
 		if (object != null) {
-			List<Frame> frameList = (List<Frame>)object;
+			List<Frame> frameList = (List<Frame>) object;
 			for (Frame f : frameList) {
 				if (f.flag) {
-					for (Coordinate c : f.coordinateList) {
-						if (c.flag) {
-							int x = (int) ((c.latitude + this.latitude) * this.resolution);
-							int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-							int z = c.getMonth()-1;
-							double density = (double)c.attribute.get("density");
-							dataMatrix[x][y][z] += (float)density;
-							coordinateMatrix[x][y][z]++;
-							Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
-							if (!timeList.contains(time)) {
-								timeList.add(time);
+					boolean flag = true;
+					Calendar calendar = f.calendar;
+					if (this.query.isDateTime()) {
+						if (!this.calendar.equals(calendar)) {
+							flag = false;
+						}
+					}
+					if (flag) {
+						for (Coordinate c : f.coordinateList) {
+							if (c.flag) {
+								int x = (int) ((c.latitude + this.latitude / 2) * this.resolution);
+								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int z = c.getMonth() - 1;
+								double density = (double) c.attribute.get("density");
+								dataMatrix[x][y][z] += (float) density;
+								coordinateMatrix[x][y][z]++;
+								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
+								if (!timeList.contains(time)) {
+									timeList.add(time);
+								}
 							}
 						}
 					}
@@ -105,19 +116,19 @@ public class Ice extends Ocean {
 		}
 		return timeList;
 	}
-	
+
 	@Override
 	public void setMatrix(Object object) {
 		List<Time> timeList = this.setCoordinateAndDataMatrix(this.coordinateMatrix, this.dataMatrix, object);
-		for(Time t: timeList) {
-			if(!this.timeList.contains(t)) {
+		for (Time t : timeList) {
+			if (!this.timeList.contains(t)) {
 				this.timeList.add(t);
 			}
 		}
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
 	}
-	
+
 	@Override
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);

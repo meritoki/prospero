@@ -42,7 +42,6 @@ public class Atmosphere extends Terra {
 		this.addChild(new Cyclone());
 		this.addChild(new Tornado());
 		this.addChild(new SeaLevelPressure());
-//		this.addChild(new Gravitation());
 		this.addChild(new Vorticity());
 		this.addChild(new Geopotential());
 		

@@ -3,7 +3,9 @@ package org.meritoki.prospero.library.model.node.data.source;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.DataType;
@@ -33,6 +35,7 @@ public class ERANetCDF extends Source {
 	public Time startTime = new Time(2017, 6, 1, 0, -1, -1);
 	public Time endTime = new Time(2019, 9, 30, 0, -1, -1);
 	public List<Integer> pressureList = new ArrayList<>();
+	protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 
 	public ERANetCDF() {
 		super();
@@ -62,7 +65,7 @@ public class ERANetCDF extends Source {
 				this.load(query, i);
 			}
 			query.objectListAdd(new Result(Mode.COMPLETE));
-			if(query.getDownload()) {
+			if (query.getDownload()) {
 				this.download();
 			}
 		}
@@ -94,7 +97,7 @@ public class ERANetCDF extends Source {
 			for (int pressure : this.pressureList) {
 				logger.info("read(" + time + ") pressure=" + pressure);
 				this.setFileName(prefix + start + "-" + end + "_" + pressure + suffix + "." + extension);
-				if(this.fileExists()) {
+				if (this.fileExists()) {
 					netCDFList.addAll(this.read(this.getFilePath()));
 				} else {
 					this.form(time, pressure);
@@ -112,57 +115,65 @@ public class ERANetCDF extends Source {
 
 		return netCDFList;
 	}
-	
-	public void form(Time time, Integer pressure) {
-		logger.info("form("+time+", "+pressure+")");
+
+	public void form(Time time) {
+		logger.info("form(" + time + ")");
 	}
-	
+
+	public void form(Time time, Integer pressure) {
+		logger.info("form(" + time + ", " + pressure + ")");
+	}
+
 	public void download() {
 		logger.info("download()");
 	}
 
 	public List<NetCDF> read(String fileName) {
 		logger.info("read(" + fileName + ")");
-		MemoryController.log();
-		List<NetCDF> netCDFList = new ArrayList<>();
-		NetcdfFile dataFile = null;
-		try {
-			dataFile = NetcdfFile.open(fileName, null);
-			Variable latitudeVar = dataFile.findVariable("latitude");
-			Variable longitudeVar = dataFile.findVariable("longitude");
-			Variable timeVar = dataFile.findVariable("time");
-			Variable variableVar = dataFile.findVariable(this.variable);
-			Attribute scaleFactorAttribute = variableVar.findAttribute("scale_factor");
-			Attribute addOffsetAttribute = variableVar.findAttribute("add_offset");
-			double scaleFactor = (Double) scaleFactorAttribute.getNumericValue();
-			double addOffset = (Double) addOffsetAttribute.getNumericValue();
-			int longitudeCount = (int) longitudeVar.getSize();
-			int latitudeCount = (int) latitudeVar.getSize();
-			int timeCount = (int) timeVar.getSize();
-			ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
-			ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
-			ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
-			ArrayShort.D3 variableArray = (ArrayShort.D3) variableVar.read();
-			this.variableArray = this.getVariableArray(variableArray, timeCount, latitudeCount, longitudeCount,
-					scaleFactor, addOffset);
-			NetCDF netCDF = new NetCDF();
-			netCDF.type = this.dataType;
-			netCDF.latArray = latArray;
-			netCDF.lonArray = lonArray;
-			netCDF.timeArray = timeArray;
-			netCDF.variableArray = this.variableArray;
-			dataFile.close();
-			System.gc();
-			netCDFList.add(netCDF);
-		} catch (java.io.IOException e) {
-			logger.error("IOException " + e.getMessage());
+		List<NetCDF> netCDFList = this.netCDFMap.get(fileName);
+		if (netCDFList == null) {
+			MemoryController.log();
+			netCDFList = new ArrayList<>();
+			NetcdfFile dataFile = null;
+			try {
+				dataFile = NetcdfFile.open(fileName, null);
+				Variable latitudeVar = dataFile.findVariable("latitude");
+				Variable longitudeVar = dataFile.findVariable("longitude");
+				Variable timeVar = dataFile.findVariable("time");
+				Variable variableVar = dataFile.findVariable(this.variable);
+				Attribute scaleFactorAttribute = variableVar.findAttribute("scale_factor");
+				Attribute addOffsetAttribute = variableVar.findAttribute("add_offset");
+				double scaleFactor = (Double) scaleFactorAttribute.getNumericValue();
+				double addOffset = (Double) addOffsetAttribute.getNumericValue();
+				int longitudeCount = (int) longitudeVar.getSize();
+				int latitudeCount = (int) latitudeVar.getSize();
+				int timeCount = (int) timeVar.getSize();
+				ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
+				ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
+				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
+				ArrayShort.D3 variableArray = (ArrayShort.D3) variableVar.read();
+				this.variableArray = this.getVariableArray(variableArray, timeCount, latitudeCount, longitudeCount,
+						scaleFactor, addOffset);
+				NetCDF netCDF = new NetCDF();
+				netCDF.type = this.dataType;
+				netCDF.latArray = latArray;
+				netCDF.lonArray = lonArray;
+				netCDF.timeArray = timeArray;
+				netCDF.variableArray = this.variableArray;
+				dataFile.close();
+				System.gc();
+				netCDFList.add(netCDF);
+				this.netCDFMap.put(fileName,netCDFList);
+			} catch (java.io.IOException e) {
+				logger.error("IOException " + e.getMessage());
 
-		} finally {
-			if (dataFile != null) {
-				try {
-					dataFile.close();
-				} catch (IOException e) {
-					logger.error("IOException " + e.getMessage());
+			} finally {
+				if (dataFile != null) {
+					try {
+						dataFile.close();
+					} catch (IOException e) {
+						logger.error("IOException " + e.getMessage());
+					}
 				}
 			}
 		}

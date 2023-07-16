@@ -36,9 +36,9 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 
-public class ModulusF128NetCDFGenerator extends OceanGenerator {
+public class ModulusSSTERAInterimGenerator extends OceanGenerator {
 
-	static Logger logger = LoggerFactory.getLogger(ModulusF128NetCDFGenerator.class.getName());
+	static Logger logger = LoggerFactory.getLogger(ModulusSSTERAInterimGenerator.class.getName());
 	public static String path = "." + seperator + "data" + seperator + "hydrosphere" + seperator + "ocean" + seperator
 			+ "sst";
 	public static String prefix = "34-128_";
@@ -57,7 +57,7 @@ public class ModulusF128NetCDFGenerator extends OceanGenerator {
 	Variable timeVar;
 
 	public static void main(String[] args) {
-		ModulusF128NetCDFGenerator modulusGenerator = new ModulusF128NetCDFGenerator();
+		ModulusSSTERAInterimGenerator modulusGenerator = new ModulusSSTERAInterimGenerator();
 		modulusGenerator.read(2001, 01);
 	}
 

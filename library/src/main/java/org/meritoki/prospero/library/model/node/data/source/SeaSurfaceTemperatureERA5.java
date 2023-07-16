@@ -20,11 +20,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.meritoki.prospero.library.model.node.data.generator.ModulusZeroTwoFiveNetCDFGenerator;
+import org.meritoki.prospero.library.model.node.data.generator.ModulusSSTERA5Generator;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.utn.app.command.era.Five;
+import org.utn.app.command.era.model.five.Batch;
+import org.utn.app.command.era.model.five.Form;
 
 import com.meritoki.library.controller.memory.MemoryController;
 
@@ -35,113 +39,156 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-public class OceanERAInterimZeroTwoFive extends OceanSource {
+public class SeaSurfaceTemperatureERA5 extends OceanERA {
 
-	static Logger logger = LoggerFactory.getLogger(OceanERAInterimZeroTwoFive.class.getName());
+	static Logger logger = LoggerFactory.getLogger(SeaSurfaceTemperatureERA5.class.getName());
+	private Form form = new Form();
 
-	public static String prefix = "34-128_";
-	public static String suffix = "_0-25-0-25";
-	public static String extension = "nc";
-	public int startYear = 2001;
-	public int endYear = 2017;
-	public boolean test = false;
-	public ArrayFloat.D3 sstArray;
-
-	public OceanERAInterimZeroTwoFive() {
+	public SeaSurfaceTemperatureERA5() {
 		super();
-		this.setRelativePath("ECMWF" + seperator + "File" + seperator + "Data" + seperator + "ERA" + seperator
-				+ "Interim" + seperator + "SST");
+		this.variable = "sst";
+		this.prefix = "sea_surface_temperature_";
+		this.suffix = "_0-25-0-25";
+		this.startTime = new Time(1979, 1, 1, 0, -1, -1);
+		this.endTime = new Time(2019, 12, 31, 24, -1, -1);
+		this.setRelativePath("ECMWF" + seperator + "File" + seperator + "Data" + seperator + "ERA" + seperator + "5"
+				+ seperator + "SST");
+		this.form.grid.add("0.25/0.25");
+		this.form.time.add("00:00");
+		this.form.time.add("06:00");
+		this.form.time.add("12:00");
+		this.form.time.add("18:00");
+		this.form.path = "reanalysis-era5-single-levels";
+		for (int i = 1; i <= 31; i++) {
+			this.form.day.add(String.format("%02d", i));
+		}
+		this.form.variable.add("sea_surface_temperature");
 	}
 
-	public List<NetCDF> read(int year, int month) {
-		logger.info("read(" + year + "," + month + ")");
-		MemoryController.log();
+	public void form(Time time) {
+		super.form(time);
+		if (!this.form.year.contains(String.valueOf(time.year))) {
+			this.form.year.add(String.valueOf(time.year));
+		}
+		String month = String.format("%02d", time.month);
+		if (!this.form.month.contains(month)) {
+			this.form.month.add(month);
+		}
+	}
+
+	@Override
+	public List<NetCDF> read(Time time) throws Exception {
 		List<NetCDF> netCDFList = new ArrayList<>();
-		String start = year + String.format("%02d", month) + String.format("%02d", 1);
-		String stop = year + String.format("%02d", month) + String.format("%02d", this.getYearMonthDays(year, month));
-		String fileName = this.getFilePath(prefix + start + "-" + stop + suffix + "." + extension);
-		NetcdfFile dataFile = null;
-		try {
-			dataFile = NetcdfFile.open(fileName, null);
-			Variable latitudeVar = dataFile.findVariable("latitude");
-			Variable longitudeVar = dataFile.findVariable("longitude");
-			Variable timeVar = dataFile.findVariable("time");
-			Variable sstVar = dataFile.findVariable("sst");
-			Attribute scaleFactorAttribute = sstVar.findAttribute("scale_factor");
-			Attribute addOffsetAttribute = sstVar.findAttribute("add_offset");
-			double scaleFactor = (Double) scaleFactorAttribute.getNumericValue();
-			double addOffset = (Double) addOffsetAttribute.getNumericValue();
-			int longitudeCount = (int) longitudeVar.getSize();
-			int latitudeCount = (int) latitudeVar.getSize();
-			int timeCount = (int) timeVar.getSize();
-			ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
-			ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
-			ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
-			ArrayShort.D3 sstArray = (ArrayShort.D3) sstVar.read();
-			this.sstArray = this.getSSTArray(sstArray, timeCount, latitudeCount, longitudeCount, scaleFactor,
-					addOffset);
-			NetCDF netCDF = new NetCDF();
-			netCDF.continent = this.getContinent(scaleFactor, addOffset);
-			netCDF.type = DataType.SST;
-			netCDF.latArray = latArray;
-			netCDF.lonArray = lonArray;
-			netCDF.timeArray = timeArray;
-			netCDF.variableArray = this.sstArray;
-			dataFile.close();
-			System.gc();
-			netCDFList.add(netCDF);
-		} catch (java.io.IOException e) {
-			logger.error("IOException " + e.getMessage());
+		String start = time.year + String.format("%02d", time.month) + String.format("%02d", 1);
+		String stop = time.year + String.format("%02d", time.month)
+				+ String.format("%02d", Time.getYearMonthDays(time.year, time.month));
+		this.setFileName(prefix + start + "-" + stop + suffix + "." + extension);
+		if (this.fileExists()) {
+			netCDFList.addAll(this.read(this.getFilePath()));
+		} else {
+			this.form(time);
+		}
+		return netCDFList;
+	}
 
-		} finally {
-			if (dataFile != null) {
-				try {
-					dataFile.close();
-				} catch (IOException e) {
-					logger.error("IOException " + e.getMessage());
+	@Override
+	public void download() {
+		super.download();
+		this.form.outputPath = this.getPath();
+		Batch batch = new Batch(this.form);
+		String batchPath = this.getPath() + batch.uuid + ".json";
+		Five.executeBatch(batchPath, new Batch(this.form));
+	}
+
+	public List<NetCDF> read(String fileName) {
+		logger.info("read(" + fileName + ")");
+		List<NetCDF> netCDFList = this.netCDFMap.get(fileName);
+		if (netCDFList == null) {
+			MemoryController.log();
+			netCDFList = new ArrayList<>();
+			NetcdfFile dataFile = null;
+			try {
+				dataFile = NetcdfFile.open(fileName, null);
+				Variable latitudeVar = dataFile.findVariable("latitude");
+				Variable longitudeVar = dataFile.findVariable("longitude");
+				Variable timeVar = dataFile.findVariable("time");
+				Variable sstVar = dataFile.findVariable("sst");
+				Attribute scaleFactorAttribute = sstVar.findAttribute("scale_factor");
+				Attribute addOffsetAttribute = sstVar.findAttribute("add_offset");
+				double scaleFactor = (Double) scaleFactorAttribute.getNumericValue();
+				double addOffset = (Double) addOffsetAttribute.getNumericValue();
+				int longitudeCount = (int) longitudeVar.getSize();
+				int latitudeCount = (int) latitudeVar.getSize();
+				int timeCount = (int) timeVar.getSize();
+				ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
+				ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
+				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
+				ArrayShort.D3 sstArray = (ArrayShort.D3) sstVar.read();
+				this.variableArray = this.getSSTArray(sstArray, timeCount, latitudeCount, longitudeCount, scaleFactor,
+						addOffset);
+				NetCDF netCDF = new NetCDF();
+//				netCDF.continent = this.getContinent(scaleFactor, addOffset);
+				netCDF.type = DataType.SST;
+				netCDF.latArray = latArray;
+				netCDF.lonArray = lonArray;
+				netCDF.timeArray = timeArray;
+				netCDF.variableArray = this.variableArray;
+				dataFile.close();
+				System.gc();
+				netCDFList.add(netCDF);
+				this.netCDFMap.put(fileName,netCDFList);
+			} catch (java.io.IOException e) {
+				logger.error("IOException " + e.getMessage());
+
+			} finally {
+				if (dataFile != null) {
+					try {
+						dataFile.close();
+					} catch (IOException e) {
+						logger.error("IOException " + e.getMessage());
+					}
 				}
 			}
-		}
-		fileName = this.getFilePath("modulus" + "_" + start + "-" + stop + suffix + "." + extension);
-		File file = new File(fileName);
-		if (!file.exists()) {
-			ModulusZeroTwoFiveNetCDFGenerator generator = new ModulusZeroTwoFiveNetCDFGenerator();
-			generator.write(year, month);
-		}
-		try {
-			dataFile = NetcdfFile.open(fileName, null);
-			Variable latitudeVar = dataFile.findVariable("latitude");
-			Variable longitudeVar = dataFile.findVariable("longitude");
-			Variable timeVar = dataFile.findVariable("time");
-			Variable modulusVar = dataFile.findVariable("modulus");
-			ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
-			ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
-			ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
-			ArrayFloat.D3 modulusArray = (ArrayFloat.D3) modulusVar.read();
-			NetCDF netCDF = new NetCDF();
-			netCDF.continent = 0;
-			netCDF.type = DataType.MODULUS;
-			netCDF.latArray = latArray;
-			netCDF.lonArray = lonArray;
-			netCDF.timeArray = timeArray;
-			netCDF.variableArray = modulusArray;
-			dataFile.close();
-			System.gc();
-			netCDFList.add(netCDF);
-		} catch (java.io.IOException e) {
-			logger.error("IOException " + e.getMessage());
+			String outputFileName = this.getFilePath("modulus" + "_" + fileName);
+			File file = new File(fileName);
+			if (!file.exists()) {
+				ModulusSSTERA5Generator generator = new ModulusSSTERA5Generator();
+				generator.write(fileName, outputFileName);
+			}
+			try {
+				dataFile = NetcdfFile.open(outputFileName, null);
+				Variable latitudeVar = dataFile.findVariable("latitude");
+				Variable longitudeVar = dataFile.findVariable("longitude");
+				Variable timeVar = dataFile.findVariable("time");
+				Variable modulusVar = dataFile.findVariable("modulus");
+				ArrayFloat.D1 latArray = (ArrayFloat.D1) latitudeVar.read();
+				ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
+				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
+				ArrayFloat.D3 modulusArray = (ArrayFloat.D3) modulusVar.read();
+				NetCDF netCDF = new NetCDF();
+				netCDF.continent = 0;
+				netCDF.type = DataType.MODULUS;
+				netCDF.latArray = latArray;
+				netCDF.lonArray = lonArray;
+				netCDF.timeArray = timeArray;
+				netCDF.variableArray = modulusArray;
+				dataFile.close();
+				System.gc();
+				netCDFList.add(netCDF);
+			} catch (java.io.IOException e) {
+				logger.error("IOException " + e.getMessage());
 
-		} finally {
-			if (dataFile != null) {
-				try {
-					dataFile.close();
-				} catch (IOException e) {
-					logger.error("IOException " + e.getMessage());
+			} finally {
+				if (dataFile != null) {
+					try {
+						dataFile.close();
+					} catch (IOException e) {
+						logger.error("IOException " + e.getMessage());
+					}
 				}
 			}
+			MemoryController.log();
 		}
-		logger.info("read(" + year + "," + month + ") complete");
-		MemoryController.log();
 		return netCDFList;
 	}
 
@@ -187,10 +234,25 @@ public class OceanERAInterimZeroTwoFive extends OceanSource {
 //		}
 //	}
 }
+//public int startYear = 1979;
+//public int endYear = 2019;
+//public boolean test = false;
+//@Override
+//public int getStartYear() {
+//	return this.startYear;
+//}
+//
+//@Override
+//public int getEndYear() {
+//	return this.endYear;
+//}
 //public static String path = "." + seperator + "data" + seperator + "hydrosphere" + seperator + "ocean" + seperator
 //+ "sst";
-//public static String path = basePath + "prospero-data" + seperator + "ECMWF" + seperator + "File" + seperator
-//+ "Data" + seperator + "ERA" + seperator + "Interim" + seperator + "SST";
+//public static String path = basePath+"prospero-data" + seperator + "ECMWF" + seperator + "File" + seperator
+//+ "Data" + seperator + "ERA" + seperator +"5"+seperator +"SST";
+//public static String prefix = 
+//public static String suffix = 
+//public static String extension = "nc";
 //public void query(Query query) throws Exception {
 //logger.info("query(" + query + ")");
 //this.unsupportedException("level", query.level);

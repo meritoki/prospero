@@ -258,7 +258,7 @@ public class Energy extends Variable {
 
 	@Override
 	public void initPlotList() throws Exception {
-		logger.info("initPlotList()");
+//		logger.info("initPlotList()");
 		List<Plot> plotList = new ArrayList<>();
 		for (Entry<String, Boolean> variable : this.variableMap.entrySet()) {
 			String variableKey = variable.getKey();
