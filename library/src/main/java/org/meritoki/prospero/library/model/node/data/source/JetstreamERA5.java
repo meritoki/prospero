@@ -144,7 +144,12 @@ public class JetstreamERA5 extends ERANetCDF {
 				float intensityAverage;
 				float u = 0;
 				float v = 0;
-				this.variableCube = new ArrayFloat.D3(timeCount, latitudeCount, longitudeCount);
+				NetCDF netCDF = new NetCDF();
+				netCDF.type = this.dataType;
+				netCDF.latArray = latArray;
+				netCDF.lonArray = lonArray;
+				netCDF.timeArray = timeArray;
+				netCDF.variableCube = new ArrayFloat.D3(timeCount, latitudeCount, longitudeCount);
 				for (int t = 0; t < timeCount; t++) {
 					for (int j = 0; j < latitudeCount; j++) {
 						for (int i = 0; i < longitudeCount; i++) {
@@ -160,16 +165,11 @@ public class JetstreamERA5 extends ERANetCDF {
 								intensitySum += intensity;
 							}
 							intensityAverage = intensitySum / levelCount;
-							this.variableCube.set(t, j, i, intensityAverage);
+							netCDF.variableCube.set(t, j, i, intensityAverage);
 						}
 					}
 				}
-				NetCDF netCDF = new NetCDF();
-				netCDF.type = this.dataType;
-				netCDF.latArray = latArray;
-				netCDF.lonArray = lonArray;
-				netCDF.timeArray = timeArray;
-				netCDF.variableCube = this.variableCube;
+
 				dataFile.close();
 				System.gc();
 				netCDFList.add(netCDF);

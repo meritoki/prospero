@@ -317,32 +317,36 @@ public class Grid extends Spheroid {
 		 */
 	public void initMonthArray(List<Time> timeList) {
 		this.monthArray = new int[12];
-		for (Time time : timeList) {
-			if (time != null) {
-				int month = time.month;
-				if (month != -1) {
-					this.monthArray[month - 1]++;
+		if (timeList != null) {
+			for (Time time : timeList) {
+				if (time != null) {
+					int month = time.month;
+					if (month != -1) {
+						this.monthArray[month - 1]++;
+					}
 				}
 			}
+			logger.debug("initMonthArray(" + timeList.size() + ") this.monthArray=" + Arrays.toString(this.monthArray));
 		}
-		logger.debug("initMonthArray(" + timeList.size() + ") this.monthArray=" + Arrays.toString(this.monthArray));
 	}
 
 	public Map<Integer, Integer> initYearMap(List<Time> timeList) {
 		this.yearMap = new HashMap<>();
-		for (Time time : timeList) {
-			if (time != null) {
-				int year = time.year;
-				Integer count = this.yearMap.get(year);
-				if (count == null) {
-					count = 1;
-				} else {
-					count++;
+		if (timeList != null) {
+			for (Time time : timeList) {
+				if (time != null) {
+					int year = time.year;
+					Integer count = this.yearMap.get(year);
+					if (count == null) {
+						count = 1;
+					} else {
+						count++;
+					}
+					this.yearMap.put(year, count);
 				}
-				this.yearMap.put(year, count);
 			}
+			logger.debug("initYearMap(" + timeList.size() + ") this.yearMap=" + this.yearMap);
 		}
-		logger.debug("initYearMap(" + timeList.size() + ") this.yearMap=" + this.yearMap);
 		return this.yearMap;
 	}
 
@@ -413,6 +417,29 @@ public class Grid extends Spheroid {
 		return this.getTileList(this.coordinateMatrix, this.dataMatrix);
 	}
 
+	public List<Tile> getTileList(List<Region> regionList, double value) {
+		logger.info("getTileList(" + regionList.size() + ", " + value + ")");
+		List<Tile> tileList = new ArrayList<>();
+		Tile tile;
+		for (int i = 0; i < this.latitude; i += dimension) {
+			for (int j = 0; j < this.longitude; j += dimension) {
+				tile = new Tile((i - this.latitude / 2) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
+						dimension, value);
+				if (regionList != null && regionList.size() > 0) {
+					for (Region region : regionList) {
+						if (region.contains(tile)) {
+							tileList.add(tile);
+							break;
+						}
+					}
+				} else {
+					tileList.add(tile);
+				}
+			}
+		}
+		return tileList;
+	}
+
 	/**
 	 * 
 	 * @param coordinateMatrix
@@ -450,7 +477,9 @@ public class Grid extends Spheroid {
 							}
 						}
 					}
-					weight = Coordinate.getArea(i - this.latitude / 2, j - this.longitude / 2, dimension);
+					weight = Coordinate.getArea((i - (this.latitude / 2)) / this.resolution,
+							(j - (this.longitude / 2)) / this.resolution, dimension);
+//					weight = Coordinate.getArea(i - this.latitude / 2, j - this.longitude / 2, dimension);
 					weightedData = (weight > 0) ? data / weight : data;
 					count = this.monthArray[m];
 					quotient = (count > 0) ? weightedData / count : weightedData;
@@ -853,7 +882,7 @@ public class Grid extends Spheroid {
 	 * @param graphics
 	 */
 	public void paintTrajectory(Graphics graphics) {
-		logger.debug("paintTrajectory(" + (graphics != null) + ") this.eventList.size()="+this.eventList.size());
+		logger.debug("paintTrajectory(" + (graphics != null) + ") this.eventList.size()=" + this.eventList.size());
 		Graphics2D g2d = (Graphics2D) graphics;
 		Point aPoint;
 		Point bPoint;
@@ -863,7 +892,7 @@ public class Grid extends Spheroid {
 		Stroke old = g2d.getStroke();
 		g2d.setStroke(new BasicStroke(thickness));
 		List<Event> eventList = Event.getSelectedEventList(this.eventList, this.calendar);
-		logger.debug("paintTrajectory(" + (graphics != null) + ") eventList.size()="+eventList.size());
+		logger.debug("paintTrajectory(" + (graphics != null) + ") eventList.size()=" + eventList.size());
 		for (Event event : eventList) {
 			if (event instanceof CycloneEvent) {
 				Map<Integer, List<Coordinate>> pressureCoordinateMap = ((CycloneEvent) event)

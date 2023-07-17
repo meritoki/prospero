@@ -70,6 +70,7 @@ public class NodeController extends com.meritoki.library.controller.node.NodeCon
 	}
 
 	public static void downloadFile(String fileURL, String path, String fileName) {
+		logger.info("downloadFile("+fileURL+", "+path+", "+fileName+")");
 		try (BufferedInputStream in = new BufferedInputStream(new URL(fileURL).openStream());
 				FileOutputStream fileOutputStream = new FileOutputStream(path + fileName)) {
 			byte dataBuffer[] = new byte[1024];

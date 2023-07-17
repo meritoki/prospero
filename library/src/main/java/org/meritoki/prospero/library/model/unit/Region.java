@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Region {
 	static Logger logger = LoggerFactory.getLogger(Region.class.getName());
-	//20221109 Future Use Coordinate
+	// 20221109 Future Use Coordinate
 	public double latitudeA;
 	public double longitudeA;
 	public double latitudeB;
@@ -35,74 +35,75 @@ public class Region {
 	@JsonIgnore
 	public List<Event> eventList;
 	@JsonIgnore
-	public HashMap<Time,List<Event>> eventMap;
+	public HashMap<Time, List<Event>> eventMap;
 	@JsonProperty
 	private int hashCode;
-	
+
 	public Region() {
-		this.hashCode = Objects.hash(this.latitudeA,this.longitudeB,this.latitudeB,this.longitudeB);
+		this.hashCode = Objects.hash(this.latitudeA, this.longitudeB, this.latitudeB, this.longitudeB);
 	}
-	
+
 	public Region(Object object) {
-		if(object instanceof Region) {
-			Region r = (Region)object;
+		if (object instanceof Region) {
+			Region r = (Region) object;
 			this.latitudeA = r.latitudeA;
 			this.longitudeA = r.longitudeA;
 			this.latitudeB = r.latitudeB;
 			this.longitudeB = r.longitudeB;
-			this.hashCode = Objects.hash(this.latitudeA,this.longitudeB,this.latitudeB,this.longitudeB);
+			this.hashCode = Objects.hash(this.latitudeA, this.longitudeB, this.latitudeB, this.longitudeB);
 		}
 	}
-	
+
 	public Region(double latitudeA, double longitudeA, double latitudeB, double longitudeB) {
 		this.latitudeA = latitudeA;
 		this.longitudeA = longitudeA;
 		this.latitudeB = latitudeB;
 		this.longitudeB = longitudeB;
-		this.hashCode = Objects.hash(this.latitudeA,this.longitudeB,this.latitudeB,this.longitudeB);
+		this.hashCode = Objects.hash(this.latitudeA, this.longitudeB, this.latitudeB, this.longitudeB);
 	}
-	
+
 	@Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        Region that = (Region) o;
-        return latitudeA == that.latitudeA && 
-        		longitudeA == that.longitudeA && 
-        		latitudeB == that.latitudeB && 
-        		longitudeB == that.longitudeB;
-    }
-	
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Region that = (Region) o;
+		return latitudeA == that.latitudeA && longitudeA == that.longitudeA && latitudeB == that.latitudeB
+				&& longitudeB == that.longitudeB;
+	}
+
 	public boolean contains(Event e) {
 		for (Coordinate c : e.coordinateList) {
-			if(this.contains(c)) {
+			if (this.contains(c)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public boolean contains(Coordinate coordinate) {
 		boolean flag = false;
-		flag = (latitudeA < coordinate.latitude && coordinate.latitude <latitudeB && longitudeA < coordinate.longitude && coordinate.longitude < longitudeB);
+		flag = (latitudeA < coordinate.latitude && coordinate.latitude < latitudeB && longitudeA < coordinate.longitude
+				&& coordinate.longitude < longitudeB);
 //		if(flag)logger.info(this+".contains("+coordinate+") flag="+flag);
 		return flag;
 	}
-	
+
 	public boolean contains(Tile tile) {
 		boolean flag = false;
-		flag = (latitudeA <= tile.coordinate.latitude && (tile.coordinate.latitude+tile.dimension) <= latitudeB && longitudeA <= tile.coordinate.longitude && (tile.coordinate.longitude+tile.dimension) <= longitudeB);
+		flag = (latitudeA <= tile.coordinate.latitude && (tile.coordinate.latitude + tile.dimension) <= latitudeB
+				&& longitudeA <= tile.coordinate.longitude
+				&& (tile.coordinate.longitude + tile.dimension) <= longitudeB);
 		return flag;
 	}
-	
+
 	public String nameString() {
-		return this.latitudeA+"_"+this.longitudeA+"_"+this.latitudeB+"_"+this.longitudeB;
+		return this.latitudeA + "_" + this.longitudeA + "_" + this.latitudeB + "_" + this.longitudeB;
 	}
-	
+
 	@Override
 	public String toString() {
-		return this.latitudeA+","+this.longitudeA+":"+this.latitudeB+","+this.longitudeB;
+		return this.latitudeA + "," + this.longitudeA + ":" + this.latitudeB + "," + this.longitudeB;
 	}
 }

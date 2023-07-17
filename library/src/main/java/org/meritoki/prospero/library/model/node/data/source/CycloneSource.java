@@ -37,6 +37,7 @@ import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.utn.app.command.cyclone.model.batch.Form;
 
 public class CycloneSource extends Source {
 
@@ -51,6 +52,7 @@ public class CycloneSource extends Source {
 	public boolean single = false;
 	public int cacheSize = 8;
 	public boolean test = true;
+	protected Form form = new Form();
 
 	public CycloneSource() {
 		super();

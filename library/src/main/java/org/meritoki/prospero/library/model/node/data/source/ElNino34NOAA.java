@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.meritoki.prospero.library.model.unit;
+package org.meritoki.prospero.library.model.node.data.source;
 
-public enum DataType {
-	SST,
-	MODULUS,
-	INTENSITY,
-	CONTINENT,
-	MSL,
-	GEOPOTENTIAL,
-	BAND_4,
-	CMI,
-	VORTICITY,
-	ELEVATION
+import java.util.ArrayList;
+
+import org.meritoki.prospero.library.model.unit.Region;
+
+//El-Nino
+public class ElNino34NOAA extends NOAA {
+
+	public ElNino34NOAA() {
+		super();
+		this.downloadURL = "https://psl.noaa.gov/gcos_wgsp/Timeseries/Data/nino34.long.data";
+		this.setRelativePath("NOAA"+seperator+"ElNino");
+		this.setDownloadPath("NOAA"+seperator+"ElNino");
+		this.setFileName("nino34.long.data");
+		Region threeFour = new Region(-5,170,5,120);
+		this.regionList = new ArrayList<>();
+		this.regionList.add(threeFour);
+	}
 }

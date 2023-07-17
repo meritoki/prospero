@@ -34,7 +34,7 @@ public class ENSO extends Ocean {
 	
 	public ENSO() {
 		super("El Niño-Southern Oscillation");
-		this.sourceMap.put("NOAA MEI", "162baa09-9ad1-4556-9a9f-a967ee37e514");
+		this.sourceMap.put("NOAA ENSO", "162baa09-9ad1-4556-9a9f-a967ee37e514");
 	}
 
 	@Override

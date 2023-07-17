@@ -28,7 +28,7 @@ public class ERANetCDF extends Source {
 
 	public String variable;
 	public DataType dataType;
-	public ArrayFloat.D3 variableCube;
+//	public ArrayFloat.D3 variableCube;
 	public String prefix;
 	public String suffix;
 	public String extension = "nc";
@@ -152,14 +152,13 @@ public class ERANetCDF extends Source {
 				ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
 				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
 				ArrayShort.D3 variableArray = (ArrayShort.D3) variableVar.read();
-				this.variableCube = this.getVariableArray(variableArray, timeCount, latitudeCount, longitudeCount,
-						scaleFactor, addOffset);
 				NetCDF netCDF = new NetCDF();
 				netCDF.type = this.dataType;
 				netCDF.latArray = latArray;
 				netCDF.lonArray = lonArray;
 				netCDF.timeArray = timeArray;
-				netCDF.variableCube = this.variableCube;
+				netCDF.variableCube = this.getVariableArray(variableArray, timeCount, latitudeCount, longitudeCount,
+						scaleFactor, addOffset);
 				dataFile.close();
 				System.gc();
 				netCDFList.add(netCDF);

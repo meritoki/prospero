@@ -14,107 +14,54 @@
  * limitations under the License.
  */
 package org.meritoki.prospero.library.model.node.data.source;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
 
-import org.meritoki.prospero.library.model.node.query.Query;
-import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Mode;
-import org.meritoki.prospero.library.model.unit.Result;
+import org.meritoki.prospero.library.model.unit.Region;
 
-public class ENSONOAA extends Source {
+//El-Nino
+public class ENSONOAA extends NOAA {
 
 	public ENSONOAA() {
 		super();
-		this.setRelativePath("NOAA"+seperator+"MEI"+seperator);
+		this.downloadURL = "https://psl.noaa.gov/enso/mei/data/meiv2.data";
+		this.setRelativePath("NOAA"+seperator+"MEI");
+		this.setDownloadPath("NOAA"+seperator+"MEI");
 		this.setFileName("meiv2.data");
-	}
-	
-	@Override
-	public void query(Query query) throws Exception {
-		logger.info("query(" + query + ")");
-		Result result = new Result();
-		result.map.put("indexList",this.read());
-		result.mode = Mode.LOAD;
-		query.objectList.add(result);
-		result = new Result();
-		result.mode = Mode.COMPLETE;
-		query.objectList.add(result);
-	}
-
-	public List<Index> read() {
-		List<Index> indexList = new ArrayList<>();
-		File file = new File(this.getFilePath());
-		BufferedReader br;
-		try {
-			br = new BufferedReader(new FileReader(file));
-			String line;
-			br.readLine();
-			while ((line = br.readLine()) != null) {
-				String[] spaceArray = line.split(" ");
-				List<String> dataList = new ArrayList<>();
-				for(String s:spaceArray) {
-					s = s.trim();
-					if(!s.isEmpty()) {
-						dataList.add(s);
-					}
-				}
-				if(dataList.size() == 13) {
-					int year = Integer.parseInt(dataList.remove(0));
-					for(int i = 0; i<dataList.size();i++) {
-						double value = Double.parseDouble(dataList.get(i));
-						if(value != -999) {
-						Index index = new Index();
-						index.value = value;
-						if(i == 0) {
-							int startYear = year - 1;
-							int endYear = year;
-							int startMonth = 11;
-							int endMonth = i;
-							Calendar startCalendar = new GregorianCalendar(startYear,startMonth,1);
-							Calendar endCalendar = new GregorianCalendar(endYear,endMonth,1);
-							endCalendar.set(Calendar.DAY_OF_MONTH, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-//							System.out.println(startCalendar.getTime());
-//							System.out.println(endCalendar.getTime());
-							index.startCalendar = startCalendar;
-							index.endCalendar = endCalendar;
-						} else {
-							int startYear = year;
-							int endYear = year;
-							int startMonth = i-1;
-							int endMonth = i;
-							Calendar startCalendar = new GregorianCalendar(startYear,startMonth,1);
-							Calendar endCalendar = new GregorianCalendar(endYear,endMonth,1);
-							endCalendar.set(Calendar.DAY_OF_MONTH, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-							index.startCalendar = startCalendar;
-							index.endCalendar = endCalendar;
-						}
-						indexList.add(index);
-						}
-					}
-				}
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-//		catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		return indexList;
+		Region three = new Region(-5,-150,5,-90);
+		Region threeFour = new Region(-5,170,5,120);
+		Region four = new Region(-5,160,5,-150);
+		Region oneTwo = new Region(-10,-90,0,-80);
+		this.regionList = new ArrayList<>();
+		this.regionList.add(three);
+		this.regionList.add(threeFour);
+		this.regionList.add(four);
+		this.regionList.add(oneTwo);
+//		3 : 
+//		SST 5N-5S,150W-90W	
+//		1870/01 - 2021/09
+//		3.4 :
+//		SST 5N-5S,170W-120W	
+//		1870/01 - 2021/09
+//		4 : 
+//		SST 5N-5S, 160E-150W	
+//		1870/01 - 2021/09
+//		1+2 : 
+//		SST 0N-10S, 90W-80W	
+//		1870/01 - 2021/09
 	}
 }
+//@Override
+//public void query(Query query) throws Exception {
+//	logger.info("query(" + query + ")");
+//	Result result = new Result();
+//	result.map.put("indexList",this.read());
+//	result.mode = Mode.LOAD;
+//	query.objectList.add(result);
+//	result = new Result();
+//	result.mode = Mode.COMPLETE;
+//	query.objectList.add(result);
+//}
 //public String fileName = this.basePath+"prospero-data/NOAA/MEI/meiv2.data";
 //public List<Index> indexList;
 

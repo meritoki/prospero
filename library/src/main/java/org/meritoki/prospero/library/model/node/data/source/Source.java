@@ -82,16 +82,19 @@ public class Source extends Node {
 	public void setRelativePath(String relativePath) {
 		logger.info("setRelativePath(" + relativePath + ")");
 		this.relativePath = relativePath;
-		File file = new File(this.relativePath);
-		if (!file.exists() && file.isDirectory()) {
-			file.mkdirs();
-		}
 	}
 
 	@JsonIgnore
 	public void setDownloadPath(String downloadPath) {
 		logger.info("setDownloadPath(" + downloadPath + ")");
 		this.downloadPath = downloadPath;
+//		File file = new File(this.getDownloadPath());
+//		logger.info("setDownloadPath(" + downloadPath + ") file="+file);
+//		logger.info("setDownloadPath(" + downloadPath + ") file.exists()="+file.exists());
+//		logger.info("setDownloadPath(" + downloadPath + ") file.isDirectory()="+file.isDirectory());
+//		if (!file.exists() && file.isDirectory()) {
+//			file.mkdirs();
+//		}
 	}
 
 	@JsonIgnore

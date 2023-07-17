@@ -141,6 +141,18 @@ public class Result {
 		return intervalList;
 	}
 	
+	public List<Region> getRegionList() {
+		Object object = this.map.get("regionList");
+		List<Region> regionList = new ArrayList<>();
+		if(object != null) {
+			regionList = (List<Region>)object; 
+			if (regionList.size() == 0) {
+				logger.warn("getRegionList() regionList.size() == 0");
+			}
+		}
+		return regionList;
+	}
+	
 	@JsonIgnore
 	@Override
 	public String toString() {

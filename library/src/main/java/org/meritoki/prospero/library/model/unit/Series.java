@@ -74,6 +74,17 @@ public class Series {
 		}
 		return data;
 	}
+	
+	public Index getIndex(Calendar calendar) {
+		Index index = null;
+		for(Index i: this.indexList) {
+			if(i.containsCalendar(calendar)) {
+				index = i;
+				break;
+			}
+		}
+		return index;
+	}
 
 
 	/**

@@ -109,11 +109,6 @@ public class Query {
 	}
 
 	@JsonIgnore
-	public String getFileName() {
-		return this.getTime() + "-" + this.getSourceUUID();
-	}
-
-	@JsonIgnore
 	public File getFile() {
 		return new File(this.getFileName() + ".json");
 	}
@@ -155,6 +150,11 @@ public class Query {
 	public void setWindow(Calendar start, Calendar end) {
 		this.map.put("window", Time.getCalendarString("YYYY/MM/dd HH:mm:ss", start) + ","
 				+ Time.getCalendarString("YYYY/MM/dd HH:mm:ss", end));
+	}
+
+	@JsonIgnore
+	public String getFileName() {
+		return this.getTime() + "-" + this.getSourceUUID();
 	}
 
 	@JsonIgnore
@@ -561,6 +561,12 @@ public class Query {
 		}
 		return group;
 	}
+	
+//	@JsonIgnore
+//	public String getFileName() {
+//		String basePath = this.map.get("basePath");
+//		return basePath;
+//	}
 	
 	@JsonIgnore
 	public String getBasePath() {

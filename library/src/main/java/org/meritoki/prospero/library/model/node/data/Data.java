@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.meritoki.prospero.library.model.node.data.source.AMONOAA;
 import org.meritoki.prospero.library.model.node.data.source.AtmosphereWMO;
 import org.meritoki.prospero.library.model.node.data.source.CityNaturalEarth;
 import org.meritoki.prospero.library.model.node.data.source.CountryNaturalEarth;
@@ -27,19 +28,25 @@ import org.meritoki.prospero.library.model.node.data.source.CycloneUTNERAInterim
 import org.meritoki.prospero.library.model.node.data.source.CycloneUTNERAInterimTest;
 import org.meritoki.prospero.library.model.node.data.source.ENSONOAA;
 import org.meritoki.prospero.library.model.node.data.source.EarthquakeUSGSEarthquakeHazardProgram;
+import org.meritoki.prospero.library.model.node.data.source.ElNino12NOAA;
+import org.meritoki.prospero.library.model.node.data.source.ElNino34NOAA;
+import org.meritoki.prospero.library.model.node.data.source.ElNino3NOAA;
+import org.meritoki.prospero.library.model.node.data.source.ElNino4NOAA;
 import org.meritoki.prospero.library.model.node.data.source.GOESNOAA;
 import org.meritoki.prospero.library.model.node.data.source.GeopotentialERA5;
+import org.meritoki.prospero.library.model.node.data.source.IODNOAA;
 import org.meritoki.prospero.library.model.node.data.source.JetstreamERA5;
 import org.meritoki.prospero.library.model.node.data.source.JetstreamERAInterim;
 import org.meritoki.prospero.library.model.node.data.source.LithosphereGEBCO;
 import org.meritoki.prospero.library.model.node.data.source.MagneticNOAAEMAG;
 import org.meritoki.prospero.library.model.node.data.source.MagneticNOAAWMM;
 import org.meritoki.prospero.library.model.node.data.source.MeanSeaLevelPressureERA5;
+import org.meritoki.prospero.library.model.node.data.source.PDONOAA;
+import org.meritoki.prospero.library.model.node.data.source.SAMNOAA;
+import org.meritoki.prospero.library.model.node.data.source.SILSOSunspot;
 import org.meritoki.prospero.library.model.node.data.source.SeaIceToth;
 import org.meritoki.prospero.library.model.node.data.source.SeaSurfaceTemperatureERA5;
 import org.meritoki.prospero.library.model.node.data.source.SeaSurfaceTemperatureERAInterim;
-import org.meritoki.prospero.library.model.node.data.source.PDONOAA;
-import org.meritoki.prospero.library.model.node.data.source.SILSOSunspot;
 import org.meritoki.prospero.library.model.node.data.source.Source;
 import org.meritoki.prospero.library.model.node.data.source.TectonicPeterBird;
 import org.meritoki.prospero.library.model.node.data.source.TornadoHistoryProject;
@@ -69,7 +76,7 @@ public class Data extends Node {
 
 	static Logger logger = LoggerFactory.getLogger(Data.class.getName());
 	public Map<String, Source> sourceMap = new HashMap<String, Source>();
-	
+
 	public Data() {
 		super("Data");
 		this.filter = false;
@@ -91,6 +98,13 @@ public class Data extends Node {
 		this.sourceMap.put("2fb6b1b3-89f3-445f-9ffb-e0e5f9afcd94", new AtmosphereWMO());
 		this.sourceMap.put("671b1a22-53e4-47b1-b148-5ba83420b0cd", new PDONOAA());
 		this.sourceMap.put("162baa09-9ad1-4556-9a9f-a967ee37e514", new ENSONOAA());
+		this.sourceMap.put("49c5c583-3ab3-4b71-b655-7c63f79cd19e", new SAMNOAA());
+		this.sourceMap.put("c6cda394-0243-4ed5-a6db-9add2a837490", new IODNOAA());
+		this.sourceMap.put("9002e9df-10c9-417a-a12e-c29da659577b", new AMONOAA());
+		this.sourceMap.put("36e6219d-4867-4c94-84ba-538fd40e63e1", new ElNino12NOAA());
+		this.sourceMap.put("19cf287a-5d24-4f60-9dd7-e5c2a545a1a5", new ElNino3NOAA());
+		this.sourceMap.put("1973a943-de01-46c2-b376-60384645bea8", new ElNino34NOAA());
+		this.sourceMap.put("8f2bc89d-7ba3-46b2-9dde-7717d992a61e", new ElNino4NOAA());
 		this.sourceMap.put("c983e688-0e94-405f-a513-7565c6e13b03", new MagneticNOAAWMM());
 		this.sourceMap.put("ecb98f29-fc40-4025-ab0e-24faeaa39d5e", new SILSOSunspot());
 		this.sourceMap.put("8b2215c6-945b-4109-bfb4-6c764636e390", new SeaIceToth());
@@ -102,28 +116,28 @@ public class Data extends Node {
 		this.sourceMap.put("9c51699e-d185-4469-a38a-08ca02b88931", new UTNTrack());
 		this.start();
 	}
-	
+
 	public void setBasePath(String basePath) {
-		logger.info("setBasePath("+basePath+")");
-		for(Entry<String,Source> entry: this.sourceMap.entrySet()) {
+		logger.info("setBasePath(" + basePath + ")");
+		for (Entry<String, Source> entry : this.sourceMap.entrySet()) {
 			Source source = entry.getValue();
 			source.setBasePath(basePath);
 		}
 	}
-	
+
 	@Override
 	protected void defaultState(Object object) {
-		if(object instanceof Query) {
-			Query query = (Query)object;
+		if (object instanceof Query) {
+			Query query = (Query) object;
 			this.query(query);
 		}
 	}
-	
+
 	protected void query(Query query) {
 		Object object = this.sourceMap.get(query.getSourceUUID());
-		if(object instanceof Source) {
-			Source source = (Source)object; 
-			if(source.getStart()) {
+		if (object instanceof Source) {
+			Source source = (Source) object;
+			if (source.getStart()) {
 				source.start();
 			} else {
 				source.interrupt();

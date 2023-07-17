@@ -18,16 +18,21 @@ package org.meritoki.prospero.library.model.terra.hydrosphere.ocean;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
+import org.meritoki.prospero.library.model.node.query.Query;
+import org.meritoki.prospero.library.model.plot.Plot;
+import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.terra.hydrosphere.Hydrosphere;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.enso.ENSO;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.ice.Ice;
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.modulus.Modulus;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.pdo.PDO;
-import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.temperature.SeaSurfaceTemperature;
+import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.temperature.SurfaceTemperature;
 import org.meritoki.prospero.library.model.unit.DataType;
+import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +44,19 @@ public class Ocean extends Hydrosphere {
 
 	public Ocean() {
 		super("Ocean");
-		this.addChild(new SeaSurfaceTemperature());
+		this.sourceMap.put("NOAA ENSO", "162baa09-9ad1-4556-9a9f-a967ee37e514");
+		this.sourceMap.put("NOAA El Nino 12", "36e6219d-4867-4c94-84ba-538fd40e63e1");
+		this.sourceMap.put("NOAA El Nino 3", "19cf287a-5d24-4f60-9dd7-e5c2a545a1a5");
+		this.sourceMap.put("NOAA El Nino 3.4", "1973a943-de01-46c2-b376-60384645bea8");
+		this.sourceMap.put("NOAA El Nino 4", "8f2bc89d-7ba3-46b2-9dde-7717d992a61e");
+		this.sourceMap.put("NOAA PDO", "671b1a22-53e4-47b1-b148-5ba83420b0cd");
+		this.sourceMap.put("NOAA SAM", "49c5c583-3ab3-4b71-b655-7c63f79cd19e");
+		this.sourceMap.put("NOAA AMO","9002e9df-10c9-417a-a12e-c29da659577b");
+		this.sourceMap.put("NOAA IOD","c6cda394-0243-4ed5-a6db-9add2a837490");
+		this.addChild(new SurfaceTemperature());
 		this.addChild(new Modulus());
-		this.addChild(new ENSO());
-		this.addChild(new PDO());
 		this.addChild(new Ice());
+		this.tileFlag = true;
 	}
 
 	public Ocean(String name) {
@@ -60,13 +73,89 @@ public class Ocean extends Hydrosphere {
 	public void load(Result result) {
 		super.load(result);
 		List<NetCDF> netCDFList = result.getNetCDFList();
-		this.netCDFList.addAll(netCDFList);
-		try {
-			this.process(this.netCDFList);
-		} catch (Exception e) {
-			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
-			e.printStackTrace();
+		List<Index> indexList = result.getIndexList();
+		if (netCDFList.size()>0) {
+			this.netCDFList.addAll(netCDFList);
+			try {
+				this.process(this.netCDFList);
+			} catch (Exception e) {
+				logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
+				e.printStackTrace();
+			}
+		} else if(indexList.size() > 0) {
+			this.regionList = result.getRegionList();
+			Series series = this.newSeries();
+			series.addIndexList(indexList);
+			this.seriesMap.put(this.query.getSource(), series);
 		}
+	}
+	
+	@Override
+	public void complete() {
+		super.complete();
+		this.initPlotList(this.seriesMap);
+		this.initTileList(this.seriesMap);
+	}
+	
+	@Override
+	public List<Plot> getPlotList() throws Exception {
+		return this.plotList;
+	}
+
+	public Plot getPlot(Series series) throws Exception {
+		Plot plot = null;
+		if (series.indexList != null && series.indexList.size() > 0) {
+			series.map.put("startCalendar", this.startCalendar);
+			series.map.put("endCalendar", this.endCalendar);
+			series.setRegression(this.regression);
+			plot = new TimePlot(series);
+		}
+		return plot;
+	}
+	
+	public void initPlotList(Map<String, Series> seriesMap) {
+		List<Plot> plotList = new ArrayList<>();
+		for (Series series : new ArrayList<Series>(seriesMap.values())) {
+			try {
+				Plot plot = this.getPlot(series);
+				if (plot != null) {
+					plotList.add(plot);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("initPlotList(" + seriesMap.size() + ") e=" + e);
+				e.printStackTrace();
+			}
+		}
+		this.plotList = plotList;
+	}
+	
+	public void initTileList(Map<String, Series> seriesMap) {
+		for (Series series : new ArrayList<Series>(seriesMap.values())) {
+			this.tileList = this.getTileList((List<Region>)series.map.get("regionList"),series.getIndex(this.calendar).value);
+		}
+	}
+	
+	public Series newSeries() {
+		Series series = new Series();
+		series.map.put("startCalendar", this.startCalendar);
+		series.map.put("endCalendar", this.endCalendar);
+		series.map.put("name", this.name);
+		series.map.put("average", this.averageFlag);
+		series.map.put("sum", this.sumFlag);
+		series.map.put("regression", this.regression);
+		series.map.put("region", "");
+		series.map.put("regionList", this.regionList);
+		series.map.put("family", this.query.getFamily());
+		series.map.put("class", this.query.getClassification());
+		series.map.put("group", this.query.getGroup());
+		series.map.put("variable", this.query.getVariable());
+		series.map.put("window", this.window);
+		series.map.put("range", this.range);
+		Query q = new Query(this.query);
+		q.map.put("region", "");//region.toString());
+		series.map.put("query", q);
+		return series;
 	}
 
 	/**
