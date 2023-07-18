@@ -86,7 +86,7 @@ public class Source extends Node {
 
 	@JsonIgnore
 	public void setDownloadPath(String downloadPath) {
-		logger.info("setDownloadPath(" + downloadPath + ")");
+		logger.debug("setDownloadPath(" + downloadPath + ")");
 		this.downloadPath = downloadPath;
 //		File file = new File(this.getDownloadPath());
 //		logger.info("setDownloadPath(" + downloadPath + ") file="+file);

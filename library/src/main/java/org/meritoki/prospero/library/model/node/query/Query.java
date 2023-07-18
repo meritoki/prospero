@@ -775,20 +775,20 @@ public class Query {
 				valid = false;
 			}
 			if (!valid) {
-				throw new Exception("getDimension(" + dimension + ") invalid");
+				throw new Exception("getResolution(" + dimension + ") invalid");
 			}
 		}
 		return d;
 	}
 
 	@JsonIgnore
-	public double getResolution() throws Exception {
+	public Integer getResolution() throws Exception {
 		return this.getResolution(map.get("resolution"));
 	}
 
 	@JsonIgnore
-	public int getResolution(String resolution) throws Exception {
-		int r = 1;
+	public Integer getResolution(String resolution) throws Exception {
+		Integer r = null;
 		if (resolution != null && !resolution.isEmpty()) {
 			boolean valid = true;
 			try {

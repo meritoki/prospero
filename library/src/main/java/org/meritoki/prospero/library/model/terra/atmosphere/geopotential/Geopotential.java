@@ -29,20 +29,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Geopotential extends Atmosphere {
-	
+
 	static Logger logger = LoggerFactory.getLogger(Vorticity.class.getName());
 	protected DataType dataType;
 
-
 	public Geopotential() {
 		super("Geopotential");
-		this.sourceMap.put("ERA 5","80607606-1671-4f9f-967b-db7f59e87b81");
+		this.sourceMap.put("ERA 5", "80607606-1671-4f9f-967b-db7f59e87b81");
 		this.dataType = DataType.GEOPOTENTIAL;
 	}
-	
+
 	@Override
 	public void init() {
-		this.dimension = 1;
+//		this.dimension = 1;
 		super.init();
 	}
 
@@ -110,10 +109,13 @@ public class Geopotential extends Atmosphere {
 					if (flag) {
 						for (int lat = 0; lat < latSize - 1; lat++) {
 							float latitude = netCDF.latArray.get(lat);
+							latitude *= this.resolution;
 							for (int lon = 0; lon < lonSize; lon++) {
 								float longitude = netCDF.lonArray.get(lon);
-								int x = (int) ((latitude + this.latitude / 2) * this.resolution);
-								int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								longitude *= this.resolution;
+								int x = (int) ((latitude + (this.latitude * this.resolution) / 2));
+								int y = (int) (((longitude + (this.longitude * this.resolution) / 2))
+										% (this.longitude * this.resolution));
 								int z = calendar.get(Calendar.MONTH);
 								dataMatrix[x][y][z] += netCDF.variableCube.get(t, lat, lon);
 								coordinateMatrix[x][y][z]++;

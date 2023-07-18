@@ -48,7 +48,7 @@ public class Lithosphere extends Terra {
 
 	@Override
 	public void init() {
-		this.dimension = 1;
+//		this.dimension = 1;
 		super.init();
 	}
 
@@ -98,10 +98,12 @@ public class Lithosphere extends Terra {
 				long lonSize = netCDF.lonArray.getSize();
 				for (int lat = 0; lat < latSize; lat++) {
 					float latitude = netCDF.latArray.get(lat);
+					latitude *= this.resolution;
 					for (int lon = 0; lon < lonSize; lon++) {
 						float longitude = netCDF.lonArray.get(lon);
-						int x = (int) ((latitude + this.latitude / 2) * this.resolution);
-						int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+						longitude *= this.resolution;
+						int x = (int) ((latitude + (this.latitude * this.resolution) / 2));// % (this.latitude * this.resolution);
+						int y = (int) (((longitude + (this.longitude * this.resolution) / 2)) % (this.longitude * this.resolution));
 						int z = 0;
 						dataMatrix[x][y][z] += netCDF.variableMatrix.get(lat, lon);
 						coordinateMatrix[x][y][z]++;

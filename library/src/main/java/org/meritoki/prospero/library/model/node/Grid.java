@@ -63,11 +63,10 @@ public class Grid extends Spheroid {
 
 	static Logger logger = LoggerFactory.getLogger(Grid.class.getName());
 	public int latitude = 180;// 20230417, 20230621
-//	public int latitude = 90;// Eventually need to implement with 180
 	public int longitude = 360;
-	public int resolution = 1;// Need to Clean Dimension Resolution Implementation
+	public double resolution = 1;// Need to Clean Dimension Resolution Implementation
+	public double dimension = 1;
 	public int[] monthArray;
-	public double dimension = 2;
 	public double max;
 	public double min;
 	public Double significance;
@@ -85,7 +84,6 @@ public class Grid extends Spheroid {
 	public List<Event> eventList = Collections.synchronizedList(new ArrayList<>());
 	public List<Time> timeList = new ArrayList<>();
 	public List<Station> stationList = new ArrayList<>();
-//	public List<Plot> plotList = new ArrayList<>();
 	public List<Table> tableList = new ArrayList<>();
 	public List<Index> indexList = new ArrayList<>();
 	public List<Cluster> clusterList = new ArrayList<>();
@@ -254,8 +252,7 @@ public class Grid extends Spheroid {
 	public void init() {
 		super.init();
 		try {
-			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-			this.dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+			
 			this.idList = this.query.getIDList();
 			this.regression = this.query.getRegression();
 			this.significance = this.query.getSignificance();
@@ -270,6 +267,7 @@ public class Grid extends Spheroid {
 			this.clearFlag = this.query.getClear();
 			this.regionList = this.query.getRegionList();
 			this.dimension = (this.query.getDimension() != null) ? this.query.getDimension() : 1;
+			this.resolution = (this.query.getResolution() != null) ? this.query.getResolution() : 1;
 			this.meter = this.query.getMeter();
 			this.interval = this.query.getInterval();
 			this.window = this.query.getWindow();
@@ -282,6 +280,8 @@ public class Grid extends Spheroid {
 			this.seriesMap = new TreeMap<>();
 			this.timeList = new ArrayList<>();
 			this.histogramFlag = this.query.getHistogram();
+			this.coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+			this.dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 		} catch (Exception e) {
 			logger.error("init() exception=" + e.getMessage());
 			e.printStackTrace();
@@ -530,7 +530,9 @@ public class Grid extends Spheroid {
 		// Over 2D Coordinate and Data Matrices
 		// Each Iteration of Both Loops Represents a Unique Tile
 		for (int i = 0; i < coordinateMatrix.length; i += this.dimension) {
+//			logger.info("getTileList(...) i="+i);
 			for (int j = 0; j < coordinateMatrix[i].length; j += this.dimension) {
+//				logger.info("getTileList(...) j="+j);
 				meanSum = 0;// Reset Mean Sum to Zero
 				// We Iterate Over All 12 Months for a Tile
 				// Each Month Dimension Contains 1 or More Years of Data
@@ -542,7 +544,7 @@ public class Grid extends Spheroid {
 					// Tile using a and b as indices
 					for (int a = i; a < (i + this.dimension); a++) {
 						for (int b = j; b < (j + this.dimension); b++) {
-							if (a < this.latitude && b < this.longitude) {
+							if (a < this.latitude * this.resolution && b < this.longitude * this.resolution) {
 								// Each Tile is like a bucket where we retain a Count and Sum of Unique
 								// Coordinates and Data, i.e. Duration, respectively,
 								// In Some Cases a Month or Tile may not contain any measurements
@@ -592,8 +594,8 @@ public class Grid extends Spheroid {
 				// The fix applied coincides with the addition of Band Support
 				// Detected because Yearly Averages for Lifetime seemed too small/low
 //				}
-				tile = new Tile((i - (this.latitude / 2)) / this.resolution,
-						(j - (this.longitude / 2)) / this.resolution, this.dimension, value);
+				tile = new Tile((i - (this.latitude * this.resolution / 2)) / this.resolution,
+						(j - (this.longitude * this.resolution / 2)) / this.resolution, this.dimension/this.resolution, value);
 				if (this.regionList != null) {
 					for (Region region : this.regionList) {
 						if (region.contains(tile)) {
@@ -1124,6 +1126,8 @@ public class Grid extends Spheroid {
 		super.paint(graphics);
 	}
 }
+//public List<Plot> plotList = new ArrayList<>();
+//public int latitude = 90;// Eventually need to implement with 180
 //this.initBandMinMax(this.bandList, false);
 //if (!this.getProjection().verticalList.contains(vertical)) {
 //this.getProjection().verticalList.add(vertical);
