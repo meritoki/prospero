@@ -85,8 +85,9 @@ public class Vorticity extends Cyclone {
 					for (Event e : eventList) {
 						for (Coordinate c : e.coordinateList) {
 							if (c.flag && ((Integer) c.attribute.get("pressure")).equals(level)) {
-								int x = (int) ((c.latitude + this.latitude) * this.resolution);
-								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+								int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+										% (this.longitude * this.resolution));
 								int z = c.getMonth() - 1;
 								coordinateMatrix[x][y][z]++;
 								vorticityMatrix[x][y][z] += (float) c.attribute.get("vorticity");
@@ -105,8 +106,9 @@ public class Vorticity extends Cyclone {
 					if (e.flag) {
 						for (Coordinate c : e.coordinateList) {
 							if (c.flag) {
-								int x = (int) ((c.latitude + this.latitude) * this.resolution);
-								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+								int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+										% (this.longitude * this.resolution));
 								int z = c.getMonth() - 1;
 								coordinateMatrix[x][y][z]++;
 								vorticityMatrix[x][y][z] += (float) c.attribute.get("vorticity");

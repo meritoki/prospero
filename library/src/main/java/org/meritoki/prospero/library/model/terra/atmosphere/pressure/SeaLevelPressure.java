@@ -112,8 +112,8 @@ public class SeaLevelPressure extends Atmosphere {
 							if (latitude <= 0) {
 								for (int lon = 0; lon < lonSize; lon++) {
 									float longitude = netCDF.lonArray.get(lon);
-									int x = (int) ((latitude + this.latitude / 2) * this.resolution);
-									int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+									int x = (int) (((latitude + (this.latitude * this.resolution) / 2)) % (this.latitude * this.resolution));
+									int y = (int) (((longitude + (this.longitude * this.resolution) / 2)) % (this.longitude * this.resolution));
 									int z = calendar.get(Calendar.MONTH);
 									dataMatrix[x][y][z] += netCDF.variableCube.get(t, lat, lon);
 									coordinateMatrix[x][y][z]++;

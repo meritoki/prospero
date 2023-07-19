@@ -71,8 +71,9 @@ public class Speed extends Cyclone {
 					if (c != null) {
 						Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 						if (startTime.lessThan(time) && time.lessThan(endTime)) {
-							int x = (int) ((c.latitude + this.latitude) * this.resolution);
-							int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+							int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+							int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+									% (this.longitude * this.resolution));
 							int z = c.getMonth() - 1;
 							coordinateMatrix[x][y][z]++;
 							speedMatrix[x][y][z] += ((CycloneEvent) e).getMeanSpeed();

@@ -39,8 +39,9 @@ public class Genesis extends Density {
 				if (e.flag) {
 					Coordinate c = ((CycloneEvent) e).getStartCoordinate();
 					if (c.flag) {
-						int x = (int) ((c.latitude + this.latitude) * this.resolution);
-						int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+						int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+						int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+								% (this.longitude * this.resolution));
 						int z = c.getMonth() - 1;
 						coordinateMatrix[x][y][z]++;
 						Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);

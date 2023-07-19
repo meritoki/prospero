@@ -69,8 +69,9 @@ public class Lifetime extends Cyclone {
 						if (c.flag) {
 							Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 							if (startTime.lessThan(time) && time.lessThan(endTime)) {
-								int x = (int) ((c.latitude + this.latitude) * this.resolution);
-								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+								int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+										% (this.longitude * this.resolution));
 								int z = c.getMonth() - 1;
 								coordinateMatrix[x][y][z]++;
 								durationMatrix[x][y][z] += e.getDuration().days;

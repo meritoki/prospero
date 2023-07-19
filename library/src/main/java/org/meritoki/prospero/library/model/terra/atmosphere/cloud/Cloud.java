@@ -116,8 +116,8 @@ public class Cloud extends Atmosphere {
 							float latitude = latMatrix.get(j, i);
 							float longitude = lonMatrix.get(j, i);
 							if ((int) latitude != 2143289344 && (int) longitude != 2143289344 && latitude <= 0) {
-								int x = (int) ((latitude + this.latitude / 2) * this.resolution);
-								int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int x = (int) (((latitude + (this.latitude * this.resolution) / 2)) % (this.latitude * this.resolution));
+								int y = (int) (((longitude + (this.longitude * this.resolution) / 2)) % (this.longitude * this.resolution));
 								int z = calendar.get(Calendar.MONTH);
 								dataMatrix[x][y][z] += dataArray.get(t, j, i);
 								coordinateMatrix[x][y][z]++;
@@ -151,8 +151,8 @@ public class Cloud extends Atmosphere {
 //							logger.info("setCoordinateMatrix(...) latitude="+latitude);
 //							logger.info("setCoordinateMatrix(...) longitude="+longitude);
 							if (latitude < 0) {
-								int x = (int) ((latitude + this.latitude / 2) * this.resolution);
-								int y = (int) ((longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int x = (int) (((latitude + (this.latitude * this.resolution) / 2)) % (this.latitude * this.resolution));
+								int y = (int) (((longitude + (this.longitude * this.resolution) / 2)) % (this.longitude * this.resolution));
 								int z = calendar.get(Calendar.MONTH);
 								dataMatrix[x][y][z] += dataArray.get(i, j);
 								coordinateMatrix[x][y][z]++;

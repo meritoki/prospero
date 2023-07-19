@@ -34,7 +34,6 @@ public class Ice extends Ocean {
 
 	public Ice() {
 		super("Ice");
-		this.tileFlag = true;
 		this.sourceMap.put("Toth", "8b2215c6-945b-4109-bfb4-6c764636e390");
 	}
 
@@ -98,8 +97,9 @@ public class Ice extends Ocean {
 					if (flag) {
 						for (Coordinate c : f.coordinateList) {
 							if (c.flag) {
-								int x = (int) ((c.latitude + this.latitude / 2) * this.resolution);
-								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+								int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+										% (this.longitude * this.resolution));
 								int z = c.getMonth() - 1;
 								double density = (double) c.attribute.get("density");
 								dataMatrix[x][y][z] += (float) density;
@@ -129,10 +129,10 @@ public class Ice extends Ocean {
 		this.initYearMap(this.timeList);
 	}
 
-	@Override
-	public void paint(Graphics graphics) throws Exception {
-		super.paint(graphics);
-	}
+//	@Override
+//	public void paint(Graphics graphics) throws Exception {
+//		super.paint(graphics);
+//	}
 }
 //this.dimension = 1;
 //this.latitude = 180;

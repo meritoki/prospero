@@ -59,8 +59,9 @@ public class InstantaneousSpeed extends Cyclone {
 						if (object instanceof Double) {
 							double speed = (double) object;
 							if (startTime.lessThan(time) && time.lessThan(endTime)) {
-								int x = (int) ((c.latitude + this.latitude) * this.resolution);
-								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+								int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+										% (this.longitude * this.resolution));
 								int z = c.getMonth() - 1;
 								coordinateMatrix[x][y][z]++;
 								speedMatrix[x][y][z] += speed;

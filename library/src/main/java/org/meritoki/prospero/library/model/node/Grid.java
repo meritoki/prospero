@@ -62,8 +62,8 @@ import org.slf4j.LoggerFactory;
 public class Grid extends Spheroid {
 
 	static Logger logger = LoggerFactory.getLogger(Grid.class.getName());
-	public int latitude = 180;// 20230417, 20230621
-	public int longitude = 360;
+	public double latitude = 180;// 20230417, 20230621
+	public double longitude = 360;
 	public double resolution = 1;// Need to Clean Dimension Resolution Implementation
 	public double dimension = 1;
 	public int[] monthArray;

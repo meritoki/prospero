@@ -642,14 +642,14 @@ public class Cyclone extends Atmosphere {
 					if (coordinateMatrix == null)
 						coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 					for (Event e : eventList) {
-						for (Coordinate p : e.coordinateList) {
-							if (p.flag && ((Integer) p.attribute.get("pressure")).equals(pressure)) {
-								Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
+						for (Coordinate c : e.coordinateList) {
+							if (c.flag && ((Integer) c.attribute.get("pressure")).equals(pressure)) {
+								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 								if (startTime.lessThan(time) && time.lessThan(endTime)) {
-									int x = (int) ((p.latitude + this.latitude) / 2 * this.resolution);
-									int y = (int) ((p.longitude + this.longitude / 2) * this.resolution)
-											% this.longitude;
-									int z = p.getMonth() - 1;
+									int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+									int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+											% (this.longitude * this.resolution));
+									int z = c.getMonth() - 1;
 									coordinateMatrix[x][y][z]++;
 									if (!timeList.contains(time)) {
 										timeList.add(time);
@@ -667,9 +667,9 @@ public class Cyclone extends Atmosphere {
 							if (c.flag) {
 								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 								if (startTime.lessThan(time) && time.lessThan(endTime)) {
-									int x = (int) ((c.latitude + this.latitude) / 2 * this.resolution);
-									int y = (int) ((c.longitude + this.longitude / 2) * this.resolution)
-											% this.longitude;
+									int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+									int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+											% (this.longitude * this.resolution));
 									int z = c.getMonth() - 1;
 									coordinateMatrix[x][y][z]++;
 									if (!timeList.contains(time)) {
