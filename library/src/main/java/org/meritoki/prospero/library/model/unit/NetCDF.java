@@ -35,4 +35,5 @@ public class NetCDF {
 	public ArrayFloat.D2 variableMatrix;
 	public ArrayFloat.D1 variableArray;
 	public Object variable;
+	public Integer pressure;
 }

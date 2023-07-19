@@ -127,6 +127,12 @@ public class ERANetCDF extends Source {
 	public void download() {
 		logger.info("download()");
 	}
+	
+	public String getPressure(String fileName) {
+		String[] fileNameArray = fileName.split("_");
+		String pressure = fileNameArray[2];
+		return pressure;
+	}
 
 	public List<NetCDF> read(String fileName) {
 		logger.info("read(" + fileName + ")");
@@ -137,6 +143,7 @@ public class ERANetCDF extends Source {
 			NetcdfFile dataFile = null;
 			try {
 				dataFile = NetcdfFile.open(fileName, null);
+				Integer pressure = Integer.parseInt(this.getPressure(fileName));
 				Variable latitudeVar = dataFile.findVariable("latitude");
 				Variable longitudeVar = dataFile.findVariable("longitude");
 				Variable timeVar = dataFile.findVariable("time");
@@ -159,6 +166,7 @@ public class ERANetCDF extends Source {
 				netCDF.timeArray = timeArray;
 				netCDF.variableCube = this.getVariableArray(variableArray, timeCount, latitudeCount, longitudeCount,
 						scaleFactor, addOffset);
+				netCDF.pressure = pressure;
 				dataFile.close();
 				System.gc();
 				netCDFList.add(netCDF);

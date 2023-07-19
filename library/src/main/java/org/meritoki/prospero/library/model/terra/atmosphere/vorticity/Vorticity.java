@@ -9,6 +9,7 @@ import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,15 @@ public class Vorticity extends Atmosphere {
 		this.tileList = this.getTileList();
 		this.tileFlag = true;
 		this.initTileMinMax();
+		if (this.stackFlag) {
+			List<Integer> levelList = this.query.getPressureList();
+			for (Integer level : levelList) {
+				this.coordinateMatrix = this.coordinateMatrixMap.get(level);
+				this.dataMatrix = this.dataMatrixMap.get(level);
+				List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.dataMatrix);
+				this.tileListMap.put(level, tileList);
+			}
+		} 
 	}
 
 	public void setMatrix(List<NetCDF> netCDFList) {
@@ -88,6 +98,15 @@ public class Vorticity extends Atmosphere {
 				long timeSize = netCDF.timeArray.getSize();
 				long latSize = netCDF.latArray.getSize();
 				long lonSize = netCDF.lonArray.getSize();
+				if(this.stackFlag) {
+					coordinateMatrix = this.coordinateMatrixMap.get(netCDF.pressure);
+					dataMatrix = this.dataMatrixMap.get(netCDF.pressure);
+					if(coordinateMatrix == null)
+						coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
+					if(dataMatrix == null)
+						dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude
+							* resolution)][12];
+				}
 				for (int t = 0; t < timeSize; t++) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(Time.getNineteenHundredJanuaryFirstDate(netCDF.timeArray.get(t)));
@@ -95,6 +114,13 @@ public class Vorticity extends Atmosphere {
 					if (this.query.isDateTime()) {
 						if (!this.calendar.equals(calendar)) {
 							flag = false;
+						}else {
+							if (this.stackFlag) {
+								coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude
+										* resolution)][12];
+								dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude
+										* resolution)][12];
+							}
 						}
 					}
 					if (flag) {
@@ -115,6 +141,10 @@ public class Vorticity extends Atmosphere {
 							}
 						}
 					}
+				}
+				if(this.stackFlag) {
+					this.coordinateMatrixMap.put(netCDF.pressure, coordinateMatrix);
+					this.dataMatrixMap.put(netCDF.pressure, dataMatrix);
 				}
 			}
 		}
