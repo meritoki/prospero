@@ -77,7 +77,6 @@ public class LithosphereGEBCO extends Source {
 			netCDF.latArray = new ArrayFloat.D1(latitudeCount);
 			netCDF.lonArray = new ArrayFloat.D1(longitudeCount);
 			netCDF.variableMatrix = new ArrayFloat.D2(latitudeCount, longitudeCount);
-			netCDF.type = DataType.ELEVATION;
 			for (int i = 0; i < latitudeCount; i++) {
 				netCDF.latArray.set(i, (float) latArray.get(i));
 				for (int j = 0; j < longitudeCount; j++) {

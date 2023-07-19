@@ -15,12 +15,13 @@
  */
 package org.meritoki.prospero.library.model.terra.lithosphere.magnetic.field;
 
-import java.awt.Graphics;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.terra.lithosphere.magnetic.anamoly.Anomaly;
-import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.DataType;
+import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.meritoki.prospero.library.model.unit.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,32 +32,34 @@ public class Field extends Lithosphere {
 	public Field() {
 		super("Field");
 		this.sourceMap.put("NOAA WMM", "c983e688-0e94-405f-a513-7565c6e13b03");
+		this.dataType = DataType.MAGNETIC;
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void paint(Graphics graphics) throws Exception {
-		if (this.load) {
-			if (this.coordinateList != null) {
-				String variable = "intensity";
-				this.initCoordinateListMinMax(variable,null);
-				List<Point> coordinateList = this.getProjection().getCoordinateList(0, this.coordinateList);
-				if (coordinateList != null) {
-					for (Point c : coordinateList) {
-						if (c != null) {
-							if (c.attribute.get(variable) != null) {
-								graphics.setColor(this.chroma.getColor((double) c.attribute.get(variable),
-										this.min, this.max));
-							}
-							graphics.fillOval((int) ((c.x) * this.getProjection().scale),
-									(int) ((c.y) * this.getProjection().scale), (int) 6, (int) 6);
-						}
-					}
-				}
-			}
-		}
-	}
+	
 }
+//
+//@SuppressWarnings("unchecked")
+//@Override
+//public void paint(Graphics graphics) throws Exception {
+//	if (this.load) {
+//		if (this.coordinateList != null) {
+//			String variable = "intensity";
+//			this.initCoordinateListMinMax(variable,null);
+//			List<Point> coordinateList = this.getProjection().getCoordinateList(0, this.coordinateList);
+//			if (coordinateList != null) {
+//				for (Point c : coordinateList) {
+//					if (c != null) {
+//						if (c.attribute.get(variable) != null) {
+//							graphics.setColor(this.chroma.getColor((double) c.attribute.get(variable),
+//									this.min, this.max));
+//						}
+//						graphics.fillOval((int) ((c.x) * this.getProjection().scale),
+//								(int) ((c.y) * this.getProjection().scale), (int) 6, (int) 6);
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
 //@Override
 //public void load() {
 //	if (this.load) {

@@ -69,8 +69,8 @@ public class Time {
 	}
 
 	// Constructor that does all validation of String input
-	public Time(String time) {
-
+	public Time(String time, String format, String unit) {
+		this(unit,Time.getCalendar(Time.getDate(time,format)));
 	}
 
 	public Time(Integer year, Integer month, Integer day, Integer hour, Integer minute, Integer second) {
@@ -801,7 +801,7 @@ public class Time {
 		return calendar;
 	}
 
-	public GregorianCalendar getCalendar(Date date) {
+	public static GregorianCalendar getCalendar(Date date) {
 		GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTime(date);
 		return calendar;

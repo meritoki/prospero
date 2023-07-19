@@ -87,8 +87,8 @@ public class TornadoHistoryProject extends Source {
 									coordinate = new Coordinate();
 									coordinate.latitude = Double.parseDouble(values[29]);
 									coordinate.longitude = Double.parseDouble(values[30]);
-//									time = new Time(values[2] + " " + values[3]);
-//									coordinate.calendar = time.calendar;
+									time = new Time(values[2] + " " + values[3], "yyyy-MM-dd HH:mm:ss", "second");
+									coordinate.calendar = time.calendar;
 									event.coordinateList.add(coordinate);
 								}
 								event.attribute.put(labelArray[8], values[8]);

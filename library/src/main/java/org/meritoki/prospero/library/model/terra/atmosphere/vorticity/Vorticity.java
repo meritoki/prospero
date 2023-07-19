@@ -23,7 +23,7 @@ public class Vorticity extends Atmosphere {
 		this.tileFlag = true;
 		this.dataType = DataType.VORTICITY;
 		this.sourceMap.put("ERA 5", "e7e20f49-2387-40ce-917f-5b592c0b8b67");
-//		this.sourceMap.put("ERA INTERIM", "316bab36-ac3b-4930-87ae-5a32e4cdb81c");
+		this.sourceMap.put("ERA INTERIM", "316bab36-ac3b-4930-87ae-5a32e4cdb81c");
 	}
 
 	public Vorticity(String name) {
@@ -33,7 +33,6 @@ public class Vorticity extends Atmosphere {
 
 	@Override
 	public void init() {
-		this.dimension = 1;
 		super.init();
 	}
 
@@ -151,3 +150,4 @@ public class Vorticity extends Atmosphere {
 		return timeList;
 	}
 }
+//this.dimension = 1;

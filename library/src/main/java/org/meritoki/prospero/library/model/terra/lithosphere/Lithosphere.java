@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.lithosphere.earthquake.Earthquake;
+import org.meritoki.prospero.library.model.terra.lithosphere.magnetic.Magnetic;
 import org.meritoki.prospero.library.model.terra.lithosphere.tectonic.Tectonic;
 import org.meritoki.prospero.library.model.terra.lithosphere.volcano.Volcanic;
 import org.meritoki.prospero.library.model.unit.DataType;
@@ -34,7 +35,7 @@ public class Lithosphere extends Terra {
 
 	public Lithosphere() {
 		super("Lithosphere");
-//		this.addChild(new Magnetic());
+		this.addChild(new Magnetic());
 		this.addChild(new Earthquake());
 		this.addChild(new Tectonic());
 		this.addChild(new Volcanic());
@@ -69,7 +70,7 @@ public class Lithosphere extends Terra {
 	public void process() throws Exception {
 		super.process();
 		try {
-			this.process(this.netCDFList);
+//			this.process(this.netCDFList);
 			this.complete();
 		} catch (Exception e) {
 			logger.error("process() exception=" + e.getMessage());
@@ -102,7 +103,7 @@ public class Lithosphere extends Terra {
 					for (int lon = 0; lon < lonSize; lon++) {
 						float longitude = netCDF.lonArray.get(lon);
 						longitude *= this.resolution;
-						int x = (int) ((latitude + (this.latitude * this.resolution) / 2));// % (this.latitude * this.resolution);
+						int x = (int) (((latitude + (this.latitude * this.resolution) / 2)) % (this.latitude * this.resolution));
 						int y = (int) (((longitude + (this.longitude * this.resolution) / 2)) % (this.longitude * this.resolution));
 						int z = 0;
 						dataMatrix[x][y][z] += netCDF.variableMatrix.get(lat, lon);

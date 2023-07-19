@@ -25,5 +25,6 @@ public enum DataType {
 	BAND_4,
 	CMI,
 	VORTICITY,
-	ELEVATION
+	ELEVATION,
+	MAGNETIC
 }

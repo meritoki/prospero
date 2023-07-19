@@ -20,6 +20,18 @@ import java.util.ArrayList;
 import org.meritoki.prospero.library.model.unit.Region;
 
 //El-Nino
+//3 : 
+//SST 5N-5S,150W-90W	
+//1870/01 - 2021/09
+//3.4 :
+//SST 5N-5S,170W-120W	
+//1870/01 - 2021/09
+//4 : 
+//SST 5N-5S, 160E-150W	
+//1870/01 - 2021/09
+//1+2 : 
+//SST 0N-10S, 90W-80W	
+//1870/01 - 2021/09
 public class ENSONOAA extends NOAA {
 
 	public ENSONOAA() {
@@ -37,18 +49,7 @@ public class ENSONOAA extends NOAA {
 		this.regionList.add(threeFour);
 		this.regionList.add(four);
 		this.regionList.add(oneTwo);
-//		3 : 
-//		SST 5N-5S,150W-90W	
-//		1870/01 - 2021/09
-//		3.4 :
-//		SST 5N-5S,170W-120W	
-//		1870/01 - 2021/09
-//		4 : 
-//		SST 5N-5S, 160E-150W	
-//		1870/01 - 2021/09
-//		1+2 : 
-//		SST 0N-10S, 90W-80W	
-//		1870/01 - 2021/09
+
 	}
 }
 //@Override
