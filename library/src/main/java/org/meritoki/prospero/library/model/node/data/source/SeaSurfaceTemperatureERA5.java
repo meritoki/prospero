@@ -15,12 +15,10 @@
  */
 package org.meritoki.prospero.library.model.node.data.source;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.meritoki.prospero.library.model.node.data.generator.ModulusSSTERA5Generator;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Time;
@@ -125,19 +123,19 @@ public class SeaSurfaceTemperatureERA5 extends OceanERA {
 				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
 				ArrayShort.D3 sstArray = (ArrayShort.D3) sstVar.read();
 				
-				NetCDF netCDF = new NetCDF();
+				NetCDF sstNetCDF = new NetCDF();
 //				netCDF.continent = this.getContinent(scaleFactor, addOffset);
-				netCDF.type = DataType.SST;
-				netCDF.latArray = latitudeArray;
-				netCDF.lonArray = longitudeArray;
-				netCDF.timeArray = timeArray;
-				netCDF.variableCube = this.getSSTArray(sstArray, timeCount, latitudeCount, longitudeCount, scaleFactor,
+				sstNetCDF.type = DataType.SST;
+				sstNetCDF.latArray = latitudeArray;
+				sstNetCDF.lonArray = longitudeArray;
+				sstNetCDF.timeArray = timeArray;
+				sstNetCDF.variableCube = this.getSSTArray(sstArray, timeCount, latitudeCount, longitudeCount, scaleFactor,
 						addOffset);
 				dataFile.close();
 				System.gc();
-				netCDFList.add(netCDF);
+				netCDFList.add(sstNetCDF);
 				// MODULUS
-				netCDF = new NetCDF();
+				NetCDF netCDF = new NetCDF();
 //				netCDF.continent = this.getContinent(scaleFactor, addOffset);
 				netCDF.type = DataType.MODULUS;
 				netCDF.latArray = latitudeArray;
@@ -208,7 +206,7 @@ public class SeaSurfaceTemperatureERA5 extends OceanERA {
 							theta = Math.toRadians(theta);
 							thetaA = Math.toRadians(thetaA);
 							thetaB = Math.toRadians(thetaB);
-							float sst = netCDF.variableCube.get(time, lat, lon);
+							float sst = sstNetCDF.variableCube.get(time, lat, lon);
 							float sstPhiA;
 							float sstPhiB;
 							float sstThetaA;
@@ -219,22 +217,22 @@ public class SeaSurfaceTemperatureERA5 extends OceanERA {
 							if (sst != continent) {
 								dPhiFlag = false;
 								if (latitudeForwardFlag) {
-									sstPhiA = netCDF.variableCube.get(time, lat, lon);
-									sstPhiB = netCDF.variableCube.get(time, lat + 1, lon);
+									sstPhiA = sstNetCDF.variableCube.get(time, lat, lon);
+									sstPhiB = sstNetCDF.variableCube.get(time, lat + 1, lon);
 									if (sstPhiA != continent && sstPhiB != continent) {
 										dPhiFlag = true;
 										dPhi = this.getDerivative("forward", sstPhiA, sstPhiB, phiA, phiB);
 									}
 								} else if (latitudeBackwardFlag) {
-									sstPhiA = netCDF.variableCube.get(time, lat - 1, lon);
-									sstPhiB = netCDF.variableCube.get(time, lat, lon);
+									sstPhiA = sstNetCDF.variableCube.get(time, lat - 1, lon);
+									sstPhiB = sstNetCDF.variableCube.get(time, lat, lon);
 									if (sstPhiA != continent && sstPhiB != continent) {
 										dPhiFlag = true;
 										dPhi = this.getDerivative("backward", sstPhiA, sstPhiB, phiA, phiB);
 									}
 								} else if (latitudeCentralFlag) {
-									sstPhiA = netCDF.variableCube.get(time, lat - 1, lon);
-									sstPhiB = netCDF.variableCube.get(time, lat + 1, lon);
+									sstPhiA = sstNetCDF.variableCube.get(time, lat - 1, lon);
+									sstPhiB = sstNetCDF.variableCube.get(time, lat + 1, lon);
 									if (sstPhiA != continent && sstPhiB != continent) {
 										dPhiFlag = true;
 										dPhi = this.getDerivative("central", sstPhiA, sstPhiB, phiA, phiB);
@@ -242,22 +240,22 @@ public class SeaSurfaceTemperatureERA5 extends OceanERA {
 								}
 								dThetaFlag = false;
 								if (longitudeForwardFlag) {
-									sstThetaA = netCDF.variableCube.get(time, lat, lon);
-									sstThetaB = netCDF.variableCube.get(time, lat, lon + 1);
+									sstThetaA = sstNetCDF.variableCube.get(time, lat, lon);
+									sstThetaB = sstNetCDF.variableCube.get(time, lat, lon + 1);
 									if (sstThetaA != continent && sstThetaB != continent) {
 										dThetaFlag = true;
 										dTheta = this.getDerivative("forward", sstThetaA, sstThetaB, thetaA, thetaB);
 									}
 								} else if (longitudeBackwardFlag) {
-									sstThetaA = netCDF.variableCube.get(time, lat, lon - 1);
-									sstThetaB = netCDF.variableCube.get(time, lat, lon);
+									sstThetaA = sstNetCDF.variableCube.get(time, lat, lon - 1);
+									sstThetaB = sstNetCDF.variableCube.get(time, lat, lon);
 									if (sstThetaA != continent && sstThetaB != continent) {
 										dThetaFlag = true;
 										dTheta = this.getDerivative("backward", sstThetaA, sstThetaB, thetaA, thetaB);
 									}
 								} else if (longitudeCentralFlag) {
-									sstThetaA = netCDF.variableCube.get(time, lat, lon - 1);
-									sstThetaB = netCDF.variableCube.get(time, lat, lon + 1);
+									sstThetaA = sstNetCDF.variableCube.get(time, lat, lon - 1);
+									sstThetaB = sstNetCDF.variableCube.get(time, lat, lon + 1);
 									if (sstThetaA != continent && sstThetaB != continent) {
 										dThetaFlag = true;
 										dTheta = this.getDerivative("central", sstThetaA, sstThetaB, thetaA, thetaB);
