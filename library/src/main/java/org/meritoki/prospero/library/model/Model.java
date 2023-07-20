@@ -87,21 +87,21 @@ public class Model extends Variable {
 			this.data.setBasePath((String) basePath);
 		}
 		Object calendar = this.properties.get("calendar");
-		if (calendar instanceof String) {
+		if (calendar instanceof String && ((String)calendar).length()>0) {
 			this.calendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) calendar);
 			
 		} else {
 			this.calendar = Calendar.getInstance();
 		}
 		Object startCalendar = this.properties.get("startCalendar");
-		if (startCalendar instanceof String) {
+		if (startCalendar instanceof String && ((String)startCalendar).length()>0) {
 			this.startCalendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) startCalendar);
 			
 		} else {
 			this.startCalendar = Time.getStartCalendar(this.calendar);
 		}
 		Object endCalendar = this.properties.get("endCalendar");
-		if (endCalendar instanceof String) {
+		if (endCalendar instanceof String && ((String)endCalendar).length()>0) {
 			this.endCalendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) endCalendar);
 			
 		} else {
@@ -135,6 +135,10 @@ public class Model extends Variable {
 	@JsonIgnore
 	public void setBasePath(String basePath) {
 		if (basePath != null) {
+			String path = (String)this.properties.get("basePath");
+			if(path == null) {
+				this.properties.put("basePath", basePath);
+			}
 			this.data.setBasePath(basePath);
 		}
 	}

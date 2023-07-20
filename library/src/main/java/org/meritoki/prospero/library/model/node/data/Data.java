@@ -76,6 +76,7 @@ public class Data extends Node {
 
 	static Logger logger = LoggerFactory.getLogger(Data.class.getName());
 	public Map<String, Source> sourceMap = new HashMap<String, Source>();
+	public String basePath;
 
 	public Data() {
 		super("Data");
@@ -119,6 +120,7 @@ public class Data extends Node {
 
 	public void setBasePath(String basePath) {
 		logger.info("setBasePath(" + basePath + ")");
+		this.basePath = basePath;
 		for (Entry<String, Source> entry : this.sourceMap.entrySet()) {
 			Source source = entry.getValue();
 			source.setBasePath(basePath);

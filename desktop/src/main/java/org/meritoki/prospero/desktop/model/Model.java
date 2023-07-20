@@ -53,6 +53,10 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 			properties = NodeController.openPropertiesXML(propertiesFile);
 		} else {
 			properties = new Properties();
+			properties.put("basePath","");
+			properties.put("calendar","");
+			properties.put("startCalendar","");
+			properties.put("endCalendar","");
 			NodeController.savePropertiesXML(properties, "prospero.xml", "Prospero");
 		}
 		this.setProperties(properties);
