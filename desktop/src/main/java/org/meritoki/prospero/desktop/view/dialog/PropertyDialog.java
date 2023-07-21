@@ -24,6 +24,21 @@ public class PropertyDialog extends javax.swing.JDialog {
     public void setModel(Model model) {
     	this.model = model;
     }
+    
+    public void init() {
+    	if(this.model != null) {
+    		String basePath = (String)this.model.system.properties.get("basePath");
+    		String calendar = (String)this.model.system.properties.get("calendar");
+    		String startCalendar = (String)this.model.system.properties.get("startCalendar");
+    		String endCalendar = (String)this.model.system.properties.get("endCalendar");
+    		String timeZone = (String)this.model.system.properties.get("timeZone");
+    		this.basePathTextField.setText(basePath);
+    		this.calendarTextField.setText(calendar);
+    		this.startCalendarTextField.setText(startCalendar);
+    		this.endCalendarTextField.setText(endCalendar);
+    		this.timeZoneTextField.setText(timeZone);
+    	}
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -152,7 +167,18 @@ public class PropertyDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void setButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setButtonActionPerformed
-        // TODO add your handling code here:
+        String basePath = this.basePathTextField.getText();
+        String calendar = this.calendarTextField.getText();
+        String startCalendar = this.startCalendarTextField.getText();
+        String endCalendar = this.endCalendarTextField.getText();
+        String timeZone = this.timeZoneTextField.getText();
+        this.model.system.properties.put("basePath",basePath);
+        this.model.system.properties.put("calendar",calendar);
+        this.model.system.properties.put("startCalendar",startCalendar);
+        this.model.system.properties.put("endCalendar",endCalendar);
+        this.model.system.properties.put("timeZone",timeZone);
+        this.model.system.saveProperties(this.model.system.properties);
+        this.model.setProperties(this.model.system.properties);
     }//GEN-LAST:event_setButtonActionPerformed
 
     private void basePathTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_basePathTextFieldActionPerformed

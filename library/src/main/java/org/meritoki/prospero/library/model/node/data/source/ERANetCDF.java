@@ -64,10 +64,10 @@ public class ERANetCDF extends Source {
 			for (Interval i : this.intervalList) {
 				this.load(query, i);
 			}
-			query.objectListAdd(new Result(Mode.COMPLETE));
 			if (query.getDownload()) {
-				this.download();
+				this.download(query);
 			}
+			query.objectListAdd(new Result(Mode.COMPLETE));
 		}
 	}
 
@@ -124,8 +124,8 @@ public class ERANetCDF extends Source {
 		logger.info("form(" + time + ", " + pressure + ")");
 	}
 
-	public void download() {
-		logger.info("download()");
+	public void download(Query query) {
+		logger.info("download("+(query!=null)+")");
 	}
 	
 	public String getPressure(String fileName) {

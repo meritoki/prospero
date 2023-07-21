@@ -79,10 +79,12 @@ public class Geopotential extends Atmosphere {
 		if (this.stackFlag) {
 			List<Integer> levelList = this.query.getPressureList();
 			for (Integer level : levelList) {
-				this.coordinateMatrix = this.coordinateMatrixMap.get(level);
-				this.dataMatrix = this.dataMatrixMap.get(level);
-				List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.dataMatrix);
-				this.tileListMap.put(level, tileList);
+				int[][][] coordinateMatrix = this.coordinateMatrixMap.get(level);
+				float[][][] dataMatrix = this.dataMatrixMap.get(level);
+				if (coordinateMatrix != null && dataMatrix != null) {
+					List<Tile> tileList = this.getTileList(coordinateMatrix, dataMatrix);
+					this.tileListMap.put(level, tileList);
+				}
 			}
 		}
 	}

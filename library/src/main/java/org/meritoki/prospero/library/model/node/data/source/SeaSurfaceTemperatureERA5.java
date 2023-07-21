@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Time;
@@ -90,8 +91,8 @@ public class SeaSurfaceTemperatureERA5 extends OceanERA {
 	}
 
 	@Override
-	public void download() {
-		super.download();
+	public void download(Query query) {
+		super.download(query);
 		this.form.outputPath = this.getPath();
 		Batch batch = new Batch(this.form);
 		String batchPath = this.getPath() + batch.uuid + ".json";

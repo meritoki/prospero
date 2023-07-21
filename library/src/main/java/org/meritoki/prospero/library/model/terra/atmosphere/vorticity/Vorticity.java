@@ -69,12 +69,14 @@ public class Vorticity extends Atmosphere {
 		if (this.stackFlag) {
 			List<Integer> levelList = this.query.getPressureList();
 			for (Integer level : levelList) {
-				this.coordinateMatrix = this.coordinateMatrixMap.get(level);
-				this.dataMatrix = this.dataMatrixMap.get(level);
-				List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.dataMatrix);
-				this.tileListMap.put(level, tileList);
+				int[][][] coordinateMatrix = this.coordinateMatrixMap.get(level);
+				float[][][] dataMatrix = this.dataMatrixMap.get(level);
+				if (coordinateMatrix != null && dataMatrix != null) {
+					List<Tile> tileList = this.getTileList(coordinateMatrix, dataMatrix);
+					this.tileListMap.put(level, tileList);
+				}
 			}
-		} 
+		}
 	}
 
 	public void setMatrix(List<NetCDF> netCDFList) {
@@ -97,14 +99,13 @@ public class Vorticity extends Atmosphere {
 				long timeSize = netCDF.timeArray.getSize();
 				long latSize = netCDF.latArray.getSize();
 				long lonSize = netCDF.lonArray.getSize();
-				if(this.stackFlag) {
+				if (this.stackFlag) {
 					coordinateMatrix = this.coordinateMatrixMap.get(netCDF.pressure);
 					dataMatrix = this.dataMatrixMap.get(netCDF.pressure);
-					if(coordinateMatrix == null)
+					if (coordinateMatrix == null)
 						coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
-					if(dataMatrix == null)
-						dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude
-							* resolution)][12];
+					if (dataMatrix == null)
+						dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 				}
 				for (int t = 0; t < timeSize; t++) {
 					Calendar calendar = Calendar.getInstance();
@@ -113,7 +114,7 @@ public class Vorticity extends Atmosphere {
 					if (this.query.isDateTime()) {
 						if (!this.calendar.equals(calendar)) {
 							flag = false;
-						}else {
+						} else {
 							if (this.stackFlag) {
 								coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude
 										* resolution)][12];
@@ -127,8 +128,10 @@ public class Vorticity extends Atmosphere {
 							float latitude = netCDF.latArray.get(lat);
 							for (int lon = 0; lon < lonSize; lon++) {
 								float longitude = netCDF.lonArray.get(lon);
-								int x = (int) (((latitude + (this.latitude * this.resolution) / 2)) % (this.latitude * this.resolution));
-								int y = (int) (((longitude + (this.longitude * this.resolution) / 2)) % (this.longitude * this.resolution));
+								int x = (int) (((latitude + (this.latitude * this.resolution) / 2))
+										% (this.latitude * this.resolution));
+								int y = (int) (((longitude + (this.longitude * this.resolution) / 2))
+										% (this.longitude * this.resolution));
 								int z = calendar.get(Calendar.MONTH);
 								dataMatrix[x][y][z] += netCDF.variableCube.get(t, lat, lon);
 								coordinateMatrix[x][y][z]++;
@@ -141,7 +144,7 @@ public class Vorticity extends Atmosphere {
 						}
 					}
 				}
-				if(this.stackFlag) {
+				if (this.stackFlag) {
 					this.coordinateMatrixMap.put(netCDF.pressure, coordinateMatrix);
 					this.dataMatrixMap.put(netCDF.pressure, dataMatrix);
 				}

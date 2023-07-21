@@ -17,19 +17,19 @@ package org.meritoki.prospero.library.model.node.data.source;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
-import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.DataType;
-import org.meritoki.prospero.library.model.unit.Frame;
 import org.meritoki.prospero.library.model.unit.NetCDF;
+import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.utn.app.command.era.Five;
 import org.utn.app.command.era.model.five.Batch;
 import org.utn.app.command.era.model.five.Form;
+import org.utn.app.command.era.model.five.Request;
 
 import com.meritoki.library.controller.memory.MemoryController;
 
@@ -83,12 +83,20 @@ public class JetstreamERA5 extends ERANetCDF {
 	}
 	
 	@Override
-	public void download() {
-		super.download();
+	public void download(Query query) {
+		super.download(query);
 		this.form.outputPath = this.getPath();
 		Batch batch = new Batch(this.form);
 		String batchPath = this.getPath() + batch.uuid + ".json";
-		Five.executeBatch(batchPath, new Batch(this.form));
+		Five.executeBatch(batchPath, batch);
+		for(Request r: batch.requestList) {
+			if(r.status.equals("complete")) {
+				this.setFileName(r.fileName+".nc");
+				Result result = new Result();
+				result.map.put("netCDFList", new ArrayList<NetCDF>((this.read(this.getFilePath()))));
+				query.objectList.add(result);
+			}
+		}
 	}
 
 	@Override

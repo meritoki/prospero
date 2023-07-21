@@ -30,6 +30,7 @@ import org.meritoki.prospero.desktop.model.Model;
 import org.meritoki.prospero.desktop.view.dialog.AboutDialog;
 import org.meritoki.prospero.desktop.view.dialog.MainDialog;
 import org.meritoki.prospero.desktop.view.dialog.OpenDialog;
+import org.meritoki.prospero.desktop.view.dialog.PropertyDialog;
 import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
 import org.meritoki.prospero.desktop.view.dialog.copernicus.CopernicusDialog;
 import org.meritoki.prospero.library.controller.node.NodeController;
@@ -53,6 +54,7 @@ public class MainFrame extends javax.swing.JFrame {
 	static Logger logger = LoggerFactory.getLogger(MainFrame.class.getName());
 	public Model model;
 	public MainDialog mainDialog = new MainDialog(this, false);
+	public PropertyDialog propertyDialog = new PropertyDialog(this, false);
 	public CopernicusDialog copernicusDialog = new CopernicusDialog(this, false);
 	public AboutDialog aboutDialog = new AboutDialog(this, false);
 	public SaveAsDialog saveAsDialog = null;
@@ -75,6 +77,7 @@ public class MainFrame extends javax.swing.JFrame {
 		if (this.model.system.version != null) {
 			this.setTitle("Prospero Desktop Application v" + this.model.system.version);
 		}
+		this.propertyDialog.setModel(this.model);
 		this.copernicusDialog.setModel(this.model);
 		this.mainDialog.setModel(this.model);
 		this.mainDialog.setVisible(true);
@@ -94,6 +97,7 @@ public class MainFrame extends javax.swing.JFrame {
 
 	public void init() {
 		logger.debug("init()");
+		this.propertyDialog.init();
 		this.copernicusDialog.init();
 		this.mainDialog.init();
 		this.cameraPanel1.init();
@@ -381,7 +385,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_copernicusMenuItemActionPerformed
 
     private void propertyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_propertyMenuItemActionPerformed
-        // TODO add your handling code here:
+    	 this.propertyDialog.setVisible(true);
     }//GEN-LAST:event_propertyMenuItemActionPerformed
 
 	private void mainDialogMenuItemActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mainDialogMenuItemActionPerformed

@@ -72,6 +72,10 @@ public class CycloneSource extends Source {
 	}
 	
 	public String getPressureString() {
+		return this.getPressureString("-");
+	}
+	
+	public String getPressureString(String delimeter) {
 		String string = "";
 		if(this.pressureArray.length > 0) {
 			if("tb".equals(this.getOrder())) {
@@ -81,7 +85,7 @@ public class CycloneSource extends Source {
 			} else {
 				Arrays.sort(this.pressureArray);
 			}
-			StringJoiner joiner = new StringJoiner("-");
+			StringJoiner joiner = new StringJoiner(delimeter);
 			for(Integer pressure:this.pressureArray) {
 				joiner.add(pressure.toString());
 			}

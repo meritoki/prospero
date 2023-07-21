@@ -33,6 +33,7 @@ import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.utn.app.command.cyclone.model.batch.Form;
 import org.utn.library.stacker.model.Collection;
 import org.utn.library.stacker.model.Dot;
 import org.utn.library.stacker.model.Stack;
@@ -46,6 +47,7 @@ public class CycloneUTNERA5Test extends CycloneSource {
 	private final String merged = "";
 	public static String extension = "json";
 	public String defaultTimeFormat = "yyyy-MM-dd HH:mm:ss";
+	public Form form = new Form();
 
 	public CycloneUTNERA5Test() {
 		super();
@@ -55,6 +57,8 @@ public class CycloneUTNERA5Test extends CycloneSource {
 		this.setPressureArray(ERAInterimEvent.pressureArray);
 		this.setPrefix(merged);
 		this.setRelativePath("UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator + "202103");
+		this.form.kilometerThreshold = 444;
+		this.form.level = this.getPressureString(",");
 	}
 	
 	@Override

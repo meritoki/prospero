@@ -50,13 +50,14 @@ public class CycloneUTNERA5 extends CycloneSource {
 	public CycloneUTNERA5() {
 		super();
 		this.single = true;
-		this.startTime = new Time(1979,1,1,-1,-1,-1);
-		this.endTime = new Time(2019,12,31,-1,-1,-1);
+		this.startTime = new Time(1979, 1, 1, -1, -1, -1);
+		this.endTime = new Time(2019, 12, 31, -1, -1, -1);
 		this.setPressureArray(ERA5Event.pressureArray);
 		this.setPrefix(merged);
-		this.setRelativePath("UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator + "202103");
+		this.setRelativePath("UTN" + seperator + "File" + seperator + "Data" + seperator + "Cyclone" + seperator
+				+ "cyclone-20210318");
 	}
-	
+
 	@Override
 	public Time getStartTime() {
 		return this.startTime;
@@ -70,7 +71,7 @@ public class CycloneUTNERA5 extends CycloneSource {
 	public List<Event> read(int year, int month) throws Exception {
 		logger.info("read(" + year + "," + month + ")");
 		String yearMonth = year + "" + String.format("%02d", month) + "01";
-		if("m".equals(this.order)) {
+		if ("m".equals(this.order)) {
 			this.setPrefix(merged);
 		} else {
 			this.setPrefix(this.getPressureString());
@@ -179,7 +180,6 @@ public class CycloneUTNERA5 extends CycloneSource {
 		calendar.set(Calendar.SECOND, 0);
 		return calendar;
 	}
-
 
 }
 //
