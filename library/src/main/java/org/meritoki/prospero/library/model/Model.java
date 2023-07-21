@@ -19,7 +19,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -45,7 +44,8 @@ import com.meritoki.module.library.model.N;
 public class Model extends Variable {
 
 	static Logger logger = LoggerFactory.getLogger(Model.class.getName());
-	public Properties properties;
+//	public Properties properties;
+	public System system = new System();
 	public Data data = new Data();
 	public Solar solar = new Solar();
 	public List<Camera> cameraList = new ArrayList<>();
@@ -81,32 +81,38 @@ public class Model extends Variable {
 
 	@JsonIgnore
 	public void setProperties(Properties properties) {
-		this.properties = properties;
-		Object basePath = this.properties.get("basePath");
+		this.system.properties = properties;
+		Object basePath = this.system.properties.get("basePath");
 		if (basePath instanceof String) {
 			this.data.setBasePath((String) basePath);
 		}
-		Object calendar = this.properties.get("calendar");
+		Object calendar = this.system.properties.get("calendar");
 		if (calendar instanceof String && ((String)calendar).length()>0) {
 			this.calendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) calendar);
 			
 		} else {
 			this.calendar = Calendar.getInstance();
 		}
-		Object startCalendar = this.properties.get("startCalendar");
+		Object startCalendar = this.system.properties.get("startCalendar");
 		if (startCalendar instanceof String && ((String)startCalendar).length()>0) {
 			this.startCalendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) startCalendar);
 			
 		} else {
 			this.startCalendar = Time.getStartCalendar(this.calendar);
 		}
-		Object endCalendar = this.properties.get("endCalendar");
+		Object endCalendar = this.system.properties.get("endCalendar");
 		if (endCalendar instanceof String && ((String)endCalendar).length()>0) {
 			this.endCalendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) endCalendar);
 			
 		} else {
 			this.endCalendar = Time.getEndCalendar(this.calendar);
 		}
+		Object timeZone = this.system.properties.get("timeZone");
+		if (timeZone instanceof String && ((String)timeZone).length()>0) {
+			this.calendar.setTimeZone(TimeZone.getTimeZone((String)timeZone));
+			this.startCalendar.setTimeZone(TimeZone.getTimeZone((String)timeZone));
+			this.endCalendar.setTimeZone(TimeZone.getTimeZone((String)timeZone));
+		} 
 		this.setCalendar(this.calendar);
 		this.setStartCalendar(this.startCalendar);
 		this.setEndCalendar(this.endCalendar);
@@ -135,9 +141,9 @@ public class Model extends Variable {
 	@JsonIgnore
 	public void setBasePath(String basePath) {
 		if (basePath != null) {
-			String path = (String)this.properties.get("basePath");
+			String path = (String)this.system.properties.get("basePath");
 			if(path == null) {
-				this.properties.put("basePath", basePath);
+				this.system.properties.put("basePath", basePath);
 			}
 			this.data.setBasePath(basePath);
 		}

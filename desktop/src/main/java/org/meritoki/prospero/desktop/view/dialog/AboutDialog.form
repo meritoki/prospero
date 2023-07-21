@@ -40,7 +40,7 @@
                   <Component id="authorValueLabel" min="-2" max="-2" attributes="0"/>
                   <Component id="contributorValueLabel" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="277" max="32767" attributes="0"/>
+              <EmptySpace pref="36" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -85,7 +85,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="productValueLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="null"/>
+        <Property name="text" type="java.lang.String" value="Prospero"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
@@ -110,22 +110,22 @@
     </Component>
     <Component class="javax.swing.JLabel" name="vendorValueLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="null"/>
+        <Property name="text" type="java.lang.String" value="Meritoki (http://www.meritoki.com)"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="versionValueLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="null"/>
+        <Property name="text" type="java.lang.String" value="v0.17.202303-alpha"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="authorValueLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="null"/>
+        <Property name="text" type="java.lang.String" value="Joaquin Osvaldo Rodriguez"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="contributorValueLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="null"/>
+        <Property name="text" type="java.lang.String" value="Dr. Gabriela Lakkis &amp; Dr. Pablo Canziani"/>
       </Properties>
     </Component>
   </SubComponents>

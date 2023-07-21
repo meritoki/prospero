@@ -79,7 +79,7 @@
 		<dependency>
 			<groupId>org.utn.app.command</groupId>
 			<artifactId>era</artifactId>
-			<version>0.4.202209</version>
+			<version>0.5.202307</version>
 		</dependency>
 		<dependency>
 			<groupId>org.utn.app.command</groupId>

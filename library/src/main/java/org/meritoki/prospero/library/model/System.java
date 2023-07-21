@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.meritoki.prospero.desktop.model.system;
+package org.meritoki.prospero.library.model;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.meritoki.prospero.library.controller.node.NodeController;
 import org.slf4j.Logger;
@@ -27,38 +28,64 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class System {
 	static Logger logger = LoggerFactory.getLogger(System.class.getName());
+	@JsonIgnore
 	public String vendor;
+	@JsonIgnore
 	public String version;
-	
-	Map<String,String> map = new HashMap<>();
-	
+	@JsonIgnore
+	public Properties properties;
+	@JsonIgnore
+	Map<String, String> map = new HashMap<>();
 	@JsonIgnore
 	public String defaultFileName = "Untitled.json";
-	
 	@JsonIgnore
 	public File file = null;
-	
 	@JsonIgnore
 	public boolean newDocument = true;
-	
+	@JsonIgnore
+	public String xmlFile = "prospero.xml";
+
 	public System() {
 		this.init();
 	}
-	
+
 	public void init() {
 		logger.trace("init()");
 		this.initDirectories();
 	}
-	
+
 	public void initDirectories() {
-		if(!new File(NodeController.getSystemHome()).exists()) {
+		if (!new File(NodeController.getSystemHome()).exists()) {
 			new File(NodeController.getSystemHome()).mkdirs();
 		}
-		if(!new File(NodeController.getDocumentCache()).exists()) {
+		if (!new File(NodeController.getDocumentCache()).exists()) {
 			new File(NodeController.getDocumentCache()).mkdirs();
 		}
-		if(!new File(NodeController.getResourceCache()).exists()) {
+		if (!new File(NodeController.getResourceCache()).exists()) {
 			new File(NodeController.getResourceCache()).mkdirs();
 		}
+	}
+	
+	public Properties initProperties() {
+		Properties properties = null;
+		File propertiesFile = new File(this.xmlFile);
+		if(propertiesFile.exists()) {
+			properties = NodeController.openPropertiesXML(propertiesFile);
+		} else {
+			properties = new Properties();
+			properties.put("basePath","");
+			properties.put("calendar","");
+			properties.put("startCalendar","");
+			properties.put("endCalendar","");
+			properties.put("timeZone","");
+			properties.put("copernicusURL","");
+			properties.put("copernicusKey","");
+			NodeController.savePropertiesXML(properties, this.xmlFile, "Prospero");
+		}
+		return properties;
+	}
+	
+	public void saveProperties(Properties properties) {
+		NodeController.savePropertiesXML(properties, this.xmlFile, "Prospero");
 	}
 }

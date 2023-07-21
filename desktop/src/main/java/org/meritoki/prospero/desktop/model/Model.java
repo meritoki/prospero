@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.Properties;
 
 import org.meritoki.prospero.desktop.model.resource.Resource;
-import org.meritoki.prospero.desktop.model.system.System;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.document.Document;
@@ -29,37 +28,19 @@ import org.slf4j.LoggerFactory;
 public class Model extends org.meritoki.prospero.library.model.Model {
 
 	static Logger logger = LoggerFactory.getLogger(Model.class.getName());
-	public System system = new System();
 	public Resource resource = new Resource();
 	public MainFrame mainFrame;
-//	public String version;
 	
 	public Model(MainFrame mainFrame) {
 		super();
 		this.mainFrame = mainFrame;
-		this.initProperties();
+		this.setProperties(this.system.initProperties());
 	}
 	
 	@Override
 	public void init() {
 		logger.debug(this+".init()");
 		this.mainFrame.init();
-	}
-	
-	public void initProperties() {
-		Properties properties = null;
-		File propertiesFile = new File("prospero.xml");
-		if(propertiesFile.exists()) {
-			properties = NodeController.openPropertiesXML(propertiesFile);
-		} else {
-			properties = new Properties();
-			properties.put("basePath","");
-			properties.put("calendar","");
-			properties.put("startCalendar","");
-			properties.put("endCalendar","");
-			NodeController.savePropertiesXML(properties, "prospero.xml", "Prospero");
-		}
-		this.setProperties(properties);
 	}
 	
 	public void newDocument() {
