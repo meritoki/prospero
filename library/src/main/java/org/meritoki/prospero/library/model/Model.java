@@ -46,7 +46,6 @@ import com.meritoki.module.library.model.N;
 public class Model extends Variable {
 
 	static Logger logger = LoggerFactory.getLogger(Model.class.getName());
-//	public Properties properties;
 	public System system = new System();
 	public Data data = new Data();
 	public Solar solar = new Solar();
@@ -61,15 +60,6 @@ public class Model extends Variable {
 		this.addChild(this.solar);
 		this.addCamera(new Camera(this.solar));
 		this.setData(this.data);
-//		this.calendar = Calendar.getInstance();
-//		this.startCalendar = new GregorianCalendar(2016, 0, 1, 0, 0, 0);
-//		this.endCalendar = new GregorianCalendar(2016, 11, 31, 0, 0, 0);
-//		this.calendar = Calendar.getInstance();
-//		this.calendar.setTime(new Date());
-//		this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
-//		this.setCalendar(this.calendar);
-//		this.setStartCalendar(this.startCalendar);
-//		this.setEndCalendar(this.endCalendar);
 	}
 	
 	public void initProvider() {
@@ -83,7 +73,6 @@ public class Model extends Variable {
 	@Override
 	public void start() {
 		super.start();
-//		logger.info(this + ".start()");
 	}
 
 	public void removeCameras() {
@@ -339,6 +328,15 @@ public class Model extends Variable {
 		return script;
 	}
 }
+//this.calendar = Calendar.getInstance();
+//this.startCalendar = new GregorianCalendar(2016, 0, 1, 0, 0, 0);
+//this.endCalendar = new GregorianCalendar(2016, 11, 31, 0, 0, 0);
+//this.calendar = Calendar.getInstance();
+//this.calendar.setTime(new Date());
+//this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
+//this.setCalendar(this.calendar);
+//this.setStartCalendar(this.startCalendar);
+//this.setEndCalendar(this.endCalendar);
 //, this.scale, this.azimuth, this.elevation));
 //this.solar.setScale(o.defaultScale);
 //this.solar.setAzimuth(this.defaultAzimuth);
