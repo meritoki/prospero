@@ -21,19 +21,24 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.meritoki.prospero.library.model.node.color.Chroma;
 import org.meritoki.prospero.library.model.node.color.Scheme;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.unit.Analysis;
@@ -58,6 +63,9 @@ import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.meritoki.library.controller.node.Exit;
+import com.meritoki.library.controller.node.NodeController;
 
 public class Grid extends Spheroid {
 
@@ -96,7 +104,7 @@ public class Grid extends Spheroid {
 	public Map<Integer, Integer> yearMap = new HashMap<>();
 //	public Map<String, Series> seriesMap = new TreeMap<>();
 	public Map<String, Plot> plotMap = new TreeMap<>();
-	public Map<Time, List<Tile>> timeTileMap = new HashMap<>();
+	public Map<Time, List<Tile>> timeTileListMap = new HashMap<>();
 	protected Cluster cluster;
 	public Analysis analysis;
 	protected Region region;
@@ -411,6 +419,172 @@ public class Grid extends Spheroid {
 	@Override
 	public void updateSpace() {
 		super.updateSpace();
+	}
+	/**
+	 * 
+	 */
+	public void cluster() {
+		// Time List Contains All Moments in Time Queried
+		// Time Tile Map Retains All Tiles at Moments in Time (Key)
+		// All Tile Lists Have Same Tile Order
+		// Constructing String for File w/ New Lines
+		// Each Column is a Tile Latitude and Longitude
+		// Each Row is a moment in Time
+		// Must be Monthly Averages
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < this.timeList.size(); i++) {
+			Time time = this.timeList.get(i);
+			List<Tile> tileList = this.timeTileListMap.get(time);
+			if (tileList != null) {
+				if (i == 0) {
+					sb.append("\"\"");
+					for (Tile tile : tileList) {
+						sb.append(",\"" + String.valueOf(tile.coordinate.latitude).replace("-", "N") + "_"
+								+ String.valueOf(tile.coordinate.longitude).replace("-", "N") + "\"");
+					}
+					sb.append("\n");
+				}
+				sb.append("\"" + (i + 1) + "\"");
+				for (Tile tile : tileList) {
+					sb.append(",\"" + tile.value + "\"");
+				}
+				sb.append("\n");
+			}
+		}
+		// Save String to CSV File
+		Date dateTime = Calendar.getInstance().getTime();
+		String date = new SimpleDateFormat("yyyyMMdd").format(dateTime);
+		String uuid = UUID.randomUUID().toString();
+		String path = "." + File.separatorChar + "output" + File.separatorChar + date + File.separatorChar + name;
+		File directory = new File(path);
+		if (!directory.exists()) {
+			directory.mkdirs();
+		}
+		NodeController.saveText(path, uuid + ".csv", sb);
+		// Prepare R Command w/ Parameters
+		// R Script
+		// Parameter One: CSV File w/ Path
+		// Parameter Two: Start Year
+		// Parameter Three: Start Month
+		// Parameter Four: End Year
+		// Parameter Five: End Month
+		// Parameter Six: Output CSV File w/ Path
+		String input = path + File.separatorChar + uuid + ".csv";
+		String output = path + File.separatorChar + "output-" + uuid + ".csv";
+		Time a = timeList.get(0);
+		Time b = timeList.get(timeList.size() - 1);
+		String rCommand = "Rscript comparison.R " + input;
+		rCommand += " " + a.year + " " + a.month + " " + b.year + " " + b.month;
+		rCommand += " " + output;
+		Exit exit;
+		try {
+			exit = NodeController.executeCommand(rCommand, 1440 * 64);
+			if (exit.value != 0) {
+				throw new Exception("Non-Zero Exit Value: " + exit.value);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		// Read Output CSV File
+		// CSV Contains Tile Latitude and Longitude and what Cluster it belongs to w/ ID
+		// Must Use ID Returned by Algorithm to Create Lists of Tiles
+		List<String[]> outputList = NodeController.openCsv(output);
+		outputList = outputList.subList(2, outputList.size() - 1);
+		List<Tile> tileList = new ArrayList<Tile>();
+		Map<Integer, List<Tile>> tileListMap = new HashMap<>();
+		for (String[] stringArray : outputList) {
+			String coordinate = stringArray[0];
+			coordinate = coordinate.replace("\"", "");
+			String[] coordinateArray = coordinate.split("_");
+			double latitude = Double.parseDouble(coordinateArray[0].replace("N", "-"));
+			double longitude = Double.parseDouble(coordinateArray[1].replace("N", "-"));
+			Integer id = Integer.parseInt(stringArray[1]);
+			tileList = tileListMap.get(id);
+			if (tileList == null) {
+				tileList = new ArrayList<>();
+			}
+			Tile tile = new Tile(latitude, longitude, this.dimension);
+			tile.flag = true;
+			tileList.add(tile);
+			tileListMap.put(id, tileList);
+		}
+		// Lists of Tiles are Converted to Cluster Objects
+		// Cluster Object Tile List provides the Latitude, Longitude, and Dimension
+		// corresponding to the Cluster
+		// The Tile List does not retain any
+		List<Cluster> clusterList = new ArrayList<>();
+		Cluster cluster;
+		for (Entry<Integer, List<Tile>> entry : tileListMap.entrySet()) {
+			cluster = new Cluster();
+			cluster.id = entry.getKey();
+			cluster.tileList = new ArrayList<>(entry.getValue());// Defect Was Here, Uses Copy Constructor and Important
+																	// Variables where Not Transferred in Copy
+			clusterList.add(cluster);
+		}
+		this.clusterList = clusterList;
+		this.getClusterPlots(this.clusterList);
+
+	}
+	
+	public Series newSeries() {
+		Series series = new Series();
+		series.map.put("startCalendar", this.startCalendar);
+		series.map.put("endCalendar", this.endCalendar);
+		series.map.put("name", this.name);
+		series.map.put("average", this.averageFlag);
+		series.map.put("sum", this.sumFlag);
+		series.map.put("regression", this.regression);
+		series.map.put("region", region.toString());
+		series.map.put("family", this.query.getFamily());
+		series.map.put("class", this.query.getClassification());
+		series.map.put("group", this.query.getGroup());
+		series.map.put("variable", this.query.getVariable());
+		series.map.put("window", this.window);
+		series.map.put("range", this.range);
+		Query q = new Query(this.query);
+		q.map.put("region", region.toString());
+		series.map.put("query", q);
+		return series;
+	}
+
+	/**
+	 * Defect 20221129. Cluster Has Tile List w/ Flag True Within this method
+	 * Cluster must be given all Tiles
+	 * 
+	 * @param clusterList
+	 */
+	public void getClusterPlots(List<Cluster> clusterList) {
+//		logger.info("getClusterPlots(" + clusterList + ")");
+		Map<String, Series> seriesMap = new HashMap<>();
+		// Time Tile Map Retains All Tiles at Moments in Time
+		// The Main For Loop Iterates Over a Map w/ Time Key and Tile List Value
+		// Each Cluster Contains a Tile List Describing the Position
+		// Each Tile Can Have a Temporary Real Number Value
+		// The Time Tile List is Loaded into a Cluster Tile List
+		for (Entry<Time, List<Tile>> entry : this.timeTileListMap.entrySet()) {
+			Time time = entry.getKey();
+			List<Tile> tileList = entry.getValue();
+			// Given that Each Cluster has a Persistent and Unique ID
+			// We Get a Series from the Series Map by Cluster ID
+			// We Add and Average of the Cluster Tile List Values to an Index
+			// We Add the Index to the Series Building a Series of Averages for all Tiles
+			// Belonging to a Cluster
+			for (Cluster cluster : clusterList) {
+				Series series = seriesMap.get(cluster.uuid);
+				if (series == null) {
+					series = this.newSeries();
+					series.map.put("cluster", cluster.id);
+				}
+				cluster.setTileList(tileList);// Problem
+				double average = cluster.getAverageValue();
+				cluster.addTilePoint(average);
+				Index index = time.getIndex();
+				index.value = average;
+				series.add(index);
+				seriesMap.put(cluster.uuid, series);
+			}
+		}
+		this.seriesMap.putAll(seriesMap);
 	}
 
 	public List<Tile> getTileList() {

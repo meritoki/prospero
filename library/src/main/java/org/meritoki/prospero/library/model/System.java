@@ -21,10 +21,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.meritoki.prospero.library.controller.node.NodeController;
+import org.meritoki.prospero.library.model.provider.Provider;
+import org.meritoki.prospero.library.model.r.R;
+import org.meritoki.prospero.library.model.r.tsclust.TSClust;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class System {
 	static Logger logger = LoggerFactory.getLogger(System.class.getName());
@@ -44,6 +48,8 @@ public class System {
 	public boolean newDocument = true;
 	@JsonIgnore
 	public String xmlFile = "prospero.xml";
+	@JsonProperty
+	public Map<String,Provider> providerMap = new HashMap<>();
 
 	public System() {
 		this.init();
@@ -52,6 +58,7 @@ public class System {
 	public void init() {
 		logger.trace("init()");
 		this.initDirectories();
+		this.initProviders();
 	}
 
 	public void initDirectories() {
@@ -87,5 +94,11 @@ public class System {
 	
 	public void saveProperties(Properties properties) {
 		NodeController.savePropertiesXML(properties, this.xmlFile, "Prospero");
+	}
+	
+	public void initProviders() {
+		logger.info("initProviders()");
+		this.providerMap.put("r", new R());
+		this.providerMap.put("tsclust", new TSClust());
 	}
 }

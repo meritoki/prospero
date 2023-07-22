@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -30,6 +31,7 @@ import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.data.Data;
 import org.meritoki.prospero.library.model.node.query.Query;
+import org.meritoki.prospero.library.model.provider.Provider;
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
@@ -55,6 +57,7 @@ public class Model extends Variable {
 
 	public Model() {
 		super("Model");
+		this.initProvider();
 		this.addChild(this.solar);
 		this.addCamera(new Camera(this.solar));
 		this.setData(this.data);
@@ -67,6 +70,14 @@ public class Model extends Variable {
 //		this.setCalendar(this.calendar);
 //		this.setStartCalendar(this.startCalendar);
 //		this.setEndCalendar(this.endCalendar);
+	}
+	
+	public void initProvider() {
+		for(Entry<String, Provider> entry:this.system.providerMap.entrySet()) {
+			Provider provider = entry.getValue();
+			provider.setModel(this);
+			provider.init();
+		}
 	}
 
 	@Override

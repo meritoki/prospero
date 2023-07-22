@@ -51,7 +51,5 @@ public class Atmosphere extends Terra {
 	public Atmosphere(String name) {
 		super(name);
 	}
-	
-	
 }
-//this.addChild(new Temperature());
+
