@@ -59,7 +59,11 @@ public class VorticityERA5 extends ERANetCDF {
 		this.form.outputPath = this.getPath();
 		Batch batch = new Batch(this.form);
 		String batchPath = this.getPath() + batch.uuid + ".json";
-		Five.executeBatch(batchPath, batch);
+		Five five = new Five();
+		five.model.system.xmlFile = "prospero.xml";
+		five.model.system.initProperties();
+		five.model.initProvider();
+		five.executeBatch(batchPath, batch);
 		for(Request r: batch.requestList) {
 			if(r.status.equals("complete")) {
 				this.setFileName(r.fileName+".nc");
@@ -68,6 +72,5 @@ public class VorticityERA5 extends ERANetCDF {
 				query.objectList.add(result);
 			}
 		}
-		//Batch can be used to manage the download
 	}
 }
