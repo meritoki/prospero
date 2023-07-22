@@ -177,12 +177,12 @@ public class ScriptPanel extends javax.swing.JPanel {
 								}
 							}
 							
-							for (Query query : script.queryList) {
-								model.query = query;
+							for (int i=0; i< script.queryList.size();i++) {//Query query : script.queryList) {
+								model.query = script.queryList.get(i);//query;
 								if (!Thread.currentThread().isInterrupted()) {
-									consoleTextArea.append("query " + query + "\n");
+									consoleTextArea.append("query " + model.query + "\n");
 									TimeController.start();
-									String variable = query.getVariable();
+									String variable = model.query.getVariable();
 									Variable node = model.getVariable(variable);
 									if (node != null) {
 										logger.info("query() node="+node);
@@ -190,7 +190,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 //										node.stop();
 										node.start();//can be called more than once, no problem
 										try {
-											node.query(query);//discrete finite task that sets a new query, includes process
+											node.query(model.query);//discrete finite task that sets a new query, includes process
 											while (!node.isComplete() && !Thread.interrupted()) {
 												Thread.sleep(4000);
 											}
@@ -206,14 +206,18 @@ public class ScriptPanel extends javax.swing.JPanel {
 											}
 											if (!Thread.currentThread().isInterrupted()) {
 												mainFrame.init();
-												mainFrame.saveQuery(query);
+												mainFrame.saveQuery(model.query);
 												MemoryController.log();
 												TimeController.stop();
 												model.removeCameras();
 												model.addCamera(new Camera(view));
 												consoleTextArea.append("query finished...\n");
+												if(i < (script.queryList.size()-1)) {
+													node.stop();
+												}
 											} else {
 												consoleTextArea.append("script interrupt handled...\n");
+												node.stop();
 												break;
 											}
 											

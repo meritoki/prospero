@@ -185,7 +185,8 @@ public class JetstreamERA5 extends ERANetCDF {
 				dataFile.close();
 				System.gc();
 				netCDFList.add(netCDF);
-				this.netCDFMap.put(fileName,netCDFList);
+				if(this.cache)
+					this.netCDFMap.put(fileName,netCDFList);
 			} catch (java.io.IOException e) {
 				logger.error("IOException " + e.getMessage());
 			} finally {

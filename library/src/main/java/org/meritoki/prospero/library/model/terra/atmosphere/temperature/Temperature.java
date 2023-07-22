@@ -15,7 +15,6 @@
  */
 package org.meritoki.prospero.library.model.terra.atmosphere.temperature;
 
-import java.awt.Graphics;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
@@ -38,22 +37,23 @@ public class Temperature extends Atmosphere {
 		this.stationList.addAll(stationList);
 	}
 	
-	@Override
-	public void paint(Graphics graphics) throws Exception {
-		if(this.load) { 
-////			this.init(this.calendar);
-//			if (coordinateList != null) {
-//				for (Coordinate c : coordinateList) {
-//					if (c != null) {
-//						graphics.setColor(this.chroma.getColor((double)c.attribute.get("temperature"), this.min, this.max));
-//						graphics.fillOval((int) ((c.point.x) * this.projection.scale),
-//								(int) ((c.point.y) * this.projection.scale), (int) 4, (int) 4);
-//					}
-//				}
-//			}
-		}
-	}
+
 }
+//@Override
+//public void paint(Graphics graphics) throws Exception {
+//	if(this.load) { 
+//////		this.init(this.calendar);
+////		if (coordinateList != null) {
+////			for (Coordinate c : coordinateList) {
+////				if (c != null) {
+////					graphics.setColor(this.chroma.getColor((double)c.attribute.get("temperature"), this.min, this.max));
+////					graphics.fillOval((int) ((c.point.x) * this.projection.scale),
+////							(int) ((c.point.y) * this.projection.scale), (int) 4, (int) 4);
+////				}
+////			}
+////		}
+//	}
+//}
 //public void init(Calendar calendar) throws Exception {
 //String sourceUUID = this.sourceMap.get(this.sourceKey);
 //this.stationList = (List<Station>) this.data.query(sourceUUID, this.query);

@@ -40,7 +40,7 @@ public class Vorticity extends Atmosphere {
 	public void load(Result result) {
 		super.load(result);
 		List<NetCDF> netCDFList = result.getNetCDFList();
-		this.netCDFList.addAll(netCDFList);
+//		this.netCDFList.addAll(netCDFList);
 		try {
 			this.process(netCDFList);
 		} catch (Exception e) {
@@ -53,7 +53,7 @@ public class Vorticity extends Atmosphere {
 	public void process() throws Exception {
 		super.process();
 		try {
-			this.process(this.netCDFList);
+//			this.process(this.netCDFList);
 			this.complete();
 		} catch (Exception e) {
 			logger.error("process() exception=" + e.getMessage());

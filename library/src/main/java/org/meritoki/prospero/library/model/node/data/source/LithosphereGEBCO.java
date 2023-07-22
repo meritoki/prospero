@@ -40,10 +40,8 @@ public class LithosphereGEBCO extends Source {
 
 	public LithosphereGEBCO() {
 		super();
-
 		this.setRelativePath("GEBCO" + seperator + "RN-8098_1510354754870" + seperator);
 		this.setFileName("GEBCO_2014_2D.nc");
-
 	}
 
 	@Override

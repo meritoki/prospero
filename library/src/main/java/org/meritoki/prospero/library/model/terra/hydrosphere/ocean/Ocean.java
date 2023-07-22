@@ -65,7 +65,7 @@ public class Ocean extends Hydrosphere {
 
 	@Override
 	public void init() {
-		this.dimension = 1;
+//		this.dimension = 1;
 		super.init();
 	}
 
@@ -75,9 +75,9 @@ public class Ocean extends Hydrosphere {
 		List<NetCDF> netCDFList = result.getNetCDFList();
 		List<Index> indexList = result.getIndexList();
 		if (netCDFList.size()>0) {
-			this.netCDFList.addAll(netCDFList);
+//			this.netCDFList.addAll(netCDFList);
 			try {
-				this.process(this.netCDFList);
+				this.process(netCDFList);
 			} catch (Exception e) {
 				logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
 				e.printStackTrace();
@@ -165,7 +165,7 @@ public class Ocean extends Hydrosphere {
 	public void process() throws Exception {
 		super.process();
 		try {
-			this.process(this.netCDFList);
+//			this.process(this.netCDFList);
 			this.complete();
 		} catch (Exception e) {
 			logger.error("process() exception=" + e.getMessage());

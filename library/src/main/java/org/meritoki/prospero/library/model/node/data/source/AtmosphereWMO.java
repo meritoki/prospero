@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AtmosphereWMO extends Source {
-	static Logger logger = LoggerFactory.getLogger(VolcanicNOAA.class.getName());
+	static Logger logger = LoggerFactory.getLogger(AtmosphereWMO.class.getName());
 
 	public AtmosphereWMO() {
 		super();

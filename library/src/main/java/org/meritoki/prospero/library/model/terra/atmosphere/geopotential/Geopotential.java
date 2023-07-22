@@ -63,7 +63,7 @@ public class Geopotential extends Atmosphere {
 	public void process() throws Exception {
 		super.process();
 		try {
-			this.process(this.netCDFList);
+//			this.process(this.netCDFList);
 			this.complete();
 		} catch (Exception e) {
 			logger.error("process() exception=" + e.getMessage());
