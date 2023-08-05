@@ -42,6 +42,7 @@ public class VariableMenu extends JPopupMenu {
 	private static final long serialVersionUID = 288610046583103334L;
 
 	public VariableMenu(Model model, MainFrame mainFrame) {
+		logger.info("VariableMenu("+(model != null)+", "+(mainFrame!=null)+")");
 		JMenuItem newMenuItem = new JMenuItem("New");
 		newMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {

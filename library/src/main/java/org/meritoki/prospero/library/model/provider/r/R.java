@@ -1,4 +1,4 @@
-package org.meritoki.prospero.library.model.r;
+package org.meritoki.prospero.library.model.provider.r;
 
 import org.meritoki.prospero.library.model.provider.Provider;
 

@@ -115,7 +115,7 @@ public class Cloud extends Atmosphere {
 						for (int j = 0; j < yDimension.getLength(); j++) {
 							float latitude = latMatrix.get(j, i);
 							float longitude = lonMatrix.get(j, i);
-							if ((int) latitude != 2143289344 && (int) longitude != 2143289344 && latitude <= 0) {
+							if ((int) latitude != 2143289344 && (int) longitude != 2143289344) {
 								int x = (int) (((latitude + (this.latitude * this.resolution) / 2)) % (this.latitude * this.resolution));
 								int y = (int) (((longitude + (this.longitude * this.resolution) / 2)) % (this.longitude * this.resolution));
 								int z = calendar.get(Calendar.MONTH);
@@ -150,7 +150,7 @@ public class Cloud extends Atmosphere {
 							float longitude = lonArray.get(i,j);
 //							logger.info("setCoordinateMatrix(...) latitude="+latitude);
 //							logger.info("setCoordinateMatrix(...) longitude="+longitude);
-							if (latitude < 0) {
+//							if (latitude < 0) {
 								int x = (int) (((latitude + (this.latitude * this.resolution) / 2)) % (this.latitude * this.resolution));
 								int y = (int) (((longitude + (this.longitude * this.resolution) / 2)) % (this.longitude * this.resolution));
 								int z = calendar.get(Calendar.MONTH);
@@ -161,7 +161,7 @@ public class Cloud extends Atmosphere {
 								if (!timeList.contains(time)) {
 									timeList.add(time);
 								}
-							}
+//							}
 						}
 					}
 				}

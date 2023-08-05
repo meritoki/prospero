@@ -22,8 +22,8 @@ import java.util.Properties;
 
 import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.provider.Provider;
-import org.meritoki.prospero.library.model.r.R;
-import org.meritoki.prospero.library.model.r.tsclust.TSClust;
+import org.meritoki.prospero.library.model.provider.r.R;
+import org.meritoki.prospero.library.model.provider.r.tsclust.TSClust;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
