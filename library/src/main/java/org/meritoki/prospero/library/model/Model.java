@@ -36,6 +36,7 @@ import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.meritoki.prospero.library.model.vendor.Vendor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,7 @@ public class Model extends Variable {
 	public Model() {
 		super("Model");
 		this.initProvider();
+		this.initVendor();
 		this.addChild(this.solar);
 		this.addCamera(new Camera(this.solar));
 		this.setData(this.data);
@@ -67,6 +69,14 @@ public class Model extends Variable {
 			Provider provider = entry.getValue();
 			provider.setModel(this);
 			provider.init();
+		}
+	}
+	
+	public void initVendor() {
+		for(Entry<String, Vendor> entry:this.system.vendorMap.entrySet()) {
+			Vendor vendor = entry.getValue();
+			vendor.setModel(this);
+			vendor.init();
 		}
 	}
 

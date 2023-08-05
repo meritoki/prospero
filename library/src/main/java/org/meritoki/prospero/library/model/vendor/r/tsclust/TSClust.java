@@ -1,6 +1,6 @@
-package org.meritoki.prospero.library.model.provider.r.tsclust;
+package org.meritoki.prospero.library.model.vendor.r.tsclust;
 
-import org.meritoki.prospero.library.model.provider.r.R;
+import org.meritoki.prospero.library.model.vendor.r.R;
 
 public class TSClust extends R {
 

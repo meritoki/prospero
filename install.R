@@ -1,7 +1,0 @@
-install.packages("wmtsa", repos="http://R-Forge.R-project.org")
-install.packages("pdc", repos="https://cran.rstudio.com")
-install.packages("locpol", repos="https://cran.rstudio.com")
-install.packages("dtw", repos="https://cran.rstudio.com")
-install.packages("longitudinalData", repos="https://CRAN.R-project.org")
-#install.packages("tsutils", repos="https://cran.rstudio.com")
-#install.packages("cli", repos="https://cran.rstudio.com") 

@@ -22,6 +22,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.io.File;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
 import org.meritoki.prospero.library.model.node.color.Chroma;
 import org.meritoki.prospero.library.model.node.color.Scheme;
 import org.meritoki.prospero.library.model.node.query.Query;
@@ -478,6 +480,9 @@ public class Grid extends Spheroid {
 		rCommand += " " + output;
 		Exit exit;
 		try {
+			URL inputUrl = getClass().getResource("comparison.R");
+			File dest = new File("./comparison.R");
+			FileUtils.copyURLToFile(inputUrl, dest);
 			exit = NodeController.executeCommand(rCommand, 1440 * 64);
 			if (exit.value != 0) {
 				throw new Exception("Non-Zero Exit Value: " + exit.value);

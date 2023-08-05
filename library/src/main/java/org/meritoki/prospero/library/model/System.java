@@ -22,8 +22,9 @@ import java.util.Properties;
 
 import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.provider.Provider;
-import org.meritoki.prospero.library.model.provider.r.R;
-import org.meritoki.prospero.library.model.provider.r.tsclust.TSClust;
+import org.meritoki.prospero.library.model.vendor.Vendor;
+import org.meritoki.prospero.library.model.vendor.r.R;
+import org.meritoki.prospero.library.model.vendor.r.tsclust.TSClust;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,9 @@ public class System {
 	@JsonIgnore
 	public String xmlFile = "prospero.xml";
 	@JsonProperty
-	public Map<String,Provider> providerMap = new HashMap<>();
+	public Map<String, Provider> providerMap = new HashMap<>();
+	@JsonProperty
+	public Map<String, Vendor> vendorMap = new HashMap<>();
 
 	public System() {
 		this.init();
@@ -59,6 +62,7 @@ public class System {
 		logger.trace("init()");
 		this.initDirectories();
 		this.initProviders();
+		this.initVendors();
 	}
 
 	public void initDirectories() {
@@ -72,33 +76,37 @@ public class System {
 			new File(NodeController.getResourceCache()).mkdirs();
 		}
 	}
-	
+
 	public Properties initProperties() {
 		Properties properties = null;
 		File propertiesFile = new File(this.xmlFile);
-		if(propertiesFile.exists()) {
+		if (propertiesFile.exists()) {
 			properties = NodeController.openPropertiesXML(propertiesFile);
 		} else {
 			properties = new Properties();
-			properties.put("basePath","");
-			properties.put("calendar","");
-			properties.put("startCalendar","");
-			properties.put("endCalendar","");
-			properties.put("timeZone","");
-			properties.put("copernicusURL","");
-			properties.put("copernicusKey","");
+			properties.put("basePath", "");
+			properties.put("calendar", "");
+			properties.put("startCalendar", "");
+			properties.put("endCalendar", "");
+			properties.put("timeZone", "");
+			properties.put("copernicusURL", "");
+			properties.put("copernicusKey", "");
 			NodeController.savePropertiesXML(properties, this.xmlFile, "Prospero");
 		}
 		return properties;
 	}
-	
+
 	public void saveProperties(Properties properties) {
 		NodeController.savePropertiesXML(properties, this.xmlFile, "Prospero");
 	}
-	
+
 	public void initProviders() {
 		logger.info("initProviders()");
-		this.providerMap.put("r", new R());
-		this.providerMap.put("tsclust", new TSClust());
+	}
+	
+	public void initVendors() {
+		logger.info("initVendors()");
+		this.vendorMap.put("r", new R());
+		this.vendorMap.put("tsclust", new TSClust());
 	}
 }
