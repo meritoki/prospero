@@ -48,8 +48,8 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 
 	public CycloneUTNERAInterimTest() {
 		super();
-		this.startTime = new Time(2001,1,1,-1,-1,-1);
-		this.endTime = new Time(2017,12,31,-1,-1,-1);
+		this.startTime = new Time(2001, 1, 1, -1, -1, -1);
+		this.endTime = new Time(2017, 12, 31, -1, -1, -1);
 		this.setPressureArray(ERAInterimEvent.pressureArray);
 		this.setBasePath("/home/jorodriguez/Drive/Test/");
 		this.setRelativePath("output/era-interim-test");
@@ -96,14 +96,25 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 									int pressure = dotEntry.getValue().gph;
 									float vorticity = (float) (dotEntry.getValue().module * Math.pow(10.0, -5.0) * -1);
 //									if(latitude <= 90) {
-										coordinate.latitude = (float) latitude;
+									coordinate.latitude = (float) latitude;
 //									} else {
 //										coordinate.latitude = (float) (latitude - 180);
 //									}
-									if (longitude <= 180) {
-										coordinate.longitude = (float) longitude;
+//									if (longitude <= 180) {
+//										coordinate.longitude = (float) longitude;
+//									} else {
+//										coordinate.longitude = (float) (longitude - 360);
+//									}
+									if (latitude < 90) {
+										coordinate.latitude = latitude;
 									} else {
-										coordinate.longitude = (float) (longitude - 360);
+										coordinate.latitude = (latitude - 180);
+									}
+
+									if (longitude < 180) {
+										coordinate.longitude = longitude;
+									} else {
+										coordinate.longitude = (longitude - 360);
 									}
 									coordinate.attribute.put("pressure", pressure);
 									coordinate.attribute.put("vorticity", vorticity);
@@ -147,7 +158,7 @@ public class CycloneUTNERAInterimTest extends CycloneSource {
 
 	public Calendar getCalendar(Date date) {
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
+//		calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
 		calendar.setTime(date);
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);

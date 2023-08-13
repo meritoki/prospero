@@ -23,7 +23,7 @@ import org.meritoki.prospero.library.model.node.data.source.AMONOAA;
 import org.meritoki.prospero.library.model.node.data.source.AtmosphereWMO;
 import org.meritoki.prospero.library.model.node.data.source.CityNaturalEarth;
 import org.meritoki.prospero.library.model.node.data.source.CountryNaturalEarth;
-import org.meritoki.prospero.library.model.node.data.source.CycloneUTNERA5;
+import org.meritoki.prospero.library.model.node.data.source.CycloneUTNERA5Test;
 import org.meritoki.prospero.library.model.node.data.source.CycloneUTNERAInterim;
 import org.meritoki.prospero.library.model.node.data.source.CycloneUTNERAInterimTest;
 import org.meritoki.prospero.library.model.node.data.source.ENSONOAA;
@@ -83,7 +83,7 @@ public class Data extends Node {
 		this.filter = false;
 		this.sourceMap.put("cc7b89a0-ccc4-4a76-a79b-c0e04b9dd45a", new CycloneUTNERAInterimTest());
 		this.sourceMap.put("2d611935-9786-4c28-9dcf-f18cf3e99a3a", new CycloneUTNERAInterim());
-		this.sourceMap.put("281cbf52-7014-4229-bffd-35c8ba41bcb5", new CycloneUTNERA5());
+		this.sourceMap.put("281cbf52-7014-4229-bffd-35c8ba41bcb5", new CycloneUTNERA5Test());
 		this.sourceMap.put("f4d6ead6-949a-42a9-9327-a8e22790e0e7", new JetstreamERAInterim());
 		this.sourceMap.put("73428541-23ea-4c4a-bc82-4fb4db5afe05", new JetstreamERA5());
 		this.sourceMap.put("d6eb88d6-100c-4948-8fd1-5300b724ec2d", new CountryNaturalEarth());

@@ -118,22 +118,27 @@ public class CycloneUTNERA5 extends CycloneSource {
 							dotMap = trackEntry.getValue().dotMap;
 							for (Entry<Integer, Dot> dotEntry : dotMap.entrySet()) {
 								if (!Thread.interrupted()) {
-									Coordinate point = new Coordinate();
+									Coordinate coordinate = new Coordinate();
 									double latitude = dotEntry.getValue().lat;
 									double longitude = dotEntry.getValue().lon;
-									point.calendar = this.getCalendar(dotEntry.getValue().startDate,
+									coordinate.calendar = this.getCalendar(dotEntry.getValue().startDate,
 											dotEntry.getValue().frame);
 									int pressure = dotEntry.getValue().gph;
 									float vorticity = (float) (dotEntry.getValue().module * Math.pow(10.0, -5.0) * -1);
-									point.latitude = (float) latitude;
-									if (longitude < 180) {
-										point.longitude = (float) longitude;
+									if(latitude < 90) {
+										coordinate.latitude = latitude;
 									} else {
-										point.longitude = (float) (longitude - 360);
+										coordinate.latitude = (latitude - 180);
 									}
-									point.attribute.put("pressure", pressure);
-									point.attribute.put("vorticity", vorticity);
-									coordinateList.add(point);
+									
+									if (longitude < 180) {
+										coordinate.longitude = longitude;
+									} else {
+										coordinate.longitude = (longitude - 360);
+									}
+									coordinate.attribute.put("pressure", pressure);
+									coordinate.attribute.put("vorticity", vorticity);
+									coordinateList.add(coordinate);
 								} else {
 									throw new InterruptedException();
 								}

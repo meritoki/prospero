@@ -20,8 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
-import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.N;
-import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.R;
+import org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes.GOES;
 import org.meritoki.prospero.library.model.unit.DataType;
 import org.meritoki.prospero.library.model.unit.NetCDF;
 import org.meritoki.prospero.library.model.unit.Result;
@@ -39,8 +38,7 @@ public class Cloud extends Atmosphere {
 
 	public Cloud() {
 		super("Cloud");
-		this.addChild(new N());
-		this.addChild(new R());
+		this.addChild(new GOES());
 	}
 
 	public Cloud(String name) {
@@ -50,7 +48,6 @@ public class Cloud extends Atmosphere {
 
 	@Override
 	public void init() {
-		this.dimension = 1;
 		super.init();
 	}
 
@@ -154,12 +151,14 @@ public class Cloud extends Atmosphere {
 								int x = (int) (((latitude + (this.latitude * this.resolution) / 2)) % (this.latitude * this.resolution));
 								int y = (int) (((longitude + (this.longitude * this.resolution) / 2)) % (this.longitude * this.resolution));
 								int z = calendar.get(Calendar.MONTH);
-								dataMatrix[x][y][z] += dataArray.get(i, j);
-								coordinateMatrix[x][y][z]++;
-								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DATE),
-										calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
-								if (!timeList.contains(time)) {
-									timeList.add(time);
+								if(x > 0 && y > 0 && z > 0) {
+									dataMatrix[x][y][z] += dataArray.get(i, j);
+									coordinateMatrix[x][y][z]++;
+									Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DATE),
+											calendar.get(Calendar.HOUR), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
+									if (!timeList.contains(time)) {
+										timeList.add(time);
+									}
 								}
 //							}
 						}

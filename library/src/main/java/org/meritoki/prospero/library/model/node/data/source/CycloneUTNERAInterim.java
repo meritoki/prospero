@@ -139,6 +139,11 @@ public class CycloneUTNERAInterim extends CycloneSource {
 					calendar.setTime(formatter.parse(date));
 					coordinate.calendar = calendar;// formatter.parse(date);
 					coordinate.latitude = latitude;
+					if(latitude < 90) {
+						coordinate.latitude = latitude;
+					} else {
+						coordinate.latitude = (latitude - 180);
+					}
 					if (longitude <= 180) {
 						coordinate.longitude = longitude;
 					} else {

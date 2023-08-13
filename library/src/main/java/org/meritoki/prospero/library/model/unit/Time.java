@@ -67,6 +67,10 @@ public class Time {
 	public Time() {
 		this.hashCode = Objects.hash(this.year, this.month, this.day, this.hour, this.minute, this.second);
 	}
+	
+	public Time(Time time) {
+		this(time.year, time.month, time.day, time.hour, time.minute, time.second);
+	}
 
 	// Constructor that does all validation of String input
 	public Time(String time, String format, String unit) {
@@ -894,6 +898,10 @@ public class Time {
 
 	public static String getCalendarString(String format, Calendar calendar) {
 		return getDateString(format, calendar.getTime());
+	}
+	
+	public static int getDayOfYear(Time time) {
+		return Time.getDayOfYear(time.year, time.month, time.day);
 	}
 
 	public static int getDayOfYear(int year, int month, int day) {

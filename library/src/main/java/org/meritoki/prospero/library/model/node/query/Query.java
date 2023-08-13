@@ -92,9 +92,9 @@ public class Query {
 			if(flag && Time.isMonth(q.getTime()) && Time.isMonth(this.getTime())) {
 				flag = this.getTime().equals(q.getTime());
 			}
-//			if(flag && this.getID() != null && q.getID() != null) {
-//				
-//			} 
+			if(flag && Time.isDate(q.getTime()) != null && Time.isDate(this.getTime()) != null) {
+				flag = this.getTime().equals(q.getTime());
+			}
 //			boolean idFlag = (this.getID() != null) ? this.getID().equals(q.getID()) : false;
 //			flag = (flag) ? idFlag : false;
 //			logger.debug(this+".equals("+q+") flag="+flag);
@@ -584,6 +584,18 @@ public class Query {
 	public String getChannel() {
 		String channel = this.map.get("channel");
 		return channel;
+	}
+	
+	@JsonIgnore
+	public String getSatellite() {
+		String satellite = this.map.get("satellite");
+		return satellite;
+	}
+	
+	@JsonIgnore
+	public String getPrefix() {
+		String prefix = this.map.get("prefix");
+		return prefix;
 	}
 
 	@JsonIgnore

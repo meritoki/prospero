@@ -377,7 +377,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
         );
 
-        this.setSize(1024, 512);
+        this.setSize(1024, 1024);
     }// </editor-fold>//GEN-END:initComponents
 
     private void copernicusMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copernicusMenuItemActionPerformed

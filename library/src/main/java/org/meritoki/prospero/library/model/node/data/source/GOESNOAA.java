@@ -15,13 +15,17 @@
  */
 package org.meritoki.prospero.library.model.node.data.source;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.node.query.Query;
-import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
+import org.meritoki.prospero.library.model.provider.aws.s3.S3;
+import org.meritoki.prospero.library.model.provider.aws.s3.goes16.Batch;
+import org.meritoki.prospero.library.model.provider.aws.s3.goes16.Form;
+import org.meritoki.prospero.library.model.provider.aws.s3.goes16.Request;
 import org.meritoki.prospero.library.model.solar.satellite.Satellite;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.DataType;
@@ -45,7 +49,7 @@ import ucar.nc2.Variable;
 public class GOESNOAA extends Source {
 
 	static Logger logger = LoggerFactory.getLogger(GOESNOAA.class.getName());
-	public static String prefix = "OR_ABI-L2-MCMIPF-M}*{_G16_";// -M6_G16_";
+//	public static String prefix = "OR_ABI-L2-MCMIPF-M}*{";//_G16_";// -M6_G16_";
 	public ArrayFloat.D2 latitudeArray;
 	public ArrayFloat.D2 longitudeArray;
 	public ArrayFloat.D2 dataMatrix;
@@ -54,21 +58,31 @@ public class GOESNOAA extends Source {
 	public double longitude = -75.2;
 	public double height = 35786023.0 + (earthRadius * 1000);
 	public DataType dataType = DataType.CMI;
-	public String variable = "CMI_C11";
+	public String channel = "CMI_C11";
+	public String satellite;
+	public Form form = new Form();
+	public String prefix;
 
 	public GOESNOAA() {
 		super();
 		this.startTime = new Time(2017, 6, 1, 0, -1, -1);
 		this.endTime = new Time(2019, 9, 30, 0, -1, -1);
+	
 	}
 
 	@Override
 	public void query(Query query) throws Exception {
 		this.intervalList = query.getIntervalList(this.getStartTime(), this.getEndTime());
-		this.variable = (query.getChannel() != null) ? query.getChannel() : "CMI_C08";
+		this.channel = (query.getChannel() != null) ? query.getChannel() : "CMI_C08";
+		this.satellite = (query.getSatellite() != null) ? query.getSatellite() : "16";
+		this.prefix = (query.getPrefix() != null)? query.getPrefix() : "ABI-L2-MCMIPF"; 
+		this.form.prefix = this.prefix;
 		if (this.intervalList != null) {
 			for (Interval i : this.intervalList) {
 				this.load(query, i);
+			}
+			if (query.getDownload()) {
+				this.download(query);
 			}
 			query.objectListAdd(new Result(Mode.COMPLETE));
 		}
@@ -90,6 +104,29 @@ public class GOESNOAA extends Source {
 		}
 	}
 
+	public void form(Time time) {
+		logger.info("form(" + time + ")");
+		if (!this.form.timeList.contains(time)) {
+			this.form.timeList.add(time);
+		}
+	}
+
+	public void download(Query query) {
+		logger.info("download(" + (query != null) + ")");
+		Batch batch = new Batch(this.form);
+		String batchPath = this.getPath() + batch.uuid + ".json";
+		S3.executeBatch(batchPath, batch);
+		this.form = new Form();
+		for (Request r : batch.requestList) {
+			if (r.status.equals("complete")) {
+				this.setFileName(r.fileName);
+				Result result = new Result();
+				result.map.put("netCDFList", new ArrayList<NetCDF>((this.read(this.getFilePath()))));
+				query.objectList.add(result);
+			}
+		}
+	}
+
 	public List<NetCDF> read(Time time) throws Exception {
 //		logger.info("read(" + time + ")");
 		List<NetCDF> netCDFList = new ArrayList<>();
@@ -99,31 +136,60 @@ public class GOESNOAA extends Source {
 		String minutes = (time.minute != -1) ? String.format("%02d", time.minute) : null;
 		String seconds = (time.second != -1) ? String.format("%02d", time.second) : null;
 		String fileName = "";
-		if (dataType == DataType.CMI) {
-			this.setRelativePath("NOAA" + seperator + "GOES" + seperator + "16");
-//			String prefix = new String(this.prefix);
-//			prefix += ;
-//			if(time.year == 2017) {
-//				prefix += "-M3_G16_";
-//			} else if(time.year == 2019) {
-//				prefix += "-M6_G16_";
-//			}
-			fileName = prefix + "s" + time.year + days + ((hours != null) ? hours : "00")
-					+ ((minutes != null) ? minutes : "") + ((seconds != null && !seconds.equals("00")) ? seconds : "");
-		} else if (dataType == DataType.BAND_4) {
-			this.setRelativePath("NOAA" + seperator + "GOES" + seperator + "13");
-			fileName = "goes13." + time.year + "." + days + "." + ((hours != null) ? hours : "00")
-					+ ((minutes != null) ? minutes : "") + ((seconds != null && !seconds.equals("00")) ? seconds : "");
+		String prefix = "OR_"+this.prefix+"}*{";
+		if (this.satellite != null) {
+			switch (this.satellite) {
+			case "13": {
+				this.setRelativePath("NOAA" + seperator + "GOES" + seperator + "13");
+				this.form.outputPath = this.getPath();
+				fileName = "goes13." + time.year + "." + days + "." + ((hours != null) ? hours : "00")
+						+ ((minutes != null) ? minutes : "")
+						+ ((seconds != null && !seconds.equals("00")) ? seconds : "");
+				break;
+			}
+			case "16": {
+				this.form.bucket = "noaa-goes16";
+				this.setRelativePath("NOAA" + seperator + "GOES" + seperator + "16");
+				this.form.outputPath = this.getPath();
+				fileName = prefix + "s" + time.year + days + ((hours != null) ? hours : "00")
+						+ ((minutes != null) ? minutes : "")
+						+ ((seconds != null && !seconds.equals("00")) ? seconds : "");
+				break;
+			}
+			case "17": {
+				this.form.bucket = "noaa-goes17";
+				this.setRelativePath("NOAA" + seperator + "GOES" + seperator + "17");
+				this.form.outputPath = this.getPath();
+				fileName = prefix + "s" + time.year + days + ((hours != null) ? hours : "00")
+						+ ((minutes != null) ? minutes : "")
+						+ ((seconds != null && !seconds.equals("00")) ? seconds : "");
+				break;
+			}
+			case "18": {
+				this.form.bucket = "noaa-goes18";
+				this.setRelativePath("NOAA" + seperator + "GOES" + seperator + "18");
+				this.form.outputPath = this.getPath();
+				fileName = prefix + "s" + time.year + days + ((hours != null) ? hours : "00")
+						+ ((minutes != null) ? minutes : "")
+						+ ((seconds != null && !seconds.equals("00")) ? seconds : "");
+				break;
+			}
+			}
 		}
+
 		String pattern = "glob:{" + fileName + "}*.{nc}";
 		logger.info("read(" + time + ") pattern=" + pattern);
-//		List<NetCDF> list = this.netCDFMap.get(pattern);
-//		if(list != null) {
-//			netCDFList = list;
-//		} else {
+		File pathDirectory = new File(this.getPath());
+		if(!pathDirectory.exists()) {
+			pathDirectory.mkdirs();
+		}
 		List<String> matchList = this.getWildCardFileList(Paths.get(this.getPath()), pattern);
-		for (String m : matchList) {
-			netCDFList.addAll(this.read(this.getPath() + m));
+		if (matchList.size() > 0) {
+			for (String m : matchList) {
+				netCDFList.addAll(this.read(this.getPath() + m));
+			}
+		} else {
+			this.form(time);
 		}
 //			if(netCDFList.size() > 0) {
 //				this.netCDFMap.put(pattern,netCDFList);
@@ -135,11 +201,31 @@ public class GOESNOAA extends Source {
 	public List<NetCDF> read(String fileName) {
 		logger.info("read(" + fileName + ")");
 		List<NetCDF> netCDFList = new ArrayList<>();
-		if (this.dataType == DataType.BAND_4) {
-			netCDFList = this.read13(fileName);
-		} else if (this.dataType == DataType.CMI) {
-			netCDFList = this.read16(fileName);
+		if (this.satellite != null) {
+			switch (this.satellite) {
+			case "13": {
+				netCDFList = this.read13(fileName);
+				break;
+			}
+			case "16": {
+				netCDFList = this.read16(fileName);
+				break;
+			}
+			case "17": {
+				netCDFList = this.read16(fileName);
+				break;
+			}
+			case "18": {
+				netCDFList = this.read16(fileName);
+				break;
+			}
+			}
 		}
+//		if (this.dataType == DataType.BAND_4) {
+//			
+//		} else if (this.dataType == DataType.CMI) {
+//			netCDFList = this.read16(fileName);
+//		}
 		return netCDFList;
 	}
 
@@ -151,7 +237,7 @@ public class GOESNOAA extends Source {
 			dataFile = NetcdfFile.open(fileName, null);
 			Variable xVariable = dataFile.findVariable("x");
 			Variable yVariable = dataFile.findVariable("y");
-			Variable dataVar = dataFile.findVariable(variable);
+			Variable dataVar = dataFile.findVariable(channel);
 			Variable timeVar = dataFile.findVariable("t");
 			Variable nominalSatelliteSubpointLonVariable = dataFile.findVariable("nominal_satellite_subpoint_lon");
 			Variable nominalSatelliteHeightVariable = dataFile.findVariable("nominal_satellite_height");
@@ -282,6 +368,24 @@ public class GOESNOAA extends Source {
 		return netCDFList;
 	}
 }
+//if (dataType == DataType.CMI) {
+//
+////String prefix = new String(this.prefix);
+////prefix += ;
+////if(time.year == 2017) {
+////	prefix += "-M3_G16_";
+////} else if(time.year == 2019) {
+////	prefix += "-M6_G16_";
+////}
+//
+//} else if (dataType == DataType.BAND_4) {
+//
+//
+//}
+//List<NetCDF> list = this.netCDFMap.get(pattern);
+//if(list != null) {
+//netCDFList = list;
+//} else {
 //protected Map<String, List<NetCDF>> netCDFMap = new HashMap<>();
 //public Earth earth = new Earth();
 //private final int startYear = 1979;

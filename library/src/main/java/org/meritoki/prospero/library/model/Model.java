@@ -31,20 +31,22 @@ import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.data.Data;
 import org.meritoki.prospero.library.model.node.query.Query;
-import org.meritoki.prospero.library.model.provider.Provider;
 import org.meritoki.prospero.library.model.solar.Solar;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
 import org.meritoki.prospero.library.model.unit.Time;
-import org.meritoki.prospero.library.model.vendor.Vendor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.meritoki.library.controller.model.ModelInterface;
+import com.meritoki.library.controller.model.SystemInterface;
+import com.meritoki.library.controller.model.provider.Provider;
+import com.meritoki.library.controller.model.vendor.Vendor;
 import com.meritoki.library.controller.node.NodeController;
 import com.meritoki.module.library.model.N;
 
-public class Model extends Variable {
+public class Model extends Variable implements ModelInterface {
 
 	static Logger logger = LoggerFactory.getLogger(Model.class.getName());
 	public System system = new System();
@@ -64,11 +66,20 @@ public class Model extends Variable {
 		this.setData(this.data);
 	}
 	
+	public SystemInterface getSystem() {
+		return this.system;
+	}
+	
 	public void initProvider() {
 		for(Entry<String, Provider> entry:this.system.providerMap.entrySet()) {
 			Provider provider = entry.getValue();
 			provider.setModel(this);
-			provider.init();
+			try {
+				provider.init();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -76,7 +87,12 @@ public class Model extends Variable {
 		for(Entry<String, Vendor> entry:this.system.vendorMap.entrySet()) {
 			Vendor vendor = entry.getValue();
 			vendor.setModel(this);
-			vendor.init();
+			try {
+				vendor.init();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

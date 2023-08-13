@@ -18,11 +18,11 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cloud.goes;
 import org.meritoki.prospero.library.model.node.color.Scheme;
 import org.meritoki.prospero.library.model.terra.atmosphere.cloud.Cloud;
 
-public class N extends Cloud {
+public class GOES extends Cloud {
 	
-	public N() {
-		super("N");
-		this.sourceMap.put("GOES-13","aefbd8d1-d423-458d-90c0-7c8429f2a653");
+	public GOES() {
+		super("GOES");
+		this.sourceMap.put("NOAA","aefbd8d1-d423-458d-90c0-7c8429f2a653");
 		this.unit = "K";
 		this.scheme = Scheme.GRAYSCALE;
 	}

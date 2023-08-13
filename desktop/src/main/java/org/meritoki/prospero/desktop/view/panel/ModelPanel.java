@@ -28,6 +28,7 @@ import javax.swing.tree.TreePath;
 
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.desktop.view.menu.VariableMenu;
+import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.slf4j.Logger;
@@ -110,15 +111,32 @@ public class ModelPanel extends javax.swing.JPanel {
 	public void initDataTreeMouseListener() {
 		MouseListener mouseListener = new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
-				TreePath treePath = jTree1.getPathForLocation(e.getX(), e.getY());
-				if (treePath != null) {
-					Object lastPathComponent = (Object) treePath.getLastPathComponent();
-					if (e.getClickCount() == 1) {
-						if (model != null) {
-							Variable node = model.getVariable(lastPathComponent.toString());
-							if (node != null) {
-								model.getCamera().setNode(node);
-								mainFrame.init();
+				if (e.isPopupTrigger() && (NodeController.isLinux() || NodeController.isMac())) {
+					TreePath treePath = jTree1.getPathForLocation(e.getX(), e.getY());
+					if (treePath != null) {
+						Object lastPathComponent = (Object) treePath.getLastPathComponent();
+						if (e.getClickCount() == 1) {
+							if (model != null) {
+								Variable node = model.getVariable(lastPathComponent.toString());
+								if (node != null) {
+									model.getCamera().setNode(node);
+									nodeMenu = new VariableMenu(model, mainFrame);
+									nodeMenu.show(e.getComponent(), e.getX(), e.getY());
+								}
+							}
+						}
+					}
+				} else {
+					TreePath treePath = jTree1.getPathForLocation(e.getX(), e.getY());
+					if (treePath != null) {
+						Object lastPathComponent = (Object) treePath.getLastPathComponent();
+						if (e.getClickCount() == 1) {
+							if (model != null) {
+								Variable node = model.getVariable(lastPathComponent.toString());
+								if (node != null) {
+									model.getCamera().setNode(node);
+									mainFrame.init();
+								}
 							}
 						}
 					}
@@ -126,7 +144,7 @@ public class ModelPanel extends javax.swing.JPanel {
 			}
 
 			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
+				if (e.isPopupTrigger() && NodeController.isWindows()) {
 					TreePath treePath = jTree1.getPathForLocation(e.getX(), e.getY());
 					if (treePath != null) {
 						Object lastPathComponent = (Object) treePath.getLastPathComponent();
@@ -143,6 +161,7 @@ public class ModelPanel extends javax.swing.JPanel {
 					}
 				}
 			}
+
 		};
 		jTree1.addMouseListener(mouseListener);
 	}

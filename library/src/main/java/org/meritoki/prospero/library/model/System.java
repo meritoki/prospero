@@ -21,17 +21,18 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.meritoki.prospero.library.controller.node.NodeController;
-import org.meritoki.prospero.library.model.provider.Provider;
-import org.meritoki.prospero.library.model.vendor.Vendor;
-import org.meritoki.prospero.library.model.vendor.r.R;
+import org.meritoki.prospero.library.model.provider.aws.s3.goes16.NOAA;
 import org.meritoki.prospero.library.model.vendor.r.tsclust.TSClust;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.meritoki.library.controller.model.SystemInterface;
+import com.meritoki.library.controller.model.provider.Provider;
+import com.meritoki.library.controller.model.vendor.Vendor;
 
-public class System {
+public class System implements SystemInterface {
 	static Logger logger = LoggerFactory.getLogger(System.class.getName());
 	@JsonIgnore
 	public String vendor;
@@ -61,6 +62,7 @@ public class System {
 	public void init() {
 		logger.trace("init()");
 		this.initDirectories();
+		this.properties = this.initProperties();
 		this.initProviders();
 		this.initVendors();
 	}
@@ -91,9 +93,16 @@ public class System {
 			properties.put("timeZone", "");
 			properties.put("copernicusURL", "");
 			properties.put("copernicusKey", "");
+			properties.put("awsRegion","");
+			properties.put("awsAccessKeyID","");
+			properties.put("awsSecretAccessKey", "");
 			NodeController.savePropertiesXML(properties, this.xmlFile, "Prospero");
 		}
 		return properties;
+	}
+	
+	public Properties getProperties() {
+		return this.properties;
 	}
 
 	public void saveProperties(Properties properties) {
@@ -102,11 +111,12 @@ public class System {
 
 	public void initProviders() {
 		logger.info("initProviders()");
+		this.providerMap.put("goes16",new NOAA());
 	}
 	
 	public void initVendors() {
 		logger.info("initVendors()");
-		this.vendorMap.put("r", new R());
+//		this.vendorMap.put("r", new R());
 		this.vendorMap.put("tsclust", new TSClust());
 	}
 }
