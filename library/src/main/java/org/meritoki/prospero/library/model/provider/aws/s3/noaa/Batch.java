@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.meritoki.prospero.library.model.provider.aws.s3.goes16;
+package org.meritoki.prospero.library.model.provider.aws.s3.noaa;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

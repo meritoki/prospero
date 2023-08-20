@@ -1,4 +1,4 @@
-package org.meritoki.prospero.library.model.provider.aws.s3.goes16;
+package org.meritoki.prospero.library.model.provider.aws.s3.noaa;
 
 import java.util.ArrayList;
 import java.util.List;

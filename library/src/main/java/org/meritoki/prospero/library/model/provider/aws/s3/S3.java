@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.provider.aws.AWS;
-import org.meritoki.prospero.library.model.provider.aws.s3.goes16.Batch;
-import org.meritoki.prospero.library.model.provider.aws.s3.goes16.Request;
+import org.meritoki.prospero.library.model.provider.aws.s3.noaa.Batch;
+import org.meritoki.prospero.library.model.provider.aws.s3.noaa.Request;
 import org.meritoki.prospero.library.model.unit.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

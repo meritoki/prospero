@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.meritoki.prospero.library.controller.node.NodeController;
-import org.meritoki.prospero.library.model.provider.aws.s3.goes16.NOAA;
+import org.meritoki.prospero.library.model.provider.aws.s3.noaa.NOAA;
 import org.meritoki.prospero.library.model.vendor.r.tsclust.TSClust;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +34,8 @@ import com.meritoki.library.controller.model.vendor.Vendor;
 
 public class System implements SystemInterface {
 	static Logger logger = LoggerFactory.getLogger(System.class.getName());
+	@JsonIgnore
+	public String product = "Prospero";
 	@JsonIgnore
 	public String vendor;
 	@JsonIgnore
@@ -56,7 +58,7 @@ public class System implements SystemInterface {
 	public Map<String, Vendor> vendorMap = new HashMap<>();
 
 	public System() {
-		this.init();
+//		this.init();
 	}
 
 	public void init() {
@@ -65,6 +67,10 @@ public class System implements SystemInterface {
 		this.properties = this.initProperties();
 		this.initProviders();
 		this.initVendors();
+	}
+	
+	public void setXMLFile(String xmlFile) {
+		this.xmlFile = xmlFile;
 	}
 
 	public void initDirectories() {
@@ -96,7 +102,7 @@ public class System implements SystemInterface {
 			properties.put("awsRegion","");
 			properties.put("awsAccessKeyID","");
 			properties.put("awsSecretAccessKey", "");
-			NodeController.savePropertiesXML(properties, this.xmlFile, "Prospero");
+			NodeController.savePropertiesXML(properties, this.xmlFile, this.product);
 		}
 		return properties;
 	}

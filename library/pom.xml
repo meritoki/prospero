@@ -70,21 +70,23 @@
 			<groupId>com.meritoki.library</groupId>
 			<artifactId>module</artifactId>
 			<version>0.6.202008</version>
-		</dependency>
-		<dependency>
-			<groupId>org.utn.library</groupId>
-			<artifactId>stacker</artifactId>
-			<version>0.4.202306</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.utn.app.command</groupId>
 			<artifactId>era</artifactId>
 			<version>0.5.202307</version>
-		</dependency>
-		<dependency>
-			<groupId>org.utn.app.command</groupId>
-			<artifactId>cyclone</artifactId>
-			<version>0.14.202306</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

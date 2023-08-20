@@ -457,6 +457,13 @@ public class Variable extends Node {
 //		this.orderList.add(child.toString());
 		this.moduleMapPut(child);
 	}
+	
+	@JsonIgnore
+	public void removeChild(Variable child) {
+		logger.info(this.name + ".removeChild(" + child + ")");
+//		this.orderList.add(child.toString());
+		this.moduleMapRemove(child);
+	}
 
 	@JsonIgnore
 	public void addChildren(List<Variable> children) {

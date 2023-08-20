@@ -33,12 +33,16 @@ public class TSClust extends R {
 		File dest = new File("./tsclust-find.R");
 		FileUtils.copyURLToFile(inputUrl, dest);
 		Exit exit = NodeController.executeCommand("Rscript tsclust-find.R");
+		File file = new File("tsclust-find.R");
+		file.delete();
 		if(exit.value != 0) {
 			logger.info("init() Installing R TSclust");
 			inputUrl = getClass().getResource("/TSclust_1.2.3.tar.gz");
 			dest = new File("./TSclust_1.2.3.tar.gz");
 			FileUtils.copyURLToFile(inputUrl, dest);
 			exit = NodeController.executeCommand(true,"R CMD INSTALL ./TSclust_1.2.3.tar.gz");
+			file = new File("TSclust_1.2.3.tar.gz");
+			file.delete();
 		} else {
 			logger.info("init() R TSclust Installed");
 		}

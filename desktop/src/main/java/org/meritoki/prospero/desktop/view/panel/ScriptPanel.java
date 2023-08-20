@@ -76,7 +76,9 @@ public class ScriptPanel extends javax.swing.JPanel {
     
     public void init() {
     	this.initTextArea();
-    	this.scriptList = this.model.scriptList;
+    	if(this.model != null) {
+    		this.scriptList = this.model.scriptList;
+    	}
 
     }
     

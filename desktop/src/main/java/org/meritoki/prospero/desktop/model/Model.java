@@ -34,13 +34,14 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 	public Model(MainFrame mainFrame) {
 		super();
 		this.mainFrame = mainFrame;
+		this.mainFrame.init();
 		this.setProperties(this.system.initProperties());
 	}
 	
 	@Override
 	public void init() {
 		logger.debug(this+".init()");
-		this.mainFrame.init();
+		super.init();
 	}
 	
 	public void newDocument() {

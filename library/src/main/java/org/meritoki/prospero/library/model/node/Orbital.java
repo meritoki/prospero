@@ -337,7 +337,7 @@ public class Orbital extends Grid {
 
 	public double getRotationCorrection(Calendar a) {
 		double angle = 0;
-		if (this.rotation > 0) {
+		if (a != null && this.rotation > 0) {
 			double t = this.referenceCalendar.getTime().getTime();
 			double T = a.getTime().getTime();
 			double difference = (T - t) / 3600000;

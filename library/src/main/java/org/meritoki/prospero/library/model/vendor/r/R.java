@@ -36,19 +36,29 @@ public class R extends Vendor {
 				File dest = new File("./install-R.sh");
 				FileUtils.copyURLToFile(inputUrl, dest);
 				exit = NodeController.executeCommand("chmod 755 install-R.sh");
-				throw new Exception("R Not Installed");
+				if(exit.value == 0) {
+					logger.info("init() R Installed");
+					File file = new File("install-R.sh");
+					file.delete();
+				} else {
+					throw new Exception("R Not Installed");
+				}
 			} else {
 				logger.info("init() R Installed");
 				URL inputUrl = getClass().getResource("/prospero-find.R");
 				File dest = new File("./prospero-find.R");
 				FileUtils.copyURLToFile(inputUrl, dest);
 				exit = NodeController.executeCommand("Rscript prospero-find.R");
+				File file = new File("prospero-find.R");
+				file.delete();
 				if (exit.value != 0) {
 					logger.info("init() Installing R Dependencies");
 					inputUrl = getClass().getResource("/prospero-install.R");
 					dest = new File("./prospero-install.R");
 					FileUtils.copyURLToFile(inputUrl, dest);
 					exit = NodeController.executeCommand(true, "Rscript prospero-install.R", 60 * 15);
+					file = new File("prospero-install.R");
+					file.delete();
 					if (exit.value != 0) {
 						throw new Exception("Install R Dependencies Failed");
 					} else {

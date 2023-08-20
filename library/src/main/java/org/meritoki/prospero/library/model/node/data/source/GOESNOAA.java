@@ -23,9 +23,9 @@ import java.util.List;
 
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.provider.aws.s3.S3;
-import org.meritoki.prospero.library.model.provider.aws.s3.goes16.Batch;
-import org.meritoki.prospero.library.model.provider.aws.s3.goes16.Form;
-import org.meritoki.prospero.library.model.provider.aws.s3.goes16.Request;
+import org.meritoki.prospero.library.model.provider.aws.s3.noaa.Batch;
+import org.meritoki.prospero.library.model.provider.aws.s3.noaa.Form;
+import org.meritoki.prospero.library.model.provider.aws.s3.noaa.Request;
 import org.meritoki.prospero.library.model.solar.satellite.Satellite;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.DataType;
