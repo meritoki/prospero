@@ -60,15 +60,12 @@ public class Model extends Variable implements ModelInterface {
 
 	public Model() {
 		super("Model");
-		this.init();
-//		this.initProvider();
-//		this.initVendor();
-//		this.addChild(this.solar);
-//		this.addCamera(new Camera(this.solar));
-//		this.setData(this.data);
+		this.construct();
+
 	}
 
-	public void init() {
+	public void construct() {
+		logger.info("construct()");
 		this.system.init();
 		this.initProvider();
 		this.initVendor();
@@ -76,6 +73,7 @@ public class Model extends Variable implements ModelInterface {
 		this.addChild(this.node);
 		this.addCamera(new Camera(this.node));
 		this.setData(this.data);
+		this.setProperties(this.system.properties);
 	}
 
 	public SystemInterface getSystem() {
@@ -119,33 +117,33 @@ public class Model extends Variable implements ModelInterface {
 
 	@JsonIgnore
 	public void setProperties(Properties properties) {
-		this.system.properties = properties;
-		Object basePath = this.system.properties.get("basePath");
+//		this.system.properties = properties;
+		Object basePath = properties.get("basePath");
 		if (basePath instanceof String) {
 			this.data.setBasePath((String) basePath);
 		}
-		Object calendar = this.system.properties.get("calendar");
+		Object calendar = properties.get("calendar");
 		if (calendar instanceof String && ((String) calendar).length() > 0) {
 			this.calendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) calendar);
 
 		} else {
 			this.calendar = Calendar.getInstance();
 		}
-		Object startCalendar = this.system.properties.get("startCalendar");
+		Object startCalendar = properties.get("startCalendar");
 		if (startCalendar instanceof String && ((String) startCalendar).length() > 0) {
 			this.startCalendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) startCalendar);
 
 		} else {
 			this.startCalendar = Time.getStartCalendar(this.calendar);
 		}
-		Object endCalendar = this.system.properties.get("endCalendar");
+		Object endCalendar = properties.get("endCalendar");
 		if (endCalendar instanceof String && ((String) endCalendar).length() > 0) {
 			this.endCalendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) endCalendar);
 
 		} else {
 			this.endCalendar = Time.getEndCalendar(this.calendar);
 		}
-		Object timeZone = this.system.properties.get("timeZone");
+		Object timeZone = properties.get("timeZone");
 		if (timeZone instanceof String && ((String) timeZone).length() > 0) {
 			this.calendar.setTimeZone(TimeZone.getTimeZone((String) timeZone));
 			this.startCalendar.setTimeZone(TimeZone.getTimeZone((String) timeZone));
@@ -391,6 +389,11 @@ public class Model extends Variable implements ModelInterface {
 		return script;
 	}
 }
+//this.initProvider();
+//this.initVendor();
+//this.addChild(this.solar);
+//this.addCamera(new Camera(this.solar));
+//this.setData(this.data);
 //this.calendar = Calendar.getInstance();
 //this.startCalendar = new GregorianCalendar(2016, 0, 1, 0, 0, 0);
 //this.endCalendar = new GregorianCalendar(2016, 11, 31, 0, 0, 0);

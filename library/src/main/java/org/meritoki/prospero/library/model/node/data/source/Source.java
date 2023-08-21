@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Interval;
@@ -62,6 +63,7 @@ public class Source extends Node {
 	public List<Region> regionList;
 	public Time startTime = new Time();
 	public Time endTime = new Time();
+	public Map<String,Object> toolMap;
 
 	public Source() {
 		this.filter = false;
@@ -70,6 +72,11 @@ public class Source extends Node {
 	public Source(String name) {
 		super(name);
 		this.filter = false;
+	}
+	
+	@JsonIgnore
+	public void setToolMap(Map<String,Object> toolMap) {
+		this.toolMap = toolMap;
 	}
 
 	@JsonIgnore

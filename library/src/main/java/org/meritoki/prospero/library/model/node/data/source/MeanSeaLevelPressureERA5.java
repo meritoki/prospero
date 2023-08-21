@@ -50,8 +50,8 @@ public class MeanSeaLevelPressureERA5 extends OceanERA {
 		this.variable = "msl";
 		this.prefix = "mean_sea_level_pressure_";
 		this.suffix = "_F128";
-		this.startTime = new Time(2001,1,1,0,-1,-1);
-		this.endTime = new Time(2017,12,31,24,-1,-1);
+		this.startTime = new Time(2001, 1, 1, 0, -1, -1);
+		this.endTime = new Time(2017, 12, 31, 24, -1, -1);
 		this.setRelativePath("ECMWF" + seperator + "File" + seperator + "Data" + seperator + "ERA" + seperator + "5"
 				+ seperator + "SeaLevelPressure" + seperator);
 		this.form.grid.add("F128");
@@ -60,7 +60,7 @@ public class MeanSeaLevelPressureERA5 extends OceanERA {
 		this.form.time.add("12:00");
 		this.form.time.add("18:00");
 		this.form.path = "reanalysis-era5-single-levels";
-		for(int i=1;i<=31;i++) {
+		for (int i = 1; i <= 31; i++) {
 			this.form.day.add(String.format("%02d", i));
 		}
 		this.form.variable.add("mean_sea_level_pressure");
@@ -91,24 +91,28 @@ public class MeanSeaLevelPressureERA5 extends OceanERA {
 		}
 		return netCDFList;
 	}
-	
+
 	@Override
 	public void download(Query query) {
 		super.download(query);
 		this.form.outputPath = this.getPath();
 		Batch batch = new Batch(this.form);
 		String batchPath = this.getPath() + batch.uuid + ".json";
-		Five five = new Five();
-		five.model.system.xmlFile = "prospero.xml";
-		five.model.system.initProperties();
-		five.model.initProvider();
-		five.executeBatch(batchPath, batch);
-		for(Request r: batch.requestList) {
-			if(r.status.equals("complete")) {
-				this.setFileName(r.fileName+".nc");
-				Result result = new Result();
-				result.map.put("netCDFList", new ArrayList<NetCDF>((this.read(this.getFilePath()))));
-				query.objectList.add(result);
+//		Five five = new Five();
+//		five.model.system.xmlFile = "prospero.xml";
+//		five.model.system.initProperties();
+//		five.model.initProvider();
+		Object object = (this.toolMap != null) ? this.toolMap.get("five") : null;
+		if (object instanceof Five) {
+			Five five = (Five) object;
+			five.executeBatch(batchPath, batch);
+			for (Request r : batch.requestList) {
+				if (r.status.equals("complete")) {
+					this.setFileName(r.fileName + ".nc");
+					Result result = new Result();
+					result.map.put("netCDFList", new ArrayList<NetCDF>((this.read(this.getFilePath()))));
+					query.objectList.add(result);
+				}
 			}
 		}
 	}
@@ -137,7 +141,7 @@ public class MeanSeaLevelPressureERA5 extends OceanERA {
 				ArrayFloat.D1 lonArray = (ArrayFloat.D1) longitudeVar.read();
 				ArrayInt.D1 timeArray = (ArrayInt.D1) timeVar.read();
 				ArrayShort.D3 mslArray = (ArrayShort.D3) mslVar.read();
-				
+
 				NetCDF netCDF = new NetCDF();
 				netCDF.continent = this.getContinent(scaleFactor, addOffset);
 				netCDF.type = DataType.MSL;
@@ -149,7 +153,7 @@ public class MeanSeaLevelPressureERA5 extends OceanERA {
 				dataFile.close();
 				System.gc();
 				netCDFList.add(netCDF);
-				this.netCDFMap.put(fileName,netCDFList);
+				this.netCDFMap.put(fileName, netCDFList);
 			} catch (java.io.IOException e) {
 				logger.error("IOException " + e.getMessage());
 

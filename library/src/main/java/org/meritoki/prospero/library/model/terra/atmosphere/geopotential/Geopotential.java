@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public class Geopotential extends Atmosphere {
 
-	static Logger logger = LoggerFactory.getLogger(Vorticity.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Geopotential.class.getName());
 	protected DataType dataType;
 
 	public Geopotential() {

@@ -35,13 +35,12 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 		super();
 		this.mainFrame = mainFrame;
 		this.mainFrame.init();
-		this.setProperties(this.system.initProperties());
 	}
 	
 	@Override
-	public void init() {
+	public void construct() {
 		logger.debug(this+".init()");
-		super.init();
+		super.construct();
 	}
 	
 	public void newDocument() {

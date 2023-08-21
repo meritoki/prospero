@@ -85,7 +85,7 @@ public class Cyclone extends Atmosphere {
 		this.addChild(new Density());
 		this.addChild(new Genesis());
 		this.addChild(new Lysis());
-		this.addChild(new Vorticity());
+//		this.addChild(new Vorticity());
 		this.addChild(new Lifetime());
 		this.addChild(new Speed());
 		this.addChild(new InstantaneousSpeed());

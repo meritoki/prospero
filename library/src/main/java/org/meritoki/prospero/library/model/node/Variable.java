@@ -163,7 +163,7 @@ public class Variable extends Node {
 	 */
 	@JsonIgnore
 	public void init() {
-		logger.debug("init()");
+		logger.info("init()");
 		try {
 			this.operator = this.query.getOperator();
 			this.script = this.query.getScript();

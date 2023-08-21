@@ -56,6 +56,7 @@ import org.meritoki.prospero.library.model.node.data.source.VorticityERAInterim;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.utn.app.command.era.Five;
 
 import com.meritoki.module.library.model.Node;
 
@@ -76,6 +77,7 @@ public class Data extends Node {
 	static Logger logger = LoggerFactory.getLogger(Data.class.getName());
 	public Map<String, Source> sourceMap = new HashMap<String, Source>();
 	public String basePath;
+	public Map<String,Object> toolMap = new HashMap<>();
 
 	public Data() {
 		super("Data");
@@ -113,7 +115,11 @@ public class Data extends Node {
 		this.sourceMap.put("aefbd8d1-d423-458d-90c0-7c8429f2a653", new GOESNOAA());
 		this.sourceMap.put("316bab36-ac3b-4930-87ae-5a32e4cdb81c", new VorticityERAInterim());
 		this.sourceMap.put("e7e20f49-2387-40ce-917f-5b592c0b8b67", new VorticityERA5());
-
+		Five five = new Five();
+		five.model.system.xmlFile = "prospero.xml";
+		five.model.system.initProperties();
+		five.model.initProvider();
+		this.toolMap.put("five",five);
 		this.start();
 	}
 
