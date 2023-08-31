@@ -118,7 +118,14 @@ public class CameraPanel extends javax.swing.JPanel implements KeyListener, Mous
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		e.consume();
+		if (this.model != null && this.model.getCamera() != null) {
+			Camera camera = this.model.getCamera();
+			if (camera != null) {
+				camera.mouseReleased(e);
+				e.consume();
+				this.init();
+			}
+		}
 		if (e.isPopupTrigger())
 			showSavePopupMenu(e);
 	}

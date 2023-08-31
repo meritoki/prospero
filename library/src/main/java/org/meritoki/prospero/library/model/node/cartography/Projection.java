@@ -273,7 +273,8 @@ public class Projection implements ProjectionInterface {
 		double x = this.getA(this.unit) * Math.sin(latitude) * Math.cos(longitude);
 		double y = this.getB(this.unit) * Math.sin(latitude) * Math.sin(longitude);
 		double z = this.getC(this.unit) * Math.cos(latitude);
-		Point point = new Point(-x, -z, y);// Correcting Orientation, Z Axis Vertical
+//		Point point = new Point(-x, -z, y);// Correcting Orientation, Z Axis Vertical
+		Point point = new Point(x, z, y);
 		Point buffer = new Point(point);
 		point.y = buffer.y * Math.cos(Math.toRadians(this.obliquity))
 				- buffer.z * Math.sin(Math.toRadians(this.obliquity));

@@ -133,6 +133,11 @@ public class Grid extends Spheroid {
 	public Grid(String name) {
 		super(name);
 	}
+	
+	public void stop() {
+		super.stop();
+		this.reset();
+	}
 
 	/**
 	 * For all primary object representation, re-initialize
@@ -145,10 +150,20 @@ public class Grid extends Spheroid {
 		this.bandList = new ArrayList<>();
 		this.frameList = new ArrayList<>();
 		this.coordinateList = new ArrayList<>();
+		this.netCDFList = new ArrayList<>();
 		this.eventList = Collections.synchronizedList(new ArrayList<>());
 		this.stationList = new ArrayList<>();
 		this.plotList = new ArrayList<>();
 		this.clusterList = new ArrayList<>();
+		///
+		eventMap = new HashMap<>();
+		regionMap = new HashMap<>();
+		tileListMap = new TreeMap<>();
+		bandListMap = new HashMap<>();
+		coordinateMatrixMap = new HashMap<>();
+		dataMatrixMap = new HashMap<>();
+		plotMap = new TreeMap<>();
+		timeTileListMap = new HashMap<>();
 	}
 
 	@Override

@@ -142,6 +142,7 @@ public class ERANetCDF extends Source {
 		logger.info("read(" + fileName + ")");
 		List<NetCDF> netCDFList = this.netCDFMap.get(fileName);
 		if (netCDFList == null) {
+			logger.info("read(" + fileName + ") netCDFList == null"); 
 			MemoryController.log();
 			netCDFList = new ArrayList<>();
 			if (MemoryController.bumper()) {

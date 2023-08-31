@@ -34,9 +34,9 @@ public class Camera {
 	@JsonProperty
 	public double scale;
 	@JsonProperty
-	protected int xDelta;
+	protected int xDelta = 0;
 	@JsonProperty
-	protected int yDelta;
+	protected int yDelta = 0;
 	@JsonIgnore
 	public Map<String, Object> configuration = new TreeMap<>();
 	@JsonIgnore
@@ -106,6 +106,8 @@ public class Camera {
 			this.scale = spheroid.defaultScale;
 			this.azimuth = 0;
 			this.elevation = 0;
+//			this.azimuth = spheroid.projection.azimuth;
+//			this.elevation = spheroid.projection.elevation;
 			spheroid.setScale(this.scale);
 			spheroid.setAzimuth(this.azimuth);
 			spheroid.setElevation(this.elevation);
@@ -117,14 +119,25 @@ public class Camera {
 			orbital.setSelectable(true);
 		}
 	}
+	
+	@JsonIgnore
+	public void mouseReleased(MouseEvent e) {
+//		logger.info("mouseReleased(e)");
+		this.xDelta = 0;
+		this.yDelta = 0;
+	}
 
 	@JsonIgnore
 	public void mouseDragged(MouseEvent e) {
-		logger.debug("mouseDragged(e)");
+//		logger.info("mouseDragged(e)");
 		int xDelta = e.getX();
 		int yDelta = e.getY();
-		this.azimuth -= xDelta - this.xDelta;
-		this.elevation -= yDelta - this.yDelta;
+//		logger.info("mouseDragged(e) xDelta="+xDelta);
+//		logger.info("mouseDragged(e) yDelta="+yDelta);
+//		logger.info("mouseDragged(e) this.xDelta="+this.xDelta);
+//		logger.info("mouseDragged(e) this.yDelta="+this.yDelta);
+		this.azimuth -= (this.xDelta > 0)?xDelta - this.xDelta:0;
+		this.elevation -= (this.yDelta > 0)?yDelta - this.yDelta:0;
 //		logger.info("mouseDragged(e) azimuth="+azimuth);
 //		logger.info("mouseDragged(e) elevation="+elevation);
 		if (this.node instanceof Spheroid) {
