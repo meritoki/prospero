@@ -42,7 +42,7 @@ import ucar.nc2.Variable;
 
 public class MeanSeaLevelPressureERA5 extends OceanERA {
 
-	static Logger logger = LoggerFactory.getLogger(SeaSurfaceTemperatureERAInterim.class.getName());
+	static Logger logger = LoggerFactory.getLogger(MeanSeaLevelPressureERA5.class.getName());
 	private Form form = new Form();
 
 	public MeanSeaLevelPressureERA5() {

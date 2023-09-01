@@ -373,6 +373,7 @@ public class TimePanel extends javax.swing.JPanel implements Runnable {
 		String sleep = this.delayTimeTextField.getText();
 		String startTime = this.startTimeTextField.getText();
 		String endTime = this.endTimeTextField.getText();
+		String unit = (String) this.incrementUnitTimeComboBox.getSelectedItem();
 		boolean currentTimeBC = this.currentTimeBCCheckBox.isSelected();
 		boolean startTimeBC = this.startTimeBCCheckBox.isSelected();
 		boolean endTimeBC = this.endTimeBCCheckBox.isSelected();
@@ -397,8 +398,11 @@ public class TimePanel extends javax.swing.JPanel implements Runnable {
 			this.model.setCalendar(calendar);
 			this.model.setStartCalendar(startCalendar);
 			this.model.setEndCalendar(endCalendar);
+			this.model.getCamera().node.query.setIncrement(timeIncrement);
+			this.model.getCamera().node.query.setUnit(unit);
 			this.model.getCamera().node.query.setTime(calendar);
 			this.model.getCamera().node.query.setWindow(startCalendar, endCalendar);
+			this.model.query = this.model.getCamera().node.query;
 			this.model.getCamera().node.query();
 			this.mainFrame.init();
 		}

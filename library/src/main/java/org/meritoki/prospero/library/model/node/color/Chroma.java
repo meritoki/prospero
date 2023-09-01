@@ -81,6 +81,11 @@ public class Chroma {
 				colorMap.setColorMap("plasma");
 				break;
 			}
+			case TURBO: {
+				colorMap = ColorMap.getInstance();
+				colorMap.setColorMap("turbo");
+				break;
+			}
 			case RAINBOW: {
 				colorMap = null;
 				this.initRainbow();

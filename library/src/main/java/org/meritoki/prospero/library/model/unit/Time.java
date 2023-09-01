@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class Time {
 
 	static Logger logger = LoggerFactory.getLogger(Time.class.getName());
-	public static String defaultFormat = "yyyy/MM/dd HH:mm:ss";//"yyyy-MM-dd HH:mm:ss";
+	public static String defaultFormat = "yyyy/MM/dd HH:mm:ss";// "yyyy-MM-dd HH:mm:ss";
 	@JsonProperty
 	public int year = -1;
 	@JsonProperty
@@ -67,14 +67,14 @@ public class Time {
 	public Time() {
 		this.hashCode = Objects.hash(this.year, this.month, this.day, this.hour, this.minute, this.second);
 	}
-	
+
 	public Time(Time time) {
 		this(time.year, time.month, time.day, time.hour, time.minute, time.second);
 	}
 
 	// Constructor that does all validation of String input
 	public Time(String time, String format, String unit) {
-		this(unit,Time.getCalendar(Time.getDate(time,format)));
+		this(unit, Time.getCalendar(Time.getDate(time, format)));
 	}
 
 	public Time(Integer year, Integer month, Integer day, Integer hour, Integer minute, Integer second) {
@@ -491,16 +491,18 @@ public class Time {
 	 */
 	public static String isDate(String value) {
 		String type = null;
-		type = (type == null) ? Time.isDate(value, "yyyy/MM/dd HH:mm:ss", "DATE_TIME") : type;
-		type = (type == null) ? Time.isDate(value, "yyyy/MM/dd HH:mm", "DATE_MINUTE") : type;
-		type = (type == null) ? Time.isDate(value, "yyyy/MM/dd HH", "DATE_HOUR") : type;
-		type = (type == null) ? Time.isDate(value, "yyyy/MM/dd", "DATE") : type;
-		type = (type == null) ? Time.isDate(value, "HH:mm:ss", "TIME") : type;
-		type = (type == null) ? Time.isDate(value, "HH:mm", "MINUTE") : type;
-		type = (type == null) ? Time.isDate(value, "HH", "HOUR") : type;
-		type = (type == null) ? Time.isDate(value, "yyyy/MM", "YEAR_MONTH") : type;
-		type = (type == null) ? Time.isDate(value, "yyyy", "YEAR") : type;
-//		logger.info("isDate("+value+") flag="+flag);
+		if (value != null) {
+			type = (type == null) ? Time.isDate(value, "yyyy/MM/dd HH:mm:ss", "DATE_TIME") : type;
+			type = (type == null) ? Time.isDate(value, "yyyy/MM/dd HH:mm", "DATE_MINUTE") : type;
+			type = (type == null) ? Time.isDate(value, "yyyy/MM/dd HH", "DATE_HOUR") : type;
+			type = (type == null) ? Time.isDate(value, "yyyy/MM/dd", "DATE") : type;
+			type = (type == null) ? Time.isDate(value, "HH:mm:ss", "TIME") : type;
+			type = (type == null) ? Time.isDate(value, "HH:mm", "MINUTE") : type;
+			type = (type == null) ? Time.isDate(value, "HH", "HOUR") : type;
+			type = (type == null) ? Time.isDate(value, "yyyy/MM", "YEAR_MONTH") : type;
+			type = (type == null) ? Time.isDate(value, "yyyy", "YEAR") : type;
+		}
+//		logger.info("isDate("+value+") type="+type);
 		return type;
 	}
 
@@ -520,58 +522,58 @@ public class Time {
 
 	public static boolean isMonth(String month) {
 		boolean flag = false;
-		if(month != null) {
-		month = month.toLowerCase();
-		switch (month) {
-		case "january": {
-			flag = true;
-			break;
-		}
-		case "february": {
-			flag = true;
-			break;
-		}
-		case "march": {
-			flag = true;
-			break;
-		}
-		case "april": {
-			flag = true;
-			break;
-		}
-		case "may": {
-			flag = true;
-			break;
-		}
-		case "june": {
-			flag = true;
-			break;
-		}
-		case "july": {
-			flag = true;
-			break;
-		}
-		case "august": {
-			flag = true;
-			break;
-		}
-		case "september": {
-			flag = true;
-			break;
-		}
-		case "october": {
-			flag = true;
-			break;
-		}
-		case "november": {
-			flag = true;
-			break;
-		}
-		case "december": {
-			flag = true;
-			break;
-		}
-		}
+		if (month != null) {
+			month = month.toLowerCase();
+			switch (month) {
+			case "january": {
+				flag = true;
+				break;
+			}
+			case "february": {
+				flag = true;
+				break;
+			}
+			case "march": {
+				flag = true;
+				break;
+			}
+			case "april": {
+				flag = true;
+				break;
+			}
+			case "may": {
+				flag = true;
+				break;
+			}
+			case "june": {
+				flag = true;
+				break;
+			}
+			case "july": {
+				flag = true;
+				break;
+			}
+			case "august": {
+				flag = true;
+				break;
+			}
+			case "september": {
+				flag = true;
+				break;
+			}
+			case "october": {
+				flag = true;
+				break;
+			}
+			case "november": {
+				flag = true;
+				break;
+			}
+			case "december": {
+				flag = true;
+				break;
+			}
+			}
 		}
 		return flag;
 	}
@@ -813,12 +815,12 @@ public class Time {
 
 	public static GregorianCalendar getCalendar(String format, String time) {
 		GregorianCalendar calendar = new GregorianCalendar();
-		Date date = Time.getDate(time,format);
+		Date date = Time.getDate(time, format);
 		if (date != null)
 			calendar.setTime(date);
 		return calendar;
 	}
-	
+
 	public static Calendar getStartCalendar(Calendar c) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, c.get(Calendar.YEAR));
@@ -829,7 +831,7 @@ public class Time {
 		calendar.set(Calendar.SECOND, 0);
 		return calendar;
 	}
-	
+
 	public static Calendar getEndCalendar(Calendar c) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, c.get(Calendar.YEAR));
@@ -840,8 +842,6 @@ public class Time {
 		calendar.set(Calendar.SECOND, 0);
 		return calendar;
 	}
-	
-	
 
 	/**
 	 * Function can invoke Get Date with any valid Format String to instantiate a
@@ -899,7 +899,7 @@ public class Time {
 	public static String getCalendarString(String format, Calendar calendar) {
 		return getDateString(format, calendar.getTime());
 	}
-	
+
 	public static int getDayOfYear(Time time) {
 		return Time.getDayOfYear(time.year, time.month, time.day);
 	}
@@ -947,12 +947,12 @@ public class Time {
 		g.set(Calendar.MILLISECOND, 0);
 		return g.getTime();
 	}
-	
+
 	public static String getPeriod(Calendar start, Calendar end) {
-		return getCalendarString("yyyyMMdd",start)+"-"+getCalendarString("yyyyMMdd",end);
-		
+		return getCalendarString("yyyyMMdd", start) + "-" + getCalendarString("yyyyMMdd", end);
+
 	}
-	
+
 	public static List<String> getDateStringList(String value, int increment) {
 		List<String> dateList = new ArrayList<>();
 		String[] dashArray = value.split("-");
@@ -980,9 +980,10 @@ public class Time {
 		// logger.info("getDateList("+value+") dateList="+dateList);
 		return dateList;
 	}
-	
+
 	/**
-	 * 20230609 Formally daysBetween 
+	 * 20230609 Formally daysBetween
+	 * 
 	 * @param d1
 	 * @param d2
 	 * @return

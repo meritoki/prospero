@@ -80,7 +80,7 @@ public class Grid extends Spheroid {
 	public double max;
 	public double min;
 	public Double significance;
-	public Scheme scheme = Scheme.MAGMA;
+	public Scheme scheme = Scheme.TURBO;
 	public Chroma chroma = new Chroma(scheme);
 	public int[][][] coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 	public float[][][] dataMatrix = new float[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
@@ -155,15 +155,15 @@ public class Grid extends Spheroid {
 		this.stationList = new ArrayList<>();
 		this.plotList = new ArrayList<>();
 		this.clusterList = new ArrayList<>();
-		///
-		eventMap = new HashMap<>();
-		regionMap = new HashMap<>();
-		tileListMap = new TreeMap<>();
-		bandListMap = new HashMap<>();
-		coordinateMatrixMap = new HashMap<>();
-		dataMatrixMap = new HashMap<>();
-		plotMap = new TreeMap<>();
-		timeTileListMap = new HashMap<>();
+		///202308 Added to call reset from stop()
+		this.eventMap = new HashMap<>();
+		this.regionMap = new HashMap<>();
+		this.tileListMap = new TreeMap<>();
+		this.bandListMap = new HashMap<>();
+		this.coordinateMatrixMap = new HashMap<>();
+		this.dataMatrixMap = new HashMap<>();
+		this.plotMap = new TreeMap<>();
+		this.timeTileListMap = new HashMap<>();
 	}
 
 	@Override

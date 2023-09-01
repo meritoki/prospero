@@ -107,23 +107,25 @@ public class SeaLevelPressure extends Atmosphere {
 						}
 					}
 					if (flag) {
-						for (int lat = 0; lat < latSize - 1; lat++) {
+						for (int lat = 0; lat < latSize; lat++) {
 							float latitude = netCDF.latArray.get(lat);
-							if (latitude <= 0) {
-								for (int lon = 0; lon < lonSize; lon++) {
-									float longitude = netCDF.lonArray.get(lon);
-									int x = (int) (((latitude + (this.latitude * this.resolution) / 2)) % (this.latitude * this.resolution));
-									int y = (int) (((longitude + (this.longitude * this.resolution) / 2)) % (this.longitude * this.resolution));
-									int z = calendar.get(Calendar.MONTH);
-									dataMatrix[x][y][z] += netCDF.variableCube.get(t, lat, lon);
-									coordinateMatrix[x][y][z]++;
-									Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1,
-											-1, -1, -1, -1);
-									if (!timeList.contains(time)) {
-										timeList.add(time);
-									}
+
+							for (int lon = 0; lon < lonSize; lon++) {
+								float longitude = netCDF.lonArray.get(lon);
+								int x = (int) (((latitude + (this.latitude * this.resolution) / 2))
+										% (this.latitude * this.resolution));
+								int y = (int) (((longitude + (this.longitude * this.resolution) / 2))
+										% (this.longitude * this.resolution));
+								int z = calendar.get(Calendar.MONTH);
+								dataMatrix[x][y][z] += netCDF.variableCube.get(t, lat, lon);
+								coordinateMatrix[x][y][z]++;
+								Time time = new Time(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, -1,
+										-1, -1, -1);
+								if (!timeList.contains(time)) {
+									timeList.add(time);
 								}
 							}
+
 						}
 					}
 				}

@@ -85,7 +85,7 @@ public class Query {
 	public boolean equals(Object object) {
 		if (object instanceof Query) {
 			Query q = (Query) object;
-			boolean flag = (this.getSource() != null && q.getSource() != null)?this.getSource().equals(q.getSource()):true; 
+			boolean flag = (this.getSource() != null && q.getSource() != null)?this.getSource().equals(q.getSource()):false; 
 			if(flag && Time.isAlias(q.getTime()) && Time.isAlias(this.getTime())) {
 				flag = this.getTime().equals(q.getTime());
 			}
@@ -97,7 +97,7 @@ public class Query {
 			}
 //			boolean idFlag = (this.getID() != null) ? this.getID().equals(q.getID()) : false;
 //			flag = (flag) ? idFlag : false;
-//			logger.debug(this+".equals("+q+") flag="+flag);
+			logger.info(this+".equals("+q+") flag="+flag);
 			return flag;
 		}
 		return false;
@@ -150,6 +150,14 @@ public class Query {
 	public void setWindow(Calendar start, Calendar end) {
 		this.map.put("window", Time.getCalendarString("YYYY/MM/dd HH:mm:ss", start) + ","
 				+ Time.getCalendarString("YYYY/MM/dd HH:mm:ss", end));
+	}
+	
+	public void setIncrement(int increment) {
+		this.map.put("increment",String.valueOf(increment));
+	}
+	
+	public void setUnit(String unit) {
+		this.map.put("unit",unit);
 	}
 
 	@JsonIgnore

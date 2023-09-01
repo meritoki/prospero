@@ -20,6 +20,7 @@ public enum Scheme {
 	MAGMA,
 	PLASMA,
 	VIRIDIS,
+	TURBO,
 	RAINBOW,
 	GRAYSCALE
 }
