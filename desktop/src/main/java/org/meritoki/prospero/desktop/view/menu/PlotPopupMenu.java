@@ -29,21 +29,21 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.view.panel.PlotPanel;
+import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlotPopupMenu extends JPopupMenu {
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 4405713496092773322L;
-	static Logger logger = LogManager.getLogger(PlotPopupMenu.class.getName());
+	static Logger logger = LoggerFactory.getLogger(PlotPopupMenu.class.getName());
 	private JMenuItem saveMenuItem;
 	private JMenuItem exportMenuItem;
 	private Model model;

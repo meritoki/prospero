@@ -2,13 +2,13 @@ package org.meritoki.prospero.library.model.solar.moon;
 
 import java.awt.Graphics;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.Orbital;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Moon extends Orbital {
 
-	static Logger logger = LogManager.getLogger(Moon.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Moon.class.getName());
 	
     public Moon(String name){
     	super(name);

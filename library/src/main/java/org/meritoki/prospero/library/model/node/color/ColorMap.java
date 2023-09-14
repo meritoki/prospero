@@ -30,7 +30,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 //import processing.core.PApplet;
-
+//https://gist.github.com/FedeMiorelli/640bbc66b2038a14802729e609abfe89
 /**
  * Implementation of Viridis color palette in Java.
  * 
@@ -54,6 +54,7 @@ public class ColorMap {
 	public static final String INFERNO = "inferno";
 	public static final String MAGMA = "magma";
 	public static final String PLASMA = "plasma";
+	public static final String TURBO = "turbo";
 
 	private static ColorMap colorMapInstance = null;
 
@@ -132,7 +133,11 @@ public class ColorMap {
 		case "plasma":
 			colorMap = getColorMap("plasma.cmap");
 			break;
+		case "turbo":
+			colorMap = getColorMap("turbo.cmap");
+			break;
 		}
+		
 	}
 
 	/**

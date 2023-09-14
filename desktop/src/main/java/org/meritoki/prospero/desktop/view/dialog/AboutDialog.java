@@ -68,7 +68,7 @@ public class AboutDialog extends javax.swing.JDialog {
 
         jLabel1.setText("Product:");
 
-        productValueLabel.setText("null");
+        productValueLabel.setText("Prospero");
 
         jLabel3.setText("Vendor:");
 
@@ -78,13 +78,13 @@ public class AboutDialog extends javax.swing.JDialog {
 
         jLabel6.setText("Contributor(s):");
 
-        vendorValueLabel.setText("null");
+        vendorValueLabel.setText("Meritoki (http://www.meritoki.com)");
 
-        versionValueLabel.setText("null");
+        versionValueLabel.setText("v0.17.202303-alpha");
 
-        authorValueLabel.setText("null");
+        authorValueLabel.setText("Joaquin Osvaldo Rodriguez");
 
-        contributorValueLabel.setText("null");
+        contributorValueLabel.setText("Dr. Gabriela Lakkis & Dr. Pablo Canziani");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -105,7 +105,7 @@ public class AboutDialog extends javax.swing.JDialog {
                     .addComponent(versionValueLabel)
                     .addComponent(authorValueLabel)
                     .addComponent(contributorValueLabel))
-                .addContainerGap(277, Short.MAX_VALUE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

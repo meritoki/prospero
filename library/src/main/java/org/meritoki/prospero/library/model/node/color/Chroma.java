@@ -17,12 +17,12 @@ package org.meritoki.prospero.library.model.node.color;
 
 import java.awt.Color;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Chroma {
 
-	static Logger logger = LogManager.getLogger(Chroma.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Chroma.class.getName());
 	public double factor;
 	public double hue = 1;
 	public double saturation = 1;
@@ -43,33 +43,61 @@ public class Chroma {
 		this.factor = 0.8;
 		this.hue = 0.8;
 		this.hueFlag = true;
+	}
+	
+	public void initGrayscale() {
+		this.factor = 0.5;
+		this.hue = 1.0;
+		this.brightness = 1.0;
+		this.saturation = 0.0;
+		this.hueFlag = true;
 		this.saturationFlag = false;
-		this.brightnessFlag = false;
+		this.brightnessFlag = true;
 	}
 
 	public Chroma(Scheme scheme) {
+//		logger.info("Chroma("+scheme+")");
 		this.scheme = scheme;
 		if (this.scheme != null) {
-			colorMap = ColorMap.getInstance();
+			
 			switch (this.scheme) {
 			case VIRIDIS: {
+				colorMap = ColorMap.getInstance();
 				colorMap.setColorMap("viridis");
 				break;
 			}
 			case INFERNO: {
+				colorMap = ColorMap.getInstance();
 				colorMap.setColorMap("inferno");
 				break;
 			}
 			case MAGMA: {
+				colorMap = ColorMap.getInstance();
 				colorMap.setColorMap("magma");
 				break;
 			}
 			case PLASMA: {
+				colorMap = ColorMap.getInstance();
 				colorMap.setColorMap("plasma");
 				break;
 			}
+			case TURBO: {
+				colorMap = ColorMap.getInstance();
+				colorMap.setColorMap("turbo");
+				break;
+			}
+			case RAINBOW: {
+				colorMap = null;
+				this.initRainbow();
+				break;
+			}
+			case GRAYSCALE: {
+				colorMap = null;
+				this.initGrayscale();
+				break;
+			}
 			default: {
-				System.err.println("Invalid scheme");
+				System.err.println("Chroma("+scheme+") invalid");
 				colorMap = null;
 				break;
 			}
@@ -94,27 +122,17 @@ public class Chroma {
 	 * @return
 	 */
 	public Color getColor(double value, double min, double max) {
-//		if(print)System.out.println("getColor("+value+", "+min+", "+max);
-//		logger.info("getColor")
+//		logger.info("getColor("+value+", "+min+", "+max+")");
 		Color color = Color.white;
-//		max = Math.abs(max);
-//		min = Math.abs(min);
-//		value = Math.abs(value);
 		if(value < min) {
-			//B
 			color = Color.white;
 		} else {
-			//A and C
 			if (value > max) {
 				value = max;
 			}
 			if (colorMap != null) {
 				try {
-					if(inverted) {
-						color = colorMap.getMappedColor((float) min, (float) max, (float) value);
-					} else {
-						color = colorMap.getMappedColor((float) max, (float) min, (float) value);
-					}
+					color = colorMap.getMappedColor((float) max, (float) min, (float) value);
 				} catch (Exception e) {
 					System.err.println("getColor("+value+", "+min+", "+max);
 					e.printStackTrace();
@@ -122,11 +140,7 @@ public class Chroma {
 			} else {
 				double difference = (min > max) ? min - max : max - min;
 				double power;
-				if (inverted) {
-					power = ((difference - value) * factor) / (difference);
-				} else {
-					power = (value * factor) / (difference);
-				}
+				power = ((value-min) * factor) / (difference);
 				double hue = (hueFlag) ? power : this.hue;
 				double saturation = (saturationFlag) ? power : this.saturation;
 				double brightness = (brightnessFlag) ? 1 - power : this.brightness;
@@ -136,6 +150,10 @@ public class Chroma {
 		return color;
 	}
 }
+//logger.info("getColor")
+//max = Math.abs(max);
+//min = Math.abs(min);
+//value = Math.abs(value);
 //public Color getColor(double value, double min, double max) {
 ////System.out.println("getColor("+value+", "+min+", "+max);
 ////logger.info("getColor")

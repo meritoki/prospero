@@ -19,5 +19,8 @@ public enum Scheme {
 	INFERNO,
 	MAGMA,
 	PLASMA,
-	VIRIDIS
+	VIRIDIS,
+	TURBO,
+	RAINBOW,
+	GRAYSCALE
 }

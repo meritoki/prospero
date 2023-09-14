@@ -28,10 +28,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.node.color.Chroma;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Label;
@@ -39,13 +35,12 @@ import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Regression;
 import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Table;
-import org.meritoki.prospero.library.model.unit.Window;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TimePlot extends Plot {
 
-	static Logger logger = LogManager.getLogger(TimePlot.class.getName());
+	static Logger logger = LoggerFactory.getLogger(TimePlot.class.getName());
 	public List<List<Index>> blackIndexMatrix;
 	public List<List<Index>> colorIndexMatrix;
 	public Calendar startCalendar;
@@ -58,6 +53,8 @@ public class TimePlot extends Plot {
 	
 	public TimePlot(Series series) {
 		super();
+		logger.info("TimePlot("+series.indexList.size()+")");
+//		logger.info("TimePlot("+series.indexList.size()+") series.map="+series.map);
 		this.blackIndexMatrix = new ArrayList<>();
 		this.colorIndexMatrix = new ArrayList<>();
 		this.blackIndexMatrix.add(series.indexList);

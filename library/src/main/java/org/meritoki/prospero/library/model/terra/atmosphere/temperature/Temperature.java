@@ -15,18 +15,16 @@
  */
 package org.meritoki.prospero.library.model.terra.atmosphere.temperature;
 
-import java.awt.Graphics;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
-import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Station;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Temperature extends Atmosphere {
-	static Logger logger = LogManager.getLogger(Temperature.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Temperature.class.getName());
 	
 	public Temperature() {
 		super("Temperature");
@@ -35,34 +33,27 @@ public class Temperature extends Atmosphere {
 
 	@Override
 	public void load(Result result) {
-		Object object = result.map.get("stationList");
-		if(object != null) {
-			this.stationList = (List<Station>)object;
-			if (this.stationList.size() == 0) {
-				logger.warn("load(...) this.stationList.size() == 0");
-			}
-			
-		}
+		List<Station> stationList = result.getStationList();
+		this.stationList.addAll(stationList);
 	}
 	
-	
-	
-	@Override
-	public void paint(Graphics graphics) throws Exception {
-		if(this.load) { 
-////			this.init(this.calendar);
-//			if (coordinateList != null) {
-//				for (Coordinate c : coordinateList) {
-//					if (c != null) {
-//						graphics.setColor(this.chroma.getColor((double)c.attribute.get("temperature"), this.min, this.max));
-//						graphics.fillOval((int) ((c.point.x) * this.projection.scale),
-//								(int) ((c.point.y) * this.projection.scale), (int) 4, (int) 4);
-//					}
-//				}
-//			}
-		}
-	}
+
 }
+//@Override
+//public void paint(Graphics graphics) throws Exception {
+//	if(this.load) { 
+//////		this.init(this.calendar);
+////		if (coordinateList != null) {
+////			for (Coordinate c : coordinateList) {
+////				if (c != null) {
+////					graphics.setColor(this.chroma.getColor((double)c.attribute.get("temperature"), this.min, this.max));
+////					graphics.fillOval((int) ((c.point.x) * this.projection.scale),
+////							(int) ((c.point.y) * this.projection.scale), (int) 4, (int) 4);
+////				}
+////			}
+////		}
+//	}
+//}
 //public void init(Calendar calendar) throws Exception {
 //String sourceUUID = this.sourceMap.get(this.sourceKey);
 //this.stationList = (List<Station>) this.data.query(sourceUUID, this.query);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.unit.Point;
-import org.meritoki.prospero.library.model.unit.Point;
 
 public class AzimuthalSouth extends Projection {
 

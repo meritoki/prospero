@@ -26,6 +26,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.filter.text.ecql.ECQL;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTReader;
+import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
@@ -34,17 +35,32 @@ import org.opengis.filter.Filter;
 
 public class CityNaturalEarth extends Source {
 	
-
+	public String downloadURL = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_populated_places.zip";
+	public String zipFile = "ne_10m_populated_places.zip";
 	
 	public CityNaturalEarth() {
 		super();
 		this.setRelativePath("NaturalEarth"+seperator+"ne_10m_populated_places"+seperator);
+		this.setDownloadPath("NaturalEarth");
 		this.setFileName("ne_10m_populated_places.shp");
 	}
 	
 	@Override
 	public void query(Query query) throws Exception {
 		logger.info("query(" + query + ")");
+		if(query.getDownload()) {
+			File file = new File(this.getFilePath());
+			if(!file.exists()) {
+				logger.info("query(" + (query  != null)+ ") download");
+				File zip = new File(this.getDownloadPath()+zipFile);
+				if(!zip.exists()) {
+					logger.info("query(" + (query  != null)+ ") downloading");
+					NodeController.downloadFile(downloadURL,this.getDownloadPath(),zipFile);
+				}
+				logger.info("query(" + (query  != null) + ") extracting");
+				NodeController.unzipFile(this.getDownloadPath()+zipFile,this.getDownloadPath()+"ne_10m_populated_places");
+			}
+		}
 		Result result = new Result();
 		result.map.put("pointList",this.box(-180, 90, 180, -90));
 		result.mode = Mode.LOAD;

@@ -18,10 +18,11 @@ package org.meritoki.prospero.library.model.solar.planet.earth;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import org.meritoki.prospero.library.model.node.cartography.Cartography;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.solar.moon.luna.Luna;
 import org.meritoki.prospero.library.model.solar.planet.Planet;
-import org.meritoki.prospero.library.model.solar.star.Star;
+import org.meritoki.prospero.library.model.solar.satellite.Satellite;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.unit.Space;
 
@@ -72,6 +73,7 @@ public class Earth extends Planet {
 		this.terra.color = this.color;
 		this.addChild(this.terra);
 		this.addChild(new Luna());
+//		this.addChild(new Satellite());
 		this.setProjection(new Projection(this.a, this.b, this.c));
 	}
 	
@@ -95,6 +97,12 @@ public class Earth extends Planet {
 	
 	@Override
 	public void setSelectedProjection(Projection projection) {
+		super.setSelectedProjection(projection);
+		this.terra.setSelectedProjection(projection);
+	}
+	
+	@Override
+	public void setSelectedProjection(Cartography projection) {
 		super.setSelectedProjection(projection);
 		this.terra.setSelectedProjection(projection);
 	}

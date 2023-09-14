@@ -24,6 +24,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+/**
+ * 20230608 Use Time Object for Start and End
+ * @author jorodriguez
+ *
+ */
 public class Duration {
 	@JsonProperty
 	public long hours;
@@ -58,11 +63,11 @@ public class Duration {
 	}
 
 	public Duration(Date startDate, Date endDate) {
-		long diff = endDate.getTime() - startDate.getTime();
-		this.seconds = diff / 1000;
-		this.minutes = diff / (60 * 1000);
-		this.hours = diff / (60 * 60 * 1000);
-		this.days = ((diff) / (1000.0 * 60.0 * 60.0 * 24.0));
+		long milliseconds = endDate.getTime() - startDate.getTime();
+		this.seconds = milliseconds / 1000;
+		this.minutes = milliseconds / (60 * 1000);
+		this.hours = milliseconds / (60 * 60 * 1000);
+		this.days = ((milliseconds) / (1000.0 * 60.0 * 60.0 * 24.0));
 	}
 
 	@JsonIgnore

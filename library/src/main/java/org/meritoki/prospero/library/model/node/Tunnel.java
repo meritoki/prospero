@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -13,17 +12,22 @@ import java.util.Map;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.solar.Solar;
-import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
-import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Table;
+import org.meritoki.prospero.library.model.unit.Time;
 import org.meritoki.prospero.library.model.unit.Unit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Tunnel extends Spheroid {
 
+	static Logger logger = LoggerFactory.getLogger(Tunnel.class.getName());
 	public Orbital a;
 	public Orbital b;
 
@@ -33,7 +37,6 @@ public class Tunnel extends Spheroid {
 		this.b = b;
 		this.a.addTunnel(this);
 		this.b.addTunnel(this);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -41,7 +44,29 @@ public class Tunnel extends Spheroid {
 		Tunnel t = (Tunnel) o;
 		return (this.a == t.a && this.b == t.b) || (this.a == t.b && this.b == t.a);
 	}
-	
+
+	@Override
+	public void initVariableMap() {
+		super.initVariableMap();
+		this.variableMap.put("Gravity Force", false);
+		this.variableMap.put("Charge Force", false);
+		this.variableMap.put("Calculate Gravity Force", false);
+		this.variableMap.put("Calculate Charge Force", false);
+		this.variableMap.put("Charge", false);
+		this.variableMap.put("Distance", false);
+		this.variableMap.put("X", false);
+		this.variableMap.put("Z", false);
+		this.variableMap.put("A", false);
+		this.variableMap.put("B", false);
+		this.variableMap.put("C", false);
+		this.variableMap.put("Print", false);
+		this.variableMap.put("Resistance", false);
+		this.variableMap.put("Tesla", false);
+		this.variableMap.put("Voltage", false);
+		this.variableMap.put("Print", false);
+		this.variableMap.put("X Ratio", false);
+	}
+
 	@Override
 	public void setProjection(Projection projection) {
 		super.setProjection(projection);
@@ -54,63 +79,55 @@ public class Tunnel extends Spheroid {
 	}
 
 	@Override
-	public Map<String, List<Index>> getIndexListMap() throws Exception {
-		Map<String, List<Index>> map = this.indexListMap;
-		if (map == null) {
-			map = this.initIndexListMap();
-			this.indexListMap = map;
+	public Map<String, Series> getSeriesMap() throws Exception {
+		logger.info("getSeriesMap()");
+		if (this.seriesMap == null) {
+			this.seriesMap = this.initSeriesMap();
 		}
-		return map;
+		return this.seriesMap;
 	}
 
-	public Map<String, List<Index>> initIndexListMap() throws Exception {
-		System.out.println("initIndexListMap()");
-		Map<String, List<Index>> map = new HashMap<>();
-		Solar solar = (Solar) this.getParent().getParent();
-		List<String> dateList = getDateList(this.period, Calendar.DATE);
+	@Override
+	public Map<String, Series> initSeriesMap() throws Exception {
+		logger.info("initSeriesMap()");
+		Map<String, Series> map = new HashMap<>();
+		Model model = (Model) this.getModel();
+		List<String> dateList = Time.getDateStringList(Time.getPeriod(this.startCalendar, this.endCalendar),
+				Calendar.DATE);
 		Calendar calendar = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		for (String date : dateList) {
 			calendar = Calendar.getInstance();
 			calendar.setTime(sdf.parse(date));
-			solar.setCalendar(calendar);
-			this.mapPut(map, calendar, "Charge", 1 / this.getCharge());
-			this.mapPut(map, calendar, "Charge Force", this.getChargeForce());
-			this.mapPut(map, calendar, "Gravity Force", this.getGravityForce());
-			this.mapPut(map, calendar, "Calculate Charge Force", this.calculateChargeForce());
-			this.mapPut(map, calendar, "Calculate Gravity Force", this.calculateGravityForce());
-			this.mapPut(map, calendar, "X", this.getX());
-			this.mapPut(map, calendar, "Z", this.getZ());
-			this.mapPut(map, calendar, "A", this.getA());
-			this.mapPut(map, calendar, "B", this.getB());
-			this.mapPut(map, calendar, "C", this.getC());
-			this.mapPut(map, calendar, "Tesla", this.getTesla());
-			this.mapPut(map, calendar, "Voltage", this.getVoltage());
-			this.mapPut(map, calendar, "Resistance", this.getResistance());
-//			this.mapPut(map, calendar, "Resistance", this.getCentroidResistanceDifference());
-			this.mapPut(map, calendar, "Resistance Ratio", this.getResistanceRatio());
-			this.mapPut(map, calendar, "Distance", this.getDistance());
-
+			model.setCalendar(calendar);
+			this.seriesMapPut(map,"Charge", new Index(1 / this.getCharge(), calendar));
+			this.seriesMapPut(map,"Charge Force", new Index(this.getChargeForce(), calendar));
+			this.seriesMapPut(map,"Gravity Force", new Index(this.getGravityForce(), calendar));
+			this.seriesMapPut(map,"Calculate Charge Force", new Index(this.calculateChargeForce(), calendar));
+			this.seriesMapPut(map,"Calculate Gravity Force", new Index(this.calculateGravityForce(), calendar));
+			this.seriesMapPut(map,"X", new Index(this.getX(), calendar));
+			this.seriesMapPut(map,"Z", new Index(this.getZ(), calendar));
+			this.seriesMapPut(map,"A", new Index(this.getA(), calendar));
+			this.seriesMapPut(map,"B", new Index(this.getB(), calendar));
+			this.seriesMapPut(map,"C", new Index(this.getC(), calendar));
+			this.seriesMapPut(map,"Tesla", new Index(this.getTesla(), calendar));
+			this.seriesMapPut(map,"Voltage", new Index(this.getVoltage(), calendar));
+			this.seriesMapPut(map,"Resistance", new Index(this.getResistance(), calendar));
+			this.seriesMapPut(map,"Resistance Ratio", new Index(this.getResistanceRatio(), calendar));
+			this.seriesMapPut(map,"Distance", new Index(this.getDistance(), calendar));
 		}
 		return map;
 	}
 
-//	public void mapPut(Map<String,List<Index>> map, Calendar calendar, String key, double value) {
-//		Index index = new Index();
-//		index.startCalendar = calendar;
-//		List<Index> indexList = map.get(key);
-//		if(indexList == null) {
-//			indexList = new ArrayList<>();
-//		}
-//		index.value = value;
-//		indexList.add(index);
-//		map.put(key,indexList);
-//	}
-
-	public List<Index> getDistanceList() throws Exception {
-		List<Index> indexList = new ArrayList<>();
+	public Series getDistanceList() throws Exception {
+		Series series = new Series();
+		series.map.put("startCalendar", this.startCalendar);
+		series.map.put("endCalendar", this.endCalendar);
+		series.map.put("query", new Query());
+		series.map.put("region", name);
 		Solar solar = (Solar) this.getParent().getParent();
-		List<String> dateList = getDateList(this.period, Calendar.DATE);
+		List<String> dateList = Time.getDateStringList(Time.getPeriod(this.startCalendar, this.endCalendar),
+				Calendar.DATE);
 		Calendar c = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		Energy energy = (Energy) this.getVariable(name);
@@ -121,16 +138,21 @@ public class Tunnel extends Spheroid {
 			Index index = new Index();
 			index.value = this.getDistance();
 			index.startCalendar = c;
-			indexList.add(index);
+			series.add(index);
 		}
 
-		return indexList;
+		return series;
 	}
 
-	public List<Index> getCalculateGravityForceList() throws Exception {
-		List<Index> indexList = new ArrayList<>();
+	public Series getCalculateGravityForceList() throws Exception {
+		Series series = new Series();
+		series.map.put("startCalendar", this.startCalendar);
+		series.map.put("endCalendar", this.endCalendar);
+		series.map.put("query", new Query());
+		series.map.put("region", name);
 		Solar solar = (Solar) this.getParent().getParent();
-		List<String> dateList = getDateList(this.period, Calendar.DATE);
+		List<String> dateList = Time.getDateStringList(Time.getPeriod(this.startCalendar, this.endCalendar),
+				Calendar.DATE);
 		Calendar c = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		Energy energy = (Energy) this.getVariable(name);
@@ -141,16 +163,17 @@ public class Tunnel extends Spheroid {
 			Index index = new Index();
 			index.value = this.getChargeForce() * this.getC();
 			index.startCalendar = c;
-			indexList.add(index);
+			series.add(index);
 		}
 
-		return indexList;
+		return series;
 	}
 
-	public List<Index> getCalculateDistanceList() throws Exception {
-		List<Index> indexList = new ArrayList<>();
+	public Series getCalculateDistanceList() throws Exception {
+		Series indexList = new Series();
 		Solar solar = (Solar) this.getParent().getParent();
-		List<String> dateList = getDateList(this.period, Calendar.DATE);
+		List<String> dateList = Time.getDateStringList(Time.getPeriod(this.startCalendar, this.endCalendar),
+				Calendar.DATE);
 		Calendar c = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		Energy energy = (Energy) this.getVariable(name);
@@ -567,7 +590,7 @@ public class Tunnel extends Spheroid {
 						dataMatrix[i][7] = "mass centroid";
 						dataMatrix[i][8] = "mass a";
 						dataMatrix[i][9] = "mass b";
-						dataMatrix[i][10]= "mass sum";
+						dataMatrix[i][10] = "mass sum";
 						dataMatrix[i][11] = "mass product";
 						dataMatrix[i][12] = "x";
 					}
@@ -693,12 +716,14 @@ public class Tunnel extends Spheroid {
 //		barycenterB.scalarMultiply(this.getProjection().scale);
 		Point pointA = (a.buffer.getPoint());
 		Point pointB = (b.buffer.getPoint());
-		Point pointC = (new Point(pointA.x-barycenterA.getX(),pointA.y-barycenterA.getY(),pointA.z-barycenterA.getZ()));
-		Point pointD = (new Point(pointB.x-barycenterB.getX(),pointB.y-barycenterB.getY(),pointB.z-barycenterB.getZ()));
+		Point pointC = (new Point(pointA.x - barycenterA.getX(), pointA.y - barycenterA.getY(),
+				pointA.z - barycenterA.getZ()));
+		Point pointD = (new Point(pointB.x - barycenterB.getX(), pointB.y - barycenterB.getY(),
+				pointB.z - barycenterB.getZ()));
 		pointA = this.getProjection().getPoint(pointA);
 		pointB = this.getProjection().getPoint(pointB);
-		pointC = this.getProjection().getPoint(pointC);//pointA.scale(this.getProjection().scale);
-		pointD = this.getProjection().getPoint(pointD);//pointB.scale(this.getProjection().scale);
+		pointC = this.getProjection().getPoint(pointC);// pointA.scale(this.getProjection().scale);
+		pointD = this.getProjection().getPoint(pointD);// pointB.scale(this.getProjection().scale);
 		pointA = pointA.scale(this.getProjection().scale);
 		pointB = pointB.scale(this.getProjection().scale);
 		pointC = pointC.scale(this.getProjection().scale);
@@ -719,18 +744,18 @@ public class Tunnel extends Spheroid {
 //		g.drawLine((int) (pointA.x*scale), (int) (pointA.y*scale), (int) (pointB.x*scale), (int) (pointB.y * scale));
 		double magnitudeA = this.getMagnitude(barycenterA);
 		double magnitudeB = this.getMagnitude(barycenterB);
-		if(magnitudeA < magnitudeB) {
+		if (magnitudeA < magnitudeB) {
 			g.setColor(Color.RED);
 		} else {
 			g.setColor(Color.BLUE);
 		}
 		g.drawLine((int) (pointA.x), (int) (pointA.y), (int) (pointC.x), (int) (pointC.y));
-		if(magnitudeA < magnitudeB) {
+		if (magnitudeA < magnitudeB) {
 			g.setColor(Color.BLUE);
 		} else {
 			g.setColor(Color.RED);
 		}
-		g.drawLine((int) (pointB.x), (int) (pointB.y), (int) (pointD.x), (int) (pointD.y ));
+		g.drawLine((int) (pointB.x), (int) (pointB.y), (int) (pointD.x), (int) (pointD.y));
 //		g.drawLine((int) (pointA.x*this.getProjection().scale), (int) (pointA.y*this.getProjection().scale), (int) (pointC.x*this.getProjection().scale), (int) (pointC.y*this.getProjection().scale));
 //		if(magnitudeA < magnitudeB) {
 //			g.setColor(Color.BLUE);
@@ -739,6 +764,33 @@ public class Tunnel extends Spheroid {
 	}
 
 }
+//this.mapPut(map, calendar, "Charge", 1 / this.getCharge());
+//this.mapPut(map, calendar, "Charge Force", this.getChargeForce());
+//this.mapPut(map, calendar, "Gravity Force", this.getGravityForce());
+//this.mapPut(map, calendar, "Calculate Charge Force", this.calculateChargeForce());
+//this.mapPut(map, calendar, "Calculate Gravity Force", this.calculateGravityForce());
+//this.mapPut(map, calendar, "X", this.getX());
+//this.mapPut(map, calendar, "Z", this.getZ());
+//this.mapPut(map, calendar, "A", this.getA());
+//this.mapPut(map, calendar, "B", this.getB());
+//this.mapPut(map, calendar, "C", this.getC());
+//this.mapPut(map, calendar, "Tesla", this.getTesla());
+//this.mapPut(map, calendar, "Voltage", this.getVoltage());
+//this.mapPut(map, calendar, "Resistance", this.getResistance());
+////this.mapPut(map, calendar, "Resistance", this.getCentroidResistanceDifference());
+//this.mapPut(map, calendar, "Resistance Ratio", this.getResistanceRatio());
+//this.mapPut(map, calendar, "Distance", this.getDistance());
+//public void mapPut(Map<String,List<Index>> map, Calendar calendar, String key, double value) {
+//Index index = new Index();
+//index.startCalendar = calendar;
+//List<Index> indexList = map.get(key);
+//if(indexList == null) {
+//	indexList = new ArrayList<>();
+//}
+//index.value = value;
+//indexList.add(index);
+//map.put(key,indexList);
+//}
 
 //System.out.println("A Cent. Gravity: "+this.a.getCentroidGravity());
 //System.out.println("A Gravity Force: "+this.getGravityForceA());

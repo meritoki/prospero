@@ -15,13 +15,14 @@
  */
 package org.meritoki.prospero.library.model.terra.lithosphere.volcano;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.node.Grid;
 
-public class Volcanic extends Grid {
+import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-	static Logger logger = LogManager.getLogger(Volcanic.class.getName());
+public class Volcanic extends Lithosphere {
+
+	static Logger logger = LoggerFactory.getLogger(Volcanic.class.getName());
 
 	public Volcanic() {
 		super("Volcanic");

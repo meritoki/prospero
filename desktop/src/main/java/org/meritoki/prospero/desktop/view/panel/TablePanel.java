@@ -22,7 +22,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.desktop.model.Model;
+import org.meritoki.prospero.desktop.view.renderer.TableRenderer;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.unit.Table;
 
@@ -139,6 +140,7 @@ public class TablePanel extends javax.swing.JPanel { //implements Runnable {
 			} else {
 				this.table.setModel(new DefaultTableModel());
 			}
+			this.table.setDefaultRenderer(Object.class, new TableRenderer(this.model));
 
 //                    if(this.tableNameComboBox.getSelectedItem() != this.tableName) {
 //                        this.tableName = this.

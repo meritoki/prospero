@@ -23,10 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.solar.Solar;
-import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.solar.planet.jupiter.Jupiter;
 import org.meritoki.prospero.library.model.solar.planet.saturn.Saturn;
 import org.meritoki.prospero.library.model.solar.planet.uranus.Uranus;
@@ -34,6 +30,8 @@ import org.meritoki.prospero.library.model.solar.star.sun.Sun;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -49,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Orbital extends Grid {
 
-	static Logger logger = LogManager.getLogger(Orbital.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Orbital.class.getName());
 	public Calendar referenceCalendar = (new GregorianCalendar(2000, 0, 0, 0, 0, 0));
 	public double orbitalPeriod;
 	public double obliquity = 0.0;
@@ -71,6 +69,28 @@ public class Orbital extends Grid {
 	public Orbital(String name) {
 		super(name);
 		
+	}
+	
+	@Override
+	public void initVariableMap() {
+		super.initVariableMap();
+		this.variableMap.put("Gravity Force", false);
+		this.variableMap.put("Charge Force", false);
+		this.variableMap.put("Calculate Gravity Force", false);
+		this.variableMap.put("Calculate Charge Force", false);
+		this.variableMap.put("Charge", false);
+		this.variableMap.put("Distance", false);
+		this.variableMap.put("X", false);
+		this.variableMap.put("Z", false);
+		this.variableMap.put("A", false);
+		this.variableMap.put("B", false);
+		this.variableMap.put("C", false);
+		this.variableMap.put("Print", false);
+		this.variableMap.put("Resistance", false);
+		this.variableMap.put("Tesla", false);
+		this.variableMap.put("Voltage", false);
+		this.variableMap.put("Print", false);
+		this.variableMap.put("X Ratio", false);
 	}
 
 	@JsonIgnore
@@ -317,7 +337,7 @@ public class Orbital extends Grid {
 
 	public double getRotationCorrection(Calendar a) {
 		double angle = 0;
-		if (this.rotation > 0) {
+		if (a != null && this.rotation > 0) {
 			double t = this.referenceCalendar.getTime().getTime();
 			double T = a.getTime().getTime();
 			double difference = (T - t) / 3600000;

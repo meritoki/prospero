@@ -20,15 +20,12 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.document.Document;
 import org.meritoki.prospero.library.model.node.data.Data;
 import org.meritoki.prospero.library.model.node.query.Query;
@@ -40,6 +37,8 @@ import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
 import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.module.library.model.Module;
@@ -48,19 +47,17 @@ import com.meritoki.module.library.model.Node;
 
 public class Variable extends Node {
 
-	static Logger logger = LogManager.getLogger(Variable.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Variable.class.getName());
 	@JsonIgnore
 	public Mode mode = Mode.NULL;
 	@JsonIgnore
 	public Calendar calendar;
 	@JsonIgnore
-	public Calendar startCalendar = new GregorianCalendar(2001, 0, 1, 0, 0, 0);
+	public Calendar startCalendar;
 	@JsonIgnore
-	public Calendar endCalendar = new GregorianCalendar(2001, 11, 31, 0, 0, 0);// Calendar.getInstance();
+	public Calendar endCalendar;
 	@JsonIgnore
 	public List<Script> scriptList = new ArrayList<>();
-	@JsonIgnore
-	public List<String> orderList = new ArrayList<>();
 	@JsonIgnore
 	public LinkedList<Time> timeList = new LinkedList<>();
 	@JsonIgnore
@@ -83,7 +80,6 @@ public class Variable extends Node {
 	public Document document;
 	@JsonIgnore
 	public Dimension dimension = new Dimension();
-
 	@JsonIgnore
 	public String source;
 	@JsonIgnore
@@ -91,15 +87,11 @@ public class Variable extends Node {
 	@JsonIgnore
 	public String unit;
 	@JsonIgnore
-	public String format ="#.###E0";
+	public String format = "#.###E0";
 	@JsonIgnore
 	public boolean load;
 	@JsonIgnore
-	public boolean correlation;
-	@JsonIgnore
 	public boolean cache;
-//	@JsonIgnore
-//	public boolean visible;
 
 
 	public Variable() {
@@ -122,9 +114,10 @@ public class Variable extends Node {
 	}
 
 	public void start() {
+		logger.debug(this+".start()");
 		super.start();
 		this.load = true;
-		this.initVariableMap();
+		
 	}
 
 	@Override
@@ -141,13 +134,13 @@ public class Variable extends Node {
 			case LOAD: {
 				this.mode = Mode.LOAD;
 				this.load(result);
-				this.addRootObject(new Result(Mode.PAINT));
+				this.addModelObject(new Result(Mode.PAINT));
 				break;
 			}
 			case COMPLETE: {
 				this.complete();
 				this.mode = Mode.COMPLETE;
-				this.addRootObject(new Result(Mode.PAINT));
+				this.addModelObject(new Result(Mode.PAINT));
 				break;
 			}
 			case EXCEPTION: {
@@ -170,7 +163,7 @@ public class Variable extends Node {
 	 */
 	@JsonIgnore
 	public void init() {
-		logger.debug("init()");
+		logger.info("init()");
 		try {
 			this.operator = this.query.getOperator();
 			this.script = this.query.getScript();
@@ -191,13 +184,13 @@ public class Variable extends Node {
 	}
 
 	public void complete() {
-		logger.info(this+".complete()");
+		logger.info(this + ".complete()");
 	}
 
 	public boolean isComplete() {
 		return this.mode == Mode.COMPLETE;// || this.mode == Mode.EXCEPTION;
 	}
-	
+
 	public boolean isException() {
 		return this.mode == Mode.EXCEPTION;
 	}
@@ -214,33 +207,27 @@ public class Variable extends Node {
 	@JsonIgnore
 	public void query(Query query) {
 		this.query = query;
-		if (query.getSource() != null) {// should only move forward if we have a source
-			query.put("sourceUUID", this.sourceMap.get(query.getSource()));
-			query.calendar = this.calendar;
-			logger.info("query(" + query + ")");
-			if (!query.equals(this.queryStack.peek())) {
-				query.objectList = this.objectList;
-				this.reset();
-				this.init();
+		query.put("sourceUUID", this.sourceMap.get(query.getSource()));
+		logger.info("query(" + query + ")");
+		if (!query.equals(this.queryStack.peek())) {// Used to Detect Same Time Query More than Once In Time Order
+			query.objectList = this.objectList;
+			this.reset();// Reset b/c Found a New Query, Older No Longer Matter
+			this.init();
+			try {
+				this.data.add(query);
+				this.queryStack.push(new Query(query));
+			} catch (Exception e) {
+				logger.warn("query(" + query + ") Exception " + e.getMessage());
+				e.printStackTrace();
+			}
+		} else {
+			if (this.mode == Mode.COMPLETE) {
 				try {
-					this.data.add(query);
-					this.queryStack.push(new Query(query));
+					this.process();
 				} catch (Exception e) {
 					logger.warn("query(" + query + ") Exception " + e.getMessage());
 					e.printStackTrace();
 				}
-			} else {
-				if (this.mode == Mode.COMPLETE) {
-					try {
-						this.process();
-					} catch (Exception e) {
-						logger.warn("query(" + query + ") Exception " + e.getMessage());
-						e.printStackTrace();
-					}
-				} 
-//				else if(this.mode == Mode.EXCEPTION) {
-//					this.reset();
-//				}
 			}
 		}
 	}
@@ -259,18 +246,39 @@ public class Variable extends Node {
 	}
 
 	public void initVariableMap() {
-
+		for (Variable n : this.getList()) {
+			n.initVariableMap();
+		}
 	}
 
-//	@JsonIgnore
-//	public Dimension getDimension() {
-//		return this.dimension;
-//	}
+	/**
+	 * 20230621 Returns first Variable that matches name
+	 * Must convert to Name.Name format
+	 * @param name
+	 * @return
+	 */
 	@JsonIgnore
 	public Variable getVariable(String name) {
-//		logger.debug(this.name+".getVariable("+name+")");
-		if (this.name != null && this.name.equals(name)) {
-			return this;
+//		logger.info(this.name+".getVariable("+name+")");
+		String parent = null;
+		String child = null;
+		if(name.indexOf(".") > -1) {
+			parent = name.split("\\.")[0];
+			child = name.split("\\.")[1];
+		} else {
+			child = name;
+		}
+		if (this.name != null && this.name.equals(child)) {
+			if(parent != null) {
+				Variable p = (Variable)this.getRoot();
+				if(p.name.equals(parent)) {
+					return this;
+				} else {
+					return null;
+				}
+			} else {
+				return this;
+			}
 		} else {
 			List<Variable> nodeList = this.getChildren();
 			for (Variable n : nodeList) {
@@ -290,7 +298,16 @@ public class Variable extends Node {
 				plotList.addAll(n.getPlotList());
 			}
 		}
+		logger.debug("getPlotList() plotList.size()="+plotList.size());
 		return plotList;
+	}
+	
+	public void initPlotList() throws Exception {
+		for (Variable n : this.getList()) {
+			if (n.load) {
+				n.initPlotList();
+			}
+		}
 	}
 
 	public List<Table> getTableList() throws Exception {
@@ -311,8 +328,15 @@ public class Variable extends Node {
 			n.setDocument(this.document);
 		}
 	}
-	
 
+//	@JsonIgnore
+//	public void setTimeZone(String timeZone) {
+//		this.timeZone = timeZone;
+//		List<Variable> nodeList = this.getChildren();
+//		for (Variable n : nodeList) {
+//			n.setCalendar(calendar);
+//		}
+//	}
 
 	@JsonIgnore
 	public void setCalendar(Calendar calendar) {
@@ -341,14 +365,7 @@ public class Variable extends Node {
 		}
 	}
 
-	@JsonIgnore
-	public void setFilter(Query filter) {
-		this.query = filter;
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.setFilter(filter);
-		}
-	}
+
 
 	@JsonIgnore
 	public void setData(Data data) {
@@ -385,20 +402,19 @@ public class Variable extends Node {
 	public Calendar getCalendar() {
 		return this.calendar;
 	}
-	
+
 	@JsonIgnore
-	
-	public void addRootObject(Object object) {
+
+	public void addModelObject(Object object) {
 		Module module = this.getModel();
-		logger.debug(module+".addRootObject("+(object!=null)+")");
+		logger.debug(module + ".addRootObject(" + (object != null) + ")");
 		module.add(object);
 	}
-	
 
 	public Module getModel() {
-		if(this.getParents()== null) {
+		if (this.getParents() == null) {
 			return this;
-		} 
+		}
 		return this.getParents().getModel();
 	}
 
@@ -409,35 +425,13 @@ public class Variable extends Node {
 	}
 
 	public void getList(Variable node, List<Variable> nodeList) {
-		List<Variable> nList = this.getChildren();
+		List<Variable> nList = node.getChildren();
 		for (Variable n : nList) {
 			Variable v = n;
 			nodeList.add(v);
 			v.getList(v, nodeList);
 		}
 	}
-	
-//	public List<Variable> getVisibleList() {
-//		List<Variable> nodeList = this.getList();
-//		List<Variable> nList = new ArrayList<>();
-//		for (Variable n : nodeList) {
-//			if(n.visible) {
-//				nList.add(n);
-//			}
-//		}
-//		return nList;
-//	}
-
-//	public void getVisibleList(Variable node, List<Variable> nodeList) {
-//		List<Variable> nList = this.getChildren();
-//		for (Variable n : nList) {
-//			Variable v = n;
-//			if(v.visible) {
-//				nodeList.add(v);
-//			}
-//			v.getList(v, nodeList);
-//		}
-//	}
 
 	/**
 	 * N parameter is the hook that provides access to the whole structure, without
@@ -454,15 +448,21 @@ public class Variable extends Node {
 	}
 
 	public Variable getParents() {
-		return (Variable)this.getRoot();
+		return (Variable) this.getRoot();
 	}
-
 
 	@JsonIgnore
 	public void addChild(Variable child) {
-		logger.debug(this.name+".addChild("+child+")");
-		this.orderList.add(child.toString());
+		logger.debug(this.name + ".addChild(" + child + ")");
+//		this.orderList.add(child.toString());
 		this.moduleMapPut(child);
+	}
+	
+	@JsonIgnore
+	public void removeChild(Variable child) {
+		logger.info(this.name + ".removeChild(" + child + ")");
+//		this.orderList.add(child.toString());
+		this.moduleMapRemove(child);
 	}
 
 	@JsonIgnore
@@ -478,25 +478,67 @@ public class Variable extends Node {
 	}
 
 	public Image getImage(Image image) throws Exception {
-		logger.debug(this+".getImage("+image+")");
+		logger.debug(this + ".getImage(" + image + ")");
 		Graphics graphics = (image != null) ? image.getGraphics() : null;
 		graphics.setColor(Color.white);
-		graphics.fillRect(0, 0, (int)dimension.width, (int)dimension.height);
-		graphics.translate((int) (dimension.width / 2.0), (int) (dimension.height/ 2.0));
+		graphics.fillRect(0, 0, (int) dimension.width, (int) dimension.height);
+		graphics.translate((int) (dimension.width / 2.0), (int) (dimension.height / 2.0));
 		this.paint(graphics);
 		return image;
 	}
-	
 
 	@JsonIgnore
 	public void paint(Graphics graphics) throws Exception {
 //		logger.debug(this+".paint(" + (graphics != null) + ")");
+//		this.initPlotList(); 20230622 Terrible Idea
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
 			n.paint(graphics);
 		}
 	}
 }
+//@JsonIgnore
+//public boolean correlation;
+//@JsonIgnore
+//public List<String> orderList = new ArrayList<>();
+//@JsonIgnore
+//public void setFilter(Query filter) {
+//	this.query = filter;
+//	List<Variable> nodeList = this.getChildren();
+//	for (Variable n : nodeList) {
+//		n.setFilter(filter);
+//	}
+//}
+//@JsonIgnore
+//public boolean visible;
+//if (query.isReady()) {// should only move forward if we have a time & source
+//query.calendar = this.calendar;
+//else if(this.mode == Mode.EXCEPTION) {
+//this.reset();
+//}
+//= new GregorianCalendar(2001, 0, 1, 0, 0, 0);
+//public List<Variable> getVisibleList() {
+//List<Variable> nodeList = this.getList();
+//List<Variable> nList = new ArrayList<>();
+//for (Variable n : nodeList) {
+//	if(n.visible) {
+//		nList.add(n);
+//	}
+//}
+//return nList;
+//}
+
+//public void getVisibleList(Variable node, List<Variable> nodeList) {
+//List<Variable> nList = this.getChildren();
+//for (Variable n : nList) {
+//	Variable v = n;
+//	if(v.visible) {
+//		nodeList.add(v);
+//	}
+//	v.getList(v, nodeList);
+//}
+//}
+//= new GregorianCalendar(2001, 11, 31, 0, 0, 0);// Calendar.getInstance();
 //@JsonIgnore
 //public void plot(Graphics graphics) throws Exception {
 //	List<Variable> nodeList = this.getChildren();

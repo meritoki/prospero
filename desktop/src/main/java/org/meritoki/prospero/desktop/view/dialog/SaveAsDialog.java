@@ -19,10 +19,10 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.model.Model;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,7 +34,7 @@ public class SaveAsDialog extends javax.swing.JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = -2182272398201780677L;
-	private static Logger logger = LogManager.getLogger(SaveAsDialog.class.getName());
+	static Logger logger = LoggerFactory.getLogger(SaveAsDialog.class.getName());
 	private Model model = null;
 	private MainFrame mainFrame;
 

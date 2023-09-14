@@ -7,3 +7,12 @@ data/
 output/
 logs/
 archive/
+config
+credentials
+prospero-find.R
+prospero-install.R
+era.xml
+prospero.yml
+tsclust-find.R
+*-error-*
+*-output-*

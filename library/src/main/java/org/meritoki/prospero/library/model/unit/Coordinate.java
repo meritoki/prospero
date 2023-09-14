@@ -50,21 +50,24 @@ public class Coordinate implements Comparable<Coordinate> {
 	public Map<String, Object> attribute = new TreeMap<>();
 	@JsonProperty
 	public boolean flag;
-	@JsonIgnore
-	public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	public Coordinate() {
-	}
+
+	public Coordinate() {}
 	
+	public Coordinate(Coordinate coordinate) {
+		this.calendar = coordinate.calendar;
+		this.latitude = coordinate.latitude;
+		this.longitude = coordinate.longitude;
+		this.attribute = new TreeMap<>(coordinate.attribute);
+		this.flag = coordinate.flag;
+	}
+
 	public void reset() {
 		this.flag = false;
 	}
 
-	public Coordinate(Coordinate coordinate) {
-		this.latitude = coordinate.latitude;
-		this.longitude = coordinate.longitude;
-		this.calendar = coordinate.calendar;
-		this.attribute = new TreeMap<>(coordinate.attribute);
+	public boolean is() {
+		return !((Double)latitude).isNaN()&!((Double)longitude).isNaN();
 	}
 
 	/**
@@ -73,9 +76,9 @@ public class Coordinate implements Comparable<Coordinate> {
 	@JsonIgnore
 	@Override
 	public int compareTo(Coordinate p) {
-		Integer levelA = (int) this.attribute.get("pressure");
-		Integer levelB = (int) p.attribute.get("pressure");
-		return levelA.compareTo(levelB);
+		Integer pressureA = (int) this.attribute.get("pressure");
+		Integer pressureB = (int) p.attribute.get("pressure");
+		return pressureA.compareTo(pressureB);
 	}
 
 	public boolean containsCalendar(Calendar calendar) {
@@ -131,24 +134,58 @@ public class Coordinate implements Comparable<Coordinate> {
 	
 	@JsonIgnore
 	public String getDateTime() {
-		return dateFormat.format(this.calendar.getTime());
+		return Time.getDateString(Time.defaultFormat,this.calendar.getTime());
+	}
+	
+	@JsonIgnore
+	public Calendar getCalendar() {
+		return this.calendar;
+	}
+	
+	@JsonIgnore
+	public Integer getPressure() {
+		Object pressure = this.attribute.get("pressure");
+		return (pressure != null)?(int)pressure:null;
+	}
+	
+	@JsonIgnore
+	public double getMeters() {
+		return this.getMeters(this.getPressure());
+	}
+	
+	@JsonIgnore
+	public double getMeters(int pressure) {
+		double p = (double) pressure;
+		double p0 = 1013.25;
+		double T = 15;
+		double meters = ((Math.pow(p0 / p, 1 / 5.257) - 1) * (T + 273.15)) / 0.0065;
+		// logger.info("getMeters("+level+") meters="+meters);
+		return meters;
+	}
+	
+	@JsonIgnore
+	public Float getVorticity() {
+		Object vorticity = this.attribute.get("vorticity");
+		return (vorticity != null)?(float)vorticity:null;
+	}
+	
+	public static double getArea(double dimension) {
+		return dimension * dimension;
 	}
 
-//	@JsonIgnore
-//	@Override
-//	public String toString() {
-//		String string = "";
-//		ObjectWriter ow = new ObjectMapper().writer();
-//		try {
-//			string = ow.writeValueAsString(this);
-//		} catch (IOException ex) {
-//			System.err.println("IOException " + ex.getMessage());
-//		}
-//		return string;
-//	}
-//	public String toString() {
-//		return this.flag +";"+this.latitude + ";" + this.longitude + ";" + ((this.calendar != null)?this.calendar.getTime():null) + ";" + this.attribute;
-//	}
+	public static double getArea(double latitude, double longitude, double dimension) {
+		return Math.cos(Math.abs(Math.toRadians(getCenterLatitude(latitude, dimension))));
+	}
+
+	public static double getCenterLatitude(double latitude, double dimension) {
+		return latitude + (dimension / 2);
+	}
+
+	public static double getCenterLongitude(double longitude, double dimension) {
+		return longitude + (dimension / 2);
+	}
+
+
 	@JsonIgnore
 	@Override
 	public String toString() {
@@ -162,5 +199,22 @@ public class Coordinate implements Comparable<Coordinate> {
 		return string;
 	}
 }
+//@JsonIgnore
+//public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//@JsonIgnore
+//@Override
+//public String toString() {
+//	String string = "";
+//	ObjectWriter ow = new ObjectMapper().writer();
+//	try {
+//		string = ow.writeValueAsString(this);
+//	} catch (IOException ex) {
+//		System.err.println("IOException " + ex.getMessage());
+//	}
+//	return string;
+//}
+//public String toString() {
+//	return this.flag +";"+this.latitude + ";" + this.longitude + ";" + ((this.calendar != null)?this.calendar.getTime():null) + ";" + this.attribute;
+//}
 //@JsonIgnore
 //public Point point = new Point();

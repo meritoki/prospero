@@ -17,12 +17,8 @@ package org.meritoki.prospero.library.model.node;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,13 +26,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.time.TimePlot;
 import org.meritoki.prospero.library.model.unit.Index;
+import org.meritoki.prospero.library.model.unit.Mode;
+import org.meritoki.prospero.library.model.unit.Result;
+import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Space;
 import org.meritoki.prospero.library.model.unit.Unit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,70 +47,59 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class Energy extends Variable {
 
-	static Logger logger = LogManager.getLogger(Energy.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Energy.class.getName());
 	@JsonProperty
 	public double mass;
 	@JsonProperty
-	public Space space = new Space();//Global X,Y,Z Point
+	public Space space = new Space();// Global X,Y,Z Point
 	@JsonProperty
-	public Space center = new Space();//Global X,Y,Z Center
+	public Space center = new Space();// Global X,Y,Z Center
 	@JsonProperty
-	public Space buffer = new Space();//Global X,Y,Z space minus center 
+	public Space buffer = new Space();// Global X,Y,Z space minus center
 	@JsonIgnore
 	public Color color = Color.BLACK;
-	///////////////////////////////////////
 	@JsonIgnore
-	public List<Tunnel> tunnelList = null;
+	public List<Tunnel> tunnelList = new ArrayList<>();
 	@JsonIgnore
 	public List<Triangle> triangleList = null;
 	@JsonIgnore
-	public Map<String, List<Index>> indexListMap;
+	public Map<String, Series> seriesMap = null;//new TreeMap<>();
 	@JsonIgnore
-	public DecimalFormat df = new DecimalFormat("0.######E0");
+	public List<Plot> plotList = new ArrayList<>();
 	@JsonIgnore
-	public String period = "18000101-20200101";
+	public List<String> energyList = new ArrayList<>();
 
 	public Energy(String name) {
 		super(name);
+		this.initVariableMap();
 	}
 
-	public void initVariableMap() {
-		if (this.tunnelList != null || this instanceof Tunnel) {
-			this.variableMap.put("Gravity Force", false);
-			this.variableMap.put("Charge Force", false);
-			this.variableMap.put("Calculate Gravity Force", false);
-			this.variableMap.put("Calculate Charge Force", false);
-			this.variableMap.put("Charge", false);
-			this.variableMap.put("Distance", false);
-			this.variableMap.put("X", false);
-			this.variableMap.put("Z", false);
-			this.variableMap.put("A", false);
-			this.variableMap.put("B", false);
-			this.variableMap.put("C", false);
-			this.variableMap.put("Print", false);
-			this.variableMap.put("Resistance", false);
-			this.variableMap.put("Tesla", false);
-			this.variableMap.put("Voltage", false);
-			this.variableMap.put("Print", false);
-			this.variableMap.put("X Ratio", false);
-		}
-		if (this.triangleList != null || this instanceof Triangle) {
-			this.variableMap.put("Angle", false);
+
+	
+	@Override
+	public void query() {
+		super.query();
+		try {
+			this.initPlotList();
+			this.addModelObject(new Result(Mode.PAINT));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
-	
+
 	@JsonIgnore
 	public void setSpace(Space space) {
 		this.space = space;
 	}
-	
+
 	@JsonIgnore
 	public void updateSpace() {
 //		logger.info(this.name+".updateSpace()");
 		this.space = new Space();
 		this.buffer = new Space(this.space);
 	}
-	
+
 	@JsonIgnore
 	public void setCenter(Space center) {
 //		logger.info(this.name+".setCenter("+center+") this.space="+this.space);
@@ -121,11 +110,16 @@ public class Energy extends Variable {
 
 	public List<Energy> getEnergyList() {
 		List<Energy> energyList = new ArrayList<>();
-		for (Variable n : this.getList()) {
-			if (n instanceof Energy) {
-				energyList.add((Energy) n);
+		if (this.energyList != null && this.energyList.size() > 0) {
+			for (String string : this.energyList) {
+				Object object = this.getVariable(string);
+				if (object instanceof Energy) {
+					Energy energy = (Energy) object;
+					energyList.add(energy);
+				}
 			}
 		}
+
 		return energyList;
 	}
 
@@ -153,8 +147,8 @@ public class Energy extends Variable {
 		return triangleList;
 	}
 
-	public List<Tunnel> getTunnelList() {
-		List<Tunnel> tunnelList = new ArrayList<>();
+	public List<Variable> getTunnelList() {
+		List<Variable> tunnelList = new ArrayList<>();
 		List<Energy> energyList = this.getEnergyList();
 		for (Energy a : energyList) {
 			for (Energy b : energyList) {
@@ -168,207 +162,224 @@ public class Energy extends Variable {
 		}
 		return tunnelList;
 	}
-	
-	public Map<String,List<Index>> initIndexListMap() throws Exception{
-		System.out.println("initIndexListMap()");
-		Map<String,List<Index>> map = new HashMap<>();
+
+	public Map<String, Series> initSeriesMap() throws Exception {
+		logger.info("initSeriesMap()");
+		Map<String, Series> map = new HashMap<>();
+		this.seriesMapPut(map, "X", this.tunnelList);
+		this.seriesMapPut(map, "Z", this.tunnelList);
+		this.seriesMapPut(map, "A", this.tunnelList);
+		this.seriesMapPut(map, "B", this.tunnelList);
+		this.seriesMapPut(map, "C", this.tunnelList);
+		this.seriesMapPut(map, "Distance", this.tunnelList);
+		this.seriesMapPut(map, "Gravity Force", this.tunnelList);
+		this.seriesMapPut(map, "Charge Force", this.tunnelList);
+		this.seriesMapPut(map, "Calculate Gravity Force", this.tunnelList);
+		this.seriesMapPut(map, "Calculate Charge Force", this.tunnelList);
+		this.seriesMapPut(map, "Charge", this.tunnelList);
+		this.seriesMapPut(map, "Resistance", this.tunnelList);
+		this.seriesMapPut(map, "Resistance Ratio", this.tunnelList);
+		this.seriesMapPut(map, "Tesla", this.tunnelList);
+		this.seriesMapPut(map, "Voltage", this.tunnelList);
+		this.seriesMapPut(map, "Angle", this.triangleList);
 		return map;
 	}
 
-	public Map<String, List<Index>> getIndexListMap() throws Exception {
-		Map<String, List<Index>> map = this.indexListMap;
-		if (map == null) {
-			map = new HashMap<>();
-			this.indexListMap = map;
-		}
-		this.mapPut(map, "X", this.tunnelList);
-		this.mapPut(map, "Z", this.tunnelList);
-		this.mapPut(map, "A", this.tunnelList);
-		this.mapPut(map, "B", this.tunnelList);
-		this.mapPut(map, "C", this.tunnelList);
-		this.mapPut(map, "Distance", this.tunnelList);
-		this.mapPut(map, "Gravity Force", this.tunnelList);
-		this.mapPut(map, "Charge Force", this.tunnelList);
-		this.mapPut(map, "Calculate Gravity Force", this.tunnelList);
-		this.mapPut(map, "Calculate Charge Force", this.tunnelList);
-		this.mapPut(map, "Charge", this.tunnelList);
-		this.mapPut(map, "Resistance", this.tunnelList);
-		this.mapPut(map, "Resistance Ratio", this.tunnelList);
-		this.mapPut(map, "Tesla", this.tunnelList);
-		this.mapPut(map, "Voltage", this.tunnelList);
-		this.mapPut(map, "Angle", this.triangleList);
-		return map;
+	public Map<String, Series> getSeriesMap() throws Exception {
+//		if (this.seriesMap == null) {
+			this.seriesMap = this.initSeriesMap();
+//		}
+		return this.seriesMap;
 	}
-	
-	public void mapPut(Map<String,List<Index>> map, String key, Object object) throws Exception {
+
+	public void seriesMapPut(Map<String, Series> seriesMap, String key, Object object) throws Exception {
 //		System.out.println("mapPut("+map.size()+","+key+","+object+")");
-		List<Index> indexList = map.get(key);
-		if (indexList == null && object != null) {
-			map.put(key, this.getIndexList(key,object));
+		Series series = seriesMap.get(key);
+		if (series == null && object != null) {
+			seriesMap.put(key, this.getSeries(key, object));
 		}
 	}
+
+//	public void mapPut(Map<String, Series> map, Calendar calendar, String key, double value) {
+////		logger.info("mapPut("+map.size()+","+calendar.getTime()+","+key+","+value+")");
+//		Index index = new Index();
+//		index.startCalendar = calendar;
+//		Series indexList = map.get(key);
+//		if (indexList == null) {
+//			indexList = new Series();
+//		}
+//		index.value = value;
+//		indexList.add(index);
+//		map.put(key, indexList);
+//	}
 	
-	public void mapPut(Map<String,List<Index>> map, Calendar calendar, String key, double value) {
-//		System.out.println("mapPut("+map.size()+","+calendar.getTime()+","+key+","+value+")");
-		Index index = new Index();
-		index.startCalendar = calendar;
-		List<Index> indexList = map.get(key);
-		if(indexList == null) {
-			indexList = new ArrayList<>();
+	public void seriesMapPut(Map<String, Series> seriesMap, String key, Index index) {
+//		logger.info("mapPut("+map.size()+","+calendar.getTime()+","+key+","+value+")");
+		Series series = seriesMap.get(key);
+		if (series == null) {
+			series = new Series();
 		}
-		index.value = value;
-		indexList.add(index);
-		map.put(key,indexList);
+		series.add(index);
+		seriesMap.put(key, series);
 	}
-	
-	public List<Index> getIndexList(String key, Object object) throws Exception {
-		System.out.println("getIndexList("+key+","+object+")");
-		List<Index> indexList = new ArrayList<>();
-		if(object instanceof List<?>) {
-			List<Object> objectList = (List<Object>)object;
-			List<Index> list = null;
+
+	public Series getSeries(String key, Object object) throws Exception {
+		logger.info(this+".getSeries(" + key + "," + object + ")");
+//		List<Index> indexList = new ArrayList<>();
+		Series series = new Series();
+		if (object instanceof List<?>) {
+			List<Object> objectList = (List<Object>) object;
+			Series s = new Series();
 			// Have to iterate over tunnels
 			for (Object o : objectList) {
-				if(o instanceof Tunnel) {
-					list = ((Tunnel)o).getIndexListMap().get(key);
-				} else if(o instanceof Triangle) {
-					list = ((Triangle)o).getIndexListMap().get(key);
-				} 
-				for (int x = 0; x < list.size(); x++) { // Index index:t.getGravityForceList()) {
-					Index index = list.get(x);
-					Index i = (indexList.size() > x) ? indexList.get(x) : new Index();
-					i.value += index.value;
-					i.startCalendar = index.startCalendar;
-					indexList.add(i);
+				if (o instanceof Tunnel) {
+					s = ((Tunnel) o).getSeriesMap().get(key);
+				} else if (o instanceof Triangle) {
+					s = ((Triangle) o).getSeriesMap().get(key);
+				}
+				if (s != null) {
+					for (int x = 0; x < s.indexList.size(); x++) { // Index index:t.getGravityForceList()) {
+						Index index = s.indexList.get(x);
+						Index i = (series.indexList.size() > x) ? series.indexList.get(x) : new Index();
+						i.value += index.value;
+						i.startCalendar = index.startCalendar;
+						series.add(i);
+					}
 				}
 			}
 		}
-		return indexList;
+		return series;
 	}
-
-
-
+	
 	@Override
 	public List<Plot> getPlotList() throws Exception {
+		return this.plotList;
+	}
+
+	@Override
+	public void initPlotList() throws Exception {
+//		logger.info("initPlotList()");
 		List<Plot> plotList = new ArrayList<>();
 		for (Entry<String, Boolean> variable : this.variableMap.entrySet()) {
 			String variableKey = variable.getKey();
 			Boolean variableLoad = variable.getValue();
 			if (variableLoad) {
 				TimePlot plot = null;
-				List<Index> indexList = null;
+				Series series = null;
 				String unit = null;
 				switch (variableKey) {
 				case "X": {
-					indexList = this.getIndexListMap().get("X");
+					series = this.getSeriesMap().get("X");
 					unit = "(N/N)";
 					break;
 				}
 				case "Z": {
-					indexList = this.getIndexListMap().get("Z");
+					series = this.getSeriesMap().get("Z");
 					unit = "  ";
 					break;
 				}
 				case "A": {
-					indexList = this.getIndexListMap().get("A");
+					series = this.getSeriesMap().get("A");
 					unit = "  ";
 					break;
 				}
 				case "B": {
-					indexList = this.getIndexListMap().get("B");
+					series = this.getSeriesMap().get("B");
 					unit = "  ";
 					break;
 				}
 				case "C": {
-					indexList = this.getIndexListMap().get("C");
+					series = this.getSeriesMap().get("C");
 					unit = "  ";
 					break;
 				}
 				case "Calculate Distance": {
-					indexList = this.getIndexListMap().get("Calculate Distance");
+					series = this.getSeriesMap().get("Calculate Distance");
 					unit = "meters(m)";
 					break;
 				}
 				case "Calculate Gravity Force": {
-					indexList = this.getIndexListMap().get("Calculate Gravity Force");
+					series = this.getSeriesMap().get("Calculate Gravity Force");
 					unit = "Newtons(N)";
 					break;
 				}
 				case "Gravity Force": {
-					indexList = this.getIndexListMap().get("Gravity Force");
+					series = this.getSeriesMap().get("Gravity Force");
 					unit = "Newtons(N)";
 					break;
 				}
 				case "Charge Force": {
-					indexList = this.getIndexListMap().get("Charge Force");
+					series = this.getSeriesMap().get("Charge Force");
 					unit = "Newtons(N)";
 					break;
 				}
 				case "Calculate Charge Force": {
-					indexList = this.getIndexListMap().get("Calculate Charge Force");
+					series = this.getSeriesMap().get("Calculate Charge Force");
 					unit = "Newtons(N)";
 					break;
 				}
 				case "Charge": {
-					indexList = this.getIndexListMap().get("Charge");
+					series = this.getSeriesMap().get("Charge");
 					unit = "C^2";
 					break;
 				}
 				case "Distance": {
-					indexList = this.getIndexListMap().get("Distance");
+					series = this.getSeriesMap().get("Distance");
 					unit = "Meters(m)";
 					break;
 				}
 				case "Resistance": {
-					indexList = this.getIndexListMap().get("Resistance");
+					series = this.getSeriesMap().get("Resistance");
 					unit = "Ohms";
 					break;
 				}
 				case "Resistance Ratio": {
-					indexList = this.getIndexListMap().get("Resistance Ratio");
+					series = this.getSeriesMap().get("Resistance Ratio");
 					unit = "";
 					break;
 				}
 				case "Tesla": {
-					indexList = this.getIndexListMap().get("Tesla");
+					series = this.getSeriesMap().get("Tesla");
 					unit = "T";
 					break;
 				}
 				case "Angle": {
-					indexList = this.getIndexListMap().get("Angle");
+					series = this.getSeriesMap().get("Angle");
 					unit = "Degrees";
 					break;
 				}
 				case "Voltage": {
-					indexList = this.getIndexListMap().get("Voltage");
+					series = this.getSeriesMap().get("Voltage");
 					unit = "Volts (V)";
 					break;
 				}
 				case "Print": {
 					this.print();
-					this.variableMap.put(variableKey,false);
+					this.variableMap.put(variableKey, false);
 					break;
 				}
 				case "X Ratio": {
-					indexList = this.getIndexListMap().get("X Ratio");
+					series = this.getSeriesMap().get("X Ratio");
 					unit = "";
 					break;
 				}
 				case "Charge Force Ratio": {
-					indexList = this.getIndexListMap().get("Charge Force Ratio");
+					series = this.getSeriesMap().get("Charge Force Ratio");
 					unit = "";
 					break;
 				}
 				case "Gravity Force Ratio": {
-					indexList = this.getIndexListMap().get("Gravity Force Ratio");
+					series = this.getSeriesMap().get("Gravity Force Ratio");
 					unit = "";
 					break;
 				}
 				}
-				if (indexList != null) {
-					List<List<Index>> blackPointMatrix = new ArrayList<>();
-					blackPointMatrix.add((indexList));
-					plot = new TimePlot(this.startCalendar, this.endCalendar, blackPointMatrix, null);
+				if (series != null) {
+					series.map.put("startCalendar", this.startCalendar);
+					series.map.put("endCalendar", this.endCalendar);
+					series.map.put("query", new Query());
+					series.map.put("region", name);
+					plot = new TimePlot(series);// this.startCalendar, this.endCalendar, blackPointMatrix, null);
 					plot.setTitle(this.name + " " + variableKey);
 					plot.setXLabel("Time");
 					plot.setYLabel(unit);
@@ -377,7 +388,7 @@ public class Energy extends Variable {
 			}
 		}
 
-		return plotList;
+		this.plotList = plotList;
 	}
 
 	public void addTunnel(Tunnel tunnel) {
@@ -386,7 +397,6 @@ public class Energy extends Variable {
 		}
 		if (!this.tunnelList.contains(tunnel)) {
 			this.tunnelList.add(tunnel);
-//			this.variableMap.put(tunnel.name, false);
 		}
 	}
 
@@ -397,12 +407,10 @@ public class Energy extends Variable {
 		}
 	}
 
-
-
 	public double getMass() {
 		return this.mass;
 	}
-	
+
 	public double getCentroidMass() {
 		return Unit.ELECTRON_MASS;
 	}
@@ -445,11 +453,11 @@ public class Energy extends Variable {
 	 * @return
 	 */
 	public double getCoulomb() {
-		return -(this.mass/Unit.ELECTRON_MASS)*Unit.COULOMBS;//-Unit.COULOMBS;
+		return -(this.mass / Unit.ELECTRON_MASS) * Unit.COULOMBS;// -Unit.COULOMBS;
 	}
-	
+
 	public double getCentroidCoulomb() {
-		return Unit.COULOMBS;//(this.mass/Unit.ELECTRON_MASS)*Unit.COULOMBS;
+		return Unit.COULOMBS;// (this.mass/Unit.ELECTRON_MASS)*Unit.COULOMBS;
 	}
 
 //	public double getElipticDistance(Energy energy) {
@@ -461,6 +469,7 @@ public class Energy extends Variable {
 
 	/**
 	 * Function returns distance in AU
+	 * 
 	 * @param energy
 	 * @return
 	 */
@@ -488,8 +497,8 @@ public class Energy extends Variable {
 		Vector3D difference = energy.space.rectangular.subtract(this.space.rectangular);
 		double distance = Math.sqrt(Math.pow((double) difference.getX(), 2) + Math.pow((double) difference.getY(), 2)
 				+ Math.pow((double) difference.getZ(), 2));
-		distance *= Unit.ASTRONOMICAL;//Kilometers
-		distance *= 1000;//Meters
+		distance *= Unit.ASTRONOMICAL;// Kilometers
+		distance *= 1000;// Meters
 		double gravityForce = (Unit.GRAVITATIONAL_CONSTANT * energy.mass * this.mass) / (Math.pow(distance, 2));
 		Vector3D force = null;
 		if (distance != 0) {
@@ -519,7 +528,7 @@ public class Energy extends Variable {
 			baryCenter += t.getMass();
 		}
 		baryCenter /= tunnelList.size();
-		System.out.println(baryCenter);
+		logger.info("getBarycenterMass(" + tunnelList.size() + ") baryCenter=" + baryCenter);
 		return baryCenter;
 	}
 
@@ -536,11 +545,11 @@ public class Energy extends Variable {
 		double distance = this.getDistance(energy);
 		return (Unit.GRAVITATIONAL_CONSTANT * ((energy.mass * this.mass) / (Math.pow(distance, 2))));
 	}
-	
+
 	public double getChargeAcceleration(double radius) {
 		return -Unit.k * this.getCoulomb() / Math.pow(radius, 2);
 	}
-	
+
 	public double getChargeAcceleration(double charge, double radius) {
 		return -Unit.k * charge / Math.pow(radius, 2);
 	}
@@ -548,7 +557,7 @@ public class Energy extends Variable {
 	public double getGravityAcceleration(double radius) {
 		return Unit.GRAVITATIONAL_CONSTANT * this.mass / Math.pow(radius, 2);
 	}
-	
+
 	public double getGravityAcceleration(double mass, double radius) {
 		return Unit.GRAVITATIONAL_CONSTANT * mass / Math.pow(radius, 2);
 	}
@@ -556,107 +565,145 @@ public class Energy extends Variable {
 	public double getGravityForce(double mass, double distance) {
 		return (Unit.GRAVITATIONAL_CONSTANT * ((mass * this.mass) / (Math.pow(distance, 2))));
 	}
-	
+
 	public double getCentroidGravityAcceleration() {
-		return this.getGravityAcceleration(Unit.ELECTRON_MASS,Unit.ELECTRON_RADIUS*100);
+		return this.getGravityAcceleration(Unit.ELECTRON_MASS, Unit.ELECTRON_RADIUS * 100);
 	}
-	
+
 	public double getCentroidChargeAcceleration() {
 		return this.getChargeAcceleration(Unit.COULOMBS, Unit.ELECTRON_RADIUS);
 	}
-	
-    public double getCentroidGravityForce() {
-    	return this.getCentroidMass()*this.getCentroidGravityAcceleration();
-    }
-    
-    public double getCentroidChargeForce() {
-    	return this.getCentroidMass()*this.getCentroidChargeAcceleration();
-    }
-    
-    public double getX() {
-    	return this.getX(this.tunnelList);
-    }
-	
+
+	public double getCentroidGravityForce() {
+		return this.getCentroidMass() * this.getCentroidGravityAcceleration();
+	}
+
+	public double getCentroidChargeForce() {
+		return this.getCentroidMass() * this.getCentroidChargeAcceleration();
+	}
+
+	public double getX() {
+		return this.getX(this.tunnelList);
+	}
+
 	public double getX(List<Tunnel> tunnelList) {
 		double sum = 0;
-		for(Tunnel tunnel:tunnelList) {
+		for (Tunnel tunnel : tunnelList) {
 			sum += tunnel.getX();
 		}
 		return sum;
 	}
-	
-	public double getCharge() {
-		//mass/electron mass provides the number of electrons
-		//multiplied by C for one electron, gives C for Spheroid
-		return this.getCentroidCoulomb()*this.getCoulomb();
-	}
-	
 
-	
+	/**
+	 * mass/electron mass provides the number of electrons multiplied by C for one
+	 * electron, gives C for Spheroid
+	 * 
+	 * @return
+	 */
+	public double getCharge() {
+		return this.getCentroidCoulomb() * this.getCoulomb();
+	}
+
 	public double getChargeForce(List<Tunnel> tunnelList) {
 		double sum = 0;
-		for(Tunnel tunnel:tunnelList) {
+		for (Tunnel tunnel : tunnelList) {
 			sum += tunnel.getChargeForce();
 		}
 		return sum;
 	}
-	
+
 	public double getResistanceRatio() {
 		return this.getResistanceRatio(this.tunnelList);
 	}
 
 	public double getResistanceRatio(List<Tunnel> tunnelList) {
 		double sum = 0;
-		for(Tunnel tunnel:tunnelList) {
+		for (Tunnel tunnel : tunnelList) {
 			sum += tunnel.getResistanceRatio();
 		}
 		return sum;
 	}
-	
-//	public void scale(double percentage) {
-//		this.space.elliptic = this.space.elliptic.scalarMultiply(percentage);
-//	}
-
-	public static List<String> getDateList(String value, int increment) {
-			List<String> dateList = new ArrayList<>();
-			String[] dashArray = value.split("-");
-			if (dashArray.length == 2) {
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-				try {
-					Date startDate = simpleDateFormat.parse(dashArray[0]);
-					Date endDate = simpleDateFormat.parse(dashArray[1]);
-					Date currentDate = startDate;
-					dateList.add(simpleDateFormat.format(startDate));
-					do {
-						Calendar calendar = Calendar.getInstance();
-						calendar.setTime(currentDate);
-						calendar.add(increment, 1);// Calendar.MONTH
-						currentDate = calendar.getTime();
-						dateList.add(simpleDateFormat.format(currentDate));
-					} while (currentDate.before(endDate));
-	
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-			} else {
-				dateList.add(value);
-			}
-	//		System.out.println("getDateList("+value+") dateList="+dateList);
-			return dateList;
-		}
 
 	public void print() {
-		System.out.println(this.name+" Mass:" + this.getMass());
-		System.out.println(this.name+" Voltage:" + this.getVoltage());
-		System.out.println(this.name+" Joules:" + this.getJoules());
-		System.out.println(this.name+" Coulomb:" + this.getCoulomb());
+		logger.info(this.name + " Mass:" + this.getMass());
+		logger.info(this.name + " Voltage:" + this.getVoltage());
+		logger.info(this.name + " Joules:" + this.getJoules());
+		logger.info(this.name + " Coulomb:" + this.getCoulomb());
 	}
-	
+
 	@JsonIgnore
 	public void paint(Graphics graphics) throws Exception {
 		super.paint(graphics);
 	}
 }
+//@Override
+//public void initVariableMap() {
+//	super.initVariableMap();
+//	if (this.tunnelList != null) {
+//		this.variableMap.put("Gravity Force", false);
+//		this.variableMap.put("Charge Force", false);
+//		this.variableMap.put("Calculate Gravity Force", false);
+//		this.variableMap.put("Calculate Charge Force", false);
+//		this.variableMap.put("Charge", false);
+//		this.variableMap.put("Distance", false);
+//		this.variableMap.put("X", false);
+//		this.variableMap.put("Z", false);
+//		this.variableMap.put("A", false);
+//		this.variableMap.put("B", false);
+//		this.variableMap.put("C", false);
+//		this.variableMap.put("Print", false);
+//		this.variableMap.put("Resistance", false);
+//		this.variableMap.put("Tesla", false);
+//		this.variableMap.put("Voltage", false);
+//		this.variableMap.put("Print", false);
+//		this.variableMap.put("X Ratio", false);
+//	}
+//	if (this.triangleList != null) {
+//		this.variableMap.put("Angle", false);
+//	}
+//}
+//List<List<Index>> blackPointMatrix = new ArrayList<>();
+//blackPointMatrix.add((indexList));
+//@Override
+//public void initVariableMap() {
+//	super.initVariableMap();
+//	if (this.tunnelList != null) {
+//		this.variableMap.put("Gravity Force", false);
+//		this.variableMap.put("Charge Force", false);
+//		this.variableMap.put("Calculate Gravity Force", false);
+//		this.variableMap.put("Calculate Charge Force", false);
+//		this.variableMap.put("Charge", false);
+//		this.variableMap.put("Distance", false);
+//		this.variableMap.put("X", false);
+//		this.variableMap.put("Z", false);
+//		this.variableMap.put("A", false);
+//		this.variableMap.put("B", false);
+//		this.variableMap.put("C", false);
+//		this.variableMap.put("Print", false);
+//		this.variableMap.put("Resistance", false);
+//		this.variableMap.put("Tesla", false);
+//		this.variableMap.put("Voltage", false);
+//		this.variableMap.put("Print", false);
+//		this.variableMap.put("X Ratio", false);
+//	}
+//	if (this.triangleList != null || this instanceof Triangle) {
+//		this.variableMap.put("Angle", false);
+//	}
+//}
+//@JsonIgnore
+//public Map<String, List<Index>> indexListMap;
+//@JsonIgnore
+//public DecimalFormat df = new DecimalFormat("0.######E0");
+//@JsonIgnore
+//public String period = "18000101-20200101";
+//for (Variable n : this.getList()) {
+//if (n instanceof Energy) {
+//	energyList.add((Energy) n);
+//}
+//}
+//public void scale(double percentage) {
+//this.space.elliptic = this.space.elliptic.scalarMultiply(percentage);
+//}
 //public Point getPoint(Point point) {
 //Point p = null;
 //double theta = Math.PI * azimuth / 180.0;

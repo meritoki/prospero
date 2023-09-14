@@ -17,42 +17,27 @@ package org.meritoki.prospero.library.model.unit;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Frame {
 	@JsonIgnore
-	static Logger logger = LogManager.getLogger(Frame.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Frame.class.getName());
 	@JsonProperty
 	public String uuid;
 	@JsonProperty
 	public boolean flag;
-//	@JsonProperty
-//	public long milliseconds;
 	@JsonProperty
 	public Calendar calendar;
-//	@JsonProperty
-//	public short latitude = 90;
-//	@JsonProperty
-//	public short longitude = 360;
-//	@JsonProperty
-//	public int resolution = 1;
-//	@JsonProperty
-//	public List<Long> millisecondList;
-	@JsonIgnore
-	public boolean print = false;
 	@JsonProperty 
 	public List<Coordinate> coordinateList = new ArrayList<>();
-//	@JsonProperty
-//	public Map<String, Data> data = new HashMap<>();
+
 
 	public Frame() {
 		this.uuid = UUID.randomUUID().toString();
@@ -71,10 +56,10 @@ public class Frame {
 				&& this.calendar.get(Calendar.HOUR_OF_DAY) == calendar.get(Calendar.HOUR_OF_DAY)
 				&& this.calendar.get(Calendar.MINUTE) == calendar.get(Calendar.MINUTE)
 				&& this.calendar.get(Calendar.SECOND) == calendar.get(Calendar.SECOND)) {
-			if(print)System.out.println(this.calendar.getTime()+".containsCalendar("+calendar.getTime()+") true");
+
 			return true;
 		}
-		if(print)System.out.println(this.calendar.getTime()+".containsCalendar("+calendar.getTime()+") false");
+
 		return false;
 	}
 
@@ -92,3 +77,19 @@ public class Frame {
         return string;
     }
 }
+//@JsonProperty
+//public Map<String, Data> data = new HashMap<>();
+//		if(print)System.out.println(this.calendar.getTime()+".containsCalendar("+calendar.getTime()+") false");
+//if(print)System.out.println(this.calendar.getTime()+".containsCalendar("+calendar.getTime()+") true");
+//@JsonProperty
+//public long milliseconds;
+//@JsonProperty
+//public short latitude = 90;
+//@JsonProperty
+//public short longitude = 360;
+//@JsonProperty
+//public int resolution = 1;
+//@JsonProperty
+//public List<Long> millisecondList;
+//@JsonIgnore
+//public boolean print = false;

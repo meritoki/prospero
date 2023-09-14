@@ -18,18 +18,18 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.lifetime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Lifetime extends Cyclone {
 
-	static Logger logger = LogManager.getLogger(Lifetime.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Lifetime.class.getName());
 
 	public Lifetime() {
 		super("Lifetime");
@@ -69,8 +69,9 @@ public class Lifetime extends Cyclone {
 						if (c.flag) {
 							Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 							if (startTime.lessThan(time) && time.lessThan(endTime)) {
-								int x = (int) ((c.latitude + this.latitude) * this.resolution);
-								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
+								int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+								int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+										% (this.longitude * this.resolution));
 								int z = c.getMonth() - 1;
 								coordinateMatrix[x][y][z]++;
 								durationMatrix[x][y][z] += e.getDuration().days;

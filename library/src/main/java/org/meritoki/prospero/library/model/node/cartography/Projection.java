@@ -22,7 +22,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Polygon;
 import org.meritoki.prospero.library.model.unit.Space;
@@ -56,7 +55,7 @@ public class Projection implements ProjectionInterface {
 	public float nearEye = 3;
 	public float nearObject = 1.5f;
 	public boolean zFlag = true;
-	public List<Double> verticalList = new ArrayList<>();
+//	public List<Double> verticalList = new ArrayList<>();
 
 	public Projection() {
 	}
@@ -188,13 +187,14 @@ public class Projection implements ProjectionInterface {
 		List<Point> pointList = new ArrayList<>();
 		Point point;
 		for (org.meritoki.prospero.library.model.unit.Coordinate coordinate : coordinateList) {
-			point = this.getPoint(vertical, coordinate.latitude, coordinate.longitude);
-			if (point != null) {
-				point.flag = coordinate.flag;
-				point.attribute.putAll(coordinate.attribute);
-				pointList.add(point);
+			if (coordinate.flag) {
+				point = this.getPoint(vertical, coordinate.latitude, coordinate.longitude);
+				if (point != null) {
+					point.flag = coordinate.flag;
+					point.attribute.putAll(coordinate.attribute);
+					pointList.add(point);
+				}
 			}
-
 		}
 //		logger.debug("getCoordinateList(" + vertical + ", " + coordinateList.size() + ") coordinateList.size()="
 //				+ pointList.size());
@@ -230,7 +230,7 @@ public class Projection implements ProjectionInterface {
 //				+ ") coordinateList.size()=" + coordinateList.size());
 		return coordinateList;
 	}
-	
+
 //	public Point getPoint(double latitude,double longitude) {
 //		Point point;
 //		if(this.verticalList.size() > 0) {
@@ -273,7 +273,8 @@ public class Projection implements ProjectionInterface {
 		double x = this.getA(this.unit) * Math.sin(latitude) * Math.cos(longitude);
 		double y = this.getB(this.unit) * Math.sin(latitude) * Math.sin(longitude);
 		double z = this.getC(this.unit) * Math.cos(latitude);
-		Point point = new Point(-x, -z, y);//Correcting Orientation, Z Axis Vertical
+//		Point point = new Point(-x, -z, y);// Correcting Orientation, Z Axis Vertical
+		Point point = new Point(x, z, y);
 		Point buffer = new Point(point);
 		point.y = buffer.y * Math.cos(Math.toRadians(this.obliquity))
 				- buffer.z * Math.sin(Math.toRadians(this.obliquity));

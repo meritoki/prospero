@@ -26,8 +26,8 @@ import javax.swing.table.TableModel;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Cluster {
 	
-	static Logger logger = LogManager.getLogger(Cluster.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Cluster.class.getName());
 	static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	@JsonProperty
 	public String uuid;

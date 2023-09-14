@@ -18,11 +18,12 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.unit.Coordinate;
-import org.meritoki.prospero.library.model.unit.Event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ERA5Event extends CycloneEvent {
+	
+	public static Integer[] pressureArray = { 100, 125, 150, 175, 200, 225, 250, 300, 400, 500, 600, 700, 775, 825, 850, 875, 925, 975 };//{ 100, 125, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 975 };//
 
 	public ERA5Event() {
 		super();
@@ -44,7 +45,7 @@ public class ERA5Event extends CycloneEvent {
 	@Override
 	public void classify() {
 		int maxTimeLevelCount = this.getMaxTimeLevelCount();
-		int lowerMostLevel = this.getLowerMostLevel();// Need to fix
+		int lowerMostLevel = this.getLowerMostLevel();
 		if (2 <= maxTimeLevelCount && maxTimeLevelCount <= 4) {
 			this.family = Family.SHALLOW;
 			if (lowerMostLevel >= 700) {

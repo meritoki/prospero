@@ -19,82 +19,177 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.Orbital;
 import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
 import org.meritoki.prospero.library.model.node.data.Data;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.solar.Solar;
-import org.meritoki.prospero.library.model.terra.Terra;
-import org.meritoki.prospero.library.model.unit.Mode;
+import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
+import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.meritoki.library.controller.model.ModelInterface;
+import com.meritoki.library.controller.model.SystemInterface;
+import com.meritoki.library.controller.model.provider.Provider;
+import com.meritoki.library.controller.model.vendor.Vendor;
 import com.meritoki.library.controller.node.NodeController;
 import com.meritoki.module.library.model.N;
 
-public class Model extends Variable {
+public class Model extends Variable implements ModelInterface {
 
-	static Logger logger = LogManager.getLogger(Model.class.getName());
-	public Properties properties;
+	static Logger logger = LoggerFactory.getLogger(Model.class.getName());
+	public System system = new System();
 	public Data data = new Data();
-	public Solar solar = new Solar();
+	public Variable node = new Variable();
 	public List<Camera> cameraList = new ArrayList<>();
 	public int index;
+	public boolean execute;
+	public Query query;
 
 	public Model() {
 		super("Model");
-		this.addChild(this.solar);
-		this.addCamera(new Camera(this.solar));
-		this.setData(this.data);
-		this.calendar = Calendar.getInstance();
-		this.calendar.setTime(new Date());
-		this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
-		this.setCalendar(this.calendar);
+		this.construct();
+
 	}
-	
+
+	public void construct() {
+		logger.info("construct()");
+		this.system.init();
+		this.initProvider();
+		this.initVendor();
+		this.node = new Solar();
+		this.addChild(this.node);
+		this.addCamera(new Camera(this.node));
+		this.setData(this.data);
+		this.setProperties(this.system.properties);
+	}
+
+	public SystemInterface getSystem() {
+		return this.system;
+	}
+
+	public void initProvider() {
+		for (Entry<String, Provider> entry : this.system.providerMap.entrySet()) {
+			Provider provider = entry.getValue();
+			provider.setModel(this);
+			try {
+				provider.init();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void initVendor() {
+		for (Entry<String, Vendor> entry : this.system.vendorMap.entrySet()) {
+			Vendor vendor = entry.getValue();
+			vendor.setModel(this);
+			try {
+				vendor.init();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 	@Override
 	public void start() {
 		super.start();
-		logger.info(this+".start()");
 	}
-	
+
 	public void removeCameras() {
 		this.cameraList = new ArrayList<>();
 	}
 
 	@JsonIgnore
 	public void setProperties(Properties properties) {
-		this.properties = properties;
-		Object basePath = this.properties.get("basePath");
+//		this.system.properties = properties;
+		Object basePath = properties.get("basePath");
 		if (basePath instanceof String) {
 			this.data.setBasePath((String) basePath);
 		}
+		Object calendar = properties.get("calendar");
+		if (calendar instanceof String && ((String) calendar).length() > 0) {
+			this.calendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) calendar);
+
+		} else {
+			this.calendar = Calendar.getInstance();
+		}
+		Object startCalendar = properties.get("startCalendar");
+		if (startCalendar instanceof String && ((String) startCalendar).length() > 0) {
+			this.startCalendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) startCalendar);
+
+		} else {
+			this.startCalendar = Time.getStartCalendar(this.calendar);
+		}
+		Object endCalendar = properties.get("endCalendar");
+		if (endCalendar instanceof String && ((String) endCalendar).length() > 0) {
+			this.endCalendar = Time.getCalendar("yyyy/MM/dd HH:mm:ss", (String) endCalendar);
+
+		} else {
+			this.endCalendar = Time.getEndCalendar(this.calendar);
+		}
+		Object timeZone = properties.get("timeZone");
+		if (timeZone instanceof String && ((String) timeZone).length() > 0) {
+			this.calendar.setTimeZone(TimeZone.getTimeZone((String) timeZone));
+			this.startCalendar.setTimeZone(TimeZone.getTimeZone((String) timeZone));
+			this.endCalendar.setTimeZone(TimeZone.getTimeZone((String) timeZone));
+		}
+		this.setCalendar(this.calendar);
+		this.setStartCalendar(this.startCalendar);
+		this.setEndCalendar(this.endCalendar);
+	}
+
+	@Override
+	public void setCalendar(Calendar calendar) {
+		logger.debug("setCalendar(" + Time.getCalendarString(null, calendar) + ")");
+		super.setCalendar(calendar);
+	}
+
+	@Override
+	public void setStartCalendar(Calendar calendar) {
+		logger.debug("setStartCalendar(" + Time.getCalendarString(null, calendar) + ")");
+		super.setStartCalendar(calendar);
+	}
+
+	@Override
+	public void setEndCalendar(Calendar calendar) {
+		logger.debug("setEndCalendar(" + Time.getCalendarString(null, calendar) + ")");
+		super.setEndCalendar(calendar);
 	}
 
 	@JsonIgnore
 	public void setBasePath(String basePath) {
 		if (basePath != null) {
+			String path = (String) this.system.properties.get("basePath");
+			if (path == null) {
+				this.system.properties.put("basePath", basePath);
+			}
 			this.data.setBasePath(basePath);
 		}
 	}
-	
+
 	@Override
 	protected void defaultState(Object object) {
 		if (object instanceof Result) {
 			Result result = (Result) object;
 			switch (result.mode) {
 			case PAINT: {
-				logger.debug("defaultState(" + (object != null) + ") result.mode="+result.mode);
+				logger.debug("defaultState(" + (object != null) + ") result.mode=" + result.mode);
 				this.init();
 				break;
 			}
@@ -114,9 +209,9 @@ public class Model extends Variable {
 	@JsonIgnore
 	public void addCamera(Camera camera) {
 		if (camera != null) {
-			this.cameraList.add(camera);//, this.scale, this.azimuth, this.elevation));
+			this.cameraList.add(camera);
 			this.index = this.cameraList.size() - 1;
-//			logger.info(this + ".addCamera(" + camera + ") this.index=" + this.index);
+			logger.debug(this + ".addCamera(" + camera + ") this.index=" + this.index);
 		}
 	}
 
@@ -173,31 +268,52 @@ public class Model extends Variable {
 
 	@JsonIgnore
 	public Camera getCamera(int index) {
-		return this.cameraList.get(index);
+		return (this.cameraList.size() > 0) ? this.cameraList.get(index) : null;
 	}
 
 	@SuppressWarnings("resource")
 	public void setCameraBuffer(Camera c) {
 		Variable node = c.getNode();
 		if (node instanceof Solar) {
-			logger.debug("updateCamera(" + node + ") instanceof Solar");
-			this.solar.setCenter(this.solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
-			this.solar.setAzimuth(c.azimuth);
-			this.solar.setElevation(c.elevation);
-			this.solar.setScale(c.scale);
-			c.buffer = this.solar;
+			logger.debug("setCameraBuffer(" + node + ") instanceof Solar");
+			if (this.node instanceof Solar) {
+				Solar solar = (Solar) this.node;
+				solar.setCenter(solar.sun.space);// Must Include Sun b/c Solar is Not Orbital
+				solar.setAzimuth(c.azimuth);
+				solar.setElevation(c.elevation);
+				solar.setScale(c.scale);
+				c.buffer = solar;
+			} else if (this.node instanceof Earth) {
+				Earth terra = (Earth) this.node;
+				terra.setCenter(terra.space);// Must Include Sun b/c Solar is Not Orbital
+				terra.setAzimuth(c.azimuth);
+				terra.setElevation(c.elevation);
+				terra.setScale(c.scale);
+				c.buffer = terra;
+			}
 		} else if (node instanceof Orbital) {
-			logger.debug("updateCamera(" + node + ") instanceof Orbital");
+			logger.debug("setCameraBuffer(" + node + ") instanceof Orbital");
 			Orbital o = (Orbital) node;
 			o.updateSpace();
-			this.solar.setSelectable(false);
-			this.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
-			this.solar.setAzimuth(c.azimuth);
-			this.solar.setElevation(c.elevation);
-			this.solar.setScale(c.scale);//o.getProjection().scale);
-			c.buffer = this.solar;
+			if (this.node instanceof Solar) {
+				Solar solar = (Solar) this.node;
+				solar.setSelectable(false);
+				solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
+				solar.setAzimuth(c.azimuth);
+				solar.setElevation(c.elevation);
+				solar.setScale(c.scale);// o.getProjection().scale);
+				c.buffer = solar;
+			} else if (this.node instanceof Earth) {
+				Earth terra = (Earth) this.node;
+				terra.setSelectable(false);
+				terra.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
+				terra.setAzimuth(c.azimuth);
+				terra.setElevation(c.elevation);
+				terra.setScale(c.scale);// o.getProjection().scale);
+				c.buffer = terra;
+			}
 		} else if (node instanceof Spheroid) {
-			logger.debug("updateCamera(" + node + ") instanceof Spheroid");
+			logger.debug("setCameraBuffer(" + node + ") instanceof Spheroid");
 			Spheroid s = (Spheroid) node;
 			s.setSelectable(true);
 			s.setAzimuth(c.azimuth);
@@ -208,7 +324,13 @@ public class Model extends Variable {
 				if (root instanceof Orbital) {
 					Orbital o = (Orbital) root;
 					o.updateSpace();
-					this.solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
+					if (this.node instanceof Solar) {
+						Solar solar = (Solar) this.node;
+						solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
+					}  else if (this.node instanceof Earth) {
+						Earth solar = (Earth) this.node;
+						solar.setCenter(o.space);// Must Include Sun b/c Solar is Not Orbital
+					}
 					break;
 				} else {
 					root = ((Variable) root).getRoot();
@@ -217,7 +339,6 @@ public class Model extends Variable {
 			c.buffer = s;
 		}
 	}
-
 
 	public void setCache(boolean cache) {
 		this.cache = cache;
@@ -268,6 +389,21 @@ public class Model extends Variable {
 		return script;
 	}
 }
+//this.initProvider();
+//this.initVendor();
+//this.addChild(this.solar);
+//this.addCamera(new Camera(this.solar));
+//this.setData(this.data);
+//this.calendar = Calendar.getInstance();
+//this.startCalendar = new GregorianCalendar(2016, 0, 1, 0, 0, 0);
+//this.endCalendar = new GregorianCalendar(2016, 11, 31, 0, 0, 0);
+//this.calendar = Calendar.getInstance();
+//this.calendar.setTime(new Date());
+//this.calendar.setTimeZone(TimeZone.getTimeZone(this.timeZone));
+//this.setCalendar(this.calendar);
+//this.setStartCalendar(this.startCalendar);
+//this.setEndCalendar(this.endCalendar);
+//, this.scale, this.azimuth, this.elevation));
 //this.solar.setScale(o.defaultScale);
 //this.solar.setAzimuth(this.defaultAzimuth);
 //this.solar.setElevation(this.defaultElevation);

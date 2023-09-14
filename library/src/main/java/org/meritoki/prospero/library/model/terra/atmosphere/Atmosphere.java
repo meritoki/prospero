@@ -18,10 +18,12 @@ package org.meritoki.prospero.library.model.terra.atmosphere;
 import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.terra.atmosphere.cloud.Cloud;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
+import org.meritoki.prospero.library.model.terra.atmosphere.geopotential.Geopotential;
 import org.meritoki.prospero.library.model.terra.atmosphere.pressure.SeaLevelPressure;
+import org.meritoki.prospero.library.model.terra.atmosphere.temperature.Temperature;
 import org.meritoki.prospero.library.model.terra.atmosphere.tornado.Tornado;
+import org.meritoki.prospero.library.model.terra.atmosphere.vorticity.Vorticity;
 import org.meritoki.prospero.library.model.terra.atmosphere.wind.Wind;
-import org.meritoki.prospero.library.model.terra.gravitation.Gravitation;
 
 /**
  * Citation
@@ -36,16 +38,18 @@ public class Atmosphere extends Terra {
 	
 	public Atmosphere() {
 		super("Atmosphere");
+		this.addChild(new Cloud());
 		this.addChild(new Wind());
 		this.addChild(new Cyclone());
 		this.addChild(new Tornado());
 		this.addChild(new SeaLevelPressure());
-		this.addChild(new Gravitation());
-		this.addChild(new Cloud());
+		this.addChild(new Vorticity());
+		this.addChild(new Geopotential());
+		this.addChild(new Temperature());
 	}
 	
 	public Atmosphere(String name) {
 		super(name);
 	}
 }
-//this.addChild(new Temperature());
+

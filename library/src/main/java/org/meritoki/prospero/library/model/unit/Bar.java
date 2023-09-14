@@ -6,7 +6,6 @@ import javax.swing.table.TableModel;
 
 public class Bar {
 	
-	
 	public double value;
 	public String label;
 	

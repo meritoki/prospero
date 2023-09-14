@@ -21,17 +21,13 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.swing.BoxLayout;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.menu.PlotPopupMenu;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.plot.Plot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,7 +39,7 @@ public class PlotPanel extends javax.swing.JPanel implements MouseListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 7660685341781127285L;
-	static Logger logger = LogManager.getLogger(PlotPanel.class.getName());
+	static Logger logger = LoggerFactory.getLogger(PlotPanel.class.getName());
 	public PlotPopupMenu plotPopupMenu;
 	public Model model;
 	public Plot plot;

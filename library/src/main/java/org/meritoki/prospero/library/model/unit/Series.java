@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Series {
 
-	static Logger logger = LogManager.getLogger(Series.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Series.class.getName());
 	public List<Index> indexList = new ArrayList<>();
 	public List<Time> timeList = new ArrayList<>();
 	public Map<String, Object> map = new TreeMap<>();
@@ -41,7 +41,7 @@ public class Series {
 
 	public void addIndexList(List<Index> indexList) {
 		for (Index i : indexList) {
-			this.addIndex(i);
+			this.add(i);
 		}
 	}
 	
@@ -74,6 +74,17 @@ public class Series {
 		}
 		return data;
 	}
+	
+	public Index getIndex(Calendar calendar) {
+		Index index = null;
+		for(Index i: this.indexList) {
+			if(i.containsCalendar(calendar)) {
+				index = i;
+				break;
+			}
+		}
+		return index;
+	}
 
 
 	/**
@@ -81,7 +92,7 @@ public class Series {
 	 * 
 	 * @param index
 	 */
-	public void addIndex(Index index) {
+	public void add(Index index) {
 		if (index != null && !this.indexList.contains(index)) {
 			this.indexList.add(index);
 		} 

@@ -17,15 +17,15 @@ package org.meritoki.prospero.library.model.terra.lithosphere.earthquake;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.lithosphere.Lithosphere;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Earthquake extends Lithosphere {
 
-	static Logger logger = LogManager.getLogger(Earthquake.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Earthquake.class.getName());
 
 	public Earthquake() {
 		super("Earthquake");
@@ -34,11 +34,8 @@ public class Earthquake extends Lithosphere {
 	
 	@Override
 	public void load(Result result) {
-		List<Event> eventList = (List<Event>) result.map.get("eventList");
-		if (eventList.size() == 0) {
-			logger.warn("loadResult(...) eventList.size() == 0");
-		}
-		this.eventList = (eventList);
+		List<Event> eventList = result.getEventList();
+		this.eventList.addAll(eventList);
 	}
 }
 //@Override

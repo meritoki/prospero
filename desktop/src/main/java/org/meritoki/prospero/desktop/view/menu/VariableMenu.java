@@ -23,25 +23,26 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.unit.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class VariableMenu extends JPopupMenu {
 
 	@JsonIgnore
-	protected Logger logger = LogManager.getLogger(VariableMenu.class.getName());
+	static Logger logger = LoggerFactory.getLogger(VariableMenu.class.getName());
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 288610046583103334L;
 
 	public VariableMenu(Model model, MainFrame mainFrame) {
+		logger.info("VariableMenu("+(model != null)+", "+(mainFrame!=null)+")");
 		JMenuItem newMenuItem = new JMenuItem("New");
 		newMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
@@ -79,7 +80,9 @@ public class VariableMenu extends JPopupMenu {
 					} else {
 						logger.info("VariableMenu(" + model.getCamera().node + ") !menuItem.isSelected()");
 						model.getCamera().node.stop();
-						model.getCamera().node.query.map.put("source",null);
+						model.getCamera().node.query.map.remove("source");
+						model.getCamera().node.query.map.remove("sourceUUID");
+						mainFrame.init();
 					}
 				}
 			});
@@ -95,9 +98,10 @@ public class VariableMenu extends JPopupMenu {
 				public void actionPerformed(ActionEvent ev) {
 					JCheckBoxMenuItem menuItem = (JCheckBoxMenuItem) ev.getSource();
 					if (menuItem.isSelected()) {
-						System.out.println(ev.getActionCommand());
+						logger.info(ev.getActionCommand());
 						model.getCamera().node.start();
 						model.getCamera().node.variableMap.put(ev.getActionCommand(), true);
+						model.getCamera().node.query();
 					} else {
 						model.getCamera().node.stop();
 						model.getCamera().node.variableMap.put(ev.getActionCommand(), false);

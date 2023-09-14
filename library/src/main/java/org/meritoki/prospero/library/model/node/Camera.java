@@ -9,12 +9,11 @@ import java.util.TreeMap;
 
 import javax.swing.JPanel;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
-import org.meritoki.prospero.library.model.terra.Terra;
 import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Dimension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Camera {
 
-	static Logger logger = LogManager.getLogger(Camera.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Camera.class.getName());
 	@JsonIgnore
 	public Variable node;
 	@JsonIgnore
@@ -35,9 +34,9 @@ public class Camera {
 	@JsonProperty
 	public double scale;
 	@JsonProperty
-	protected int xDelta;
+	protected int xDelta = 0;
 	@JsonProperty
-	protected int yDelta;
+	protected int yDelta = 0;
 	@JsonIgnore
 	public Map<String, Object> configuration = new TreeMap<>();
 	@JsonIgnore
@@ -86,14 +85,20 @@ public class Camera {
 		this.image = image;
 	}
 	
+	/**
+	 * 20230529 Not Functional, Has Defects
+	 * Shows Earth AND Terra when Terra is selected
+	 * @param node
+	 */
 	@JsonIgnore
 	public void setNode(Variable node) {
-		if(this.node instanceof Terra) {
-			logger.debug("setNode("+node+") this.node instanceof Terra");
-			Spheroid s = ((Spheroid)this.node);
-			s.setSelectable(false);
-			logger.debug("setNode("+node+") s.selectable="+s.selectable);
-		}
+		logger.info("setNode("+node+")");
+//		if(this.node instanceof Terra) {
+//			logger.info("setNode("+node+") this.node instanceof Terra");
+//			Spheroid spheroid = ((Spheroid)this.node);
+//			spheroid.setSelectable(false);
+//			logger.debug("setNode("+node+") s.selectable="+spheroid.selectable);
+//		}
 		this.node = node;
 		if(this.node instanceof Spheroid) {
 			logger.debug("setNode("+node+") this.node instanceof Spheroid");
@@ -101,25 +106,40 @@ public class Camera {
 			this.scale = spheroid.defaultScale;
 			this.azimuth = 0;
 			this.elevation = 0;
+//			this.azimuth = spheroid.projection.azimuth;
+//			this.elevation = spheroid.projection.elevation;
 			spheroid.setScale(this.scale);
 			spheroid.setAzimuth(this.azimuth);
 			spheroid.setElevation(this.elevation);
 
-		}
+		} 
 		if(this.node instanceof Orbital) {
 			logger.debug("setNode("+node+") this.node instanceof Orbital");
 			Orbital orbital = ((Orbital)this.node);
-			orbital.setSelectable(false);
+			orbital.setSelectable(true);
 		}
+	}
+	
+	@JsonIgnore
+	public void mouseReleased(MouseEvent e) {
+//		logger.info("mouseReleased(e)");
+		this.xDelta = 0;
+		this.yDelta = 0;
 	}
 
 	@JsonIgnore
 	public void mouseDragged(MouseEvent e) {
-		logger.debug("mouseDragged(e)");
+//		logger.info("mouseDragged(e)");
 		int xDelta = e.getX();
 		int yDelta = e.getY();
-		this.azimuth -= xDelta - this.xDelta;
-		this.elevation -= yDelta - this.yDelta;
+//		logger.info("mouseDragged(e) xDelta="+xDelta);
+//		logger.info("mouseDragged(e) yDelta="+yDelta);
+//		logger.info("mouseDragged(e) this.xDelta="+this.xDelta);
+//		logger.info("mouseDragged(e) this.yDelta="+this.yDelta);
+		this.azimuth -= (this.xDelta > 0)?xDelta - this.xDelta:0;
+		this.elevation -= (this.yDelta > 0)?yDelta - this.yDelta:0;
+//		logger.info("mouseDragged(e) azimuth="+azimuth);
+//		logger.info("mouseDragged(e) elevation="+elevation);
 		if (this.node instanceof Spheroid) {
 			Spheroid s = (Spheroid) this.node;
 			s.setAzimuth(this.azimuth);
@@ -204,6 +224,14 @@ public class Camera {
 				case '8': {
 					this.azimuth = 23;
 					this.elevation = 35;
+					s.setAzimuth(this.azimuth);
+					s.setElevation(this.elevation);
+					s.setScale(s.defaultScale);
+					break;
+				}
+				case '9': {
+					this.azimuth = -900;
+					this.elevation = -200;
 					s.setAzimuth(this.azimuth);
 					s.setElevation(this.elevation);
 					s.setScale(s.defaultScale);

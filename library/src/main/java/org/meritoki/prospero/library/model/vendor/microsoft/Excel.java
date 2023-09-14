@@ -27,16 +27,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Excel {
 	
-	static Logger logger = LogManager.getLogger(Excel.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Excel.class.getName());
 	public Map<String,Object[][]> sheetMap = new HashMap<>();
 	
 	public String getDefaultPath() {

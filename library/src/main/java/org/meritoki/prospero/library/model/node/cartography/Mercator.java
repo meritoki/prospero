@@ -1,7 +1,6 @@
 package org.meritoki.prospero.library.model.node.cartography;
 
 import org.meritoki.prospero.library.model.unit.Point;
-import org.meritoki.prospero.library.model.unit.Point;
 
 public class Mercator extends Projection {
 	

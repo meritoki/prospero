@@ -20,25 +20,22 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SILSOSunspot extends Source {
-	
-	static Logger logger = LogManager.getLogger(SILSOSunspot.class.getName());
-//	public String fileName = basePath+"prospero-data/SILSO/SN_d_tot_V2.0.csv";
+
+	static Logger logger = LoggerFactory.getLogger(SILSOSunspot.class.getName());
 	public List<Index> indexList;
-	
+
 	public SILSOSunspot() {
 		super();
 		this.setRelativePath("SILSO");
@@ -49,14 +46,13 @@ public class SILSOSunspot extends Source {
 	public void query(Query query) throws Exception {
 		logger.info("query(" + query + ")");
 		Result result = new Result();
-		result.map.put("indexList",this.read());
+		result.map.put("indexList", this.read());
 		result.mode = Mode.LOAD;
 		query.objectList.add(result);
 		result = new Result();
 		result.mode = Mode.COMPLETE;
 		query.objectList.add(result);
 	}
-
 
 	public List<Index> read() {
 		List<Index> indexList = new ArrayList<>();
@@ -68,21 +64,21 @@ public class SILSOSunspot extends Source {
 			while ((line = br.readLine()) != null) {
 				String[] commaArray = line.split(";");
 				List<String> dataList = new ArrayList<>();
-				for(String s:commaArray) {
+				for (String s : commaArray) {
 					s = s.trim();
-					if(!s.isEmpty()) {
+					if (!s.isEmpty()) {
 						dataList.add(s);
 					}
 				}
-				if(dataList.size() == 8) {
+				if (dataList.size() == 8) {
 					int year = Integer.parseInt(dataList.get(0));
 					int month = Integer.parseInt(dataList.get(1));
 					int day = Integer.parseInt(dataList.get(2));
 					int value = Integer.parseInt(dataList.get(4));
 					Index index = new Index();
 					index.value = value;
-					index.startCalendar = new GregorianCalendar(year, month-1,day,0,0,0);
-					index.endCalendar = new GregorianCalendar(year, month-1,day,24,0,0);
+					index.startCalendar = new GregorianCalendar(year, month - 1, day, 0, 0, 0);
+					index.endCalendar = new GregorianCalendar(year, month - 1, day, 24, 0, 0);
 					indexList.add(index);
 				}
 			}
@@ -92,11 +88,12 @@ public class SILSOSunspot extends Source {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 		return indexList;
-		
+
 	}
 }
+//public String fileName = basePath+"prospero-data/SILSO/SN_d_tot_V2.0.csv";
 //@Override
 //public Object get() {
 //	if (this.indexList == null) {

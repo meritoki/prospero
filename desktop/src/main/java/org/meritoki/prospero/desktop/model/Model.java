@@ -18,45 +18,29 @@ package org.meritoki.prospero.desktop.model;
 import java.io.File;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.model.resource.Resource;
-import org.meritoki.prospero.desktop.model.system.System;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
+import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.document.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Model extends org.meritoki.prospero.library.model.Model {
 
-	private static final Logger logger = LogManager.getLogger(Model.class.getName());
-	public System system = new System();
+	static Logger logger = LoggerFactory.getLogger(Model.class.getName());
 	public Resource resource = new Resource();
 	public MainFrame mainFrame;
-	public String version;
-//	public Properties properties = NodeController.openPropertiesXML(new File("prospero.xml"));
 	
 	public Model(MainFrame mainFrame) {
 		super();
 		this.mainFrame = mainFrame;
-		this.initProperties();
-	}
-	
-	@Override
-	public void init() {
-//		logger.info(this+".init()");
 		this.mainFrame.init();
 	}
 	
-	public void initProperties() {
-		Properties properties = null;
-		File propertiesFile = new File("prospero.xml");
-		if(propertiesFile.exists()) {
-			properties = NodeController.openPropertiesXML(propertiesFile);
-		} else {
-			properties = new Properties();
-			NodeController.savePropertiesXML(properties, "prospero.xml", "Prospero");
-		}
-		this.setProperties(properties);
+	@Override
+	public void construct() {
+		logger.debug(this+".init()");
+		super.construct();
 	}
 	
 	public void newDocument() {
@@ -92,3 +76,4 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 		this.system.newDocument = false;
 	}
 }
+//public Properties properties = NodeController.openPropertiesXML(new File("prospero.xml"));

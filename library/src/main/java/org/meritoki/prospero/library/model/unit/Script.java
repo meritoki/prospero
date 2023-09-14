@@ -17,7 +17,11 @@ package org.meritoki.prospero.library.model.unit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.node.cartography.Cartography;
 import org.meritoki.prospero.library.model.node.query.Query;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,14 +29,51 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.meritoki.library.controller.json.JsonController;
 
 public class Script {
+	
+	@JsonProperty
+	public Map<String, String> map = new TreeMap<>();
 
 	@JsonProperty
+	public List<Query> loadList = new ArrayList<>();
+	
+	@JsonProperty
 	public List<Query> queryList = new ArrayList<>();
+	
+	public Script() {
+		
+	}
+	
+	public Script(Script s) {
+		this.queryList = new ArrayList<>(s.queryList);
+	}
 	
 	@JsonIgnore
 	public String getJson() {
 		return JsonController.getJson(this);
 	}
+	
+	@JsonIgnore
+	public String getView() {
+		String view = map.get("view");
+		return view;
+	}
+	
+	@JsonIgnore
+	public String getProjection() {
+		String projection = map.get("projection");
+		return projection;
+	}
+	
+	@JsonIgnore
+	public Cartography getCartography() {
+		String projection = this.getProjection();
+		Cartography cartography = null;
+		if(projection != null) {
+			cartography = Cartography.valueOf(projection);
+		}
+		return cartography;
+	}
+
 }
 //public static void main(String[] args) {
 ////Script s = new Script();

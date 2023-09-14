@@ -17,26 +17,28 @@ package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Density extends Cyclone {
 
-	static Logger logger = LogManager.getLogger(Density.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Density.class.getName());
 
 	public Density() {
 		super("Density");
 		this.format = "##.##E0";
+		this.tileFlag = true;
 	}
 
 	public Density(String name) {
 		super(name);
 		this.format = "##.##E0";
+		this.tileFlag = true;
 	}
 
 	@Override
@@ -52,7 +54,7 @@ public class Density extends Cyclone {
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix);
-		this.timeTileMap.put(key,tileList);//All Tiles at Moments in Time
+		this.timeTileListMap.put(key,tileList);//All Tiles at Moments in Time
 		if (averageFlag) {
 			index = Tile.getAverage(key, tileList);
 		} else if (sumFlag) {

@@ -26,14 +26,14 @@ import java.util.Map;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.function.SlopeFunction;
 import org.meritoki.prospero.library.model.function.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Regression {
 
-	static Logger logger = LogManager.getLogger(Regression.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Regression.class.getName());
 	public Map<String, Double> map;
 	public Calendar startCalendar;
 	public Calendar endCalendar;

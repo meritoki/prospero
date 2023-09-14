@@ -18,7 +18,6 @@ package org.meritoki.prospero.library.model.node.data.source;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,11 +28,19 @@ import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Time;
 
+/**
+ * Fix Time representation loaded into coordinate
+ * @author jorodriguez
+ *
+ */
 public class TornadoHistoryProject extends Source {
 
 //	public List<Event> eventList;
 	
 	public TornadoHistoryProject() {
+		super();
+		this.setRelativePath("TornadoHistoryProject");
+		
 	}
 
 	@Override
@@ -49,8 +56,8 @@ public class TornadoHistoryProject extends Source {
 	}
 
 	public List<Event> read() {
-		String path = basePath+"prospero-data/TornadoHistoryProject";
-		File file = new File(path);
+
+		File file = new File(this.getPath());
 		File[] fileArray = file.listFiles();
 		List<Event> eventList = new LinkedList<Event>();
 		Time time;
@@ -80,8 +87,8 @@ public class TornadoHistoryProject extends Source {
 									coordinate = new Coordinate();
 									coordinate.latitude = Double.parseDouble(values[29]);
 									coordinate.longitude = Double.parseDouble(values[30]);
-//									time = new Time(values[2] + " " + values[3]);
-//									coordinate.calendar = time.calendar;
+									time = new Time(values[2] + " " + values[3], "yyyy-MM-dd HH:mm:ss", "second");
+									coordinate.calendar = time.calendar;
 									event.coordinateList.add(coordinate);
 								}
 								event.attribute.put(labelArray[8], values[8]);
@@ -107,7 +114,7 @@ public class TornadoHistoryProject extends Source {
 		return eventList;
 	}
 }
-
+//String path = basePath+"prospero-data/TornadoHistoryProject";
 //@Override
 //public Object get() {
 //	if(this.eventList == null) {

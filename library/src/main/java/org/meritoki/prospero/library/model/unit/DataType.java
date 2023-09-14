@@ -22,5 +22,9 @@ public enum DataType {
 	CONTINENT,
 	MSL,
 	GEOPOTENTIAL,
-	BAND_4
+	BAND_4,
+	CMI,
+	VORTICITY,
+	ELEVATION,
+	MAGNETIC
 }

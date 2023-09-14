@@ -22,21 +22,20 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.view.dialog.LoadDialog;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
 import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.Grid;
+import org.meritoki.prospero.library.model.node.Spheroid;
 import org.meritoki.prospero.library.model.node.Variable;
-import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
+import org.meritoki.prospero.library.model.node.cartography.Cartography;
 import org.meritoki.prospero.library.model.node.query.Query;
-import org.meritoki.prospero.library.model.terra.Terra;
-import org.meritoki.prospero.library.model.terra.biosphere.country.Country;
 import org.meritoki.prospero.library.model.unit.Analysis;
 import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Script;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -51,7 +50,7 @@ import com.meritoki.library.controller.time.TimeController;
 public class ScriptPanel extends javax.swing.JPanel {
 
 	private static final long serialVersionUID = 1L;
-	static Logger logger = LogManager.getLogger(ScriptPanel.class.getName());
+	static Logger logger = LoggerFactory.getLogger(ScriptPanel.class.getName());
 	private Model model;
 	private MainFrame mainFrame;
 	public LoadDialog loadDialog;
@@ -59,6 +58,8 @@ public class ScriptPanel extends javax.swing.JPanel {
 	public Thread thread;
 	public Runnable runnable;
 	public List<Script> scriptList = new ArrayList<>();
+	public double azimuth = -900;
+	public double elevation = -200;
     /**
      * Creates new form ScriptPanel
      */
@@ -75,12 +76,16 @@ public class ScriptPanel extends javax.swing.JPanel {
     
     public void init() {
     	this.initTextArea();
-    	this.scriptList = this.model.scriptList;
+    	if(this.model != null) {
+    		this.scriptList = this.model.scriptList;
+    	}
+
     }
     
     public void initTextArea() {
     	if(this.model != null) {
-    		Variable node = this.model.getCamera().node;
+    		Camera camera = (this.model != null) ? this.model.getCamera():null;
+    		Variable node = (camera != null) ? camera.node: null;
     		if(node != null) {
     			Script script = node.script;
     			if(script != null) {
@@ -121,25 +126,28 @@ public class ScriptPanel extends javax.swing.JPanel {
 			public void run() {
 				Thread.currentThread().setName("Script");
 				if(model.scriptList.size() > 0) {
-					Terra terra = (Terra)model.getVariable("Terra");
-					terra.setSelectedProjection(new AzimuthalSouth());
-					Country country = (Country)terra.getVariable("Country");
-					country.start();
-					country.query.map.put("source","Natural Earth");
-					country.query(country.query);
 					Iterator<Script> iterator = scriptList.iterator();
 					while (iterator.hasNext()) {
 						Script script = iterator.next();
 						if (script != null) {
-							for (Query query : script.queryList) {
+							Variable view = (script.getView() != null)?model.getVariable(script.getView()):null;
+							logger.info("query() view="+view);
+							if(view instanceof Spheroid) {
+								Cartography cartography = script.getCartography();
+								if(cartography != null) {
+									logger.info("query() cartography="+cartography);
+									((Spheroid)view).setSelectedProjection(cartography);
+								}
+							}
+							for (Query query : script.loadList) {
 								if (!Thread.currentThread().isInterrupted()) {
-									consoleTextArea.append("query " + query + "\n");
+									consoleTextArea.append("load " + query + "\n");
 									TimeController.start();
 									String variable = query.getVariable();
 									Variable node = model.getVariable(variable);
 									if (node != null) {
 										logger.info("query() node="+node);
-										model.getCamera().setNode(terra);
+										model.getCamera().setNode(view);
 										node.start();//can be called more than once, no problem
 										try {
 											node.query(query);//discrete finite task that sets a new query, includes process
@@ -147,10 +155,52 @@ public class ScriptPanel extends javax.swing.JPanel {
 												Thread.sleep(4000);
 											}
 											logger.info("query() node.isComplete()="+node.isComplete());
+											if (!Thread.currentThread().isInterrupted()) {
+												mainFrame.init();
+												MemoryController.log();
+												TimeController.stop();
+												consoleTextArea.append("load finished...\n");
+											} else {
+												consoleTextArea.append("script interrupt handled...\n");
+												break;
+											}
+											
+										} catch (Exception qe) {
+											consoleTextArea.append(qe.getMessage() + "\n");
+											node.stop();
+										}
+									} else {
+										logger.warn("query() node == null");
+										consoleTextArea.append("load failed...\n");
+									}
+								} else {
+									consoleTextArea.append("script interrupt handled...\n");
+									break;
+								}
+							}
+							
+							for (int i=0; i< script.queryList.size();i++) {//Query query : script.queryList) {
+								model.query = script.queryList.get(i);//query;
+								if (!Thread.currentThread().isInterrupted()) {
+									consoleTextArea.append("query " + model.query + "\n");
+									TimeController.start();
+									String variable = model.query.getVariable();
+									Variable node = model.getVariable(variable);
+									if (node != null) {
+										logger.info("query() node="+node);
+										model.getCamera().setNode(view);
+//										node.stop();
+										node.start();//can be called more than once, no problem
+										try {
+											node.query(model.query);//discrete finite task that sets a new query, includes process
+											while (!node.isComplete() && !Thread.interrupted()) {
+												Thread.sleep(4000);
+											}
+											logger.info("query() node.isComplete()="+node.isComplete());
 											if(((Grid)node).analysis == Analysis.CLUSTER) {
 												List<Cluster> clusterList = ((Grid)node).clusterList;
 												for(Cluster cluster:clusterList) {
-													Camera camera = new Camera(terra);
+													Camera camera = new Camera(view);
 													camera.configuration.put("node", node);
 													camera.configuration.put("cluster",cluster);
 													model.addCamera(camera);
@@ -158,18 +208,21 @@ public class ScriptPanel extends javax.swing.JPanel {
 											}
 											if (!Thread.currentThread().isInterrupted()) {
 												mainFrame.init();
-												mainFrame.saveQuery(query);
+												mainFrame.saveQuery(model.query);
 												MemoryController.log();
 												TimeController.stop();
 												model.removeCameras();
-												model.addCamera(new Camera(terra));
+												model.addCamera(new Camera(view));
 												consoleTextArea.append("query finished...\n");
+												if(i < (script.queryList.size()-1)) {
+													node.stop();
+												}
 											} else {
 												consoleTextArea.append("script interrupt handled...\n");
-		
+												node.stop();
 												break;
 											}
-											node.stop();
+											
 										} catch (Exception qe) {
 											consoleTextArea.append(qe.getMessage() + "\n");
 											node.stop();
@@ -187,7 +240,7 @@ public class ScriptPanel extends javax.swing.JPanel {
 						}
 						iterator.remove();
 					}
-//					country.stop();
+
 				}
 			}
 			
@@ -301,3 +354,19 @@ public class ScriptPanel extends javax.swing.JPanel {
     private javax.swing.JTextArea scriptTextArea;
     // End of variables declaration//GEN-END:variables
 }
+//Terra terra = (Terra)model.getVariable("Terra");
+//terra.setSelectedProjection(new AzimuthalSouth());
+//Country country = (Country)terra.getVariable("Country");
+//country.start();
+//country.query.map.put("source","Natural Earth");
+//country.query.map.put("time","all");
+//country.query(country.query);
+////this.query();
+//for(Script s:this.model.scriptList) {
+//this.scriptList.add(new Script(s));
+////this.scriptList = new ArrayList<>(this.model.scriptList);
+//}
+//terra.setAzimuth(azimuth);
+//terra.setElevation(elevation);
+//Camera camera = new Camera(terra);
+//country.stop();

@@ -22,6 +22,7 @@ import javax.swing.DefaultListModel;
 
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
 import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.library.model.node.Camera;
 import org.meritoki.prospero.library.model.node.Variable;
 
 /**
@@ -59,7 +60,8 @@ public class QueryPanel extends javax.swing.JPanel {
 	}
     
 	public void initList() {
-		Variable node = (this.model != null) ? this.model.getCamera().node: null;
+		Camera camera = (this.model != null) ? this.model.getCamera():null;
+		Variable node = (camera != null) ? camera.node: null;
 		if (node != null) {
 			this.initQueryList(node.query.getList());
 		} else {
@@ -92,6 +94,7 @@ public class QueryPanel extends javax.swing.JPanel {
         keyValueList = new javax.swing.JList<>();
         addButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
+        executeCheckBox = new javax.swing.JCheckBox();
 
         keyValueList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -114,6 +117,14 @@ public class QueryPanel extends javax.swing.JPanel {
             }
         });
 
+        executeCheckBox.setSelected(true);
+        executeCheckBox.setText("Execute");
+        executeCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                executeCheckBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -127,18 +138,23 @@ public class QueryPanel extends javax.swing.JPanel {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
                     .addComponent(addButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(96, 96, 96)
+                .addComponent(executeCheckBox)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
+                .addComponent(executeCheckBox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(keyTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(valueTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(addButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(removeButton)
                 .addContainerGap())
@@ -153,12 +169,8 @@ public class QueryPanel extends javax.swing.JPanel {
         Variable node = (this.model != null) ? this.model.getCamera().node: null;
         if (key != null && value != null && node != null) {
             node.query.put(key, value);
-            try {
-				node.init();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            if(this.model.execute)
+            	node.query();
             this.mainFrame.init();
         }
     }//GEN-LAST:event_addButtonActionPerformed
@@ -169,19 +181,23 @@ public class QueryPanel extends javax.swing.JPanel {
         if (attribute != null && node != null) {
             String[] pair = attribute.split("=");
             node.query.remove(pair[0]);
-            try {
-				node.init();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            if(this.model.execute)
+            	node.query();
             this.mainFrame.init();
         }
     }//GEN-LAST:event_removeButtonActionPerformed
 
+    private void executeCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeCheckBoxActionPerformed
+    	Variable node = (this.model != null) ? this.model.getCamera().node : null;       
+        this.model.execute = this.executeCheckBox.isSelected();
+        if(this.model.execute)
+        	node.query();
+    }//GEN-LAST:event_executeCheckBoxActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
+    private javax.swing.JCheckBox executeCheckBox;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField keyTextField;
     private javax.swing.JList<String> keyValueList;

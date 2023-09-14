@@ -17,8 +17,8 @@ package org.meritoki.prospero.library.model.unit;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class Dimension {
 
 	@JsonIgnore
-	static Logger logger = LogManager.getLogger(Dimension.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Dimension.class.getName());
 	@JsonProperty
 	public double width;
 	@JsonProperty

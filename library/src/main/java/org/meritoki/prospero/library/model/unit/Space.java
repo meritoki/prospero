@@ -16,8 +16,8 @@
 package org.meritoki.prospero.library.model.unit;
 
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public class Space {
-	static Logger logger = LogManager.getLogger(Space.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Space.class.getName());
 //	@JsonProperty
 //	public Vector3D elliptic = new Vector3D(0,0,0);
 //	@JsonProperty

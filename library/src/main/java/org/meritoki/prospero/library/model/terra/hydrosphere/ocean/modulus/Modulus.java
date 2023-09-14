@@ -15,13 +15,14 @@
  */
 package org.meritoki.prospero.library.model.terra.hydrosphere.ocean.modulus;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.meritoki.prospero.library.model.terra.hydrosphere.ocean.Ocean;
 import org.meritoki.prospero.library.model.unit.DataType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Modulus extends Ocean {
-	static Logger logger = LogManager.getLogger(Modulus.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Modulus.class.getName());
 	
 	public Modulus() {
 		super("Modulus");
