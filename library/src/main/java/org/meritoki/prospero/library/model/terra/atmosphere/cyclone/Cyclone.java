@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone;
 
 import java.awt.Graphics;
@@ -10,25 +25,18 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import org.apache.commons.math3.ml.clustering.CentroidCluster;
-import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.cluster.TileWrapper;
-import org.meritoki.prospero.library.model.grid.Grid;
-import org.meritoki.prospero.library.model.node.Variable;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.plot.histogram.Histogram;
 import org.meritoki.prospero.library.model.plot.time.TimePlot;
-import org.meritoki.prospero.library.model.query.Query;
-import org.meritoki.prospero.library.model.table.Table;
-import org.meritoki.prospero.library.model.terra.analysis.Analysis;
+import org.meritoki.prospero.library.model.terra.atmosphere.Atmosphere;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density.Density;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.genesis.Genesis;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.lifetime.Lifetime;
@@ -39,49 +47,59 @@ import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Classif
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.Family;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.vorticity.Vorticity;
+import org.meritoki.prospero.library.model.unit.Analysis;
 import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Bar;
 import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Coordinate;
+import org.meritoki.prospero.library.model.unit.Count;
 import org.meritoki.prospero.library.model.unit.Duration;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
+import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Regression;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.meritoki.library.controller.node.Exit;
 import com.meritoki.library.controller.node.NodeController;
 
-public class Cyclone extends Grid {
+public class Cyclone extends Atmosphere {
 
-	static Logger logger = LogManager.getLogger(Cyclone.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Cyclone.class.getName());
 	public String title = this.name;
 	public List<Integer> pressureList;
 	public List<Duration> durationList;
 	public List<Family> familyList;
 	public List<Classification> classificationList;
+	public Count count;
 
 	public Cyclone() {
 		super("Cyclone");
 		this.addChild(new Density());
 		this.addChild(new Genesis());
 		this.addChild(new Lysis());
-		this.addChild(new Vorticity());
+//		this.addChild(new Vorticity());
+		this.addChild(new Lifetime());
 		this.addChild(new Speed());
 		this.addChild(new InstantaneousSpeed());
-		this.addChild(new Lifetime());
-		this.sourceMap.put("UTN ERA INTERIM", "2d611935-9786-4c28-9dcf-f18cf3e99a3a");
-		this.sourceMap.put("UTN ERA 5", "281cbf52-7014-4229-bffd-35c8ba41bcb5");
+//		this.sourceMap.put("UTN ERA INTERIM", "2d611935-9786-4c28-9dcf-f18cf3e99a3a");
+//		this.sourceMap.put("UTN ERA INTERIM TEST", "cc7b89a0-ccc4-4a76-a79b-c0e04b9dd45a");
+//		this.sourceMap.put("UTN ERA 5", "281cbf52-7014-4229-bffd-35c8ba41bcb5");
+//		this.sourceMap.put("UTN TRACK", "9c51699e-d185-4469-a38a-08ca02b88931");
 	}
 
 	public Cyclone(String name) {
 		super(name);
-		this.sourceMap.put("UTN ERA INTERIM", "2d611935-9786-4c28-9dcf-f18cf3e99a3a");
-		this.sourceMap.put("UTN ERA 5", "281cbf52-7014-4229-bffd-35c8ba41bcb5");
+//		this.sourceMap.put("UTN ERA INTERIM", "2d611935-9786-4c28-9dcf-f18cf3e99a3a");
+//		this.sourceMap.put("UTN ERA INTERIM TEST", "cc7b89a0-ccc4-4a76-a79b-c0e04b9dd45a");
+//		this.sourceMap.put("UTN ERA 5", "281cbf52-7014-4229-bffd-35c8ba41bcb5");
 	}
 
 	@Override
@@ -97,6 +115,7 @@ public class Cyclone extends Grid {
 			this.classificationList = query.getClassificationList();
 			this.durationList = query.getDurationList();
 			this.pressureList = query.getPressureList();
+			this.count = query.getCount();
 		} catch (Exception e) {
 			logger.error("init() exception=" + e.getMessage());
 			e.printStackTrace();
@@ -104,7 +123,8 @@ public class Cyclone extends Grid {
 	}
 
 	/**
-	 * 
+	 * Method is used to set flags in Event and Coordinate to true or false
+	 * depending on query parameters
 	 */
 	@Override
 	public void filter(List<Event> eventList) throws Exception {
@@ -165,9 +185,47 @@ public class Cyclone extends Grid {
 					}
 					e.flag = durationFlag && familyFlag && classFlag;
 				}
+				this.setCountEventList(eventList, this.count);
 			}
 		} else {
 			throw new InterruptedException();
+		}
+	}
+
+	/**
+	 * Function Sets Cyclone Event Flag to False Where Count Condition is Not Satisfied.
+	 * @param eventList
+	 * @param count
+	 */
+	public void setCountEventList(List<Event> eventList, Count count) {
+		if (count != null) {
+			Iterator<Event> eventIterator = eventList.iterator();
+			while (eventIterator.hasNext()) {
+				Event e = eventIterator.next();
+				if (e instanceof CycloneEvent) {
+					CycloneEvent event = (CycloneEvent) e;
+					switch (count.operator) {
+					case '>': {
+						if (event.getPressureCount() <= count.value) {
+							event.flag = false;
+						}
+						break;
+					}
+					case '<': {
+						if (event.getPressureCount() >= count.value) {
+							event.flag = false;
+						}
+						break;
+					}
+					case '=': {
+						if (event.getPressureCount() < count.value || event.getPressureCount() > count.value) {
+							event.flag = false;
+						}
+						break;
+					}
+					}
+				}
+			}
 		}
 	}
 
@@ -181,151 +239,11 @@ public class Cyclone extends Grid {
 		this.eventList.addAll(new ArrayList<>(eventList));
 		try {
 			this.process(eventList);
+//			this.addRootObject(new Result(Mode.PAINT));
 		} catch (Exception e) {
 			logger.error("load(" + (result != null) + ") exception=" + e.getMessage());
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void complete() {
-		super.complete();
-		if (this.regionList != null && this.regionList.size() > 0) {//
-			for (Time time : this.timeList) {
-				try {
-					List<Event> eventList = this.eventMap.get(time);
-					if (eventList != null) {
-						for (Region region : this.regionList) {
-							this.region = region;
-							Series series = this.seriesMap.get(region.toString());
-							if (series == null) {
-								series = this.newSeries();
-							}
-							super.filter(eventList);
-							series.addIndex(this.getIndex(time, eventList));
-							this.seriesMap.put(region.toString(), series);
-						}
-						this.eventMap.remove(time);
-					}
-				} catch (Exception e) {
-					logger.error("complete() exception=" + e.getMessage());
-					e.printStackTrace();
-				}
-			}
-
-		}
-		if (this.analysis == Analysis.CLUSTER) {
-			this.cluster();
-		}
-		this.initPlotList(this.seriesMap, this.eventList);
-		this.initTableList(this.eventList, this.bandList,this.clusterList);
-	}
-
-	public void cluster() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < this.timeList.size(); i++) { // Time time: this.timeList) {
-			Time time = this.timeList.get(i);
-			List<Tile> tileList = this.timeTileMap.get(time);
-			if (tileList != null) {
-				if (i == 0) {
-					sb.append("\"\"");
-					for (Tile tile : tileList) {
-						sb.append(",\"" + String.valueOf(tile.latitude).replace("-", "N") + "_"
-								+ String.valueOf(tile.longitude).replace("-", "N") + "\"");
-					}
-					sb.append("\n");
-				}
-				sb.append("\"" + (i + 1) + "\"");
-				for (Tile tile : tileList) {
-					sb.append(",\"" + tile.value + "\"");
-				}
-				sb.append("\n");
-			}
-		}
-		Date dateTime = Calendar.getInstance().getTime();
-		String date = new SimpleDateFormat("yyyyMMdd").format(dateTime);
-		String uuid = UUID.randomUUID().toString();
-		String path = "." + File.separatorChar + "output" + File.separatorChar + date + File.separatorChar + name;
-		File directory = new File(path);
-		if (!directory.exists()) {
-			directory.mkdirs();
-		}
-		NodeController.saveText(path, uuid + ".csv", sb);
-		String input = path + File.separatorChar + uuid + ".csv";
-		String output = path + File.separatorChar + "output-" + uuid + ".csv";
-		String rCommand = "Rscript comparison.R " + input;
-		Time a = timeList.get(0);
-		Time b = timeList.get(timeList.size() - 1);
-		rCommand += " " + a.year + " " + a.month + " " + b.year + " " + b.month;
-		rCommand += " " + output;
-		Exit exit;
-		try {
-			exit = NodeController.executeCommand(rCommand, 1440 * 64);
-			if (exit.value != 0) {
-				throw new Exception("Non-Zero Exit Value: " + exit.value);
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		List<String[]> outputList = NodeController.openCsv(output);// "./output.csv");
-		outputList = outputList.subList(2, outputList.size() - 1);
-		List<Tile> tileList = new ArrayList<Tile>();
-		Map<Integer, List<Tile>> tileMap = new HashMap<>();
-		for (String[] stringArray : outputList) {
-			String coordinate = stringArray[0];
-			coordinate = coordinate.replace("\"", "");
-			String[] coordinateArray = coordinate.split("_");
-			double latitude = Double.parseDouble(coordinateArray[0].replace("N", "-"));
-			double longitude = Double.parseDouble(coordinateArray[1].replace("N", "-"));
-			Integer id = Integer.parseInt(stringArray[1]);
-			tileList = tileMap.get(id);
-			if (tileList == null) {
-				tileList = new ArrayList<>();
-			}
-			Tile tile = new Tile(latitude, longitude, this.dimension);
-			tileList.add(tile);
-			tileMap.put(id, tileList);
-		}
-		List<Cluster> clusterList = new ArrayList<>();
-		Cluster cluster;
-		for (Entry<Integer, List<Tile>> entry : tileMap.entrySet()) {
-			cluster = new Cluster();
-			cluster.id = entry.getKey();
-			cluster.tileList = entry.getValue();
-			clusterList.add(cluster);
-		}
-		this.clusterList = clusterList;
-		this.getClusterPlots(this.clusterList);
-	}
-
-	public void getClusterPlots(List<Cluster> clusterList) {
-		logger.info("getClusterPlots("+clusterList+")");
-		Map<String, Series> seriesMap = new HashMap<>();
-		for (Entry<Time, List<Tile>> entry : this.timeTileMap.entrySet()) {
-			Time time = entry.getKey();
-			List<Tile> tileList = entry.getValue();
-			for (Tile t : tileList) {
-				for (Cluster c : clusterList) {
-					if (c.contains(t)) {
-						c.setTile(t);
-					}
-				}
-			}
-			for (Cluster c : clusterList) {
-				Series series = seriesMap.get(c.uuid);
-				if (series == null) {
-					series = this.newSeries();
-					series.map.put("cluster", c.id);
-				}
-				Index index = time.getIndex();
-				index.value = c.getAverageValue();
-				series.addIndex(index);
-				seriesMap.put(c.uuid, series);
-			}
-		}
-		this.seriesMap.putAll(seriesMap);
-//		this.initPlotList(this.seriesMap, null);
 	}
 
 	/**
@@ -377,11 +295,11 @@ public class Cyclone extends Grid {
 									series = this.newSeries();
 								}
 								super.filter(eventList);
-								series.addIndex(this.getIndex(time, eventList));
+								series.add(this.getIndex(time, eventList));
 								this.seriesMap.put(region.toString(), series);
 							}
 							this.initPlotList(this.seriesMap, null);
-//							this.initTableList(null, null,null);
+//							this.initTableList(eventList, null, null, null);
 							this.eventMap.remove(time);
 						}
 					} catch (Exception e) {
@@ -395,36 +313,39 @@ public class Cyclone extends Grid {
 		}
 	}
 
-	public Series newSeries() {
-		Series series = new Series();
-		series.map.put("startCalendar", this.startCalendar);
-		series.map.put("endCalendar", this.endCalendar);
-		series.map.put("name", this.name);
-		series.map.put("average", this.averageFlag);
-		series.map.put("sum", this.sumFlag);
-		series.map.put("regression", this.regression);
-		series.map.put("region", region.toString());
-		series.map.put("family", this.query.getFamily());
-		series.map.put("class", this.query.getClassification());
-		series.map.put("group", this.query.getGroup());
-		series.map.put("variable", this.query.getVariable());
-		series.map.put("window", this.window);
-		series.map.put("range", this.range);
-		Query q = new Query(this.query);
-		q.map.put("region", region.toString());
-		series.map.put("query", q);
-		return series;
-	}
+	@Override
+	public void complete() {
+		super.complete();
+		if (this.regionList != null && this.regionList.size() > 0) {//
+			for (Time time : this.timeList) {
+				try {
+					List<Event> eventList = this.eventMap.get(time);
+					if (eventList != null) {
+						for (Region region : this.regionList) {
+							this.region = region;
+							Series series = this.seriesMap.get(region.toString());
+							if (series == null) {
+								series = this.newSeries();
+							}
+							super.filter(eventList);
+							series.add(this.getIndex(time, eventList));
+							this.seriesMap.put(region.toString(), series);
+						}
+						this.eventMap.remove(time);
+					}
+				} catch (Exception e) {
+					logger.error("complete() exception=" + e.getMessage());
+					e.printStackTrace();
+				}
+			}
 
-	public Plot getPlot(Series series) throws Exception {
-		Plot plot = null;
-		if (series.indexList != null && series.indexList.size() > 0) {
-			series.map.put("startCalendar", this.startCalendar);
-			series.map.put("endCalendar", this.endCalendar);
-			series.setRegression(this.regression);
-			plot = new TimePlot(series);
 		}
-		return plot;
+		if (this.analysis == Analysis.CLUSTER) {
+			this.cluster();
+		}
+		this.initPlotList(this.seriesMap, this.eventList);
+		this.initTableList(this.eventList, this.tileList, this.bandList, this.clusterList);
+		this.addModelObject(new Result(Mode.PAINT));
 	}
 
 	public List<Time> setEventMap(HashMap<Time, List<Event>> eventMap, List<Event> eventList) {
@@ -481,7 +402,7 @@ public class Cyclone extends Grid {
 				e.printStackTrace();
 			}
 		}
-		if (eventList != null) {
+		if (this.histogramFlag && eventList != null) {
 			plotList.add(this.getEventTotalDurationCountHistogram(eventList));
 			plotList.add(this.getEventTotalDistanceCountHistogram(eventList));
 			plotList.add(this.getEventTotalMeanVelocityCountHistogram(eventList));
@@ -498,28 +419,25 @@ public class Cyclone extends Grid {
 		this.plotList = plotList;
 	}
 
-	public void initTableList(List<Event> eventList, List<Band> bandList, List<Cluster> clusterList) {
+	public void initTableList(List<Event> eventList, List<Tile> tileList, List<Band> bandList,
+			List<Cluster> clusterList) {
 		List<Table> tableList = new ArrayList<>();
 		if (eventList != null && eventList.size() > 0) {
-			tableList.add(new Table("Cyclone Event(s)", CycloneEvent.getTableModel(eventList)));
+			tableList.add(new Table("Cyclone Event(s)", CycloneEvent.getTableModel(eventList,this.calendar)));
+		}
+		if (eventList != null && eventList.size() > 0) {
+			tableList.add(new Table("Cyclone Event Time", CycloneEvent.getTimeTableModel(eventList, this.calendar)));
+		}
+		if (tileList != null && tileList.size() > 0) {
+			tableList.add(new Table("Tiles(s)", Tile.getTableModel(tileList)));
 		}
 		if (bandList != null && bandList.size() > 0) {
 			tableList.add(new Table("Band(s)", Band.getTableModel(bandList)));
 		}
-		if(clusterList != null && clusterList.size() >0) {
+		if (clusterList != null && clusterList.size() > 0) {
 			tableList.add(new Table("Cluster(s)", Cluster.getTableModel(clusterList)));
 		}
 		this.tableList = tableList;
-	}
-
-	@Override
-	public List<Table> getTableList() throws Exception {
-		return this.tableList;
-	}
-
-	@Override
-	public List<Plot> getPlotList() throws Exception {
-		return this.plotList;
 	}
 
 	public void setMatrix(List<Event> eventList) {
@@ -531,6 +449,7 @@ public class Cyclone extends Grid {
 		}
 		this.initMonthArray(this.timeList);
 		this.initYearMap(this.timeList);
+		this.tileFlag = !this.name.equals("Cyclone");
 		this.tileList = this.getTileList();
 		this.bandList = this.getBandList(this.tileList);
 		if (this.stackFlag) {
@@ -543,26 +462,10 @@ public class Cyclone extends Grid {
 		}
 	}
 
-	public List<Band> getBandList(List<Tile> tileList) {
-		List<Band> bandList = new ArrayList<>();
-		if (tileList != null && tileList.size() > 0) {
-			List<Double> tileLatitudeList = this.getTileLatitudeList(tileList);
-			for (Double latitude : tileLatitudeList) {
-				List<Tile> bandTileList = new ArrayList<>();
-				for (Tile t : tileList) {
-					if (latitude.equals(t.latitude)) {
-						bandTileList.add(t);
-					}
-				}
-				Band band = new Band(bandTileList, latitude);
-				bandList.add(band);
-			}
-		}
-		return bandList;
-	}
-
 	public List<Time> setCoordinateMatrix(int[][][] coordinateMatrix, List<Event> eventList) {
 		List<Time> timeList = null;
+		Time startTime = new Time("month", this.startCalendar);
+		Time endTime = new Time("month", this.endCalendar);
 		if (eventList != null) {
 			timeList = new ArrayList<>();
 			if (this.stackFlag) {
@@ -572,15 +475,18 @@ public class Cyclone extends Grid {
 					if (coordinateMatrix == null)
 						coordinateMatrix = new int[(int) (latitude * resolution)][(int) (longitude * resolution)][12];
 					for (Event e : eventList) {
-						for (Coordinate p : e.coordinateList) {
-							if (p.flag && ((Integer) p.attribute.get("pressure")).equals(pressure)) {
-								int x = (int) ((p.latitude + this.latitude) * this.resolution);
-								int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = p.getMonth() - 1;
-								coordinateMatrix[x][y][z]++;
-								Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
-								if (!timeList.contains(time)) {
-									timeList.add(time);
+						for (Coordinate c : e.coordinateList) {
+							if (c.flag && ((Integer) c.attribute.get("pressure")).equals(pressure)) {
+								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
+								if (startTime.lessThan(time) && time.lessThan(endTime)) {
+									int x = (int) (((c.latitude + this.latitude/2) * this.resolution));
+									int y = (int) (((c.longitude + this.longitude/2) * this.resolution)
+											% (this.longitude * this.resolution));
+									int z = c.getMonth() - 1;
+									coordinateMatrix[x][y][z]++;
+									if (!timeList.contains(time)) {
+										timeList.add(time);
+									}
 								}
 							}
 						}
@@ -592,13 +498,16 @@ public class Cyclone extends Grid {
 					if (e.flag) {
 						for (Coordinate c : e.coordinateList) {
 							if (c.flag) {
-								int x = (int) ((c.latitude + this.latitude) * this.resolution);
-								int y = (int) ((c.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = c.getMonth() - 1;
-								coordinateMatrix[x][y][z]++;
 								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
-								if (!timeList.contains(time)) {
-									timeList.add(time);
+								if (startTime.lessThan(time) && time.lessThan(endTime)) {
+									int x = (int) (((c.latitude + this.latitude/2) * this.resolution));
+									int y = (int) (((c.longitude + this.longitude/2) * this.resolution)
+											% (this.longitude * this.resolution));
+									int z = c.getMonth() - 1;
+									coordinateMatrix[x][y][z]++;
+									if (!timeList.contains(time)) {
+										timeList.add(time);
+									}
 								}
 							}
 						}
@@ -607,6 +516,45 @@ public class Cyclone extends Grid {
 			}
 		}
 		return timeList;
+	}
+
+	@Override
+	public List<Table> getTableList() throws Exception {
+		return this.tableList;
+	}
+
+	@Override
+	public List<Plot> getPlotList() throws Exception {
+		return this.plotList;
+	}
+
+	public Plot getPlot(Series series) throws Exception {
+		Plot plot = null;
+		if (series.indexList != null && series.indexList.size() > 0) {
+			series.map.put("startCalendar", this.startCalendar);
+			series.map.put("endCalendar", this.endCalendar);
+			series.setRegression(this.regression);
+			plot = new TimePlot(series);
+		}
+		return plot;
+	}
+
+	public List<Band> getBandList(List<Tile> tileList) {
+		List<Band> bandList = new ArrayList<>();
+		if (tileList != null && tileList.size() > 0) {
+			List<Double> tileLatitudeList = this.getTileLatitudeList(tileList);
+			for (Double latitude : tileLatitudeList) {
+				List<Tile> bandTileList = new ArrayList<>();
+				for (Tile t : tileList) {
+					if (latitude.equals(t.coordinate.latitude)) {
+						bandTileList.add(t);
+					}
+				}
+				Band band = new Band(bandTileList, latitude);
+				bandList.add(band);
+			}
+		}
+		return bandList;
 	}
 
 	public Time getTime(String value, Event e) {
@@ -693,7 +641,7 @@ public class Cyclone extends Grid {
 		List<Integer> levelList = new ArrayList<>();
 		for (Event e : eventList) {
 			if (e.flag) {
-				List<Integer> lList = ((CycloneEvent) e).getSelectedLevelList();
+				List<Integer> lList = ((CycloneEvent) e).getSelectedPressureList();
 				for (Integer i : lList) {
 					if (!levelList.contains(i)) {
 						levelList.add(i);
@@ -709,8 +657,8 @@ public class Cyclone extends Grid {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-mean-velocity-count-histogram";
 		Map<Integer, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Total Mean Velocity Count");
-		histogram.setXLabel("Event Mean Velocity (km/s)");
+		histogram.setTitle("Mean Velocity Count");
+		histogram.setXLabel("Event Mean Velocity (m/s)");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
 			Integer count = 0;
@@ -742,7 +690,7 @@ public class Cyclone extends Grid {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-mean-vorticity-count-histogram";
 		Map<String, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Total Mean Vorticity Count");
+		histogram.setTitle("Mean Vorticity Count");
 		histogram.setXLabel("Event Mean Vorticity");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -776,7 +724,7 @@ public class Cyclone extends Grid {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-duration-count-histogram";
 		Map<Integer, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Total Duration Count");
+		histogram.setTitle("Duration Count");
 		histogram.setXLabel("Event Duration (Days)");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -809,7 +757,7 @@ public class Cyclone extends Grid {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-distance-count-histogram";
 		Map<Integer, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Total Distance Count");
+		histogram.setTitle("Distance Count");
 		histogram.setXLabel("Event Distance (1000 Kilometers)");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -817,12 +765,9 @@ public class Cyclone extends Grid {
 			int distance;
 			for (Event e : eventList) {
 				if (e.flag) {
-					distance = (int) (((CycloneEvent) e).getDistance());
-//					System.out.println("Distance: "+distance);
-					int range = distance / 1000000;
-//					System.out.println("Range: "+range);
-//					int key = range*1000000+1000000;
-//					System.out.println("Key: "+key);
+					distance = (int) (((CycloneEvent) e).getDistance());// Meters
+					int range = distance / 1000;// Kilometers
+					range /= 1000;
 					count = countMap.get(range);
 					if (count == null) {
 						count = 0;
@@ -847,8 +792,8 @@ public class Cyclone extends Grid {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-level-count-histogram";
 		Map<String, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Level Percentage (%)");
-		histogram.setXLabel("Event Level");
+		histogram.setTitle("Pressure Percentage (%)");
+		histogram.setXLabel("Event Pressure");
 		histogram.setYLabel("Event Percentage (%)");
 		if (eventList != null) {
 			Integer count = 0;
@@ -883,7 +828,7 @@ public class Cyclone extends Grid {
 		Histogram histogram = new Histogram();
 		Map<String, Integer> countMap = new HashMap<>();
 		histogram.data = "event-lowermost-level-count-histogram";
-		histogram.setTitle("Event Lowermost Level Count");
+		histogram.setTitle("Lowermost Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -916,7 +861,7 @@ public class Cyclone extends Grid {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-total-level-count-histogram";
 		Map<Integer, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Total Level Count");
+		histogram.setTitle("Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -949,7 +894,7 @@ public class Cyclone extends Grid {
 		Histogram histogram = new Histogram();
 		histogram.data = "event-uppermost-level-count-histogram";
 		Map<String, Integer> countMap = new HashMap<>();
-		histogram.setTitle("Event Uppermost Level Count");
+		histogram.setTitle("Uppermost Level Count");
 		histogram.setXLabel("Event Level");
 		histogram.setYLabel("Event Count");
 		if (eventList != null) {
@@ -1110,37 +1055,66 @@ public class Cyclone extends Grid {
 		return histogram;
 	}
 
-	public List<Cluster> getClusterList(List<Tile> tileList) {
-		List<Cluster> clusterList = new ArrayList<>();
-		List<TileWrapper> clusterInput = new ArrayList<TileWrapper>(tileList.size());
-		for (Tile tile : tileList) {
-			clusterInput.add(new TileWrapper(tile));
-		}
-		KMeansPlusPlusClusterer<TileWrapper> clusterer = new KMeansPlusPlusClusterer<TileWrapper>(10, 10000);
-//		MultiKMeansPlusPlusClusterer mClusterer = new MultiKMeansPlusPlusClusterer(clusterer,10);
-		List<CentroidCluster<TileWrapper>> clusterResults = clusterer.cluster(clusterInput);
-		for (int i = 0; i < clusterResults.size(); i++) {
-			Cluster cluster = new Cluster();
-			for (TileWrapper tileWrapper : clusterResults.get(i).getPoints()) {
-				cluster.tileList.add(tileWrapper.getTile());
-			}
-//		    logger.info("getClusterList("+tileList.size()+") cluster.tileList.size()="+cluster.tileList.size());
-			clusterList.add(cluster);
-		}
-		return clusterList;
-	}
-
 	@Override
 	public void paint(Graphics graphics) throws Exception {
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.paint(graphics);
-		}
-		if (this.load) {
-			super.paint(graphics);
-		}
+		super.paint(graphics);
 	}
 }
+
+//@JsonIgnore
+//@Override
+//public void setCalendar(Calendar calendar) {
+//	this.calendar = calendar;
+//	this.query();
+//	List<Variable> nodeList = this.getChildren();
+//	for (Variable n : nodeList) {
+//		n.setCalendar(calendar);
+//	}
+//}
+//public List<Cluster> getClusterList(List<Tile> tileList) {
+//List<Cluster> clusterList = new ArrayList<>();
+//List<TileWrapper> clusterInput = new ArrayList<TileWrapper>(tileList.size());
+//for (Tile tile : tileList) {
+//	clusterInput.add(new TileWrapper(tile));
+//}
+//KMeansPlusPlusClusterer<TileWrapper> clusterer = new KMeansPlusPlusClusterer<TileWrapper>(10, 10000);
+////MultiKMeansPlusPlusClusterer mClusterer = new MultiKMeansPlusPlusClusterer(clusterer,10);
+//List<CentroidCluster<TileWrapper>> clusterResults = clusterer.cluster(clusterInput);
+//for (int i = 0; i < clusterResults.size(); i++) {
+//	Cluster cluster = new Cluster();
+//	for (TileWrapper tileWrapper : clusterResults.get(i).getPoints()) {
+//		cluster.tileList.add(tileWrapper.getTile());
+//	}
+////    logger.info("getClusterList("+tileList.size()+") cluster.tileList.size()="+cluster.tileList.size());
+//	clusterList.add(cluster);
+//}
+//return clusterList;
+//}
+//Collections.sort(this.clusterList, new Comparator<Cluster>() {
+//@Override
+//public int compare(Cluster o1, Cluster o2) {
+//	return (o1.tileList.size()) - (o2.tileList.size());
+//}
+//});
+//this.tileList = new ArrayList<>();
+//for (Cluster c : this.clusterList) {
+//this.tileList.addAll(c.getTileList());
+//}
+//for (Tile t : tileList) {
+//for (Cluster cluster : clusterList) {
+//	if (cluster.contains(t)) {
+//		cluster.setTile(t);
+//	}
+//}
+//}
+//this.initPlotList(this.seriesMap, null);
+//List<Variable> nodeList = this.getChildren();
+//for (Variable n : nodeList) {
+//	n.paint(graphics);
+//}
+//if (this.load) {
+//	super.paint(graphics);
+//}
 //else if(this.bandFlag) {
 //List<Double> tileLatitudeList = this.getTileLatitudeList(this.tileList);
 //this.bandList = new ArrayList<>();

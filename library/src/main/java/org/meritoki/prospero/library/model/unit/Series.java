@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.unit;
 
 import java.io.IOException;
@@ -8,10 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.query.Query;
+import org.meritoki.prospero.library.model.node.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class Series {
 
-	static Logger logger = LogManager.getLogger(Series.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Series.class.getName());
 	public List<Index> indexList = new ArrayList<>();
 	public List<Time> timeList = new ArrayList<>();
 	public Map<String, Object> map = new TreeMap<>();
@@ -27,7 +41,7 @@ public class Series {
 
 	public void addIndexList(List<Index> indexList) {
 		for (Index i : indexList) {
-			this.addIndex(i);
+			this.add(i);
 		}
 	}
 	
@@ -35,16 +49,23 @@ public class Series {
 		String title = "";
 		title += (this.map.get("name")!=null)?this.map.get("name")+" ":"";
 		title += (this.map.get("cluster")!=null)?"Cluster "+this.map.get("cluster")+" ":"";
-		title += (this.map.get("group")!=null)?((String)this.map.get("group"))+" ":"";
+		title += (this.map.get("group")!=null)?this.capitalize((String)this.map.get("group"))+" ":"";
 		title += (this.map.get("sum")!=null && (boolean)this.map.get("sum"))?"Sum ":"";
 		title += (this.map.get("average")!=null && (boolean)this.map.get("average"))?"Average ":"";
-		title += (this.map.get("family")!=null)?"Family "+((String)this.map.get("family"))+" ":"";
-		title += (this.map.get("class")!=null)?"Class "+((String)this.map.get("class"))+" ":"";
+		title += (this.map.get("family")!=null)?"Family "+this.capitalize((String)this.map.get("family"))+" ":"";
+		title += (this.map.get("class")!=null)?"Class "+this.capitalize((String)this.map.get("class"))+" ":"";
 		title += (this.map.get("region")!=null)?"Region "+"("+((String)this.map.get("region")).replace(",", "_").replace(":", ")-(")+")":"";
 		return title;
 	}
 	
-	public String getData() {
+	public String capitalize(String string) {
+		if(string == null || string.length() == 0) {
+			return string;
+		}
+		return string.substring(0,1).toUpperCase() + string.substring(1).toLowerCase();
+	}
+	
+	public String getData() throws Exception {
 		Query query = (Query)this.map.get("query");
 		String data = query.getName();
 		Integer cluster = (Integer)this.map.get("cluster");
@@ -53,6 +74,17 @@ public class Series {
 		}
 		return data;
 	}
+	
+	public Index getIndex(Calendar calendar) {
+		Index index = null;
+		for(Index i: this.indexList) {
+			if(i.containsCalendar(calendar)) {
+				index = i;
+				break;
+			}
+		}
+		return index;
+	}
 
 
 	/**
@@ -60,7 +92,7 @@ public class Series {
 	 * 
 	 * @param index
 	 */
-	public void addIndex(Index index) {
+	public void add(Index index) {
 		if (index != null && !this.indexList.contains(index)) {
 			this.indexList.add(index);
 		} 
@@ -105,32 +137,8 @@ public class Series {
 					Point point = index.getPoint(startCalendar);
 					pointList.add(point);
 				}
-				double[][] data = new double[pointList.size()][2];
-				for (int i = 0; i < pointList.size(); i++) {
-					Point p = pointList.get(i);
-					data[i][0] = p.x;
-					data[i][1] = p.y;
-				}
-				SimpleRegression simpleRegression = new SimpleRegression(true);
-				simpleRegression.addData(data);
 				Regression r = new Regression();
-				Map<String, Double> map = new HashMap<>();
-				map.put("intercept", simpleRegression.getIntercept());
-				map.put("interceptStdErr", simpleRegression.getInterceptStdErr());
-				map.put("meanSquareError", simpleRegression.getMeanSquareError());
-//					map.put("n", simpleRegression.getN());
-				map.put("r", simpleRegression.getR());
-				map.put("regressionSumSquares", simpleRegression.getRegressionSumSquares());
-				map.put("rSquare", simpleRegression.getRSquare());
-				map.put("significance", simpleRegression.getSignificance());
-				map.put("slope", simpleRegression.getSlope());
-				map.put("slopeConfidenceInterval", simpleRegression.getSlopeConfidenceInterval());
-				map.put("slopeStdErr", simpleRegression.getSlopeStdErr());
-				map.put("sumOfCrossProducts", simpleRegression.getSumOfCrossProducts());
-				map.put("sumSquaredErrors", simpleRegression.getSumSquaredErrors());
-				map.put("totalSumSquares", simpleRegression.getTotalSumSquares());
-				map.put("xSumSqaures", simpleRegression.getXSumSquares());
-				r.map = map;
+				r.map = Regression.getRegression(pointList);
 				r.startCalendar = startCalendar;
 				r.endCalendar = endCalendar;
 				regressionList.add(r);
@@ -258,6 +266,31 @@ public class Series {
 		return string;
 	}
 }
+//double[][] data = new double[pointList.size()][2];
+//for (int i = 0; i < pointList.size(); i++) {
+//	Point p = pointList.get(i);
+//	data[i][0] = p.x;
+//	data[i][1] = p.y;
+//}
+//SimpleRegression simpleRegression = new SimpleRegression(true);
+//simpleRegression.addData(data);
+//Regression r = new Regression();
+//Map<String, Double> map = new HashMap<>();
+//map.put("intercept", simpleRegression.getIntercept());
+//map.put("interceptStdErr", simpleRegression.getInterceptStdErr());
+//map.put("meanSquareError", simpleRegression.getMeanSquareError());
+////	map.put("n", simpleRegression.getN());
+//map.put("r", simpleRegression.getR());
+//map.put("regressionSumSquares", simpleRegression.getRegressionSumSquares());
+//map.put("rSquare", simpleRegression.getRSquare());
+//map.put("significance", simpleRegression.getSignificance());
+//map.put("slope", simpleRegression.getSlope());
+//map.put("slopeConfidenceInterval", simpleRegression.getSlopeConfidenceInterval());
+//map.put("slopeStdErr", simpleRegression.getSlopeStdErr());
+//map.put("sumOfCrossProducts", simpleRegression.getSumOfCrossProducts());
+//map.put("sumSquaredErrors", simpleRegression.getSumSquaredErrors());
+//map.put("totalSumSquares", simpleRegression.getTotalSumSquares());
+//map.put("xSumSqaures", simpleRegression.getXSumSquares());
 ///**
 //* Function addIndex Index index
 //* 

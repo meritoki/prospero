@@ -1,22 +1,35 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.vorticity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
-import org.meritoki.prospero.library.model.unit.Band;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Vorticity extends Cyclone {
 
-	static Logger logger = LogManager.getLogger(Vorticity.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Vorticity.class.getName());
 
 	public Vorticity() {
 		super("Vorticity");
@@ -28,65 +41,6 @@ public class Vorticity extends Cyclone {
 		super.init();
 	}
 
-	public List<Tile> getTileList() {
-		List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.dataMatrix);
-		logger.debug("getTileList() tileList.size()=" + tileList.size());
-		return tileList;
-	}
-
-	public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] vorticityMatrix) {
-		List<Tile> tileList = new ArrayList<>();
-		int yearCount = this.getYearCount();
-		int monthCount = this.getMonthCount();
-		Tile tile;
-		int point;
-		float vorticity;
-		float vorticityMean;
-		float vorticityMeanSum;
-		float value;
-		for (int i = 0; i < coordinateMatrix.length; i += dimension) {
-			for (int j = 0; j < coordinateMatrix[i].length; j += dimension) {
-				vorticityMeanSum = 0;
-				for (int m = 0; m < 12; m++) {
-					point = 0;
-					vorticity = 0;
-					for (int a = i; a < (i + dimension); a++) {
-						for (int b = j; b < (j + dimension); b++) {
-							if (a < this.latitude && b < this.longitude) {
-								point += coordinateMatrix[a][b][m];
-								vorticity += vorticityMatrix[a][b][m];
-							}
-						}
-					}
-					vorticityMean = (point > 0) ? vorticity / point : 0;
-					vorticityMeanSum += vorticityMean;
-				}
-				value = vorticityMeanSum;
-				if (this.monthFlag) {
-					value /= monthCount;
-				} else if (this.yearFlag) {
-					value /= yearCount;
-				}
-				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
-						this.dimension, value);
-				if (this.region != null) {
-					if (this.region.contains(tile)) {
-						tileList.add(tile);
-					}
-				} else if (this.regionList != null) {
-					for (Region region : this.regionList) {
-						if (region.contains(tile)) {
-							tileList.add(tile);
-							break;
-						}
-					}
-				} else {
-					tileList.add(tile);
-				}
-			}
-		}
-		return tileList;
-	}
 
 	@Override
 	public void setMatrix(List<Event> eventList) {
@@ -129,14 +83,15 @@ public class Vorticity extends Cyclone {
 						vorticityMatrix = new float[(int) (latitude * resolution)][(int) (longitude
 							* resolution)][12];
 					for (Event e : eventList) {
-						for (Coordinate p : e.coordinateList) {
-							if (p.flag && ((Integer) p.attribute.get("pressure")).equals(level)) {
-								int x = (int) ((p.latitude + this.latitude) * this.resolution);
-								int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = p.getMonth() - 1;
+						for (Coordinate c : e.coordinateList) {
+							if (c.flag && ((Integer) c.attribute.get("pressure")).equals(level)) {
+								int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+								int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+										% (this.longitude * this.resolution));
+								int z = c.getMonth() - 1;
 								coordinateMatrix[x][y][z]++;
-								vorticityMatrix[x][y][z] += (float) p.attribute.get("vorticity");
-								Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
+								vorticityMatrix[x][y][z] += (float) c.attribute.get("vorticity");
+								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 								if (!timeList.contains(time)) {
 									timeList.add(time);
 								}
@@ -149,14 +104,15 @@ public class Vorticity extends Cyclone {
 			} else {
 				for (Event e : eventList) {
 					if (e.flag) {
-						for (Coordinate p : e.coordinateList) {
-							if (p.flag) {
-								int x = (int) ((p.latitude + this.latitude) * this.resolution);
-								int y = (int) ((p.longitude + this.longitude / 2) * this.resolution) % this.longitude;
-								int z = p.getMonth() - 1;
+						for (Coordinate c : e.coordinateList) {
+							if (c.flag) {
+								int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+								int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+										% (this.longitude * this.resolution));
+								int z = c.getMonth() - 1;
 								coordinateMatrix[x][y][z]++;
-								vorticityMatrix[x][y][z] += (float) p.attribute.get("vorticity");
-								Time time = new Time(p.getYear(), p.getMonth(), -1, -1, -1, -1);
+								vorticityMatrix[x][y][z] += (float) c.attribute.get("vorticity");
+								Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 								if (!timeList.contains(time)) {
 									timeList.add(time);
 								}
@@ -188,6 +144,65 @@ public class Vorticity extends Cyclone {
 		return index;
 	}
 }
+//public List<Tile> getTileList() {
+//List<Tile> tileList = this.getTileList(this.coordinateMatrix, this.dataMatrix);
+//logger.debug("getTileList() tileList.size()=" + tileList.size());
+//return tileList;
+//}
+//
+//public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] vorticityMatrix) {
+//List<Tile> tileList = new ArrayList<>();
+//int yearCount = this.getYearCount();
+//int monthCount = this.getMonthCount();
+//Tile tile;
+//int point;
+//float vorticity;
+//float vorticityMean;
+//float vorticityMeanSum;
+//float value;
+//for (int i = 0; i < coordinateMatrix.length; i += dimension) {
+//	for (int j = 0; j < coordinateMatrix[i].length; j += dimension) {
+//		vorticityMeanSum = 0;
+//		for (int m = 0; m < 12; m++) {
+//			point = 0;
+//			vorticity = 0;
+//			for (int a = i; a < (i + dimension); a++) {
+//				for (int b = j; b < (j + dimension); b++) {
+//					if (a < this.latitude && b < this.longitude) {
+//						point += coordinateMatrix[a][b][m];
+//						vorticity += vorticityMatrix[a][b][m];
+//					}
+//				}
+//			}
+//			vorticityMean = (point > 0) ? vorticity / point : 0;
+//			vorticityMeanSum += vorticityMean;
+//		}
+//		value = vorticityMeanSum;
+//		if (this.monthFlag) {
+//			value /= monthCount;
+//		} else if (this.yearFlag) {
+//			value /= yearCount;
+//		}
+//		tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
+//				this.dimension, value);
+//		if (this.region != null) {
+//			if (this.region.contains(tile)) {
+//				tileList.add(tile);
+//			}
+//		} else if (this.regionList != null) {
+//			for (Region region : this.regionList) {
+//				if (region.contains(tile)) {
+//					tileList.add(tile);
+//					break;
+//				}
+//			}
+//		} else {
+//			tileList.add(tile);
+//		}
+//	}
+//}
+//return tileList;
+//}
 //else if(this.bandFlag) {
 //List<Double> tileLatitudeList = this.getTileLatitudeList(this.tileList);
 //for (Double latitude : tileLatitudeList) {

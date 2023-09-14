@@ -1,38 +1,61 @@
 /*
-f * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.meritoki.prospero.library.model.solar.moon.luna;
 
 import java.awt.Color;
 
+import org.meritoki.prospero.library.model.node.cartography.Projection;
 import org.meritoki.prospero.library.model.solar.moon.Moon;
-import org.meritoki.prospero.library.model.solar.planet.earth.Earth;
+import org.meritoki.prospero.library.model.unit.Unit;
 
 /**
+ * 
+ * <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html">https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html</a>
  *
- * @author jorodriguez
  */
-public class Luna extends Moon{
+public class Luna extends Moon {
 
-    public Luna(Earth earth) {
+    public Luna() {
     	super("Luna");
-    	this.centroid = earth;
-        this.mass = 7.3477e22;
-        this.radius = 1738.1;
+        this.mass = 7.3477e22;//Kilograms
+        this.radius = 1738.1;//Kilometers
+		this.a = this.radius;//Kilometers
+		this.b = this.a;//Kilometers
+		this.c = 1736.00;//Kilometers
         this.color = Color.RED;
-        this.longitudeOfAscendingNode[0] = 125.1228;//o
-        this.longitudeOfAscendingNode[1] = -0.0529538083;//o
-        this.inclination[0] = 5.1454;//i//0.00005
-        this.inclination[1] = 0;//i//0.00005
+        this.defaultScale = 7200000.0;
+        //N
+        this.longitudeOfAscendingNode[0] = 125.1228;
+        this.longitudeOfAscendingNode[1] = -0.0529538083;
+        //i
+        this.inclination[0] = 5.1454;
+        this.inclination[1] = 0;
+        //w
         this.argumentOfPeriapsis[0] = 318.0634;
         this.argumentOfPeriapsis[1] = 0.1643573223;
-        this.semiMajorAxis[0] = 60.2666;//0.00256660410207;//60.2666*6371;//a//1.00000011
-        this.semiMajorAxis[1] = 0;
+        //a
+        this.semiMajorAxis[0] = (60.2666 * Unit.EARTH_RADII)/Unit.ASTRONOMICAL;//Astronomical Unit
+        this.semiMajorAxis[1] = 0;//Astronomical Unit
+        //e
         this.eccentricity[0] = 0.054900;//e//0.01671022
         this.eccentricity[1] = 0;//e
+        //M
         this.meanAnomaly[0] = 115.3654;
         this.meanAnomaly[1] = 13.0649929509;
+        this.projection = new Projection(this.a,this.b,this.c);
+        this.orbitalPeriod = 27;
     }
 }

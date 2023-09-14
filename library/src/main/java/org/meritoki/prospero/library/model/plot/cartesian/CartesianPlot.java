@@ -24,49 +24,18 @@ import java.awt.geom.AffineTransform;
 import java.text.DecimalFormat;
 import java.util.List;
 
-import org.meritoki.prospero.library.model.color.Chroma;
 import org.meritoki.prospero.library.model.plot.Plot;
 import org.meritoki.prospero.library.model.unit.Point;
 
 public class CartesianPlot extends Plot {
 
-//	public final double DEFAULT_SCALE = 1;
-//	public int panelWidth;
-//	public int panelHeight;
-//	public double plotWidth = 512;
-//	public double plotHeight = 256;
-//	public double scale;
-//	public String title = "Plot";
-//	public String xLabel = "X";
-//	public String yLabel = "Y";
 	public double yMin = 0;
 	public double yMax = 1000;
 	public double xMin = 0;
 	public double xMax = 1000;
-//	public double yInterval = 100;
-//	public double xInterval = 100;
-//	public int padding = 10;
-//	public int horizon = 450;
-//	public double yIncrement;
-//	public double xIncrement;
-//	public double step = 10;
-//	public String fontName = "SanSerif";
-//	public int titleFontStyle = Font.BOLD;
-//	public int barFontStyle = Font.PLAIN;
-//	public int yIncrementFontStyle = Font.PLAIN;
-//	public int xLabelFontStyle = Font.BOLD;
-//	public int yLabelFontStyle = Font.BOLD;
-//	public int titleFontSize = 18;
-//	public int barFontSize = 16;
-//	public int yIncrementFontSize = 16;
-//	public int xLabelFontSize = 16;
-//	public int yLabelFontSize = 16;
-//	public Color barColor = Color.GRAY;
 	public List<List<Point>> blackPointMatrix;
 	public List<List<Point>> colorPointMatrix;
-//	public final boolean print = false;
-//	public final boolean detail = false;
-//	public Chroma chroma = new Chroma();
+
 
 	public CartesianPlot() {
 		super();
@@ -274,6 +243,37 @@ public class CartesianPlot extends Plot {
 		g.drawImage(image, x, y, null);
 	}
 }
+//public final boolean print = false;
+//public final boolean detail = false;
+//public Chroma chroma = new Chroma();
+//public double yInterval = 100;
+//public double xInterval = 100;
+//public int padding = 10;
+//public int horizon = 450;
+//public double yIncrement;
+//public double xIncrement;
+//public double step = 10;
+//public String fontName = "SanSerif";
+//public int titleFontStyle = Font.BOLD;
+//public int barFontStyle = Font.PLAIN;
+//public int yIncrementFontStyle = Font.PLAIN;
+//public int xLabelFontStyle = Font.BOLD;
+//public int yLabelFontStyle = Font.BOLD;
+//public int titleFontSize = 18;
+//public int barFontSize = 16;
+//public int yIncrementFontSize = 16;
+//public int xLabelFontSize = 16;
+//public int yLabelFontSize = 16;
+//public Color barColor = Color.GRAY;
+//public final double DEFAULT_SCALE = 1;
+//public int panelWidth;
+//public int panelHeight;
+//public double plotWidth = 512;
+//public double plotHeight = 256;
+//public double scale;
+//public String title = "Plot";
+//public String xLabel = "X";
+//public String yLabel = "Y";
 //for(List<Point> pointList: this.pointMatrix) {
 //Point previousPoint = null;
 //for (int i = 0; i < pointList.size(); i++) {

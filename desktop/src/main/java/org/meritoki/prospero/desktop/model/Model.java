@@ -1,21 +1,47 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.desktop.model;
 
 import java.io.File;
+import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.model.resource.Resource;
-import org.meritoki.prospero.desktop.model.system.System;
+import org.meritoki.prospero.desktop.view.frame.MainFrame;
+import org.meritoki.prospero.library.controller.node.NodeController;
 import org.meritoki.prospero.library.model.document.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Model extends org.meritoki.prospero.library.model.Model {
 
-	private static final Logger logger = LogManager.getLogger(Model.class.getName());
-	
-	public System system = new System();
-	
+	static Logger logger = LoggerFactory.getLogger(Model.class.getName());
 	public Resource resource = new Resource();
+	public MainFrame mainFrame;
+	
+	public Model(MainFrame mainFrame) {
+		super();
+		this.mainFrame = mainFrame;
+		this.mainFrame.init();
+	}
+	
+	@Override
+	public void construct() {
+		logger.debug(this+".init()");
+		super.construct();
+	}
 	
 	public void newDocument() {
 		logger.info("newDocument()");
@@ -50,3 +76,4 @@ public class Model extends org.meritoki.prospero.library.model.Model {
 		this.system.newDocument = false;
 	}
 }
+//public Properties properties = NodeController.openPropertiesXML(new File("prospero.xml"));

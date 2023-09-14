@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  */
 package org.meritoki.prospero.library;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Library {
-	static Logger logger = LogManager.getLogger(Library.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Library.class.getName());
 
 	public static void main(String args[]) {
 

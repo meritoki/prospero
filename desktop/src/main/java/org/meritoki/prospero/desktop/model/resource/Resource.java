@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@ package org.meritoki.prospero.desktop.model.resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.meritoki.prospero.desktop.controller.node.NodeController;
+import org.meritoki.prospero.library.controller.node.NodeController;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

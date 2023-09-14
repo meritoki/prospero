@@ -1,9 +1,5 @@
-package org.meritoki.prospero.library.model.node;
-
-import java.awt.Graphics;
-
 /*
- * Copyright 2020 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +13,32 @@ import java.awt.Graphics;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.meritoki.prospero.library.model.node;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.data.Data;
 import org.meritoki.prospero.library.model.document.Document;
+import org.meritoki.prospero.library.model.node.data.Data;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.query.Query;
-import org.meritoki.prospero.library.model.table.Table;
-import org.meritoki.prospero.library.model.terra.cartography.AzimuthalSouth;
-import org.meritoki.prospero.library.model.terra.cartography.Projection;
+import org.meritoki.prospero.library.model.unit.Dimension;
 import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Operator;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Script;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meritoki.module.library.model.Module;
@@ -49,55 +47,55 @@ import com.meritoki.module.library.model.Node;
 
 public class Variable extends Node {
 
+	static Logger logger = LoggerFactory.getLogger(Variable.class.getName());
 	@JsonIgnore
-	static Logger logger = LogManager.getLogger(Variable.class.getName());
 	public Mode mode = Mode.NULL;
-	@JsonIgnore
-	public String timeZone = "GMT-3";
 	@JsonIgnore
 	public Calendar calendar;
 	@JsonIgnore
-	public Calendar startCalendar = new GregorianCalendar(2001, 0, 1, 0, 0, 0);
+	public Calendar startCalendar;
 	@JsonIgnore
-	public Calendar endCalendar = new GregorianCalendar(2001, 11, 31, 0, 0, 0);// Calendar.getInstance();
-	@JsonIgnore
-	public LinkedList<Query> queryQueue = new LinkedList<>();
-	@JsonIgnore
-	public Script script = null;
+	public Calendar endCalendar;
 	@JsonIgnore
 	public List<Script> scriptList = new ArrayList<>();
 	@JsonIgnore
-	public Query query = new Query();
+	public LinkedList<Time> timeList = new LinkedList<>();
 	@JsonIgnore
 	public LinkedList<Query> queryStack = new LinkedList<>();
 	@JsonIgnore
-	public List<String> orderList = new ArrayList<>();
-	@JsonIgnore
-	public Projection projection = new AzimuthalSouth();
-	@JsonIgnore
-	public Data data;
+	public LinkedList<Query> queryQueue = new LinkedList<>();
 	@JsonIgnore
 	public Map<String, String> sourceMap = new HashMap<String, String>();
 	@JsonIgnore
-	public String source;
-	@JsonIgnore
-	public boolean load;
-	@JsonIgnore
-	public boolean correlation = false;
-	@JsonIgnore
 	public Map<String, Boolean> variableMap = new HashMap<>();
 	@JsonIgnore
-	public String unit;
+	public Script script = null;
+	@JsonIgnore
+	public Query query = new Query();
+	@JsonIgnore
+	public Data data;
 	@JsonIgnore
 	public Operator operator;
 	@JsonIgnore
-	public LinkedList<Time> timeList = new LinkedList<>();
+	public Document document;
 	@JsonIgnore
-	public boolean cache = false;
+	public Dimension dimension = new Dimension();
 	@JsonIgnore
-	public Document document = null;
+	public String source;
+	@JsonIgnore
+	public String timeZone = "GMT-3";
+	@JsonIgnore
+	public String unit;
+	@JsonIgnore
+	public String format = "#.###E0";
+	@JsonIgnore
+	public boolean load;
+	@JsonIgnore
+	public boolean cache;
 
-	public Variable() {}
+
+	public Variable() {
+	}
 
 	public Variable(String name) {
 		super(name);
@@ -115,15 +113,11 @@ public class Variable extends Node {
 		return this.name.equals(node.name);
 	}
 
-	/**
-	 * MUST DELETE, Replicate Function in query()
-	 * 
-	 * @param sourceKey
-	 */
 	public void start() {
+		logger.debug(this+".start()");
 		super.start();
 		this.load = true;
-		this.initVariableMap();
+		
 	}
 
 	@Override
@@ -139,22 +133,25 @@ public class Variable extends Node {
 			switch (result.mode) {
 			case LOAD: {
 				this.mode = Mode.LOAD;
-				load(result);
+				this.load(result);
+				this.addModelObject(new Result(Mode.PAINT));
 				break;
 			}
 			case COMPLETE: {
-				complete();
+				this.complete();
 				this.mode = Mode.COMPLETE;
+				this.addModelObject(new Result(Mode.PAINT));
 				break;
 			}
 			case EXCEPTION: {
+				this.complete();
 				this.mode = Mode.EXCEPTION;
-				logger.warn("defaultState("+(object != null)+") EXCEPTION");
-				logger.warn("defaultState("+(object != null)+") result.message=" + result.message);
+				logger.warn("defaultState(" + (object != null) + ") EXCEPTION");
+				logger.warn("defaultState(" + (object != null) + ") result.message=" + result.message);
 				break;
 			}
 			default: {
-				logger.warn("defaultState("+(object != null)+") default");
+				logger.warn("defaultState(" + (object != null) + ") default");
 				break;
 			}
 			}
@@ -166,74 +163,70 @@ public class Variable extends Node {
 	 */
 	@JsonIgnore
 	public void init() {
-//		logger.info("init()");
+		logger.info("init()");
 		try {
 			this.operator = this.query.getOperator();
 			this.script = this.query.getScript();
 			this.timeList = new LinkedList<>();
 		} catch (Exception e) {
-			logger.error("init() e="+e.getMessage());
+			logger.error("init() e=" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * Support Result from Data Source
+	 * 
 	 * @param result
 	 */
 	public void load(Result result) {
-//		logger.info("load(" + (result != null) + ")");
+		logger.debug("load(" + (result != null) + ")");
 	}
-	
+
 	public void complete() {
-		logger.info("complete()");
+		logger.info(this + ".complete()");
 	}
 
 	public boolean isComplete() {
-		return this.mode == Mode.COMPLETE;
+		return this.mode == Mode.COMPLETE;// || this.mode == Mode.EXCEPTION;
 	}
-	
+
+	public boolean isException() {
+		return this.mode == Mode.EXCEPTION;
+	}
+
 	@JsonIgnore
 	public void query() {
 		this.query(this.query);
 	}
 
 	/**
-	 * Query is an important function. If the query is completely unknown, the global query is set
-	 * for the first time.
+	 * Query is an important function. If the query is completely unknown, the
+	 * global query is set for the first time.
 	 */
 	@JsonIgnore
 	public void query(Query query) {
 		this.query = query;
-		if(query.getSource() != null) {//should only move forward if we have a source
-			query.put("sourceUUID",this.sourceMap.get(query.getSource()));
-			query.calendar = this.calendar;
-			logger.info("query(" + query + ")");
-			if (!query.equals(this.queryStack.peek())) {
-				query.objectList = this.objectList;
-				this.reset();
-				this.init();
+		query.put("sourceUUID", this.sourceMap.get(query.getSource()));
+		logger.info("query(" + query + ")");
+		if (!query.equals(this.queryStack.peek())) {// Used to Detect Same Time Query More than Once In Time Order
+			query.objectList = this.objectList;
+			this.reset();// Reset b/c Found a New Query, Older No Longer Matter
+			this.init();
+			try {
+				this.data.add(query);
+				this.queryStack.push(new Query(query));
+			} catch (Exception e) {
+				logger.warn("query(" + query + ") Exception " + e.getMessage());
+				e.printStackTrace();
+			}
+		} else {
+			if (this.mode == Mode.COMPLETE) {
 				try {
-					this.data.add(query);
-//					Page page = this.document.pageMap.get(query.getTime()+"-"+query.getSourceUUID());
-//					if(page == null) {
-//						page = new Page();
-//					}
-//					page.queryList.add(query);
-//					this.document.pageMap.put(query.getTime()+"-"+query.getSourceUUID(),page);
-					this.queryStack.push(new Query(query));
+					this.process();
 				} catch (Exception e) {
 					logger.warn("query(" + query + ") Exception " + e.getMessage());
 					e.printStackTrace();
-				}
-			} else {
-				if (this.mode == Mode.COMPLETE) {
-					try {
-						this.process();
-					} catch (Exception e) {
-						logger.warn("query(" + query + ") Exception " + e.getMessage());
-						e.printStackTrace();
-					}
 				}
 			}
 		}
@@ -253,14 +246,39 @@ public class Variable extends Node {
 	}
 
 	public void initVariableMap() {
-
+		for (Variable n : this.getList()) {
+			n.initVariableMap();
+		}
 	}
 
+	/**
+	 * 20230621 Returns first Variable that matches name
+	 * Must convert to Name.Name format
+	 * @param name
+	 * @return
+	 */
 	@JsonIgnore
 	public Variable getVariable(String name) {
-//		logger.debug(this.name+".getVariable("+name+")");
-		if (this.name != null && this.name.equals(name)) {
-			return this;
+//		logger.info(this.name+".getVariable("+name+")");
+		String parent = null;
+		String child = null;
+		if(name.indexOf(".") > -1) {
+			parent = name.split("\\.")[0];
+			child = name.split("\\.")[1];
+		} else {
+			child = name;
+		}
+		if (this.name != null && this.name.equals(child)) {
+			if(parent != null) {
+				Variable p = (Variable)this.getRoot();
+				if(p.name.equals(parent)) {
+					return this;
+				} else {
+					return null;
+				}
+			} else {
+				return this;
+			}
 		} else {
 			List<Variable> nodeList = this.getChildren();
 			for (Variable n : nodeList) {
@@ -280,9 +298,18 @@ public class Variable extends Node {
 				plotList.addAll(n.getPlotList());
 			}
 		}
+		logger.debug("getPlotList() plotList.size()="+plotList.size());
 		return plotList;
 	}
 	
+	public void initPlotList() throws Exception {
+		for (Variable n : this.getList()) {
+			if (n.load) {
+				n.initPlotList();
+			}
+		}
+	}
+
 	public List<Table> getTableList() throws Exception {
 		List<Table> tableList = new ArrayList<>();
 		for (Variable n : this.getList()) {
@@ -292,8 +319,7 @@ public class Variable extends Node {
 		}
 		return tableList;
 	}
-	
-	
+
 	@JsonIgnore
 	public void setDocument(Document document) {
 		this.document = document;
@@ -302,6 +328,15 @@ public class Variable extends Node {
 			n.setDocument(this.document);
 		}
 	}
+
+//	@JsonIgnore
+//	public void setTimeZone(String timeZone) {
+//		this.timeZone = timeZone;
+//		List<Variable> nodeList = this.getChildren();
+//		for (Variable n : nodeList) {
+//			n.setCalendar(calendar);
+//		}
+//	}
 
 	@JsonIgnore
 	public void setCalendar(Calendar calendar) {
@@ -330,59 +365,16 @@ public class Variable extends Node {
 		}
 	}
 
-	@JsonIgnore
-	public Calendar getCalendar() {
-		return this.calendar;
-	}
+
 
 	@JsonIgnore
-	public void setFilter(Query filter) {
-		this.query = filter;
+	public void setData(Data data) {
+		this.data = data;
 		List<Variable> nodeList = this.getChildren();
 		for (Variable n : nodeList) {
-			n.setFilter(filter);
+			n.setData(data);
 		}
 	}
-
-	@JsonIgnore
-	public void setData(Data filter) {
-		this.data = filter;
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.setData(filter);
-		}
-	}
-
-	@JsonIgnore
-	public void setProjection(Projection projection) {
-		this.projection = projection;
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.setProjection(projection);
-		}
-	}
-
-	@JsonIgnore
-	public void paint(Graphics graphics) throws Exception {
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.paint(graphics);
-		}
-	}
-
-	@JsonIgnore
-	public void plot(Graphics graphics) throws Exception {
-		List<Variable> nodeList = this.getChildren();
-		for (Variable n : nodeList) {
-			n.plot(graphics);
-		}
-	}
-
-//	@JsonIgnore
-//	public void unload() {
-//		String sourceUUID = this.sourceMap.get(this.sourceKey);
-//		this.data.unload(sourceUUID);
-//	}
 
 	@JsonIgnore
 	public List<String> getSourceList() {
@@ -398,42 +390,32 @@ public class Variable extends Node {
 	public List<Variable> getChildren() {
 		List<Module> moduleList = new ArrayList<Module>(this.moduleMap.values());
 		List<Variable> variableList = new ArrayList<>();
-//		for(String s: this.orderList) {
-			for (Module m : moduleList) {
-//				System.out.println(s+".equals("+m+")");
-//				if(s.equals(m.toString())) {
-	 				if (m instanceof Variable) {
-						variableList.add((Variable) m);
-					}
-//				}
+		for (Module m : moduleList) {
+			if (m instanceof Variable) {
+				variableList.add((Variable) m);
 			}
-//		}
-//		List<Module> moduleList = new ArrayList<Module>(this.moduleMap.values());
-//		List<Variable> variableList = new ArrayList<>();
-//		for (Module m : moduleList) {
-//			for(String s: this.orderList) {
-//				if (s.equals(m.toString()) && m instanceof Variable) {
-//					variableList.add((Variable) m);
-//				}
-//			}
-//			
-//		}
+		}
 		return variableList;
 	}
 
 	@JsonIgnore
-	public void addChild(Variable child) {
-//		logger.info(this.name+".addChild("+child+")");
-		this.orderList.add(child.toString());
-		this.moduleMapPut(child);
+	public Calendar getCalendar() {
+		return this.calendar;
 	}
 
-//
 	@JsonIgnore
-	public void addChildren(List<Variable> children) {
-		for (Variable v : children) {
-			this.addChild(v);
+
+	public void addModelObject(Object object) {
+		Module module = this.getModel();
+		logger.debug(module + ".addRootObject(" + (object != null) + ")");
+		module.add(object);
+	}
+
+	public Module getModel() {
+		if (this.getParents() == null) {
+			return this;
 		}
+		return this.getParents().getModel();
 	}
 
 	public List<Variable> getList() {
@@ -443,7 +425,7 @@ public class Variable extends Node {
 	}
 
 	public void getList(Variable node, List<Variable> nodeList) {
-		List<Variable> nList = this.getChildren();
+		List<Variable> nList = node.getChildren();
 		for (Variable n : nList) {
 			Variable v = n;
 			nodeList.add(v);
@@ -465,11 +447,141 @@ public class Variable extends Node {
 		module.getChildren().forEach(each -> getTree(each, m));
 	}
 
+	public Variable getParents() {
+		return (Variable) this.getRoot();
+	}
+
+	@JsonIgnore
+	public void addChild(Variable child) {
+		logger.debug(this.name + ".addChild(" + child + ")");
+//		this.orderList.add(child.toString());
+		this.moduleMapPut(child);
+	}
+	
+	@JsonIgnore
+	public void removeChild(Variable child) {
+		logger.info(this.name + ".removeChild(" + child + ")");
+//		this.orderList.add(child.toString());
+		this.moduleMapRemove(child);
+	}
+
+	@JsonIgnore
+	public void addChildren(List<Variable> children) {
+		for (Variable v : children) {
+			this.addChild(v);
+		}
+	}
+
 	@JsonIgnore
 	public static void printTree(Variable node, String appender) {
 		node.getChildren().forEach(each -> printTree(each, appender + appender));
 	}
+
+	public Image getImage(Image image) throws Exception {
+		logger.debug(this + ".getImage(" + image + ")");
+		Graphics graphics = (image != null) ? image.getGraphics() : null;
+		graphics.setColor(Color.white);
+		graphics.fillRect(0, 0, (int) dimension.width, (int) dimension.height);
+		graphics.translate((int) (dimension.width / 2.0), (int) (dimension.height / 2.0));
+		this.paint(graphics);
+		return image;
+	}
+
+	@JsonIgnore
+	public void paint(Graphics graphics) throws Exception {
+//		logger.debug(this+".paint(" + (graphics != null) + ")");
+//		this.initPlotList(); 20230622 Terrible Idea
+		List<Variable> nodeList = this.getChildren();
+		for (Variable n : nodeList) {
+			n.paint(graphics);
+		}
+	}
 }
+//@JsonIgnore
+//public boolean correlation;
+//@JsonIgnore
+//public List<String> orderList = new ArrayList<>();
+//@JsonIgnore
+//public void setFilter(Query filter) {
+//	this.query = filter;
+//	List<Variable> nodeList = this.getChildren();
+//	for (Variable n : nodeList) {
+//		n.setFilter(filter);
+//	}
+//}
+//@JsonIgnore
+//public boolean visible;
+//if (query.isReady()) {// should only move forward if we have a time & source
+//query.calendar = this.calendar;
+//else if(this.mode == Mode.EXCEPTION) {
+//this.reset();
+//}
+//= new GregorianCalendar(2001, 0, 1, 0, 0, 0);
+//public List<Variable> getVisibleList() {
+//List<Variable> nodeList = this.getList();
+//List<Variable> nList = new ArrayList<>();
+//for (Variable n : nodeList) {
+//	if(n.visible) {
+//		nList.add(n);
+//	}
+//}
+//return nList;
+//}
+
+//public void getVisibleList(Variable node, List<Variable> nodeList) {
+//List<Variable> nList = this.getChildren();
+//for (Variable n : nList) {
+//	Variable v = n;
+//	if(v.visible) {
+//		nodeList.add(v);
+//	}
+//	v.getList(v, nodeList);
+//}
+//}
+//= new GregorianCalendar(2001, 11, 31, 0, 0, 0);// Calendar.getInstance();
+//@JsonIgnore
+//public void plot(Graphics graphics) throws Exception {
+//	List<Variable> nodeList = this.getChildren();
+//	for (Variable n : nodeList) {
+//		n.plot(graphics);
+//	}
+//}
+//@JsonIgnore
+//public void setProjection(Projection projection) {
+//	this.projection = projection;
+//	List<Variable> nodeList = this.getChildren();
+//	for (Variable n : nodeList) {
+//		n.setProjection(projection);
+//	}
+//}
+//for(String s: this.orderList) {
+//System.out.println(s+".equals("+m+")");
+//if(s.equals(m.toString())) {
+//}
+//}
+//List<Module> moduleList = new ArrayList<Module>(this.moduleMap.values());
+//List<Variable> variableList = new ArrayList<>();
+//for (Module m : moduleList) {
+//for(String s: this.orderList) {
+//	if (s.equals(m.toString()) && m instanceof Variable) {
+//		variableList.add((Variable) m);
+//	}
+//}
+//
+//}
+//Page page = this.document.pageMap.get(query.getTime()+"-"+query.getSourceUUID());
+//if(page == null) {
+//	page = new Page();
+//}
+//page.queryList.add(query);
+//this.document.pageMap.put(query.getTime()+"-"+query.getSourceUUID(),page);
+//@JsonIgnore
+//public Projection projection = new Globe();
+//@JsonIgnore
+//public void unload() {
+//	String sourceUUID = this.sourceMap.get(this.sourceKey);
+//	this.data.unload(sourceUUID);
+//}
 //public List<Event> filter(List<Event> eventList) throws Exception {
 //if (!Thread.interrupted()) {
 //	if (eventList != null) {

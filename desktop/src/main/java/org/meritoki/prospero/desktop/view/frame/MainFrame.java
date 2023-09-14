@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 package org.meritoki.prospero.desktop.view.frame;
 
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.File;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,19 +26,25 @@ import java.util.UUID;
 
 import javax.swing.JPanel;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.desktop.controller.node.NodeController;
 import org.meritoki.prospero.desktop.model.Model;
 import org.meritoki.prospero.desktop.view.dialog.AboutDialog;
 import org.meritoki.prospero.desktop.view.dialog.MainDialog;
-import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
 import org.meritoki.prospero.desktop.view.dialog.OpenDialog;
+import org.meritoki.prospero.desktop.view.dialog.PropertyDialog;
+import org.meritoki.prospero.desktop.view.dialog.SaveAsDialog;
+import org.meritoki.prospero.desktop.view.dialog.copernicus.CopernicusDialog;
+import org.meritoki.prospero.library.controller.node.NodeController;
+import org.meritoki.prospero.library.model.node.Camera;
+import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.query.Query;
-import org.meritoki.prospero.library.model.table.Table;
+import org.meritoki.prospero.library.model.unit.Cluster;
 import org.meritoki.prospero.library.model.unit.Script;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.meritoki.library.controller.model.ModelInterface;
 
 /**
  *
@@ -45,13 +53,15 @@ import org.meritoki.prospero.library.model.vendor.microsoft.Excel;
 public class MainFrame extends javax.swing.JFrame {
 
 	private static final long serialVersionUID = -1201441426706336659L;
-	static Logger logger = LogManager.getLogger(MainFrame.class.getName());
+	static Logger logger = LoggerFactory.getLogger(MainFrame.class.getName());
 	public Model model;
 	public MainDialog mainDialog = new MainDialog(this, false);
+	public PropertyDialog propertyDialog = new PropertyDialog(this, false);
+	public CopernicusDialog copernicusDialog = new CopernicusDialog(this, false);
 	public AboutDialog aboutDialog = new AboutDialog(this, false);
 	public SaveAsDialog saveAsDialog = null;
 	public OpenDialog openDialog = null;
-	
+
 	/**
 	 * Creates new form MainFrame2
 	 */
@@ -59,33 +69,44 @@ public class MainFrame extends javax.swing.JFrame {
 		initComponents();
 		this.setTitle("Prospero Desktop Application");
 	}
-	
+
 	public MainDialog getMainDialog() {
 		return this.mainDialog;
 	}
 
 	public void setModel(Model model) {
-//		logger.info("setModel("+model+")");
 		this.model = model;
+		if (this.model.system.version != null) {
+			this.setTitle("Prospero Desktop Application v" + this.model.system.version);
+		}
+		this.propertyDialog.setModel(this.model);
+		this.copernicusDialog.setModel(this.model);
 		this.mainDialog.setModel(this.model);
 		this.mainDialog.setVisible(true);
-		this.gridPanel.setModel(this.model);
-		this.solarPanel.setModel(this.model);
 		this.plotPanel.setModel(this.model);
 		this.tablePanel.setModel(this.model);
+		this.cameraPanel1.setModel(this.model);
+		this.initIconImage();
 		this.init();
+	}
+	
+	public void initIconImage() {
+		URL url = getClass().getResource("/Icon.png");
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Image image = toolkit.createImage(url);
+		this.setIconImage(image);
 	}
 
 	public void init() {
-//		logger.info("init()");
+		logger.debug("init()");
+		this.propertyDialog.init();
+		this.copernicusDialog.init();
 		this.mainDialog.init();
-		this.plotPanel.repaint();
-		this.solarPanel.repaint();
-		this.gridPanel.repaint();
-		this.plotPanel.repaint();
-		this.tablePanel.repaint();
+		this.cameraPanel1.init();
+		this.plotPanel.init();
+		this.tablePanel.init();
 	}
-	
+
 	public void save() {
 		if (this.model.system.newDocument) {
 			this.saveAsDialog = new org.meritoki.prospero.desktop.view.dialog.SaveAsDialog(this, false, this.model);
@@ -94,51 +115,78 @@ public class MainFrame extends javax.swing.JFrame {
 			this.init();
 		}
 	}
-	
+
 	public JPanel getGridPanel() {
-		return this.gridPanel;
+		return this.cameraPanel1;
 	}
-	
+
 	public JPanel getPlotPanel() {
 		return this.plotPanel;
 	}
-	
+
 	public void saveQuery(Query query) throws Exception {
-//		logger.info("savePanels("+query+")");
+		logger.info("saveQuery(" + query + ")");
 		Date dateTime = Calendar.getInstance().getTime();
-    	String date = new SimpleDateFormat("yyyyMMdd").format(dateTime);
-//    	String time = new SimpleDateFormat("HHmm").format(dateTime);
-    	String name = query.getName();
-    	String uuid = UUID.randomUUID().toString();
+		String date = new SimpleDateFormat("yyyyMMdd").format(dateTime);
+		String time = new SimpleDateFormat("HHmm").format(dateTime);
+		String name = date + "-" + time + "-" + query.getName();
+		String uuid = UUID.randomUUID().toString();
 		String path = "output" + File.separatorChar + date + File.separatorChar + name;
 		File directory = new File(path);
-		if(!directory.exists()) {
+		if (!directory.exists()) {
 			directory.mkdirs();
 		}
 		Script script = new Script();
 		script.queryList.add(query);
-		name += "-"+uuid;
-		NodeController.saveJson(path, name+".json", script);
-		this.saveGridPanel(path, name);
-		this.savePlotPanel(path, name, uuid);
+		name += "-" + uuid;
+		NodeController.saveJson(path, name + ".json", script);
+		this.saveCameras(path, date + "-" + time, query.getName());
+		this.savePlots(path, date + "-" + time, uuid);
+		this.saveTables(path, name, uuid);
 	}
-	
-	public void saveGridPanel(String path, String name) {
-		NodeController.savePanel(this.gridPanel, path,"grid-"+((name !=null)?name:""));
-	}
-	
-	public void savePlotPanel(String path, String name, String uuid) throws Exception {
-    	Excel excel = new Excel();
-    	for(Plot plot: this.model.getPlotList()) {
-			if(plot != null) {
-				for(Table table: plot.tableList) {
-					//puts everything in one excel
-					excel.sheetMap.put(table.name,Table.getTableData(table.tableModel));
+
+	/**
+	 * Panel Paint Has Already Been Called
+	 * 
+	 * @param path
+	 * @param dateTime
+	 */
+	public void saveCameras(String path, String dateTime, String name) {//, String uuid) {
+		logger.info("saveCameras(" + path + ", " + dateTime + ", " + ", " + name + ")");
+		for (Camera camera : this.model.cameraList) {
+			if (camera != null) {
+				Object object = camera.configuration.get("cluster");
+				String c = "";
+				if (object instanceof Cluster) {
+					Cluster cluster = (Cluster) object;
+					c += "-cluster-" + cluster.id;
 				}
+				Image image = camera.getImage();
+				if (image != null) {
+					String fileName = dateTime + "-grid" + c + "-"+ name + ".png";
+					try {
+						NodeController.savePng(path, fileName, NodeController.toBufferedImage(image));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+
+	public void savePlots(String path, String name, String uuid) throws Exception {
+		logger.info("savePlots(" + path + ", " + name + ", " + uuid + ")");
+//		Excel excel = new Excel();
+		for (Plot plot : this.model.getPlotList()) {
+			if (plot != null) {
+//				for (Table table : plot.tableList) {
+//					// puts everything in one excel
+//					excel.sheetMap.put(table.name, Table.getTableData(table.tableModel));
+//				}
 				Image image = plot.getImage();
-				if(image != null) {
+				if (image != null) {
 					String fileName;
-					fileName = "plot-"+plot.data+"-"+uuid+".png";
+					fileName = name + "-plot-" + plot.data + "-" + uuid + ".png";
 					try {
 						NodeController.savePng(path, fileName, NodeController.toBufferedImage(image));
 					} catch (Exception e) {
@@ -148,10 +196,24 @@ public class MainFrame extends javax.swing.JFrame {
 				}
 			}
 		}
-    	for(Table table: this.model.getTableList()) {
-    		excel.sheetMap.put(table.name,Table.getTableData(table.tableModel));
-    	}
-    	excel.save(path, "table"+((name !=null)?"-"+name:""));
+
+	}
+
+	public void saveTables(String path, String name, String uuid) throws Exception {
+		logger.info("saveTables(" + path + ", " + name + ", " + uuid + ")");
+		Excel excel = new Excel();
+		for (Plot plot : this.model.getPlotList()) {
+			if (plot != null) {
+				for (Table table : plot.tableList) {
+					// puts everything in one excel
+					excel.sheetMap.put(table.name, Table.getTableData(table.tableModel));
+				}
+			}
+		}
+		for (Table table : this.model.getTableList()) {
+			excel.sheetMap.put(table.name, Table.getTableData(table.tableModel));
+		}
+		excel.save(path, "table" + ((name != null) ? "-" + name : ""));
 	}
 
 	// this.setSize(1024, 512);
@@ -162,21 +224,20 @@ public class MainFrame extends javax.swing.JFrame {
 	 */
 	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="collapsed" desc="Generated
+	// <editor-fold defaultstate="collapsed" desc="Generated
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jMenuItem1 = new javax.swing.JMenuItem();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jScrollPane3 = new javax.swing.JScrollPane();
-        solarPanel = new org.meritoki.prospero.desktop.view.panel.SolarPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        gridPanel = new org.meritoki.prospero.desktop.view.panel.GridPanel();
+        cameraPanel1 = new org.meritoki.prospero.desktop.view.panel.CameraPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         plotPanel = new org.meritoki.prospero.desktop.view.panel.PlotPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablePanel = new org.meritoki.prospero.desktop.view.panel.TablePanel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
         openMenuItem = new javax.swing.JMenuItem();
         recentMenu = new javax.swing.JMenu();
@@ -186,6 +247,8 @@ public class MainFrame extends javax.swing.JFrame {
         windowMenu = new javax.swing.JMenu();
         dialogMenu = new javax.swing.JMenu();
         mainDialogMenuItem = new javax.swing.JMenuItem();
+        copernicusMenuItem = new javax.swing.JMenuItem();
+        propertyMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 
@@ -193,35 +256,20 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        javax.swing.GroupLayout solarPanelLayout = new javax.swing.GroupLayout(solarPanel);
-        solarPanel.setLayout(solarPanelLayout);
-        solarPanelLayout.setHorizontalGroup(
-            solarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 948, Short.MAX_VALUE)
+        javax.swing.GroupLayout cameraPanel1Layout = new javax.swing.GroupLayout(cameraPanel1);
+        cameraPanel1.setLayout(cameraPanel1Layout);
+        cameraPanel1Layout.setHorizontalGroup(
+            cameraPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 950, Short.MAX_VALUE)
         );
-        solarPanelLayout.setVerticalGroup(
-            solarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 458, Short.MAX_VALUE)
-        );
-
-        jScrollPane3.setViewportView(solarPanel);
-
-        jTabbedPane1.addTab("Solar", jScrollPane3);
-
-        javax.swing.GroupLayout gridPanelLayout = new javax.swing.GroupLayout(gridPanel);
-        gridPanel.setLayout(gridPanelLayout);
-        gridPanelLayout.setHorizontalGroup(
-            gridPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 948, Short.MAX_VALUE)
-        );
-        gridPanelLayout.setVerticalGroup(
-            gridPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 458, Short.MAX_VALUE)
+        cameraPanel1Layout.setVerticalGroup(
+            cameraPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 417, Short.MAX_VALUE)
         );
 
-        jScrollPane5.setViewportView(gridPanel);
+        jScrollPane3.setViewportView(cameraPanel1);
 
-        jTabbedPane1.addTab("Grid", jScrollPane5);
+        jTabbedPane1.addTab("Camera", jScrollPane3);
 
         plotPanel.setLayout(new javax.swing.BoxLayout(plotPanel, javax.swing.BoxLayout.LINE_AXIS));
         jScrollPane6.setViewportView(plotPanel);
@@ -232,7 +280,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Table", jScrollPane1);
 
-        jMenu1.setText("File");
+        fileMenu.setText("File");
 
         newMenuItem.setText("New");
         newMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -240,7 +288,7 @@ public class MainFrame extends javax.swing.JFrame {
                 newMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(newMenuItem);
+        fileMenu.add(newMenuItem);
 
         openMenuItem.setText("Open");
         openMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -248,10 +296,10 @@ public class MainFrame extends javax.swing.JFrame {
                 openMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(openMenuItem);
+        fileMenu.add(openMenuItem);
 
         recentMenu.setText("Recent");
-        jMenu1.add(recentMenu);
+        fileMenu.add(recentMenu);
 
         saveMenuItem.setText("Save");
         saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -259,7 +307,7 @@ public class MainFrame extends javax.swing.JFrame {
                 saveMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(saveMenuItem);
+        fileMenu.add(saveMenuItem);
 
         saveAsMenuItem.setText("Save As");
         saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -267,12 +315,12 @@ public class MainFrame extends javax.swing.JFrame {
                 saveAsMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(saveAsMenuItem);
+        fileMenu.add(saveAsMenuItem);
 
         exportMenu.setText("Export");
-        jMenu1.add(exportMenu);
+        fileMenu.add(exportMenu);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(fileMenu);
 
         windowMenu.setText("Window");
 
@@ -285,6 +333,22 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         dialogMenu.add(mainDialogMenuItem);
+
+        copernicusMenuItem.setText("Copernicus");
+        copernicusMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                copernicusMenuItemActionPerformed(evt);
+            }
+        });
+        dialogMenu.add(copernicusMenuItem);
+
+        propertyMenuItem.setText("Property");
+        propertyMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                propertyMenuItemActionPerformed(evt);
+            }
+        });
+        dialogMenu.add(propertyMenuItem);
 
         windowMenu.add(dialogMenu);
 
@@ -315,33 +379,41 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
         );
 
-        this.setSize(1024, 720);
+        this.setSize(1024, 1024);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void mainDialogMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mainDialogMenuItemActionPerformed
-         this.mainDialog.setVisible(true);
-    }//GEN-LAST:event_mainDialogMenuItemActionPerformed
+    private void copernicusMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copernicusMenuItemActionPerformed
+        this.copernicusDialog.setVisible(true);
+    }//GEN-LAST:event_copernicusMenuItemActionPerformed
 
-    private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_aboutMenuItemActionPerformed
+    private void propertyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_propertyMenuItemActionPerformed
+    	 this.propertyDialog.setVisible(true);
+    }//GEN-LAST:event_propertyMenuItemActionPerformed
 
-    private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newMenuItemActionPerformed
-    	this.model.newDocument();
-    	// TODO add your handling code here:
-    }//GEN-LAST:event_newMenuItemActionPerformed
+	private void mainDialogMenuItemActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_mainDialogMenuItemActionPerformed
+		this.mainDialog.setVisible(true);
+	}// GEN-LAST:event_mainDialogMenuItemActionPerformed
 
-    private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
-        this.openDialog = new OpenDialog(this, false, this.model);
-    }//GEN-LAST:event_openMenuItemActionPerformed
+	private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_aboutMenuItemActionPerformed
+		this.aboutDialog.setVisible(true);
+	}// GEN-LAST:event_aboutMenuItemActionPerformed
 
-    private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
-    	this.save();
-    }//GEN-LAST:event_saveMenuItemActionPerformed
+	private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_newMenuItemActionPerformed
+		this.model.newDocument();
+		// TODO add your handling code here:
+	}// GEN-LAST:event_newMenuItemActionPerformed
 
-    private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
-    	this.saveAsDialog = new org.meritoki.prospero.desktop.view.dialog.SaveAsDialog(this, false, this.model);
-    }//GEN-LAST:event_saveAsMenuItemActionPerformed
+	private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_openMenuItemActionPerformed
+		this.openDialog = new OpenDialog(this, false, this.model);
+	}// GEN-LAST:event_openMenuItemActionPerformed
+
+	private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_saveMenuItemActionPerformed
+		this.save();
+	}// GEN-LAST:event_saveMenuItemActionPerformed
+
+	private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_saveAsMenuItemActionPerformed
+		this.saveAsDialog = new org.meritoki.prospero.desktop.view.dialog.SaveAsDialog(this, false, this.model);
+	}// GEN-LAST:event_saveAsMenuItemActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -383,26 +455,26 @@ public class MainFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private org.meritoki.prospero.desktop.view.panel.CameraPanel cameraPanel1;
+    private javax.swing.JMenuItem copernicusMenuItem;
     private javax.swing.JMenu dialogMenu;
     private javax.swing.JMenu exportMenu;
-    private org.meritoki.prospero.desktop.view.panel.GridPanel gridPanel;
+    private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JMenuItem mainDialogMenuItem;
     private javax.swing.JMenuItem newMenuItem;
     private javax.swing.JMenuItem openMenuItem;
     private org.meritoki.prospero.desktop.view.panel.PlotPanel plotPanel;
+    private javax.swing.JMenuItem propertyMenuItem;
     private javax.swing.JMenu recentMenu;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
-    private org.meritoki.prospero.desktop.view.panel.SolarPanel solarPanel;
     private org.meritoki.prospero.desktop.view.panel.TablePanel tablePanel;
     private javax.swing.JMenu windowMenu;
     // End of variables declaration//GEN-END:variables

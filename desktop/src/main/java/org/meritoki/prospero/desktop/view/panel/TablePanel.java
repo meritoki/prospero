@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,16 @@ import javax.swing.JTabbedPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import org.meritoki.prospero.library.model.Model;
+import org.meritoki.prospero.desktop.model.Model;
+import org.meritoki.prospero.desktop.view.renderer.TableRenderer;
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.table.Table;
+import org.meritoki.prospero.library.model.unit.Table;
 
 /**
  *
  * @author jorodriguez
  */
-public class TablePanel extends javax.swing.JPanel implements Runnable {
+public class TablePanel extends javax.swing.JPanel { //implements Runnable {
 
 	/**
 	 * 
@@ -46,8 +47,8 @@ public class TablePanel extends javax.swing.JPanel implements Runnable {
 	 * Creates new form TablePanel
 	 */
 	public TablePanel() {
-		Thread thread = new Thread(this);
-		thread.start();
+//		Thread thread = new Thread(this);
+//		thread.start();
 		initComponents();
 	}
 
@@ -139,6 +140,7 @@ public class TablePanel extends javax.swing.JPanel implements Runnable {
 			} else {
 				this.table.setModel(new DefaultTableModel());
 			}
+			this.table.setDefaultRenderer(Object.class, new TableRenderer(this.model));
 
 //                    if(this.tableNameComboBox.getSelectedItem() != this.tableName) {
 //                        this.tableName = this.
@@ -177,18 +179,18 @@ public class TablePanel extends javax.swing.JPanel implements Runnable {
 		}
 	}
 
-	@Override
-	public void run() {
-		while (true) {
-			try {
-				this.init();
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+//	@Override
+//	public void run() {
+//		while (true) {
+//			try {
+//				this.init();
+//				Thread.sleep(10000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
 	/**
 	 * This method is called from within the constructor to initialize the form.

@@ -1,8 +1,15 @@
 .settings
 .project
+.classpath
 target/
 archive/
 logs/
 output/
 desktop/output.csv
 desktop/process/
+desktop/prospero.xml
+era-interim.py
+era-5.py
+era.xml
+.cdsapirc
+R-3.6.3/

@@ -1,116 +1,49 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.density;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Density extends Cyclone {
 
-	static Logger logger = LogManager.getLogger(Density.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Density.class.getName());
 
 	public Density() {
 		super("Density");
+		this.format = "##.##E0";
+		this.tileFlag = true;
 	}
 
 	public Density(String name) {
 		super(name);
+		this.format = "##.##E0";
+		this.tileFlag = true;
 	}
 
 	@Override
 	public List<Tile> getTileList() {
 		return this.getTileList(this.coordinateMatrix);
-	}
-
-	public List<Tile> getTileList(int[][][] coordinateMatrix) {
-		List<Tile> tileList = new ArrayList<>();
-		int yearCount = this.getYearCount();
-		int monthCount = this.getMonthCount();
-		Tile tile;
-		int count;
-		int density;
-		double weight;
-		double weightedDensity;
-		double weightedDensityQuotient;
-		double weightedDensityQuotientSum = 0;
-		double value;
-		// cycle through each tile
-		for (int i = 0; i < coordinateMatrix.length; i += dimension) {
-			for (int j = 0; j < coordinateMatrix[i].length; j += dimension) {
-				weightedDensityQuotientSum = 0;
-				for (int m = 0; m < 12; m++) {// for each month
-					density = 0;// each tile in a given month has a density;
-					int x = (int) (i + dimension);
-					int y = (int) (j + dimension);
-					if (x >= latitude) {
-						x = (int) (latitude);
-					}
-					if (y >= longitude) {
-						y = (int) (longitude);
-					}
-					for (int a = i; a < x; a++) {
-						for (int b = j; b < y; b++) {
-							density += coordinateMatrix[a][b][m];// density is the sum of count within tile for a given
-							// month;
-						}
-					}
-					weight = this.getArea(i - this.latitude, j - this.longitude / 2, dimension); // this.getArea(dimension);
-					weightedDensity = (weight > 0) ? density / weight : 0;
-					count = this.monthArray[m];
-					weightedDensityQuotient = (count > 0) ? weightedDensity / count : 0;
-					weightedDensityQuotientSum += weightedDensityQuotient;
-				}
-				value = weightedDensityQuotientSum;
-				if (this.monthFlag) {
-					value /= monthCount;
-				} else if (this.yearFlag) {
-					value /= yearCount;
-				}
-				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
-						dimension, value);
-
-				if (this.region != null) {
-					if (this.region.contains(tile)) {
-						tileList.add(tile);
-					}
-				} else if (this.regionList != null) {
-					for (Region region : this.regionList) {
-						if (region.contains(tile)) {
-							tileList.add(tile);
-							break;
-						}
-					}
-				} else {
-					tileList.add(tile);
-				}
-			}
-		}
-		return tileList;
-	}
-
-	public double getArea(double dimension) {
-		return dimension * dimension;
-	}
-
-	public double getArea(double latitude, double longitude, double dimension) {
-		return Math.cos(Math.abs(Math.toRadians(this.getCenterLatitude(latitude, dimension))));
-	}
-
-	public double getCenterLatitude(double latitude, double dimension) {
-		return latitude + (dimension / 2);
-	}
-
-	public double getCenterLongitude(double longitude, double dimension) {
-		return longitude + (dimension / 2);
 	}
 
 	@Override
@@ -121,7 +54,7 @@ public class Density extends Cyclone {
 		this.initMonthArray(timeList);
 		this.initYearMap(timeList);
 		List<Tile> tileList = this.getTileList(coordinateMatrix);
-		this.timeTileMap.put(key,tileList);
+		this.timeTileListMap.put(key,tileList);//All Tiles at Moments in Time
 		if (averageFlag) {
 			index = Tile.getAverage(key, tileList);
 		} else if (sumFlag) {
@@ -131,35 +64,105 @@ public class Density extends Cyclone {
 		}
 		return index;
 	}
-	
-//	public Index getIndex(List<Tile> tileList) {
-//		Index index = null;
-//		if (average) {
-//			StandardDeviation standardDeviation = new StandardDeviation();
-//			Mean mean = new Mean();
-//			for (Tile tile : tileList) {
-//				standardDeviation.increment(tile.value);
-//				mean.increment(tile.value);
+}
+//public Index getIndex(List<Tile> tileList) {
+//Index index = null;
+//if (average) {
+//	StandardDeviation standardDeviation = new StandardDeviation();
+//	Mean mean = new Mean();
+//	for (Tile tile : tileList) {
+//		standardDeviation.increment(tile.value);
+//		mean.increment(tile.value);
+//	}
+//	double value = mean.getResult();
+//	if (!Double.isNaN(value) && value != 0) {
+//		index = key.getIndex();
+//		index.value = value;
+//		index.map.put("N", standardDeviation.getN());
+//		index.map.put("standardDeviation", standardDeviation.getResult());
+//	}
+//} else if (sum) {
+//	double sum = 0;
+//	for (Tile tile : tileList) {
+//		sum += tile.value;
+//	}
+//	index = key.getIndex();
+//	index.value = sum;
+//} else {
+//	index = super.getIndex(key, eventList);
+//}
+//}
+//public List<Tile> getTileList(int[][][] coordinateMatrix) {
+//List<Tile> tileList = new ArrayList<>();
+//int yearCount = this.getYearCount();
+//int monthCount = this.getMonthCount();
+//Tile tile;
+//int count;
+//int density;
+//double weight;
+//double weightedDensity;
+//double weightedDensityQuotient;
+//double weightedDensityQuotientSum = 0;
+//double value;
+//// cycle through each tile
+//for (int i = 0; i < coordinateMatrix.length; i += dimension) {
+//	for (int j = 0; j < coordinateMatrix[i].length; j += dimension) {
+//		weightedDensityQuotientSum = 0;
+//		for (int m = 0; m < 12; m++) {// for each month
+//			density = 0;// each tile in a given month has a density;
+//			int x = (int) (i + dimension);
+//			int y = (int) (j + dimension);
+//			//We do not want the following nested for loop to fail
+//			//We must check if x and y with dimension added will succeed
+//			//If x or y go over the possible values of the Coordinate Matrix (0 <= x <= latitude, 0 <= y <= longitude)
+//			//The nested for loop can sum what it has without a problem, especially with Odd dimensions
+////			if (x >= latitude) {
+////				x = (int) (latitude);
+////			}
+////			if (y >= longitude) {
+////				y = (int) (longitude);
+////			}
+//			for (int a = i; a < x; a++) {
+//				for (int b = j; b < y; b++) {
+//					if (a < this.latitude && b < this.longitude) {
+//					density += coordinateMatrix[a][b][m];// density is the sum of count within tile for a given
+//					// month;
+//					}
+//				}
 //			}
-//			double value = mean.getResult();
-//			if (!Double.isNaN(value) && value != 0) {
-//				index = key.getIndex();
-//				index.value = value;
-//				index.map.put("N", standardDeviation.getN());
-//				index.map.put("standardDeviation", standardDeviation.getResult());
+//			weight = this.getArea(i - this.latitude, j - this.longitude / 2, dimension); // this.getArea(dimension);
+//			weightedDensity = (weight > 0) ? density / weight : 0;
+//			count = this.monthArray[m];
+//			weightedDensityQuotient = (count > 0) ? weightedDensity / count : weightedDensity;
+//			weightedDensityQuotientSum += weightedDensityQuotient;
+//		}
+//		value = weightedDensityQuotientSum;
+//		if (this.monthFlag) {
+//			value /= monthCount;
+//		} else if (this.yearFlag) {
+////			value /= yearCount;
+//		}
+//		tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
+//				dimension, value);
+//
+//		if (this.region != null) {
+//			if (this.region.contains(tile)) {
+//				tileList.add(tile);
 //			}
-//		} else if (sum) {
-//			double sum = 0;
-//			for (Tile tile : tileList) {
-//				sum += tile.value;
+//		} else if (this.regionList != null) {
+//			for (Region region : this.regionList) {
+//				if (region.contains(tile)) {
+//					tileList.add(tile);
+//					break;
+//				}
 //			}
-//			index = key.getIndex();
-//			index.value = sum;
 //		} else {
-//			index = super.getIndex(key, eventList);
+//			tileList.add(tile);
 //		}
 //	}
-}
+//}
+//return tileList;
+//}
 //@Override
 //public void setIndexList(Series series, Map<Time, List<Event>> eventMap, boolean reset) {
 ////	logger.info("setIndexList(" +series+","+ eventMap.size() + ","+reset+")");

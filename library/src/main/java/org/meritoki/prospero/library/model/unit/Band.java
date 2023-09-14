@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.unit;
 
 import java.text.DateFormat;
@@ -7,17 +22,15 @@ import java.util.List;
 
 import javax.swing.table.TableModel;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.meritoki.prospero.library.model.table.Table;
-import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Band {
 	
 	@JsonIgnore
-	static Logger logger = LogManager.getLogger(Band.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Band.class.getName());
 	public List<Tile> tileList = new ArrayList<>();
 	public double value;
 	public double latitude;

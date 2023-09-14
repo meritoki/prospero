@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Joaquin Osvaldo Rodriguez
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.desktop.model.Model;
 import org.meritoki.prospero.desktop.view.frame.MainFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,7 +34,7 @@ public class SaveAsDialog extends javax.swing.JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = -2182272398201780677L;
-	private static Logger logger = LogManager.getLogger(SaveAsDialog.class.getName());
+	static Logger logger = LoggerFactory.getLogger(SaveAsDialog.class.getName());
 	private Model model = null;
 	private MainFrame mainFrame;
 
@@ -137,7 +137,7 @@ public class SaveAsDialog extends javax.swing.JDialog {
 		/* Create and display the dialog */
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				SaveAsDialog dialog = new SaveAsDialog(new javax.swing.JFrame(), true, new Model());
+				SaveAsDialog dialog = new SaveAsDialog(new javax.swing.JFrame(), true, new Model(null));
 				dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 					@Override
 					public void windowClosing(java.awt.event.WindowEvent e) {

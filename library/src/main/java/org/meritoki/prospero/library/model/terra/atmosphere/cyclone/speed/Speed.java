@@ -1,93 +1,46 @@
+/*
+ * Copyright 2016-2022 Joaquin Osvaldo Rodriguez
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.meritoki.prospero.library.model.terra.atmosphere.cyclone.speed;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.commons.math3.stat.descriptive.moment.StandardDeviation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.Cyclone;
 import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
 import org.meritoki.prospero.library.model.unit.Coordinate;
 import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Index;
-import org.meritoki.prospero.library.model.unit.Region;
 import org.meritoki.prospero.library.model.unit.Tile;
 import org.meritoki.prospero.library.model.unit.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Speed extends Cyclone {
 
-	static Logger logger = LogManager.getLogger(Speed.class.getName());
+	static Logger logger = LoggerFactory.getLogger(Speed.class.getName());
 
 	public Speed() {
 		super("Speed");
 		this.unit = "m/s";
+		this.format = "##.##E0";
 	}
 
 	@Override
 	public void init() {
 		super.init();
-	}
-
-	@Override
-	public List<Tile> getTileList() {
-		return this.getTileList(this.coordinateMatrix, this.dataMatrix);
-	}
-
-	public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] speedMatrix) {
-		List<Tile> tileList = new ArrayList<>();
-		int yearCount = this.getYearCount();
-		int monthCount = this.getMonthCount();
-		Tile tile;
-		int point;
-		float speed;
-		float speedMean;
-		float speedMeanSum;
-		float value;
-		for (int i = 0; i < coordinateMatrix.length; i += this.dimension) {
-			for (int j = 0; j < coordinateMatrix[i].length; j += this.dimension) {
-				speedMeanSum = 0;
-				for (int m = 0; m < 12; m++) {
-					point = 0;
-					speed = 0;
-					for (int a = i; a < (i + this.dimension); a++) {
-						for (int b = j; b < (j + this.dimension); b++) {
-							if (a < this.latitude && b < this.longitude) {
-								point += coordinateMatrix[a][b][m];
-								speed += speedMatrix[a][b][m];
-							}
-						}
-					}
-					speedMean = (point > 0) ? speed / point : 0;
-					speedMeanSum += speedMean;
-				}
-				value = speedMeanSum;
-				if (this.monthFlag) {
-					value /= monthCount;
-				} else if (this.yearFlag) {
-					value /= yearCount;//value /= ((double) this.getMonthCount() / (double) yearCount);
-				}
-				tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
-						this.dimension, value);
-				if (this.region != null) {
-					if (this.region.contains(tile)) {
-						tileList.add(tile);
-					}
-				} else if (this.regionList != null) {
-					for (Region region : this.regionList) {
-						if (region.contains(tile)) {
-							tileList.add(tile);
-							break;
-						}
-					}
-				} else {
-					tileList.add(tile);
-				}
-			}
-		}
-
-		return tileList;
 	}
 
 	@Override
@@ -108,21 +61,25 @@ public class Speed extends Cyclone {
 	public List<Time> setSpeedCoordinateMatrix(float[][][] speedMatrix, int[][][] coordinateMatrix,
 			List<Event> eventList) {
 		List<Time> timeList = null;
+		Time startTime = new Time("month", this.startCalendar);
+		Time endTime = new Time("month", this.endCalendar);
 		if (eventList != null) {
 			timeList = new ArrayList<>();
 			for (Event e : eventList) {
 				if (e.flag) {
-					Coordinate c = ((CycloneEvent) e).getHalfTimeLowerMostPoint(null);
+					Coordinate c = ((CycloneEvent) e).getHalfTimeLowerMostCoordinate(null);
 					if (c != null) {
-						coordinateMatrix[(int) ((c.latitude + this.latitude)
-								* this.resolution)][(int) ((c.longitude + this.longitude / 2) * this.resolution)][c
-										.getMonth() - 1]++;
-						speedMatrix[(int) ((c.latitude + this.latitude)
-								* this.resolution)][(int) ((c.longitude + this.longitude / 2) * this.resolution)][c
-										.getMonth() - 1] += ((CycloneEvent) e).getMeanSpeed();
 						Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
-						if (!timeList.contains(time)) {
-							timeList.add(time);
+						if (startTime.lessThan(time) && time.lessThan(endTime)) {
+							int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+							int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
+									% (this.longitude * this.resolution));
+							int z = c.getMonth() - 1;
+							coordinateMatrix[x][y][z]++;
+							speedMatrix[x][y][z] += ((CycloneEvent) e).getMeanSpeed();
+							if (!timeList.contains(time)) {
+								timeList.add(time);
+							}
 						}
 					}
 				}
@@ -150,6 +107,68 @@ public class Speed extends Cyclone {
 		return index;
 	}
 }
+//@Override
+//public List<Tile> getTileList() {
+//	return this.getTileList(this.coordinateMatrix, this.dataMatrix);
+//}
+//
+//public List<Tile> getTileList(int[][][] coordinateMatrix, float[][][] speedMatrix) {
+//	List<Tile> tileList = new ArrayList<>();
+//	int yearCount = this.getYearCount();
+//	int monthCount = this.getMonthCount();
+//	Tile tile;
+//	int count;
+//	float speed;
+//	float mean;
+//	float meanSum;
+//	float value;
+//	for (int i = 0; i < coordinateMatrix.length; i += this.dimension) {
+//		for (int j = 0; j < coordinateMatrix[i].length; j += this.dimension) {
+//			meanSum = 0;
+//			for (int m = 0; m < 12; m++) {
+//				count = 0;
+//				speed = 0;
+//				for (int a = i; a < (i + this.dimension); a++) {
+//					for (int b = j; b < (j + this.dimension); b++) {
+//						if (a < this.latitude && b < this.longitude) {
+//							count += coordinateMatrix[a][b][m];
+//							speed += speedMatrix[a][b][m];
+//						}
+//					}
+//				}
+//				mean = (count > 0) ? speed / count : 0;
+//				count = this.monthArray[m];
+//				mean = (count > 0) ? mean / count : mean;
+//				meanSum += mean;
+//			}
+//			value = meanSum;
+//			if (this.monthFlag) {
+//				value /= monthCount;
+//			} else if (this.yearFlag) {
+//				value /= yearCount;// value /= ((double) this.getMonthCount() / (double) yearCount);
+//			}
+//			tile = new Tile((i - this.latitude) / this.resolution, (j - (this.longitude / 2)) / this.resolution,
+//					this.dimension, value);
+//			if (this.region != null) {
+//				if (this.region.contains(tile)) {
+//					tileList.add(tile);
+//				}
+//			} else if (this.regionList != null) {
+//				for (Region region : this.regionList) {
+//					if (region.contains(tile)) {
+//						tileList.add(tile);
+//						break;
+//					}
+//				}
+//			} else {
+//				tileList.add(tile);
+//			}
+//		}
+//	}
+//
+//	return tileList;
+//}
+//Time time = new Time(c.getYear(), c.getMonth(), -1, -1, -1, -1);
 //@Override
 //public void setEventList(List<Event> eventList, boolean reset) {
 ////	logger.info("setEventList("+eventList.size()+","+reset+")");

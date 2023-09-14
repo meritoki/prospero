@@ -10,47 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.meritoki.prospero.library.model.plot.Plot;
-import org.meritoki.prospero.library.model.table.Table;
 import org.meritoki.prospero.library.model.unit.Bar;
-import org.meritoki.prospero.library.model.unit.Index;
 import org.meritoki.prospero.library.model.unit.Point;
+import org.meritoki.prospero.library.model.unit.Table;
 
 public class Histogram extends Plot {
 
 	public final int DEFAULT_SCALE = 1;
-//	public int width;
-//	public int height;
-//	public double scale;
 	public List<Bar> barList = new ArrayList<>();
-//	public String title;
-//	public String xLabel;
-//	public String yLabel;
-//	public double xLength = 800;
-//	public double yLength = 300;
-//	public double yMin = 0;
-//	public double yMax = 1000;
-//	public double yInterval = 100;
-//	public int padding = 10;
-//	public int horizon = 450;
-//	public double increment;s
-//	public double step = 10;
-//	public String fontName = "SanSerif";
-//	public int titleFontStyle = Font.BOLD;
-//	public int barFontStyle = Font.PLAIN;
-//	public int yIncrementFontStyle = Font.PLAIN;
-//	public int xLabelFontStyle = Font.BOLD;
-//	public int yLabelFontStyle = Font.BOLD;
-//	public int titleFontSize = 18;
-//	public int barFontSize = 16;
-//	public int yIncrementFontSize = 16;
-//	public int xLabelFontSize = 16;
-//	public int yLabelFontSize = 16;
-//	public Color barColor = Color.GRAY;
-	
 
 	public Histogram() {
 		this.scale = DEFAULT_SCALE;
-//		this.test2();
 	}
 	
 	public void initTableList() {
@@ -72,9 +42,7 @@ public class Histogram extends Plot {
 		this.barList.add(new Bar(77.7, "500"));
 		this.barList.add(new Bar(32.3, "600"));
 		this.barList.add(new Bar(100, "700"));
-//		this.setXLabel("Hello World");
-//		this.setYLabel("Hello World");
-//		this.setTitle("Testing long title **********************");
+
 	}
 
 	public void setPanelWidth(int width) {
@@ -232,3 +200,33 @@ public class Histogram extends Plot {
 		return image;
 	}
 }
+//this.setXLabel("Hello World");
+//this.setYLabel("Hello World");
+//this.setTitle("Testing long title **********************");
+//public int width;
+//public int height;
+//public double scale;
+//public String title;
+//public String xLabel;
+//public String yLabel;
+//public double xLength = 800;
+//public double yLength = 300;
+//public double yMin = 0;
+//public double yMax = 1000;
+//public double yInterval = 100;
+//public int padding = 10;
+//public int horizon = 450;
+//public double increment;s
+//public double step = 10;
+//public String fontName = "SanSerif";
+//public int titleFontStyle = Font.BOLD;
+//public int barFontStyle = Font.PLAIN;
+//public int yIncrementFontStyle = Font.PLAIN;
+//public int xLabelFontStyle = Font.BOLD;
+//public int yLabelFontStyle = Font.BOLD;
+//public int titleFontSize = 18;
+//public int barFontSize = 16;
+//public int yIncrementFontSize = 16;
+//public int xLabelFontSize = 16;
+//public int yLabelFontSize = 16;
+//public Color barColor = Color.GRAY;
