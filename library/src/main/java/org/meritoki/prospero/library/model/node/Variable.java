@@ -89,7 +89,7 @@ public class Variable extends Node {
 	@JsonIgnore
 	public String format = "#.###E0";
 	@JsonIgnore
-	public boolean load;
+	public boolean load;//If True, Show Data from Variable
 	@JsonIgnore
 	public boolean cache;
 

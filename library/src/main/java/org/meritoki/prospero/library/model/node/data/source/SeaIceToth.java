@@ -91,8 +91,8 @@ public class SeaIceToth extends Source {
 				if (line.length() > 0) {
 					String[] lineArray = line.split("\\s+");
 					if (lineArray.length == 522) {
-						double latitude = Double.parseDouble(lineArray[0]);
-						double longitude = Double.parseDouble(lineArray[1]);
+						double latitude = Double.parseDouble(lineArray[0]);//-xx.xxx
+						double longitude = Double.parseDouble(lineArray[1]);//xxx.xxx
 						Coordinate coordinate = new Coordinate();
 						coordinate.calendar = frame.calendar;
 						coordinate.attribute.put("density", Double.parseDouble(lineArray[index]));
