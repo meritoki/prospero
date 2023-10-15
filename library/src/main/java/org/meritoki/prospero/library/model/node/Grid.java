@@ -891,7 +891,6 @@ public class Grid extends Spheroid {
 
 	public void paintStack(Graphics graphics) {
 		logger.debug(this + ".paintStack(...) tileListMap.size() = " + this.tileListMap.size());
-		this.scheme = Scheme.VIRIDIS;
 		this.chroma = new Chroma(this.scheme);
 		if (this.tileListMap.size() > 0) {
 			int size = this.tileListMap.size();

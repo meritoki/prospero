@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class Desktop {
 
 	static Logger logger = LoggerFactory.getLogger(Desktop.class.getName());
-	public static String versionNumber = "0.17.202303-alpha";
+	public static String versionNumber = "0.18.202310-alpha";
 	public static String vendor = "Meritoki";
 	public static String about = "Version " + versionNumber + " Copyright " + vendor + " 2016-2023";
 	public static Option versionOption = new Option("v", "version", false, "Print version information");

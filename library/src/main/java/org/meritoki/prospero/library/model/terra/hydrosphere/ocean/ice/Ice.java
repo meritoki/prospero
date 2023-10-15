@@ -97,7 +97,7 @@ public class Ice extends Ocean {
 					if (flag) {
 						for (Coordinate c : f.coordinateList) {
 							if (c.flag) {
-								int x = (int) (((c.latitude + this.latitude) / 2 * this.resolution) % (this.latitude * this.resolution));
+								int x = (int) (((c.latitude + this.latitude / 2) * this.resolution) % (this.latitude * this.resolution));
 								int y = (int) (((c.longitude + this.longitude / 2) * this.resolution)
 										% (this.longitude * this.resolution));
 								int z = c.getMonth() - 1;
