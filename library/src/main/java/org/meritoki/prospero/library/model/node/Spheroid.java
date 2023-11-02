@@ -15,8 +15,14 @@
  */
 package org.meritoki.prospero.library.model.node;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+
+import javax.swing.table.TableModel;
 
 import org.meritoki.prospero.library.model.node.cartography.AzimuthalNorth;
 import org.meritoki.prospero.library.model.node.cartography.AzimuthalSouth;
@@ -24,8 +30,11 @@ import org.meritoki.prospero.library.model.node.cartography.Cartography;
 import org.meritoki.prospero.library.model.node.cartography.Equirectangular;
 import org.meritoki.prospero.library.model.node.cartography.Mercator;
 import org.meritoki.prospero.library.model.node.cartography.Projection;
+import org.meritoki.prospero.library.model.terra.atmosphere.cyclone.unit.CycloneEvent;
+import org.meritoki.prospero.library.model.unit.Event;
 import org.meritoki.prospero.library.model.unit.Point;
 import org.meritoki.prospero.library.model.unit.Space;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -311,45 +320,47 @@ public class Spheroid extends Energy {
 	public double calculateChargeForce(double x) {
 		return this.getGravityForceSum() / x;
 	}
+	
 
-	@Override
-	public void print() {
-		super.print();
-		System.out.println("Mass");
-		System.out.println(this.name + " Mass:" + this.getMass());
-		System.out.println(this.name + " Centroid Mass:" + this.getCentroidMass());
-		System.out.println("X");
-		double X = this.getX();
-		System.out.println(this.name + " X: " + X);
-		System.out.println(this.name + " Calculate X: " + this.calculateX(X));
-		System.out.println(this.name + " X Ratio: " + this.getXRatio(X));
-		System.out.println("CHARGE");
-		System.out.println(this.name + " Coulomb:" + this.getCoulomb());
-		System.out.println(this.name + " Centroid Coulomb:" + this.getCentroidCoulomb());
-		System.out.println(this.name + " Charge Acceleration: " + this.getChargeAcceleration());
-		System.out.println(this.name + " Charge Force: " + this.getChargeForce());
-		System.out.println(this.name + " Calculate Charge Force: " + this.calculateChargeForce(X));
-		System.out.println(this.name + " Charge Force Ratio: " + this.getChargeForceRatio(X));
-		System.out.println("GRAVITY");
-		System.out.println(this.name + " Gravity Acceleration: " + this.getGravityAcceleration());
-		System.out.println(this.name + " Centroid Gravity Acceleration: " + this.getCentroidGravityAcceleration());
-		System.out.println(this.name + " Gravity Force: " + this.getGravityForce());
-		System.out.println(this.name + " Centroid Gravity Force: " + this.getCentroidGravityForce());
-		System.out.println(this.name + " Gravity Force Quotient: " + this.getGravityForceQuotient());
-		System.out.println(this.name + " Gravity Force Difference: " + this.getGravityForceDifference());
-		System.out.println(this.name + " Gravity Force Sum: " + this.getGravityForceSum());
-		System.out.println(this.name + " Calculate Gravity Force: " + this.calculateGravityForce(X));
-		System.out.println(this.name + " Gravity Force Ratio: " + this.getGravityForceRatio(X));
-//		System.out.println(this.name+" Gravity Force Ratio Charge Quotient: "+this.getGravityForceRatio(X)/Unit.COULOMBS);
-		System.out.println("Voltage");
-		System.out.println(this.name + " Voltage:" + this.getVoltage());
-//		System.out.println(this.name+" Centroid Voltage:"+this.getCentroidVoltage());
-		System.out.println("Joules");
-		System.out.println(this.name + " Joules:" + this.getJoules());
-//		System.out.println(this.name+" Centroid Joules:"+this.getCentroidJoules());
-		System.out.println("RESISTANCE");
-		System.out.println(this.name + " Resistance Ratio: " + this.getResistanceRatio());
-	}
+
+//	@Override
+//	public void print() {
+//		super.print();
+//		System.out.println("Mass");
+//		System.out.println(this.name + " Mass:" + this.getMass());
+//		System.out.println(this.name + " Centroid Mass:" + this.getCentroidMass());
+//		System.out.println("X");
+//		double X = this.getX();
+//		System.out.println(this.name + " X: " + X);
+//		System.out.println(this.name + " Calculate X: " + this.calculateX(X));
+//		System.out.println(this.name + " X Ratio: " + this.getXRatio(X));
+//		System.out.println("CHARGE");
+//		System.out.println(this.name + " Coulomb:" + this.getCoulomb());
+//		System.out.println(this.name + " Centroid Coulomb:" + this.getCentroidCoulomb());
+//		System.out.println(this.name + " Charge Acceleration: " + this.getChargeAcceleration());
+//		System.out.println(this.name + " Charge Force: " + this.getChargeForce());
+//		System.out.println(this.name + " Calculate Charge Force: " + this.calculateChargeForce(X));
+//		System.out.println(this.name + " Charge Force Ratio: " + this.getChargeForceRatio(X));
+//		System.out.println("GRAVITY");
+//		System.out.println(this.name + " Gravity Acceleration: " + this.getGravityAcceleration());
+//		System.out.println(this.name + " Centroid Gravity Acceleration: " + this.getCentroidGravityAcceleration());
+//		System.out.println(this.name + " Gravity Force: " + this.getGravityForce());
+//		System.out.println(this.name + " Centroid Gravity Force: " + this.getCentroidGravityForce());
+//		System.out.println(this.name + " Gravity Force Quotient: " + this.getGravityForceQuotient());
+//		System.out.println(this.name + " Gravity Force Difference: " + this.getGravityForceDifference());
+//		System.out.println(this.name + " Gravity Force Sum: " + this.getGravityForceSum());
+//		System.out.println(this.name + " Calculate Gravity Force: " + this.calculateGravityForce(X));
+//		System.out.println(this.name + " Gravity Force Ratio: " + this.getGravityForceRatio(X));
+////		System.out.println(this.name+" Gravity Force Ratio Charge Quotient: "+this.getGravityForceRatio(X)/Unit.COULOMBS);
+//		System.out.println("Voltage");
+//		System.out.println(this.name + " Voltage:" + this.getVoltage());
+////		System.out.println(this.name+" Centroid Voltage:"+this.getCentroidVoltage());
+//		System.out.println("Joules");
+//		System.out.println(this.name + " Joules:" + this.getJoules());
+////		System.out.println(this.name+" Centroid Joules:"+this.getCentroidJoules());
+//		System.out.println("RESISTANCE");
+//		System.out.println(this.name + " Resistance Ratio: " + this.getResistanceRatio());
+//	}
 
 	@JsonIgnore
 	@Override

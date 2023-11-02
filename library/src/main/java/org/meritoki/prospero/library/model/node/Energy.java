@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.swing.table.TableModel;
+
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.meritoki.prospero.library.model.node.query.Query;
 import org.meritoki.prospero.library.model.plot.Plot;
@@ -34,6 +36,7 @@ import org.meritoki.prospero.library.model.unit.Mode;
 import org.meritoki.prospero.library.model.unit.Result;
 import org.meritoki.prospero.library.model.unit.Series;
 import org.meritoki.prospero.library.model.unit.Space;
+import org.meritoki.prospero.library.model.unit.Table;
 import org.meritoki.prospero.library.model.unit.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,6 +187,11 @@ public class Energy extends Variable {
 		this.seriesMapPut(map, "Angle", this.triangleList);
 		return map;
 	}
+	
+	public void initTableList() {
+		
+	}
+	
 
 	public Map<String, Series> getSeriesMap() throws Exception {
 //		if (this.seriesMap == null) {
@@ -417,6 +425,7 @@ public class Energy extends Variable {
 
 	/**
 	 * Joules is calculated using mass and the speed of light
+	 * E=m*c^2
 	 * 
 	 * @return
 	 */
@@ -622,6 +631,97 @@ public class Energy extends Variable {
 			sum += tunnel.getResistanceRatio();
 		}
 		return sum;
+	}
+	
+	public static TableModel getTableModel(List<Energy> energyList) {
+		Object[] objectArray = getObjectArray(energyList);
+		return new javax.swing.table.DefaultTableModel((Object[][]) objectArray[1], (Object[]) objectArray[0]);
+	}
+	
+	public static Object[] getObjectArray(List<Energy> energyList) {
+		Object[] objectArray = new Object[2];
+		Object[] columnArray = new Object[0];
+		Object[][] dataMatrix = null;
+		if (energyList != null) {
+			if (energyList.size() > 0) {
+				for (int i = 0; i < energyList.size(); i++) {
+					Energy e = energyList.get(i);
+					if (e instanceof Spheroid) {
+						Spheroid s = (Spheroid) e;
+						if (i == 0) {
+							columnArray = Table.getColumnNames(18).toArray();
+							dataMatrix = new Object[energyList.size() + 1][18];
+							dataMatrix[i][0] = "mass";
+							dataMatrix[i][1] = "mass(centroid)";
+							dataMatrix[i][2] = "coulomb";
+							dataMatrix[i][3] = "coulomb(centroid)";
+							dataMatrix[i][4] = "acceleration(charge)";
+							dataMatrix[i][5] = "force(charge)";
+							dataMatrix[i][6] = "force(calculate charge)";
+							dataMatrix[i][7] = "force(ratio charge)";
+							dataMatrix[i][8] = "acceleration(gravity)";
+							dataMatrix[i][9] = "acceleration (centroid gravity)";
+							dataMatrix[i][10] = "force(gravity)";
+							dataMatrix[i][11] = "force(centroid gravity)";
+							dataMatrix[i][12] = "voltage";
+							dataMatrix[i][13] = "joules";
+							dataMatrix[i][14] = "resistence(ratio)";
+						}
+						double X = s.getX();
+						dataMatrix[i + 1][0] = s.getMass();
+						dataMatrix[i + 1][1] = s.getCentroidMass();
+						dataMatrix[i + 1][2] = s.getCoulomb();
+						dataMatrix[i + 1][3] = s.getCentroidCoulomb();
+						dataMatrix[i + 1][4] = s.getChargeAcceleration();
+						dataMatrix[i + 1][5] = s.getChargeForce();
+						dataMatrix[i + 1][6] = s.calculateChargeForce(X);
+						dataMatrix[i + 1][7] = s.getChargeForceRatio(X);
+						dataMatrix[i + 1][8] = s.getGravityAcceleration();
+						dataMatrix[i + 1][9] = s.getCentroidGravityAcceleration();
+						dataMatrix[i + 1][10] = s.getGravityForce();
+						dataMatrix[i + 1][11] = s.getCentroidGravityForce();
+						dataMatrix[i + 1][12] = s.getVoltage();
+						dataMatrix[i + 1][13] = s.getJoules();
+						dataMatrix[i + 1][14] = s.getResistanceRatio();
+					} else if(e instanceof Tunnel) {
+						Tunnel t = (Tunnel)e;
+						if (i == 0) {
+							columnArray = Table.getColumnNames(13).toArray();
+							dataMatrix = new Object[energyList.size() + 1][13];
+							dataMatrix[i][0] = "time seconds";
+							dataMatrix[i][1] = "time seconds a";
+							dataMatrix[i][2] = "time seconds b";
+							dataMatrix[i][3] = "distance";
+							dataMatrix[i][4] = "distance barycenter a";
+							dataMatrix[i][5] = "distance barycenter b";
+							dataMatrix[i][6] = "mass";
+							dataMatrix[i][7] = "mass centroid";
+							dataMatrix[i][8] = "mass a";
+							dataMatrix[i][9] = "mass b";
+							dataMatrix[i][10] = "mass sum";
+							dataMatrix[i][11] = "mass product";
+							dataMatrix[i][12] = "x";
+						}
+						dataMatrix[i + 1][0] = t.getSeconds();
+						dataMatrix[i + 1][1] = t.getSecondsA();
+						dataMatrix[i + 1][2] = t.getSecondsB();
+						dataMatrix[i + 1][3] = t.getDistance();
+						dataMatrix[i + 1][4] = t.getBarycenterDistanceA();
+						dataMatrix[i + 1][5] = t.getBarycenterDistanceB();
+						dataMatrix[i + 1][6] = t.getMass();
+						dataMatrix[i + 1][7] = t.getCentroidMass();
+						dataMatrix[i + 1][8] = t.a.getMass();
+						dataMatrix[i + 1][9] = t.b.getMass();
+						dataMatrix[i + 1][10] = t.getMassSum();
+						dataMatrix[i + 1][11] = t.getMassProduct();
+						dataMatrix[i + 1][12] = t.getX();
+					}
+				}
+			}
+			objectArray[0] = columnArray;
+			objectArray[1] = dataMatrix;
+		}
+		return objectArray;
 	}
 
 	public void print() {

@@ -563,57 +563,57 @@ public class Tunnel extends Spheroid {
 		return b.getDirection(a).scalarMultiply(this.getBarycenterDistanceB());
 	}
 
-	public static TableModel getTableModel(List<Tunnel> tunnelList) {
-		Object[] objectArray = getObjectArray(tunnelList);
-		return new javax.swing.table.DefaultTableModel((Object[][]) objectArray[1], (Object[]) objectArray[0]);
-	}
-
-	public static Object[] getObjectArray(List<Tunnel> eventList) {
-		Object[] objectArray = new Object[2];
-		Object[] columnArray = new Object[0];
-		Object[][] dataMatrix = null;
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		if (eventList != null) {
-			if (eventList.size() > 0) {
-				for (int i = 0; i < eventList.size(); i++) {
-					Tunnel t = eventList.get(i);
-					if (i == 0) {
-						columnArray = Table.getColumnNames(13).toArray();
-						dataMatrix = new Object[eventList.size() + 1][13];
-						dataMatrix[i][0] = "time seconds";
-						dataMatrix[i][1] = "time seconds a";
-						dataMatrix[i][2] = "time seconds b";
-						dataMatrix[i][3] = "distance";
-						dataMatrix[i][4] = "distance barycenter a";
-						dataMatrix[i][5] = "distance barycenter b";
-						dataMatrix[i][6] = "mass";
-						dataMatrix[i][7] = "mass centroid";
-						dataMatrix[i][8] = "mass a";
-						dataMatrix[i][9] = "mass b";
-						dataMatrix[i][10] = "mass sum";
-						dataMatrix[i][11] = "mass product";
-						dataMatrix[i][12] = "x";
-					}
-					dataMatrix[i + 1][0] = t.getSeconds();
-					dataMatrix[i + 1][1] = t.getSecondsA();
-					dataMatrix[i + 1][2] = t.getSecondsB();
-					dataMatrix[i + 1][3] = t.getDistance();
-					dataMatrix[i + 1][4] = t.getBarycenterDistanceA();
-					dataMatrix[i + 1][5] = t.getBarycenterDistanceB();
-					dataMatrix[i + 1][6] = t.getMass();
-					dataMatrix[i + 1][7] = t.getCentroidMass();
-					dataMatrix[i + 1][8] = t.a.getMass();
-					dataMatrix[i + 1][9] = t.b.getMass();
-					dataMatrix[i + 1][10] = t.getMassSum();
-					dataMatrix[i + 1][11] = t.getMassProduct();
-					dataMatrix[i + 1][12] = t.getX();
-				}
-			}
-			objectArray[0] = columnArray;
-			objectArray[1] = dataMatrix;
-		}
-		return objectArray;
-	}
+//	public static TableModel getTableModel(List<Tunnel> tunnelList) {
+//		Object[] objectArray = getObjectArray(tunnelList);
+//		return new javax.swing.table.DefaultTableModel((Object[][]) objectArray[1], (Object[]) objectArray[0]);
+//	}
+//
+//	public static Object[] getObjectArray(List<Tunnel> eventList) {
+//		Object[] objectArray = new Object[2];
+//		Object[] columnArray = new Object[0];
+//		Object[][] dataMatrix = null;
+//		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//		if (eventList != null) {
+//			if (eventList.size() > 0) {
+//				for (int i = 0; i < eventList.size(); i++) {
+//					Tunnel t = eventList.get(i);
+//					if (i == 0) {
+//						columnArray = Table.getColumnNames(13).toArray();
+//						dataMatrix = new Object[eventList.size() + 1][13];
+//						dataMatrix[i][0] = "time seconds";
+//						dataMatrix[i][1] = "time seconds a";
+//						dataMatrix[i][2] = "time seconds b";
+//						dataMatrix[i][3] = "distance";
+//						dataMatrix[i][4] = "distance barycenter a";
+//						dataMatrix[i][5] = "distance barycenter b";
+//						dataMatrix[i][6] = "mass";
+//						dataMatrix[i][7] = "mass centroid";
+//						dataMatrix[i][8] = "mass a";
+//						dataMatrix[i][9] = "mass b";
+//						dataMatrix[i][10] = "mass sum";
+//						dataMatrix[i][11] = "mass product";
+//						dataMatrix[i][12] = "x";
+//					}
+//					dataMatrix[i + 1][0] = t.getSeconds();
+//					dataMatrix[i + 1][1] = t.getSecondsA();
+//					dataMatrix[i + 1][2] = t.getSecondsB();
+//					dataMatrix[i + 1][3] = t.getDistance();
+//					dataMatrix[i + 1][4] = t.getBarycenterDistanceA();
+//					dataMatrix[i + 1][5] = t.getBarycenterDistanceB();
+//					dataMatrix[i + 1][6] = t.getMass();
+//					dataMatrix[i + 1][7] = t.getCentroidMass();
+//					dataMatrix[i + 1][8] = t.a.getMass();
+//					dataMatrix[i + 1][9] = t.b.getMass();
+//					dataMatrix[i + 1][10] = t.getMassSum();
+//					dataMatrix[i + 1][11] = t.getMassProduct();
+//					dataMatrix[i + 1][12] = t.getX();
+//				}
+//			}
+//			objectArray[0] = columnArray;
+//			objectArray[1] = dataMatrix;
+//		}
+//		return objectArray;
+//	}
 
 	@Override
 	public void print() {
